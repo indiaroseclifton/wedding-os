@@ -30,13 +30,42 @@ export default async function DashboardPage() {
   ).length;
   const decided = decisions.filter((d) => d.status === "DECIDED").length;
 
+  const checklist = [
+    {
+      done: decisions.some((d) => d.type === "PRIORITIES"),
+      label: "Set priorities together",
+      href: "/decisions/priorities",
+    },
+    {
+      done: decisions.some((d) => d.type === "STYLE_VIBE" || d.type === "STYLE"),
+      label: "Agree style & vibe",
+      href: "/decisions/style",
+    },
+    {
+      done: guests.length > 0,
+      label: "Start the guest list",
+      href: "/guests/new",
+    },
+    {
+      done: vendors.length > 0,
+      label: "Add key vendors",
+      href: "/vendors/new",
+    },
+    {
+      done: packages.length > 0,
+      label: "Create a handoff package",
+      href: "/handoffs/new",
+    },
+  ];
+  const remaining = checklist.filter((c) => !c.done).length;
+
   const cards = [
     { href: "/tasks", label: "Open tasks", value: String(openTasks) },
     { href: "/guests", label: "Guests", value: String(guests.length) },
     { href: "/guests", label: "Headcount", value: String(headcount) },
     { href: "/vendors", label: "Vendors booked", value: String(booked) },
     { href: "/decisions", label: "Decisions locked", value: String(decided) },
-    { href: "/handoffs", label: "Handoff packages", value: String(packages.length) },
+    { href: "/handoffs", label: "Handoffs", value: String(packages.length) },
   ];
 
   return (
@@ -47,6 +76,27 @@ export default async function DashboardPage() {
           Welcome{session ? `, ${session.name}` : ""}. {workspace.name}
         </p>
       </div>
+
+      {remaining > 0 && (
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <p className="text-sm font-semibold text-slate-900">Getting started</p>
+          <p className="mt-1 text-xs text-slate-500">{remaining} of {checklist.length} still open</p>
+          <ul className="mt-3 space-y-2">
+            {checklist.map((c) => (
+              <li key={c.href} className="flex items-center justify-between text-sm">
+                <span className={c.done ? "text-slate-400 line-through" : ""}>{c.label}</span>
+                {!c.done ? (
+                  <Link href={c.href} className="text-xs font-medium underline">
+                    Start
+                  </Link>
+                ) : (
+                  <span className="text-xs text-emerald-700">Done</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map((c) => (
@@ -63,41 +113,41 @@ export default async function DashboardPage() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
-          <p className="font-medium text-slate-900">Keep moving</p>
+          <p className="font-medium text-slate-900">Coordination</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
             <li>
-              <Link href="/decisions/priorities" className="underline">
-                Align on priorities
+              <Link href="/dietary" className="underline">
+                Dietary rollup for catering
               </Link>
             </li>
             <li>
               <Link href="/handoffs/new" className="underline">
-                Create a DJ or day-of handoff
+                DJ / day-of handoff
               </Link>
             </li>
             <li>
-              <Link href="/seating" className="underline">
-                Seat remaining guests
+              <Link href="/people" className="underline">
+                Invite wedding party
               </Link>
             </li>
           </ul>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
-          <p className="font-medium text-slate-900">Shortcuts</p>
+          <p className="font-medium text-slate-900">Plan</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
             <li>
-              <Link href="/guests/import" className="underline">
-                Import guest CSV
+              <Link href="/timeline" className="underline">
+                Timeline milestones
               </Link>
             </li>
             <li>
-              <Link href="/music" className="underline">
-                Must-play / do-not-play
+              <Link href="/floorplan" className="underline">
+                Floor plan layout
               </Link>
             </li>
             <li>
-              <Link href="/polls" className="underline">
-                Start a quick poll
+              <Link href="/traditions" className="underline">
+                Cultural traditions
               </Link>
             </li>
           </ul>
