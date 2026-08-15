@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const budgetFile = path.join(dataDir, "budget.json");
 
@@ -22,9 +21,9 @@ export type StoredBudget = {
 };
 
 async function readAll(): Promise<Record<string, StoredBudget>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    const raw = await fs.readFile(budgetFile, "utf8");
+    const raw = await readText(budgetFile);
     return JSON.parse(raw || "{}");
   } catch {
     return {};
@@ -32,8 +31,8 @@ async function readAll(): Promise<Record<string, StoredBudget>> {
 }
 
 async function writeAll(all: Record<string, StoredBudget>) {
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(budgetFile, JSON.stringify(all, null, 2), "utf8");
+  await ensureDir();
+  await writeText(budgetFile, JSON.stringify(all, null, 2));
 }
 
 export async function getBudget(workspaceId: string): Promise<StoredBudget> {

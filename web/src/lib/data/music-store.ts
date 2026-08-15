@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const musicFile = path.join(dataDir, "music.json");
 
@@ -24,9 +23,9 @@ export type StoredMusic = {
 };
 
 async function readAll(): Promise<Record<string, StoredMusic>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(musicFile, "utf8"));
+    return JSON.parse(await readText(musicFile));
   } catch {
     return {};
   }
@@ -51,7 +50,7 @@ export async function getMusic(workspaceId: string): Promise<StoredMusic> {
       requests: [],
       updatedAt: new Date().toISOString(),
     };
-    await fs.writeFile(musicFile, JSON.stringify(all, null, 2), "utf8");
+    await writeText(musicFile, JSON.stringify(all, null, 2));
   }
   return normalize(all[workspaceId]);
 }
@@ -65,7 +64,7 @@ export async function saveMusic(workspaceId: string, patch: Partial<StoredMusic>
     requests: patch.requests ?? current.requests,
     updatedAt: new Date().toISOString(),
   };
-  await fs.writeFile(musicFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(musicFile, JSON.stringify(all, null, 2));
   return normalize(all[workspaceId]);
 }
 

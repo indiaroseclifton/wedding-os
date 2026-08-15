@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const timelineFile = path.join(dataDir, "timeline.json");
 
@@ -17,16 +16,16 @@ export type TimelineItem = {
 };
 
 async function readJson(): Promise<TimelineItem[]> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(timelineFile, "utf8"));
+    return JSON.parse(await readText(timelineFile));
   } catch {
     return [];
   }
 }
 
 async function writeJson(rows: TimelineItem[]) {
-  await fs.writeFile(timelineFile, JSON.stringify(rows, null, 2), "utf8");
+  await writeText(timelineFile, JSON.stringify(rows, null, 2));
 }
 
 export async function listTimeline(workspaceId: string) {

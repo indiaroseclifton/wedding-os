@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const mediaFile = path.join(dataDir, "media.json");
 
@@ -22,16 +21,16 @@ export type StoredMedia = {
 };
 
 async function readAll(): Promise<Record<string, StoredMedia>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(mediaFile, "utf8"));
+    return JSON.parse(await readText(mediaFile));
   } catch {
     return {};
   }
 }
 
 async function writeAll(all: Record<string, StoredMedia>) {
-  await fs.writeFile(mediaFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(mediaFile, JSON.stringify(all, null, 2));
 }
 
 export async function getMedia(workspaceId: string): Promise<StoredMedia> {

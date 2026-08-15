@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, readJson, writeJson } from "./store-io";
 
 const vendorsFile = path.join(dataDir, "vendors.json");
 
@@ -19,26 +18,6 @@ export type StoredVendor = {
   createdAt: string;
   updatedAt: string;
 };
-
-async function ensureFile(file: string, fallback = "[]") {
-  await fs.mkdir(dataDir, { recursive: true });
-  try {
-    await fs.access(file);
-  } catch {
-    await fs.writeFile(file, fallback, "utf8");
-  }
-}
-
-async function readJson<T>(file: string): Promise<T[]> {
-  await ensureFile(file);
-  const raw = await fs.readFile(file, "utf8");
-  return JSON.parse(raw || "[]") as T[];
-}
-
-async function writeJson<T>(file: string, rows: T[]) {
-  await ensureFile(file);
-  await fs.writeFile(file, JSON.stringify(rows, null, 2), "utf8");
-}
 
 export async function listVendors(workspaceId: string) {
   return (await readJson<StoredVendor>(vendorsFile))

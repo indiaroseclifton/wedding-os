@@ -1,7 +1,13 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import {
+  dataDir,
+  ensureFile,
+  readJson,
+  writeJson,
+  readText,
+  writeText,
+} from "./store-io";
 
 const decisionsFile = path.join(dataDir, "decisions.json");
 const invitesFile = path.join(dataDir, "invites.json");
@@ -10,26 +16,6 @@ const tasksFile = path.join(dataDir, "tasks.json");
 const guestsFile = path.join(dataDir, "guests.json");
 const tablesFile = path.join(dataDir, "tables.json");
 const workspaceMetaFile = path.join(dataDir, "workspace-meta.json");
-
-async function ensureFile(file: string, fallback = "[]") {
-  await fs.mkdir(dataDir, { recursive: true });
-  try {
-    await fs.access(file);
-  } catch {
-    await fs.writeFile(file, fallback, "utf8");
-  }
-}
-
-async function readJson<T>(file: string): Promise<T[]> {
-  await ensureFile(file);
-  const raw = await fs.readFile(file, "utf8");
-  return JSON.parse(raw || "[]") as T[];
-}
-
-async function writeJson<T>(file: string, rows: T[]) {
-  await ensureFile(file);
-  await fs.writeFile(file, JSON.stringify(rows, null, 2), "utf8");
-}
 
 export type StoredDecision = {
   id: string;
@@ -459,11 +445,11 @@ export async function assignGuestToTable(guestId: string, tableName: string | nu
 
 export async function getWorkspaceMeta(workspaceId: string, fallbackName: string) {
   await ensureFile(workspaceMetaFile, "{}");
-  const raw = await fs.readFile(workspaceMetaFile, "utf8");
+  const raw = await readText(workspaceMetaFile);
   const all = JSON.parse(raw || "{}") as Record<string, { name?: string; weddingDate?: string }>;
   if (!all[workspaceId]) {
     all[workspaceId] = { name: fallbackName };
-    await fs.writeFile(workspaceMetaFile, JSON.stringify(all, null, 2), "utf8");
+    await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
   }
   return { workspaceId, name: all[workspaceId].name || fallbackName, weddingDate: all[workspaceId].weddingDate };
 }
@@ -473,9 +459,9 @@ export async function saveWorkspaceMeta(
   patch: { name?: string; weddingDate?: string }
 ) {
   await ensureFile(workspaceMetaFile, "{}");
-  const raw = await fs.readFile(workspaceMetaFile, "utf8");
+  const raw = await readText(workspaceMetaFile);
   const all = JSON.parse(raw || "{}") as Record<string, { name?: string; weddingDate?: string }>;
   all[workspaceId] = { ...all[workspaceId], ...patch };
-  await fs.writeFile(workspaceMetaFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
   return all[workspaceId];
 }

@@ -4,7 +4,7 @@
 
 1. Repo is on GitHub: `indiaroseclifton/wedding-os`
 2. App runs locally with `DEMO_AUTH=1` and `DATA_BACKEND=file`
-3. Optional: Neon database URL works with `npx prisma migrate dev`
+3. Optional: Neon or Prisma Postgres URL works with `npx prisma migrate deploy`
 
 ## Vercel project
 
@@ -15,33 +15,32 @@
 
 ## Environment variables
 
-Minimum for demo-style deploy:
+Minimum for a throwaway demo (data can reset):
 
 ```bash
 DEMO_AUTH=1
 DATA_BACKEND=file
 ```
 
-Note: file storage on Vercel is **ephemeral**. Data resets when the instance recycles. Fine for a demo; not for production couples.
-
-For durable data:
+For durable data (recommended):
 
 ```bash
 DEMO_AUTH=1
 DATA_BACKEND=prisma
-DATABASE_URL=postgresql://...neon.tech/...?sslmode=require
+DATABASE_URL=postgresql://...
 ```
 
-Then ensure Prisma client generates on build (`postinstall` or `prisma generate` in build script).
+`npm run build` runs `prisma generate` and, when `DATABASE_URL` is set, `prisma migrate deploy`.
 
 ## After deploy
 
 1. Open the Vercel URL
 2. Sign in as Alex / Jordan
 3. Smoke-test: add guest, create handoff, open share link `/p/...`
+4. Reload later — the guest should still be there
 
 ## Later
 
 - Custom domain
 - `DEMO_AUTH=0` + Resend magic links (`docs/AUTH_EMAIL_SETUP.md`)
-- Move remaining file stores onto Prisma models
+- Move remaining file stores onto first-class Prisma models

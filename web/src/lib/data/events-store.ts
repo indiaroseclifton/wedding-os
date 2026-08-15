@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const eventsFile = path.join(dataDir, "events.json");
 
@@ -34,16 +33,16 @@ const DEFAULT_TYPES = [
 export { DEFAULT_TYPES };
 
 async function readJson(): Promise<SubEvent[]> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(eventsFile, "utf8"));
+    return JSON.parse(await readText(eventsFile));
   } catch {
     return [];
   }
 }
 
 async function writeJson(rows: SubEvent[]) {
-  await fs.writeFile(eventsFile, JSON.stringify(rows, null, 2), "utf8");
+  await writeText(eventsFile, JSON.stringify(rows, null, 2));
 }
 
 export async function listEvents(workspaceId: string) {

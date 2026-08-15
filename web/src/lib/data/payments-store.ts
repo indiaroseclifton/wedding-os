@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const paymentsFile = path.join(dataDir, "payments.json");
 
@@ -24,16 +23,16 @@ export type PaymentItem = {
 };
 
 async function readJson(): Promise<PaymentItem[]> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(paymentsFile, "utf8"));
+    return JSON.parse(await readText(paymentsFile));
   } catch {
     return [];
   }
 }
 
 async function writeJson(rows: PaymentItem[]) {
-  await fs.writeFile(paymentsFile, JSON.stringify(rows, null, 2), "utf8");
+  await writeText(paymentsFile, JSON.stringify(rows, null, 2));
 }
 
 function normalize(row: PaymentItem): PaymentItem {

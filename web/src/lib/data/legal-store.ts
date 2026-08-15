@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const legalFile = path.join(dataDir, "legal.json");
 
@@ -34,16 +33,16 @@ const STARTER: Omit<LegalItem, "id">[] = [
 ];
 
 async function readAll(): Promise<Record<string, StoredLegal>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(legalFile, "utf8"));
+    return JSON.parse(await readText(legalFile));
   } catch {
     return {};
   }
 }
 
 async function writeAll(all: Record<string, StoredLegal>) {
-  await fs.writeFile(legalFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(legalFile, JSON.stringify(all, null, 2));
 }
 
 export async function getLegal(workspaceId: string): Promise<StoredLegal> {

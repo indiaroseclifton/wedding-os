@@ -21,7 +21,7 @@
 - Handoff refresh confirm + `lastRefreshedAt` / `lastRefreshedFrom` stamp
 - Happy-path smoke checklist: `docs/SMOKE_CHECKLIST.md`
 
-## Phase 3 (next when ready)
-- Neon/Prisma default store
-- Real auth
-- Deploy
+## Phase 3
+- Demo deploy on Vercel (done)
+- Durable store: `DATA_BACKEND=prisma` writes every JSON module through `JsonStore` (done)
+- Real auth / Resend magic links (next)

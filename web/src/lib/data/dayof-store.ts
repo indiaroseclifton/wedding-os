@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const dayOfFile = path.join(dataDir, "day-of.json");
 
@@ -37,16 +36,16 @@ export type StoredDayOf = {
 };
 
 async function readAll(): Promise<Record<string, StoredDayOf>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(dayOfFile, "utf8"));
+    return JSON.parse(await readText(dayOfFile));
   } catch {
     return {};
   }
 }
 
 async function writeAll(all: Record<string, StoredDayOf>) {
-  await fs.writeFile(dayOfFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(dayOfFile, JSON.stringify(all, null, 2));
 }
 
 const DEFAULT_SCHEDULE: Omit<ScheduleSlot, "id">[] = [

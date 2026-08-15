@@ -1,4 +1,3 @@
-import { promises as fs } from "fs";
 import path from "path";
 import {
   addGuest,
@@ -13,17 +12,14 @@ import { createVendor } from "./vendors-store";
 import { saveMusic } from "./music-store";
 import { addPayment } from "./payments-store";
 import { createPackage } from "./handoffs-store";
-import { wipeDataDir, dataDir } from "./store-io";
+import { wipeDataDir, dataDir, pathExists, writeText } from "./store-io";
 
 const flagFile = path.join(dataDir, ".seeded");
 
 export async function seedDemoIfEmpty(options?: { force?: boolean }) {
   if (!options?.force) {
-    try {
-      await fs.access(flagFile);
+    if (await pathExists(flagFile)) {
       return { seeded: false, reason: "already_seeded" as const };
-    } catch {
-      // continue
     }
   }
 
@@ -176,8 +172,7 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
     recipientName: "Spin City DJ",
   });
 
-  await fs.mkdir(path.dirname(flagFile), { recursive: true });
-  await fs.writeFile(flagFile, new Date().toISOString(), "utf8");
+  await writeText(flagFile, new Date().toISOString());
   return { seeded: true, reason: "ok" as const };
 }
 

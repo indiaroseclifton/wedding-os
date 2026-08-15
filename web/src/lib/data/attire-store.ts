@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const attireFile = path.join(dataDir, "attire.json");
 
@@ -24,16 +23,16 @@ export type StoredAttire = {
 };
 
 async function readAll(): Promise<Record<string, StoredAttire>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(attireFile, "utf8"));
+    return JSON.parse(await readText(attireFile));
   } catch {
     return {};
   }
 }
 
 async function writeAll(all: Record<string, StoredAttire>) {
-  await fs.writeFile(attireFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(attireFile, JSON.stringify(all, null, 2));
 }
 
 export async function getAttire(workspaceId: string): Promise<StoredAttire> {

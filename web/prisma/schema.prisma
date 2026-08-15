@@ -2,7 +2,8 @@
 // Use PostgreSQL in production. SQLite is fine only for local experiments.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -364,3 +365,10 @@ model Table {
 
   @@index([workspaceId])
 }
+
+model JsonStore {
+  key       String   @id
+  payload   Json
+  updatedAt DateTime @updatedAt
+}
+

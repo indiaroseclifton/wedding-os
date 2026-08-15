@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const moodFile = path.join(dataDir, "moodboard.json");
 
@@ -22,17 +21,17 @@ export type StoredMoodboard = {
 };
 
 async function readAll(): Promise<Record<string, StoredMoodboard>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(moodFile, "utf8"));
+    return JSON.parse(await readText(moodFile));
   } catch {
     return {};
   }
 }
 
 async function writeAll(all: Record<string, StoredMoodboard>) {
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(moodFile, JSON.stringify(all, null, 2), "utf8");
+  await ensureDir();
+  await writeText(moodFile, JSON.stringify(all, null, 2));
 }
 
 export async function getMoodboard(workspaceId: string): Promise<StoredMoodboard> {

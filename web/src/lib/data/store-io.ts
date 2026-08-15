@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { tmpdir } from "os";
 import { randomUUID } from "crypto";
+import { getDataBackend } from "./repository/types";
 
 function resolveDataDir() {
   if (process.env.DATA_DIR) return process.env.DATA_DIR;
@@ -67,28 +68,100 @@ export type StoredMember = {
   createdAt: string;
 };
 
-export async function ensureFile(file: string, fallback = "[]") {
+function storeKey(file: string) {
+  return path.basename(file);
+}
+
+export function usePrismaStore() {
+  return getDataBackend() === "prisma" && Boolean(process.env.DATABASE_URL);
+}
+
+async function getPrisma() {
+  const { prisma } = await import("./prisma");
+  return prisma;
+}
+
+export async function ensureDir() {
+  if (usePrismaStore()) return;
   await fs.mkdir(dataDir, { recursive: true });
+}
+
+export async function pathExists(file: string) {
+  if (usePrismaStore()) {
+    const prisma = await getPrisma();
+    const row = await prisma.jsonStore.findUnique({ where: { key: storeKey(file) } });
+    return Boolean(row);
+  }
   try {
     await fs.access(file);
+    return true;
   } catch {
-    await fs.writeFile(file, fallback, "utf8");
+    return false;
   }
 }
 
+export async function readText(file: string): Promise<string> {
+  if (usePrismaStore()) {
+    const prisma = await getPrisma();
+    const row = await prisma.jsonStore.findUnique({ where: { key: storeKey(file) } });
+    if (!row) {
+      const err = new Error(`ENOENT: ${storeKey(file)}`) as NodeJS.ErrnoException;
+      err.code = "ENOENT";
+      throw err;
+    }
+    const payload = row.payload as unknown;
+    if (payload && typeof payload === "object" && !Array.isArray(payload) && "text" in payload) {
+      const text = (payload as { text?: unknown }).text;
+      if (typeof text === "string") return text;
+    }
+    return JSON.stringify(payload);
+  }
+  return fs.readFile(file, "utf8");
+}
+
+export async function writeText(file: string, contents: string) {
+  if (usePrismaStore()) {
+    const prisma = await getPrisma();
+    let payload: unknown;
+    try {
+      payload = JSON.parse(contents);
+    } catch {
+      payload = { text: contents };
+    }
+    const key = storeKey(file);
+    await prisma.jsonStore.upsert({
+      where: { key },
+      create: { key, payload: payload as object },
+      update: { payload: payload as object },
+    });
+    return;
+  }
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  await fs.writeFile(file, contents, "utf8");
+}
+
+export async function ensureFile(file: string, fallback = "[]") {
+  if (await pathExists(file)) return;
+  await writeText(file, fallback);
+}
+
 export async function readJson<T>(file: string): Promise<T[]> {
-  await ensureFile(file);
-  const raw = await fs.readFile(file, "utf8");
+  await ensureFile(file, "[]");
+  const raw = await readText(file);
   return JSON.parse(raw || "[]") as T[];
 }
 
 export async function writeJson<T>(file: string, rows: T[]) {
-  await ensureFile(file);
-  await fs.writeFile(file, JSON.stringify(rows, null, 2), "utf8");
+  await writeText(file, JSON.stringify(rows, null, 2));
 }
 
 /** Wipe every file in `.data` (JSON stores + `.seeded`). Recreates the folder. */
 export async function wipeDataDir() {
+  if (usePrismaStore()) {
+    const prisma = await getPrisma();
+    await prisma.jsonStore.deleteMany();
+    return;
+  }
   await fs.mkdir(dataDir, { recursive: true });
   const entries = await fs.readdir(dataDir);
   await Promise.all(

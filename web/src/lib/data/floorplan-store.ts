@@ -1,6 +1,5 @@
-import { promises as fs } from "fs";
 import path from "path";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const floorFile = path.join(dataDir, "floorplan.json");
 
@@ -17,16 +16,16 @@ export type StoredFloorPlan = {
 };
 
 async function readAll(): Promise<Record<string, StoredFloorPlan>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(floorFile, "utf8"));
+    return JSON.parse(await readText(floorFile));
   } catch {
     return {};
   }
 }
 
 async function writeAll(all: Record<string, StoredFloorPlan>) {
-  await fs.writeFile(floorFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(floorFile, JSON.stringify(all, null, 2));
 }
 
 export async function getFloorPlan(workspaceId: string): Promise<StoredFloorPlan> {

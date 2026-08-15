@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const pollsFile = path.join(dataDir, "polls.json");
 
@@ -20,17 +19,17 @@ export type StoredPoll = {
 };
 
 async function readJson(): Promise<StoredPoll[]> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(pollsFile, "utf8"));
+    return JSON.parse(await readText(pollsFile));
   } catch {
     return [];
   }
 }
 
 async function writeJson(rows: StoredPoll[]) {
-  await fs.mkdir(dataDir, { recursive: true });
-  await fs.writeFile(pollsFile, JSON.stringify(rows, null, 2), "utf8");
+  await ensureDir();
+  await writeText(pollsFile, JSON.stringify(rows, null, 2));
 }
 
 export async function listPolls(workspaceId: string) {

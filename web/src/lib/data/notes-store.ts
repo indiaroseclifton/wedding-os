@@ -1,7 +1,6 @@
-import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir } from "./store-io";
+import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
 
 const notesFile = path.join(dataDir, "notes.json");
 
@@ -20,9 +19,9 @@ export type StoredNotes = {
 };
 
 async function readAll(): Promise<Record<string, StoredNotes>> {
-  await fs.mkdir(dataDir, { recursive: true });
+  await ensureDir();
   try {
-    return JSON.parse(await fs.readFile(notesFile, "utf8"));
+    return JSON.parse(await readText(notesFile));
   } catch {
     return {};
   }
@@ -37,7 +36,7 @@ export async function getNotes(workspaceId: string): Promise<StoredNotes> {
       entries: [],
       updatedAt: new Date().toISOString(),
     };
-    await fs.writeFile(notesFile, JSON.stringify(all, null, 2), "utf8");
+    await writeText(notesFile, JSON.stringify(all, null, 2));
   }
   return all[workspaceId];
 }
@@ -60,7 +59,7 @@ export async function addNote(
     entries: [entry, ...current.entries],
     updatedAt: new Date().toISOString(),
   };
-  await fs.writeFile(notesFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(notesFile, JSON.stringify(all, null, 2));
   return all[workspaceId];
 }
 
@@ -68,6 +67,6 @@ export async function savePinned(workspaceId: string, pinned: string) {
   const all = await readAll();
   const current = await getNotes(workspaceId);
   all[workspaceId] = { ...current, pinned, updatedAt: new Date().toISOString() };
-  await fs.writeFile(notesFile, JSON.stringify(all, null, 2), "utf8");
+  await writeText(notesFile, JSON.stringify(all, null, 2));
   return all[workspaceId];
 }
