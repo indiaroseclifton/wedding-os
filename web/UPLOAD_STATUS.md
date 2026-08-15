@@ -1,17 +1,23 @@
 # Upload status
 
-## Done on GitHub
-- Login, session, dashboard shell
-- Prisma schema
-- store-io.ts (file helpers + core types)
-- UI components, domain types, validation
-- Auth access helpers
+## Ready to try after re-download
+- Login (Alex / Jordan)
+- Dashboard with live task + guest counts
+- Guests: list, add guest
+- Tasks: list, add task
+- Seating overview
+- Decisions list (empty until guided flows upload)
+- Core file store (guests, tasks, tables, members, decisions)
 
-## In progress (next batches)
-- store-a1 / a2 / b1 / b2 (full data layer — split for upload size)
-- workspace.ts
-- Guests, seating, tasks, decisions pages + APIs
+## Still uploading later
+- Guest edit detail page
+- Import CSV workflows
+- Full seating editor
+- Guided decision wizards (style / venue / priorities)
+- Vendors, handoffs, polls, day-of
 
-## On your Mac
-You do not need to re-download until the data layer batch is marked complete.
-Keep using the current running demo shell.
+## Refresh steps
+1. Ctrl+C
+2. Download ZIP from GitHub
+3. Copy `.env` into new `web`
+4. `npm install && npm run dev`
