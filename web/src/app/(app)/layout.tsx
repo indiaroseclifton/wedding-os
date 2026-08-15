@@ -5,6 +5,8 @@ import { getSessionUser } from "@/lib/auth/session";
 const NAV = [
   { href: "/dashboard", label: "Home" },
   { href: "/tasks", label: "Tasks" },
+  { href: "/workload", label: "Workload" },
+  { href: "/timeline", label: "Timeline" },
   { href: "/guests", label: "Guests" },
   { href: "/seating", label: "Seating" },
   { href: "/vendors", label: "Vendors" },
