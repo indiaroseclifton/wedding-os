@@ -5,11 +5,11 @@ import { getSessionUser } from "@/lib/auth/session";
 const NAV = [
   { href: "/dashboard", label: "Home" },
   { href: "/tasks", label: "Tasks" },
-  { href: "/workload", label: "Workload" },
   { href: "/timeline", label: "Timeline" },
   { href: "/events", label: "Events" },
   { href: "/guests", label: "Guests" },
   { href: "/seating", label: "Seating" },
+  { href: "/floorplan", label: "Floor plan" },
   { href: "/vendors", label: "Vendors" },
   { href: "/payments", label: "Payments" },
   { href: "/handoffs", label: "Handoffs" },
@@ -20,10 +20,12 @@ const NAV = [
   { href: "/attire", label: "Attire" },
   { href: "/day-of", label: "Day-of" },
   { href: "/legal", label: "Legal" },
+  { href: "/media", label: "Media" },
   { href: "/budget", label: "Budget" },
   { href: "/music", label: "Music" },
   { href: "/moodboard", label: "Moodboard" },
   { href: "/notes", label: "Notes" },
+  { href: "/workload", label: "Workload" },
   { href: "/party", label: "Party view" },
 ];
 
