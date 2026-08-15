@@ -31,6 +31,36 @@ export default async function DashboardPage() {
   ).length;
   const decided = decisions.filter((d) => d.status === "DECIDED").length;
 
+  const recent = [
+    ...tasks.map((t) => ({
+      kind: "Task",
+      title: t.title,
+      href: "/tasks",
+      at: t.updatedAt || t.createdAt || "",
+    })),
+    ...guests.map((g) => ({
+      kind: "Guest",
+      title: g.name,
+      href: `/guests/${g.id}`,
+      at: g.updatedAt || g.createdAt || "",
+    })),
+    ...vendors.map((v) => ({
+      kind: "Vendor",
+      title: v.name,
+      href: `/vendors/${v.id}`,
+      at: v.updatedAt || v.createdAt || "",
+    })),
+    ...packages.map((p) => ({
+      kind: "Handoff",
+      title: p.title,
+      href: `/handoffs/${p.id}`,
+      at: p.updatedAt || p.createdAt || "",
+    })),
+  ]
+    .filter((r) => r.at)
+    .sort((a, b) => (a.at < b.at ? 1 : -1))
+    .slice(0, 6);
+
   const checklist = [
     {
       done: decisions.some((d) => d.type === "PRIORITIES"),
@@ -117,13 +147,28 @@ export default async function DashboardPage() {
         ))}
       </div>
 
+      {recent.length > 0 && (
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <p className="text-sm font-semibold">Recent</p>
+          <ul className="mt-3 space-y-2">
+            {recent.map((r, i) => (
+              <li key={`${r.href}-${i}`} className="flex items-center justify-between text-sm">
+                <Link href={r.href} className="hover:underline">
+                  <span className="text-xs text-slate-400">{r.kind}</span> {r.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
           <p className="font-medium text-slate-900">Coordination</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
             <li>
-              <Link href="/dietary" className="underline">
-                Dietary rollup for catering
+              <Link href="/search" className="underline">
+                Search guests, tasks, vendors
               </Link>
             </li>
             <li>
