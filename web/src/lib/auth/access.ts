@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth/session";
 import {
   ensureDemoWorkspace,
+  ensureEmailMember,
   getCurrentMembership,
   getTaskById,
 } from "@/lib/data/workspace";
@@ -15,6 +16,9 @@ export async function requireSession() {
     };
   }
   await ensureDemoWorkspace();
+  if (session.email && !session.email.endsWith("@example.com")) {
+    await ensureEmailMember(session);
+  }
   return { ok: true as const, session };
 }
 

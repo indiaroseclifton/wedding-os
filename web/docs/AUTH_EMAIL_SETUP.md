@@ -1,28 +1,25 @@
-# Real email login (optional — later)
+# Email login (Resend)
 
-Demo login (Alex / Jordan) stays the default so the app works offline without email setup.
+Demo buttons (Alex / Jordan) stay on the sign-in page.
 
-## When you want magic-link email
+## One-time setup
 
-1. Create a [Resend](https://resend.com) account and API key.
-2. Add to `web/.env`:
+1. In [Resend API Keys](https://resend.com/api-keys), create a key and copy it.
+2. In the Vercel project → Settings → Environment Variables, add:
+
+```bash
+RESEND_API_KEY=re_...
+AUTH_SECRET=generate-a-long-random-string
+AUTH_URL=https://wedding-os-taupe.vercel.app
+EMAIL_FROM="Wedding OS <onboarding@resend.dev>"
+```
+
+3. Redeploy (or push any commit). Until a custom domain is verified in Resend, mail only delivers to the email on the Resend account.
+
+Keep `DEMO_AUTH=1` so the demo buttons still work.
+
+When you want email-only login later:
 
 ```bash
 DEMO_AUTH=0
-AUTH_SECRET=generate-a-long-random-string
-AUTH_URL=http://localhost:3000
-RESEND_API_KEY=re_...
-EMAIL_FROM="Wedding OS <onboarding@yourdomain.com>"
 ```
-
-3. Wire Auth.js (NextAuth v5) with the Resend provider in `src/lib/auth/auth.ts` (scaffold already referenced by session helpers when `DEMO_AUTH=0`).
-4. Run `npx prisma migrate dev` if users should live in Postgres.
-5. Restart `npm run dev`.
-
-Until those keys exist, keep:
-
-```bash
-DEMO_AUTH=1
-```
-
-That uses the one-click demo users and is correct for local product work.

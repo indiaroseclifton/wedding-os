@@ -2,9 +2,8 @@ import NextAuth from "next-auth";
 import Resend from "next-auth/providers/resend";
 
 /**
- * Demo deploys keep DEMO_AUTH on (cookie login as Alex/Jordan).
- * This module still has to exist so /api/auth/[...nextauth] compiles.
- * Real magic-link email only fires when RESEND_API_KEY is set.
+ * Magic-link email via Resend. Demo cookie login stays available
+ * until DEMO_AUTH=0. This module must exist so /api/auth compiles.
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -21,9 +20,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verifyRequest: "/login?verify=1",
   },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user?.email) {
+        const email = user.email.toLowerCase();
+        token.sub = email;
+        token.email = email;
+        token.name = user.name || email.split("@")[0];
+      }
+      return token;
+    },
     async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
+      if (session.user) {
+        const email = String(token.email || session.user.email || "").toLowerCase();
+        session.user.id = email;
+        session.user.email = email;
+        session.user.name = (token.name as string) || session.user.name || email.split("@")[0];
       }
       return session;
     },

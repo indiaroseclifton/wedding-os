@@ -29,6 +29,7 @@ import {
   updateTable,
   deleteTable,
   assignGuestToTable,
+  addOrActivateMember,
 } from "@/lib/data/store";
 
 export const DEMO_WORKSPACE_ID = "ws_alex_jordan";
@@ -61,6 +62,21 @@ export async function ensureDemoWorkspace() {
     workspace: { id: DEMO_WORKSPACE_ID, name: meta.name || DEMO_WORKSPACE.name },
     meta,
   };
+}
+
+export async function ensureEmailMember(user: {
+  userId: string;
+  name: string;
+  email: string;
+}) {
+  await ensureDemoWorkspace();
+  return addOrActivateMember({
+    workspaceId: DEMO_WORKSPACE_ID,
+    userId: user.userId,
+    name: user.name,
+    email: user.email,
+    role: "COUPLE",
+  });
 }
 
 export async function getCurrentMembership(userId: string) {

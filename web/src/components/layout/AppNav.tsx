@@ -66,7 +66,19 @@ export function AppNav({ userName }: { userName: string }) {
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
         <p className="text-sm font-semibold tracking-tight">Wedding OS</p>
-        <p className="text-xs text-slate-500">{userName}</p>
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-slate-500">{userName}</p>
+          <button
+            type="button"
+            onClick={async () => {
+              await fetch("/api/auth/logout", { method: "POST" });
+              window.location.href = "/login";
+            }}
+            className="text-xs font-medium text-slate-500 underline hover:text-slate-900"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
       <div className="mx-auto max-w-6xl space-y-2 px-4 pb-3">
         {GROUPS.map((group) => (

@@ -12,24 +12,28 @@ function demoAuthEnabled() {
   return process.env.DEMO_AUTH !== "0";
 }
 
+export function emailLoginEnabled() {
+  const key = process.env.RESEND_API_KEY || "";
+  return key.startsWith("re_") && key !== "re_demo_unused";
+}
+
 export async function getSessionUser(): Promise<SessionUser | null> {
-  if (!demoAuthEnabled()) {
-    try {
-      const { auth } = await import("@/lib/auth/auth");
-      const session = await auth();
-      if (!session?.user?.email) return null;
-      const id = (session.user as { id?: string }).id;
-      if (!id) return null;
+  try {
+    const { auth } = await import("@/lib/auth/auth");
+    const session = await auth();
+    if (session?.user?.email) {
+      const email = session.user.email.toLowerCase();
       return {
-        userId: id,
-        email: session.user.email,
-        name: session.user.name || session.user.email.split("@")[0],
+        userId: session.user.id || email,
+        email,
+        name: session.user.name || email.split("@")[0],
       };
-    } catch (error) {
-      console.error("Auth session read failed", error);
-      return null;
     }
+  } catch (error) {
+    console.error("Auth session read failed", error);
   }
+
+  if (!demoAuthEnabled()) return null;
 
   const jar = await cookies();
   const raw = jar.get(SESSION_COOKIE)?.value;

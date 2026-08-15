@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
+import { ensureEmailMember } from "@/lib/data/workspace";
 import { AppNav } from "@/components/layout/AppNav";
 
 export default async function AppLayout({
@@ -9,6 +10,9 @@ export default async function AppLayout({
 }) {
   const session = await getSessionUser();
   if (!session) redirect("/login");
+  if (session.email && !session.email.endsWith("@example.com")) {
+    await ensureEmailMember(session);
+  }
 
   return (
     <div className="min-h-screen">

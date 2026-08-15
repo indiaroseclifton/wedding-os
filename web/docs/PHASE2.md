@@ -23,5 +23,6 @@
 
 ## Phase 3
 - Demo deploy on Vercel (done)
-- Durable store: `DATA_BACKEND=prisma` writes every JSON module through `JsonStore` (done)
-- Real auth / Resend magic links (next)
+- Durable store via Neon / `JsonStore` (done)
+- Email magic-link login (Resend) — UI live; needs `RESEND_API_KEY`
+- Custom domain / email-from your domain (later)
