@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 const dataDir = path.join(process.cwd(), ".data");
 const packagesFile = path.join(dataDir, "packages.json");
 
-export type HandoffTemplate = "DAY_OF" | "DJ" | "PHOTOGRAPHER";
+export type HandoffTemplate = "DAY_OF" | "DJ" | "PHOTOGRAPHER" | "CATERING";
 
 export type StoredPackage = {
   id: string;
@@ -39,6 +39,13 @@ export const TEMPLATE_SECTIONS: Record<HandoffTemplate, string[]> = {
     "style_notes",
     "constraints",
   ],
+  CATERING: [
+    "headcount",
+    "dietary_summary",
+    "dietary_detail",
+    "service_notes",
+    "day_of_contact",
+  ],
 };
 
 export const SECTION_LABELS: Record<string, string> = {
@@ -56,6 +63,10 @@ export const SECTION_LABELS: Record<string, string> = {
   group_notes: "Family / group notes",
   style_notes: "Style notes",
   constraints: "Constraints",
+  headcount: "Headcount",
+  dietary_summary: "Dietary summary",
+  dietary_detail: "Guest dietary detail",
+  service_notes: "Service notes",
 };
 
 async function ensureFile(file: string, fallback = "[]") {
@@ -102,11 +113,13 @@ export async function createPackage(input: {
   title: string;
   recipientName?: string;
   recipientEmail?: string;
+  sections?: Record<string, string>;
 }) {
   const rows = await readJson<StoredPackage>(packagesFile);
   const now = new Date().toISOString();
   const sections: Record<string, string> = {};
   for (const key of TEMPLATE_SECTIONS[input.template]) sections[key] = "";
+  if (input.sections) Object.assign(sections, input.sections);
   const row: StoredPackage = {
     id: randomUUID(),
     workspaceId: input.workspaceId,
@@ -130,7 +143,14 @@ export async function updatePackage(
   patch: Partial<
     Pick<
       StoredPackage,
-      "title" | "status" | "recipientName" | "recipientEmail" | "sections" | "shareToken" | "sharedAt" | "shareVersion"
+      | "title"
+      | "status"
+      | "recipientName"
+      | "recipientEmail"
+      | "sections"
+      | "shareToken"
+      | "sharedAt"
+      | "shareVersion"
     >
   >
 ) {

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const TEMPLATES = [
   { id: "DJ", label: "DJ / Band", title: "DJ package" },
+  { id: "CATERING", label: "Catering", title: "Catering package" },
   { id: "DAY_OF", label: "Day-of coordinator", title: "Day-of package" },
   { id: "PHOTOGRAPHER", label: "Photographer", title: "Photo package" },
 ];
@@ -30,6 +31,7 @@ export default function NewHandoffPage() {
           recipientName: form.get("recipientName") || undefined,
           recipientEmail: form.get("recipientEmail") || undefined,
           prefillFromMusic: form.get("prefillFromMusic") === "on",
+          prefillFromGuests: form.get("prefillFromGuests") === "on",
         }),
       });
       if (!res.ok) {
@@ -50,7 +52,7 @@ export default function NewHandoffPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">New handoff package</h1>
         <p className="mt-1 text-sm text-slate-600">
-          DJ packages can pull must-play / do-not-play from Music automatically.
+          DJ pulls from Music; Catering pulls dietary notes from Guests.
         </p>
       </div>
       <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
@@ -84,7 +86,13 @@ export default function NewHandoffPage() {
         {template === "DJ" && (
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="prefillFromMusic" defaultChecked />
-            <span>Prefill must-play / do-not-play from Music</span>
+            <span>Prefill from Music</span>
+          </label>
+        )}
+        {template === "CATERING" && (
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="prefillFromGuests" defaultChecked />
+            <span>Prefill headcount & dietary from Guests</span>
           </label>
         )}
         {error && <p className="text-xs text-rose-600">{error}</p>}
