@@ -3,6 +3,24 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ensureDemoWorkspace, getWorkspaceDecisions } from "@/lib/data/workspace";
 
+const FLOWS = [
+  {
+    href: "/decisions/priorities",
+    title: "Priorities",
+    body: "Rank what matters and what you will protect under pressure.",
+  },
+  {
+    href: "/decisions/style",
+    title: "Style & vibe",
+    body: "Agree on the feel before shopping or briefing vendors.",
+  },
+  {
+    href: "/decisions/venue",
+    title: "Venue type",
+    body: "Choose the kind of place, not every listing yet.",
+  },
+];
+
 export default async function DecisionsPage() {
   const { workspace } = await ensureDemoWorkspace();
   const decisions = await getWorkspaceDecisions(workspace.id);
@@ -12,14 +30,27 @@ export default async function DecisionsPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Decisions</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Priorities, style, and venue choices with a clear record.
+          Guided choices with a clear record you can revisit together.
         </p>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        {FLOWS.map((f) => (
+          <Link
+            key={f.href}
+            href={f.href}
+            className="rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+          >
+            <p className="text-sm font-semibold text-slate-900">{f.title}</p>
+            <p className="mt-1 text-xs text-slate-600">{f.body}</p>
+          </Link>
+        ))}
       </div>
 
       {decisions.length === 0 ? (
         <EmptyState
-          title="No decisions yet"
-          body="Guided decision flows will land in the next upload batches. For now the list is ready."
+          title="No saved decisions yet"
+          body="Start with priorities, style, or venue type. You can mark them exploring or decided."
         />
       ) : (
         <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
@@ -34,10 +65,6 @@ export default async function DecisionsPage() {
           ))}
         </ul>
       )}
-
-      <Link href="/dashboard" className="text-sm font-medium text-slate-900 underline">
-        Back to dashboard
-      </Link>
     </div>
   );
 }
