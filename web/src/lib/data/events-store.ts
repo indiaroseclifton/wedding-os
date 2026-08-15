@@ -13,6 +13,7 @@ export type SubEvent = {
   date?: string;
   location?: string;
   budgetCap?: number;
+  expectedGuests?: number;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -62,6 +63,7 @@ export async function createEvent(input: {
   date?: string;
   location?: string;
   budgetCap?: number;
+  expectedGuests?: number;
   notes?: string;
 }) {
   const rows = await readJson();
@@ -74,6 +76,7 @@ export async function createEvent(input: {
     date: input.date,
     location: input.location,
     budgetCap: input.budgetCap,
+    expectedGuests: input.expectedGuests,
     notes: input.notes,
     createdAt: now,
     updatedAt: now,
@@ -98,4 +101,12 @@ export async function deleteEvent(id: string) {
   if (next.length === rows.length) return false;
   await writeJson(next);
   return true;
+}
+
+export function rollupEvents(events: SubEvent[]) {
+  return {
+    count: events.length,
+    budgetTotal: events.reduce((s, e) => s + (e.budgetCap || 0), 0),
+    guestsTotal: events.reduce((s, e) => s + (e.expectedGuests || 0), 0),
+  };
 }

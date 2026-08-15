@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
-import { createEvent, listEvents } from "@/lib/data/events-store";
+import {
+  createEvent,
+  listEvents,
+  rollupEvents,
+} from "@/lib/data/events-store";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -9,7 +13,7 @@ export async function GET() {
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
   const events = await listEvents(workspace.id);
-  return NextResponse.json({ events });
+  return NextResponse.json({ events, rollup: rollupEvents(events) });
 }
 
 export async function POST(request: Request) {
@@ -25,7 +29,14 @@ export async function POST(request: Request) {
       type: body.type || "Other",
       date: optionalString(body.date, 40),
       location: optionalString(body.location, 200),
-      budgetCap: typeof body.budgetCap === "number" ? body.budgetCap : undefined,
+      budgetCap:
+        body.budgetCap === "" || body.budgetCap == null
+          ? undefined
+          : Number(body.budgetCap) || 0,
+      expectedGuests:
+        body.expectedGuests === "" || body.expectedGuests == null
+          ? undefined
+          : Number(body.expectedGuests) || 0,
       notes: optionalString(body.notes, 2000),
     });
     return NextResponse.json({ event });

@@ -10,6 +10,7 @@ export default function TraditionsPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [activePackIds, setActivePackIds] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
+  const [msg, setMsg] = useState<string | null>(null);
 
   async function load() {
     const res = await fetch("/api/traditions");
@@ -59,14 +60,51 @@ export default function TraditionsPage() {
     });
   }
 
+  async function pushAllToTimeline() {
+    setMsg(null);
+    const res = await fetch("/api/traditions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "to_timeline" }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      setMsg(`Added ${data.added} to timeline${data.skipped ? ` · ${data.skipped} skipped` : ""}`);
+    } else {
+      setMsg("Could not push to timeline");
+    }
+  }
+
+  async function pushOne(id: string) {
+    await fetch("/api/traditions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "item_to_timeline", id }),
+    });
+    setMsg("Added to timeline");
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Traditions</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Add cultural or religious checklists; they feed planning without replacing your timeline.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Traditions</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Cultural checklists that can push open items onto the master timeline.
+          </p>
+        </div>
+        {items.length > 0 && (
+          <button
+            type="button"
+            onClick={pushAllToTimeline}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium"
+          >
+            Push open items to timeline
+          </button>
+        )}
       </div>
+
+      {msg && <p className="text-xs text-emerald-700">{msg}</p>}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {packs.map((p) => {
@@ -103,16 +141,23 @@ export default function TraditionsPage() {
 
       <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center justify-between gap-3 px-4 py-3">
+          <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div>
               <p className={`text-sm font-medium ${item.done ? "line-through text-slate-400" : ""}`}>
                 {item.title}
               </p>
               {item.timing && <p className="text-xs text-slate-500">{item.timing}</p>}
             </div>
-            <button type="button" onClick={() => toggle(item.id, item.done)} className="text-xs font-medium underline">
-              {item.done ? "Undo" : "Done"}
-            </button>
+            <div className="flex gap-3">
+              {!item.done && (
+                <button type="button" onClick={() => pushOne(item.id)} className="text-xs font-medium underline">
+                  → Timeline
+                </button>
+              )}
+              <button type="button" onClick={() => toggle(item.id, item.done)} className="text-xs font-medium underline">
+                {item.done ? "Undo" : "Done"}
+              </button>
+            </div>
           </li>
         ))}
         {!items.length && (

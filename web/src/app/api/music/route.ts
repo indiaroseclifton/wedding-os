@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
-import { getMusic, saveMusic } from "@/lib/data/music-store";
+import {
+  addSongRequest,
+  getMusic,
+  saveMusic,
+  setSongRequestStatus,
+} from "@/lib/data/music-store";
 
 export async function GET() {
   const access = await requireCoupleApi();
@@ -16,6 +21,23 @@ export async function POST(request: Request) {
   if (!access.ok) return access.response;
   const body = await request.json();
   const { workspace } = await ensureDemoWorkspace();
+
+  if (body.action === "request") {
+    const music = await addSongRequest(workspace.id, {
+      song: String(body.song || ""),
+      from: body.from ? String(body.from) : undefined,
+    });
+    return NextResponse.json({ music });
+  }
+  if (body.action === "request_status") {
+    const music = await setSongRequestStatus(
+      workspace.id,
+      String(body.id),
+      body.status
+    );
+    return NextResponse.json({ music });
+  }
+
   const music = await saveMusic(workspace.id, {
     mustPlay: Array.isArray(body.mustPlay) ? body.mustPlay : undefined,
     doNotPlay: Array.isArray(body.doNotPlay) ? body.doNotPlay : undefined,
