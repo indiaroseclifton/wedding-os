@@ -10,8 +10,10 @@ export type StoredPoll = {
   workspaceId: string;
   title: string;
   description?: string;
+  mode: "SINGLE" | "RANKED";
   options: { id: string; label: string }[];
-  votes: Record<string, string>; // userId -> optionId
+  /** userId -> optionId for single; userId -> ordered optionIds for ranked */
+  votes: Record<string, string | string[]>;
   status: "OPEN" | "CLOSED";
   createdAt: string;
   updatedAt: string;
@@ -46,6 +48,7 @@ export async function createPoll(input: {
   title: string;
   description?: string;
   options: string[];
+  mode?: "SINGLE" | "RANKED";
 }) {
   const rows = await readJson();
   const now = new Date().toISOString();
@@ -54,6 +57,7 @@ export async function createPoll(input: {
     workspaceId: input.workspaceId,
     title: input.title,
     description: input.description,
+    mode: input.mode || "SINGLE",
     options: input.options.filter(Boolean).map((label) => ({
       id: randomUUID(),
       label,
@@ -68,12 +72,26 @@ export async function createPoll(input: {
   return poll;
 }
 
-export async function castVote(pollId: string, userId: string, optionId: string) {
+export async function castVote(
+  pollId: string,
+  userId: string,
+  optionId: string | string[]
+) {
   const rows = await readJson();
   const poll = rows.find((p) => p.id === pollId);
   if (!poll || poll.status !== "OPEN") return null;
-  if (!poll.options.some((o) => o.id === optionId)) return null;
-  poll.votes[userId] = optionId;
+
+  if (poll.mode === "RANKED") {
+    const ranking = Array.isArray(optionId) ? optionId : [optionId];
+    const valid = ranking.every((id) => poll.options.some((o) => o.id === id));
+    if (!valid || ranking.length === 0) return null;
+    poll.votes[userId] = ranking;
+  } else {
+    const id = Array.isArray(optionId) ? optionId[0] : optionId;
+    if (!poll.options.some((o) => o.id === id)) return null;
+    poll.votes[userId] = id;
+  }
+
   poll.updatedAt = new Date().toISOString();
   await writeJson(rows);
   return poll;
@@ -87,4 +105,20 @@ export async function closePoll(pollId: string) {
   poll.updatedAt = new Date().toISOString();
   await writeJson(rows);
   return poll;
+}
+
+/** Borda-style points for ranked polls: n points for 1st, n-1 for 2nd, ... */
+export function tallyRanked(poll: StoredPoll): { optionId: string; points: number }[] {
+  const n = poll.options.length;
+  const points: Record<string, number> = {};
+  for (const o of poll.options) points[o.id] = 0;
+  for (const vote of Object.values(poll.votes)) {
+    if (!Array.isArray(vote)) continue;
+    vote.forEach((optionId, index) => {
+      points[optionId] = (points[optionId] || 0) + (n - index);
+    });
+  }
+  return Object.entries(points)
+    .map(([optionId, pts]) => ({ optionId, points: pts }))
+    .sort((a, b) => b.points - a.points);
 }

@@ -31,6 +31,7 @@ export async function POST(request: Request) {
       title,
       description: body.description,
       options,
+      mode: body.mode === "RANKED" ? "RANKED" : "SINGLE",
     });
     return NextResponse.json({ poll });
   } catch (error) {

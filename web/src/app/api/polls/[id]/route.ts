@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi, requireSession } from "@/lib/auth/access";
-import { castVote, closePoll, getPoll } from "@/lib/data/polls-store";
+import { castVote, closePoll, getPoll, tallyRanked } from "@/lib/data/polls-store";
 
 export async function GET(
   _request: Request,
@@ -11,7 +11,8 @@ export async function GET(
   const { id } = await context.params;
   const poll = await getPoll(id);
   if (!poll) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ poll });
+  const rankedTally = poll.mode === "RANKED" ? tallyRanked(poll) : null;
+  return NextResponse.json({ poll, rankedTally });
 }
 
 export async function POST(
@@ -30,9 +31,11 @@ export async function POST(
     return NextResponse.json({ poll });
   }
   if (body.action === "vote") {
-    const poll = await castVote(id, access.session.userId, body.optionId);
+    const payload = body.ranking || body.optionId;
+    const poll = await castVote(id, access.session.userId, payload);
     if (!poll) return NextResponse.json({ error: "Could not vote" }, { status: 400 });
-    return NextResponse.json({ poll });
+    const rankedTally = poll.mode === "RANKED" ? tallyRanked(poll) : null;
+    return NextResponse.json({ poll, rankedTally });
   }
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }
