@@ -53,6 +53,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/music", label: "Music" },
       { href: "/moodboard", label: "Moodboard" },
       { href: "/notes", label: "Notes" },
+      { href: "/settings", label: "Settings" },
     ],
   },
 ];

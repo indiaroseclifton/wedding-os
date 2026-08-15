@@ -17,7 +17,7 @@ export default async function VendorsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Vendors</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Contacts, status, and notes in one place — no spreadsheet chase.
+            Contacts, status, notes, and linked payments.
           </p>
         </div>
         <Link
@@ -55,7 +55,7 @@ export default async function VendorsPage() {
               <div className="flex items-center gap-3">
                 <StatusBadge status={v.status} />
                 <Link href={`/vendors/${v.id}`} className="text-xs font-medium underline">
-                  Edit
+                  Open
                 </Link>
               </div>
             </li>

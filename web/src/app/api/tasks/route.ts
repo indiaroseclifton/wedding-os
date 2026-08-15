@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       description,
       ownerId,
       ownerName,
-      dueDate: optionalId(body.dueDate),
+      dueDate: optionalString(body.dueDate, 40),
       decisionId: optionalId(body.decisionId),
     });
 

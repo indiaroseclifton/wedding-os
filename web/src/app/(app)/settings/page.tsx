@@ -1,29 +1,60 @@
-import { ensureDemoWorkspace, loadWorkspaceMeta } from "@/lib/data/workspace";
+"use client";
 
-export default async function SettingsPage() {
-  const { workspace } = await ensureDemoWorkspace();
-  const meta = await loadWorkspaceMeta(workspace.id, workspace.name);
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export default function SettingsPage() {
+  const router = useRouter();
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    // Clear demo cookie client-side as well
+    document.cookie = "wedding_os_user=; Max-Age=0; path=/";
+    router.push("/login");
+    router.refresh();
+  }
+
+  async function seed() {
+    const res = await fetch("/api/dev/seed", { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    setMsg(data.seeded ? "Sample data added" : "Already seeded (or failed)");
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-lg space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-slate-600">Workspace basics for this demo.</p>
+        <p className="mt-1 text-sm text-slate-600">Demo session and sample data.</p>
       </div>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
-        <p>
-          <span className="text-slate-500">Name</span>
-          <br />
-          <span className="font-medium">{meta.name}</span>
+
+      <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <p className="font-medium">Session</p>
+        <p className="text-slate-600">
+          Demo auth uses Alex / Jordan cookies. Log out to switch users.
         </p>
-        <p className="mt-3">
-          <span className="text-slate-500">Wedding date</span>
-          <br />
-          <span className="font-medium">{meta.weddingDate || "Not set"}</span>
+        <button
+          type="button"
+          onClick={logout}
+          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+        >
+          Log out
+        </button>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <p className="font-medium">Sample data</p>
+        <p className="text-slate-600">
+          Adds a few guests, vendors, and tasks once per local data folder.
         </p>
-        <p className="mt-3 text-xs text-slate-500">
-          Demo mode uses local files under <code>.data/</code>. Neon is connected for Milestone A.
-        </p>
+        <button
+          type="button"
+          onClick={seed}
+          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white"
+        >
+          Load sample data
+        </button>
+        {msg && <p className="text-xs text-slate-500">{msg}</p>}
       </div>
     </div>
   );

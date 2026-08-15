@@ -44,6 +44,7 @@ export default function NewTaskPage() {
           title: form.get("title"),
           description: form.get("description") || undefined,
           ownerId: form.get("ownerId") || undefined,
+          dueDate: form.get("dueDate") || undefined,
         }),
       });
       if (!res.ok) {
@@ -84,6 +85,10 @@ export default function NewTaskPage() {
               </option>
             ))}
           </select>
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium">Due (optional)</span>
+          <input name="dueDate" type="date" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
         {error && <p className="text-xs text-rose-600">{error}</p>}
         <button
