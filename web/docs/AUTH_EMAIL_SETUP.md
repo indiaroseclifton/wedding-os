@@ -23,3 +23,5 @@ When you want email-only login later:
 ```bash
 DEMO_AUTH=0
 ```
+
+<!-- redeploy: pick up RESEND_API_KEY -->
