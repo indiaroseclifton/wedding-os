@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { requireCoupleApi, requireSession } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import {
+  addScheduleSlot,
   addUpdate,
   getDayOf,
   patchCheckIn,
+  removeScheduleSlot,
   saveDayOf,
 } from "@/lib/data/dayof-store";
 
@@ -40,6 +42,22 @@ export async function POST(request: Request) {
       weatherNote: body.weatherNote,
       emergencyContact: body.emergencyContact,
     });
+    return NextResponse.json({ dayOf });
+  }
+  if (body.action === "schedule_add") {
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+    const dayOf = await addScheduleSlot(workspace.id, {
+      time: String(body.time || "12:00"),
+      title: String(body.title || "Moment"),
+      owner: body.owner ? String(body.owner) : undefined,
+    });
+    return NextResponse.json({ dayOf });
+  }
+  if (body.action === "schedule_remove") {
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+    const dayOf = await removeScheduleSlot(workspace.id, String(body.id));
     return NextResponse.json({ dayOf });
   }
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });

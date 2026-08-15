@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
-import { addPayment, listPayments, patchPayment } from "@/lib/data/payments-store";
+import {
+  addPayment,
+  listPayments,
+  patchPayment,
+  type PaymentKind,
+} from "@/lib/data/payments-store";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -24,6 +29,9 @@ export async function POST(request: Request) {
     }
     const vendorName = requiredString(body.vendorName, "Vendor", 120);
     const label = requiredString(body.label, "Label", 120);
+    const kind = (["DEPOSIT", "FINAL", "OTHER"].includes(body.kind)
+      ? body.kind
+      : undefined) as PaymentKind | undefined;
     const { workspace } = await ensureDemoWorkspace();
     const payment = await addPayment({
       workspaceId: workspace.id,
@@ -33,6 +41,7 @@ export async function POST(request: Request) {
       dueDate: optionalString(body.dueDate, 40),
       contractLink: optionalString(body.contractLink, 500),
       notes: optionalString(body.notes, 2000),
+      kind,
     });
     return NextResponse.json({ payment });
   } catch (error) {
