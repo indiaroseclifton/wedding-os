@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { dataDir } from "./store-io";
 
-const dataDir = path.join(process.cwd(), ".data");
 const floorFile = path.join(dataDir, "floorplan.json");
 
 export type TablePosition = {

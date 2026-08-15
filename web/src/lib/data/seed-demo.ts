@@ -13,9 +13,9 @@ import { createVendor } from "./vendors-store";
 import { saveMusic } from "./music-store";
 import { addPayment } from "./payments-store";
 import { createPackage } from "./handoffs-store";
-import { wipeDataDir } from "./store-io";
+import { wipeDataDir, dataDir } from "./store-io";
 
-const flagFile = path.join(process.cwd(), ".data", ".seeded");
+const flagFile = path.join(dataDir, ".seeded");
 
 export async function seedDemoIfEmpty(options?: { force?: boolean }) {
   if (!options?.force) {

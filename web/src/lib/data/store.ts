@@ -1,8 +1,8 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
+import { dataDir } from "./store-io";
 
-const dataDir = path.join(process.cwd(), ".data");
 const decisionsFile = path.join(dataDir, "decisions.json");
 const invitesFile = path.join(dataDir, "invites.json");
 const membersFile = path.join(dataDir, "members.json");

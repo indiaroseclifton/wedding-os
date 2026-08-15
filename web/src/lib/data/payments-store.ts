@@ -1,8 +1,8 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
+import { dataDir } from "./store-io";
 
-const dataDir = path.join(process.cwd(), ".data");
 const paymentsFile = path.join(dataDir, "payments.json");
 
 export type PaymentKind = "DEPOSIT" | "FINAL" | "OTHER";

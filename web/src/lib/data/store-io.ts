@@ -1,8 +1,18 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { tmpdir } from "os";
 import { randomUUID } from "crypto";
 
-export const dataDir = path.join(process.cwd(), ".data");
+function resolveDataDir() {
+  if (process.env.DATA_DIR) return process.env.DATA_DIR;
+  // Vercel / Lambda: the app bundle is read-only. Only /tmp is writable.
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    return path.join(tmpdir(), "wedding-os-data");
+  }
+  return path.join(process.cwd(), ".data");
+}
+
+export const dataDir = resolveDataDir();
 export const decisionsFile = path.join(dataDir, "decisions.json");
 export const invitesFile = path.join(dataDir, "invites.json");
 export const membersFile = path.join(dataDir, "members.json");
