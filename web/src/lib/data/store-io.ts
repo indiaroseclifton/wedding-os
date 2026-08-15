@@ -77,4 +77,15 @@ export async function writeJson<T>(file: string, rows: T[]) {
   await fs.writeFile(file, JSON.stringify(rows, null, 2), "utf8");
 }
 
+/** Wipe every file in `.data` (JSON stores + `.seeded`). Recreates the folder. */
+export async function wipeDataDir() {
+  await fs.mkdir(dataDir, { recursive: true });
+  const entries = await fs.readdir(dataDir);
+  await Promise.all(
+    entries.map((name) =>
+      fs.rm(path.join(dataDir, name), { recursive: true, force: true }),
+    ),
+  );
+}
+
 export { randomUUID };

@@ -13,6 +13,7 @@ import { createVendor } from "./vendors-store";
 import { saveMusic } from "./music-store";
 import { addPayment } from "./payments-store";
 import { createPackage } from "./handoffs-store";
+import { wipeDataDir } from "./store-io";
 
 const flagFile = path.join(process.cwd(), ".data", ".seeded");
 
@@ -96,8 +97,8 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
   await addTable({ workspaceId: ws, name: "Table 2", capacity: 8, shape: "ROUND" });
   await addTable({ workspaceId: ws, name: "Head table", capacity: 6, shape: "HEAD" });
 
-  // Vendors + payment
-  await createVendor({
+  // Vendors + payment (capture ids so payments stay linked if a vendor is renamed)
+  const venue = await createVendor({
     workspaceId: ws,
     name: "Northside Venue",
     category: "Venue",
@@ -125,7 +126,8 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
 
   await addPayment({
     workspaceId: ws,
-    vendorName: "Northside Venue",
+    vendorId: venue.id,
+    vendorName: venue.name,
     label: "Venue deposit",
     amount: 2500,
     dueDate: "2026-09-01",
@@ -177,4 +179,10 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
   await fs.mkdir(path.dirname(flagFile), { recursive: true });
   await fs.writeFile(flagFile, new Date().toISOString(), "utf8");
   return { seeded: true, reason: "ok" as const };
+}
+
+/** Wipe `.data` then reseed. Use this — never `force` alone, which would duplicate. */
+export async function resetDemoData() {
+  await wipeDataDir();
+  return seedDemoIfEmpty({ force: true });
 }

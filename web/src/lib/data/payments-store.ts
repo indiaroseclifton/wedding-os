@@ -10,6 +10,7 @@ export type PaymentKind = "DEPOSIT" | "FINAL" | "OTHER";
 export type PaymentItem = {
   id: string;
   workspaceId: string;
+  vendorId?: string;
   vendorName: string;
   label: string;
   kind: PaymentKind;
@@ -38,8 +39,30 @@ async function writeJson(rows: PaymentItem[]) {
 function normalize(row: PaymentItem): PaymentItem {
   return {
     ...row,
-    kind: row.kind || (row.label?.toLowerCase().includes("final") ? "FINAL" : row.label?.toLowerCase().includes("deposit") ? "DEPOSIT" : "OTHER"),
+    kind:
+      row.kind ||
+      (row.label?.toLowerCase().includes("final")
+        ? "FINAL"
+        : row.label?.toLowerCase().includes("deposit")
+          ? "DEPOSIT"
+          : "OTHER"),
   };
+}
+
+/** Group key: prefer vendor id so a rename does not split the vendor's payments. */
+export function paymentVendorKey(p: Pick<PaymentItem, "vendorId" | "vendorName">) {
+  return p.vendorId || `name:${p.vendorName}`;
+}
+
+export function resolvePaymentVendorName(
+  p: Pick<PaymentItem, "vendorId" | "vendorName">,
+  vendors: { id: string; name: string }[],
+) {
+  if (p.vendorId) {
+    const match = vendors.find((v) => v.id === p.vendorId);
+    if (match) return match.name;
+  }
+  return p.vendorName;
 }
 
 export async function listPayments(workspaceId: string) {
@@ -52,6 +75,7 @@ export async function listPayments(workspaceId: string) {
 export async function addPayment(input: {
   workspaceId: string;
   vendorName: string;
+  vendorId?: string;
   label: string;
   amount: number;
   dueDate?: string;
@@ -70,6 +94,7 @@ export async function addPayment(input: {
   const row: PaymentItem = {
     id: randomUUID(),
     workspaceId: input.workspaceId,
+    vendorId: input.vendorId,
     vendorName: input.vendorName,
     label: input.label,
     kind,

@@ -7,6 +7,7 @@ import {
   patchPayment,
   type PaymentKind,
 } from "@/lib/data/payments-store";
+import { getVendor } from "@/lib/data/vendors-store";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -27,7 +28,15 @@ export async function POST(request: Request) {
       if (!payment) return NextResponse.json({ error: "Not found" }, { status: 404 });
       return NextResponse.json({ payment });
     }
-    const vendorName = requiredString(body.vendorName, "Vendor", 120);
+    const vendorId = optionalString(body.vendorId, 80);
+    let vendorName = "";
+    if (vendorId) {
+      const vendor = await getVendor(vendorId);
+      if (vendor) vendorName = vendor.name;
+    }
+    if (!vendorName) {
+      vendorName = requiredString(body.vendorName, "Vendor", 120);
+    }
     const label = requiredString(body.label, "Label", 120);
     const kind = (["DEPOSIT", "FINAL", "OTHER"].includes(body.kind)
       ? body.kind
@@ -35,6 +44,7 @@ export async function POST(request: Request) {
     const { workspace } = await ensureDemoWorkspace();
     const payment = await addPayment({
       workspaceId: workspace.id,
+      vendorId: vendorId || undefined,
       vendorName,
       label,
       amount: Number(body.amount) || 0,

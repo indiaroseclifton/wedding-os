@@ -6,6 +6,8 @@ import { useState } from "react";
 export default function SettingsPage() {
   const router = useRouter();
   const [msg, setMsg] = useState<string | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
@@ -19,6 +21,31 @@ export default function SettingsPage() {
     const res = await fetch("/api/dev/seed", { method: "POST" });
     const data = await res.json().catch(() => ({}));
     setMsg(data.seeded ? "Sample data added" : "Already seeded (or failed)");
+  }
+
+  async function resetSample() {
+    if (!confirmReset) {
+      setConfirmReset(true);
+      setMsg("This wipes local sample data and reseeds. Click again to confirm.");
+      return;
+    }
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch("/api/dev/seed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset" }),
+      });
+      const data = await res.json().catch(() => ({}));
+      setMsg(data.seeded ? "Sample data reset" : "Reset failed");
+      setConfirmReset(false);
+      router.refresh();
+    } catch {
+      setMsg("Reset failed");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -54,6 +81,33 @@ export default function SettingsPage() {
         >
           Load sample data
         </button>
+        <p className="pt-2 text-slate-600">
+          Reset wipes the local data folder and reseeds. Use this after a messy
+          demo — do not force-seed without a wipe (that duplicates rows).
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={resetSample}
+            className="rounded-lg border border-rose-300 bg-white px-3 py-2 text-sm font-medium text-rose-800 disabled:opacity-50"
+          >
+            {confirmReset ? "Confirm reset" : "Reset sample data"}
+          </button>
+          {confirmReset && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setConfirmReset(false);
+                setMsg(null);
+              }}
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
         {msg && <p className="text-xs text-slate-500">{msg}</p>}
       </div>
     </div>
