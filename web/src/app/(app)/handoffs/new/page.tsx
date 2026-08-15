@@ -13,6 +13,7 @@ export default function NewHandoffPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [template, setTemplate] = useState("DJ");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,6 +29,7 @@ export default function NewHandoffPage() {
           title: form.get("title"),
           recipientName: form.get("recipientName") || undefined,
           recipientEmail: form.get("recipientEmail") || undefined,
+          prefillFromMusic: form.get("prefillFromMusic") === "on",
         }),
       });
       if (!res.ok) {
@@ -47,12 +49,19 @@ export default function NewHandoffPage() {
     <div className="mx-auto max-w-lg space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">New handoff package</h1>
-        <p className="mt-1 text-sm text-slate-600">Pick a template, then fill sections and share a link.</p>
+        <p className="mt-1 text-sm text-slate-600">
+          DJ packages can pull must-play / do-not-play from Music automatically.
+        </p>
       </div>
       <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
         <label className="block text-sm">
           <span className="font-medium">Template</span>
-          <select name="template" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <select
+            name="template"
+            value={template}
+            onChange={(e) => setTemplate(e.target.value)}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
             {TEMPLATES.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.label}
@@ -72,6 +81,12 @@ export default function NewHandoffPage() {
           <span className="font-medium">Recipient email</span>
           <input name="recipientEmail" type="email" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
+        {template === "DJ" && (
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="prefillFromMusic" defaultChecked />
+            <span>Prefill must-play / do-not-play from Music</span>
+          </label>
+        )}
         {error && <p className="text-xs text-rose-600">{error}</p>}
         <button
           type="submit"
