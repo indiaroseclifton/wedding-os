@@ -2,6 +2,7 @@ import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { ExportCsvButton } from "./ExportCsvButton";
+import { GuestFilters } from "./GuestFilters";
 
 export default async function GuestsPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -82,23 +83,15 @@ export default async function GuestsPage() {
           secondaryLabel="Import CSV"
         />
       ) : (
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-          {guests.map((g) => (
-            <li key={g.id} className="flex items-center justify-between gap-3 px-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-slate-900">{g.name}</p>
-                <p className="text-xs text-slate-500">
-                  {g.rsvp}
-                  {g.dietary ? ` · ${g.dietary}` : ""}
-                  {g.tableLabel ? ` · ${g.tableLabel}` : ""}
-                </p>
-              </div>
-              <Link href={`/guests/${g.id}`} className="text-xs font-medium text-slate-700 underline">
-                Edit
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <GuestFilters
+          guests={guests.map((g) => ({
+            id: g.id,
+            name: g.name,
+            rsvp: g.rsvp,
+            dietary: g.dietary,
+            tableLabel: g.tableLabel,
+          }))}
+        />
       )}
     </div>
   );

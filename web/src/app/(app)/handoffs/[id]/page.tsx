@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PrintButton } from "@/components/ui/PrintButton";
+import { ExportTextButton } from "@/components/handoffs/ExportTextButton";
 
 const LABELS: Record<string, string> = {
   date_locations: "Date & locations",
@@ -19,6 +20,10 @@ const LABELS: Record<string, string> = {
   group_notes: "Family / group notes",
   style_notes: "Style notes",
   constraints: "Constraints",
+  headcount: "Headcount",
+  dietary_summary: "Dietary summary",
+  dietary_detail: "Guest dietary detail",
+  service_notes: "Service notes",
 };
 
 type Pkg = {
@@ -104,7 +109,10 @@ export default function HandoffDetailPage() {
             {pkg.recipientName ? ` · ${pkg.recipientName}` : ""}
           </p>
         </div>
-        <PrintButton />
+        <div className="flex flex-wrap gap-2">
+          <ExportTextButton title={pkg.title} sections={sections} />
+          <PrintButton />
+        </div>
       </div>
 
       <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 print:border-0 print:p-0">
