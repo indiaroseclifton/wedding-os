@@ -3,13 +3,16 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
 
 const NAV = [
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard", label: "Home" },
   { href: "/tasks", label: "Tasks" },
   { href: "/guests", label: "Guests" },
   { href: "/seating", label: "Seating" },
   { href: "/vendors", label: "Vendors" },
   { href: "/handoffs", label: "Handoffs" },
   { href: "/decisions", label: "Decisions" },
+  { href: "/budget", label: "Budget" },
+  { href: "/music", label: "Music" },
+  { href: "/notes", label: "Notes" },
 ];
 
 export default async function AppLayout({
@@ -25,7 +28,7 @@ export default async function AppLayout({
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <p className="text-sm font-semibold tracking-tight">Wedding OS</p>
-          <nav className="flex flex-wrap items-center gap-3 text-xs font-medium text-slate-600">
+          <nav className="flex max-w-3xl flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-slate-600">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href} className="hover:text-slate-900">
                 {item.label}
