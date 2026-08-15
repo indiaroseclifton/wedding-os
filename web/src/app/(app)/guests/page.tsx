@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
+import {
+  ensureDemoWorkspace,
+  getWorkspaceGuests,
+  getWorkspaceTables,
+} from "@/lib/data/workspace";
 import { ExportCsvButton } from "./ExportCsvButton";
 import { GuestFilters } from "./GuestFilters";
 
 export default async function GuestsPage() {
   const { workspace } = await ensureDemoWorkspace();
-  const guests = await getWorkspaceGuests(workspace.id);
+  const [guests, tables] = await Promise.all([
+    getWorkspaceGuests(workspace.id),
+    getWorkspaceTables(workspace.id),
+  ]);
 
   const headcount = guests.reduce((sum, g) => {
     if (g.rsvp === "NO") return sum;
@@ -17,13 +24,20 @@ export default async function GuestsPage() {
     ["UNKNOWN", "INVITED", "MAYBE"].includes(g.rsvp)
   ).length;
 
+  const tableNames = Array.from(
+    new Set([
+      ...tables.map((t) => t.name),
+      ...guests.map((g) => g.tableLabel).filter(Boolean) as string[],
+    ])
+  ).sort();
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Guests</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Manage RSVPs, dietary notes, and headcount.
+            Select multiple guests for bulk RSVP, seating, side, or delete.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -84,12 +98,14 @@ export default async function GuestsPage() {
         />
       ) : (
         <GuestFilters
+          tableNames={tableNames}
           guests={guests.map((g) => ({
             id: g.id,
             name: g.name,
             rsvp: g.rsvp,
             dietary: g.dietary,
             tableLabel: g.tableLabel,
+            side: g.side,
           }))}
         />
       )}
