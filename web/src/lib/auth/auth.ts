@@ -1,11 +1,31 @@
 import NextAuth from "next-auth";
 import Resend from "next-auth/providers/resend";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { Adapter } from "next-auth/adapters";
+import { prisma } from "@/lib/data/prisma";
+
+const prismaAdapter = PrismaAdapter(prisma) as Adapter;
 
 /**
  * Magic-link email via Resend. Demo cookie login stays available
- * until DEMO_AUTH=0. This module must exist so /api/auth compiles.
+ * until DEMO_AUTH=0. Email provider requires a DB adapter so the
+ * one-time token can be stored.
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: {
+    ...prismaAdapter,
+    async createUser(data) {
+      const email = data.email!;
+      return prisma.user.create({
+        data: {
+          email,
+          name: data.name || email.split("@")[0],
+          emailVerified: data.emailVerified,
+          image: data.image,
+        },
+      });
+    },
+  },
   providers: [
     Resend({
       apiKey: process.env.RESEND_API_KEY || "re_demo_unused",
@@ -18,6 +38,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/login",
     verifyRequest: "/login?verify=1",
+    error: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
