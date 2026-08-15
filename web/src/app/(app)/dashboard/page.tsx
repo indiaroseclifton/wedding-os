@@ -8,6 +8,7 @@ import {
 } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { listPackages } from "@/lib/data/handoffs-store";
+import { SeedButton } from "./SeedButton";
 
 export default async function DashboardPage() {
   const session = await getSessionUser();
@@ -70,17 +71,22 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Welcome{session ? `, ${session.name}` : ""}. {workspace.name}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Welcome{session ? `, ${session.name}` : ""}. {workspace.name}
+          </p>
+        </div>
+        <SeedButton />
       </div>
 
       {remaining > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white p-4">
           <p className="text-sm font-semibold text-slate-900">Getting started</p>
-          <p className="mt-1 text-xs text-slate-500">{remaining} of {checklist.length} still open</p>
+          <p className="mt-1 text-xs text-slate-500">
+            {remaining} of {checklist.length} still open
+          </p>
           <ul className="mt-3 space-y-2">
             {checklist.map((c) => (
               <li key={c.href} className="flex items-center justify-between text-sm">
@@ -122,7 +128,7 @@ export default async function DashboardPage() {
             </li>
             <li>
               <Link href="/handoffs/new" className="underline">
-                DJ / day-of handoff
+                Create catering or DJ handoff
               </Link>
             </li>
             <li>
