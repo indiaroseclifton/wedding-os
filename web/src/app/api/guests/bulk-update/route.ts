@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     if (action === "table") {
       const tableLabel =
         body.tableLabel === null || body.tableLabel === ""
-          ? null
+          ? undefined
           : String(body.tableLabel).trim();
       let updated = 0;
       for (const id of ids) {
