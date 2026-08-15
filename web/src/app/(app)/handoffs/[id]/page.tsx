@@ -42,6 +42,7 @@ export default function HandoffDetailPage() {
   const [pkg, setPkg] = useState<Pkg | null>(null);
   const [sections, setSections] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
@@ -78,6 +79,24 @@ export default function HandoffDetailPage() {
     }
   }
 
+  async function refreshFromSource() {
+    setSaving(true);
+    setError(null);
+    setInfo(null);
+    try {
+      const res = await fetch(`/api/handoffs/${id}/refresh`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not refresh");
+      setPkg(data.package);
+      setSections(data.package.sections || {});
+      setInfo(data.message || "Refreshed");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not refresh");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function share() {
     setSaving(true);
     setError(null);
@@ -100,6 +119,8 @@ export default function HandoffDetailPage() {
   if (error && !pkg) return <p className="text-sm text-rose-600">{error}</p>;
   if (!pkg) return <p className="text-sm text-slate-600">Loading…</p>;
 
+  const canRefresh = pkg.template === "DJ" || pkg.template === "CATERING";
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -116,6 +137,25 @@ export default function HandoffDetailPage() {
         </div>
       </div>
 
+      {canRefresh && (
+        <div className="rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm text-sky-900 print:hidden">
+          <p className="font-medium">Keep this package in sync</p>
+          <p className="mt-1 text-xs text-sky-800">
+            {pkg.template === "DJ"
+              ? "Refresh pulls the latest Music lists into this package."
+              : "Refresh pulls the latest guest headcount and dietary notes."}
+          </p>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={refreshFromSource}
+            className="mt-2 rounded-lg border border-sky-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+          >
+            Refresh from {pkg.template === "DJ" ? "Music" : "Guests"}
+          </button>
+        </div>
+      )}
+
       <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 print:border-0 print:p-0">
         {Object.keys(sections).map((key) => (
           <label key={key} className="block text-sm">
@@ -131,6 +171,7 @@ export default function HandoffDetailPage() {
       </div>
 
       {error && <p className="text-xs text-rose-600 print:hidden">{error}</p>}
+      {info && <p className="text-xs text-emerald-700 print:hidden">{info}</p>}
 
       <div className="flex flex-wrap gap-2 print:hidden">
         <button
@@ -139,7 +180,7 @@ export default function HandoffDetailPage() {
           disabled={saving}
           className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save draft"}
+          {saving ? "Working…" : "Save draft"}
         </button>
         <button
           type="button"
