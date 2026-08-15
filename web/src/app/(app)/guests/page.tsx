@@ -17,19 +17,27 @@ export default async function GuestsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Guests</h1>
           <p className="mt-1 text-sm text-slate-600">
             Manage RSVPs, dietary notes, and headcount.
           </p>
         </div>
-        <Link
-          href="/guests/new"
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-        >
-          Add guest
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/guests/import"
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
+          >
+            Import CSV
+          </Link>
+          <Link
+            href="/guests/new"
+            className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          >
+            Add guest
+          </Link>
+        </div>
       </div>
 
       {guests.length > 0 && (
@@ -54,9 +62,11 @@ export default async function GuestsPage() {
       {guests.length === 0 ? (
         <EmptyState
           title="No guests yet"
-          body="Add people one by one. Headcount excludes declined RSVPs and includes plus-ones."
+          body="Add people one by one or import a CSV."
           primaryHref="/guests/new"
           primaryLabel="Add guest"
+          secondaryHref="/guests/import"
+          secondaryLabel="Import CSV"
         />
       ) : (
         <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">

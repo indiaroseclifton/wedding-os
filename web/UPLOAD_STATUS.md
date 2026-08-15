@@ -1,23 +1,31 @@
-# Upload status
+# Upload status — core modules complete
 
-## Ready to try after re-download
-- Login (Alex / Jordan)
-- Dashboard with live task + guest counts
-- Guests: list, add guest
-- Tasks: list, add task
-- Seating overview
-- Decisions list (empty until guided flows upload)
-- Core file store (guests, tasks, tables, members, decisions)
+## On GitHub now
+- Login (demo)
+- Dashboard
+- Tasks
+- Guests (list, add, edit, CSV import)
+- Seating (create tables, assign guests)
+- Vendors
+- Handoffs (DJ / day-of / photographer + share link)
+- Decisions (priorities, style, venue wizards)
+- Budget
+- Music (must-play / do-not-play)
+- Notes
+- Neon / Prisma schema (Milestone A foundation)
 
-## Still uploading later
-- Guest edit detail page
-- Import CSV workflows
-- Full seating editor
-- Guided decision wizards (style / venue / priorities)
-- Vendors, handoffs, polls, day-of
+## Not in this demo slice
+- Live polls with ranked voting UI
+- Full AR/3D floor plan
+- Production Auth.js email magic links
+- Wedding-party restricted portal polish
+- Moodboard media uploads
 
-## Refresh steps
-1. Ctrl+C
-2. Download ZIP from GitHub
-3. Copy `.env` into new `web`
-4. `npm install && npm run dev`
+## Update on Mac
+```bash
+cd ~/Documents/wedding-os
+git pull
+cd web
+npm install
+npm run dev
+```
