@@ -2,6 +2,7 @@ import {
   acceptInvite,
   createInvite,
   createTask,
+  deleteTask,
   ensureOwnerMember,
   getDecision,
   getInviteByToken,
@@ -85,6 +86,10 @@ export async function addTask(input: Parameters<typeof createTask>[0]) {
 
 export async function patchTask(id: string, patch: Parameters<typeof updateTask>[1]) {
   return updateTask(id, patch);
+}
+
+export async function removeTask(id: string) {
+  return deleteTask(id);
 }
 
 export async function savePrioritiesDecision(input: Parameters<typeof upsertPrioritiesDecision>[0]) {

@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ensureDemoWorkspace, getWorkspaceTasks } from "@/lib/data/workspace";
+import {
+  ensureDemoWorkspace,
+  getWorkspaceMembers,
+  getWorkspaceTasks,
+} from "@/lib/data/workspace";
 import { TasksClient } from "./TasksClient";
 
 export default async function TasksPage() {
   const { workspace } = await ensureDemoWorkspace();
-  const tasks = await getWorkspaceTasks(workspace.id);
+  const [tasks, members] = await Promise.all([
+    getWorkspaceTasks(workspace.id),
+    getWorkspaceMembers(workspace.id),
+  ]);
   const open = tasks.filter((t) => t.status !== "DONE");
 
   return (
@@ -14,7 +21,7 @@ export default async function TasksPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Tasks</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Shared to-dos — update status without leaving the list.
+            Select multiple tasks to change status, reassign, or delete.
           </p>
         </div>
         <Link
@@ -28,7 +35,7 @@ export default async function TasksPage() {
       {tasks.length === 0 ? (
         <EmptyState
           title="No tasks yet"
-          body="Create a task and assign it to you or your partner."
+          body="Create a task and assign it to you, your partner, or the wedding party."
           primaryHref="/tasks/new"
           primaryLabel="Add task"
         />
@@ -38,9 +45,11 @@ export default async function TasksPage() {
             {open.length} open · {tasks.length} total
           </p>
           <TasksClient
+            members={members.map((m) => ({ userId: m.userId, name: m.name }))}
             tasks={tasks.map((t) => ({
               id: t.id,
               title: t.title,
+              ownerId: t.ownerId,
               ownerName: t.ownerName,
               status: t.status,
               dueDate: t.dueDate,

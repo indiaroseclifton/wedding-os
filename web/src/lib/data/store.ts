@@ -336,6 +336,14 @@ export async function updateTask(
   return row;
 }
 
+export async function deleteTask(id: string) {
+  const rows = await readJson<StoredTask>(tasksFile);
+  const next = rows.filter((r) => r.id !== id);
+  if (next.length === rows.length) return false;
+  await writeJson(tasksFile, next);
+  return true;
+}
+
 export async function listGuests(workspaceId: string) {
   return (await readJson<StoredGuest>(guestsFile)).filter((r) => r.workspaceId === workspaceId);
 }
@@ -471,41 +479,3 @@ export async function saveWorkspaceMeta(
   await fs.writeFile(workspaceMetaFile, JSON.stringify(all, null, 2), "utf8");
   return all[workspaceId];
 }
-
-// Stubs for modules not yet expanded on GitHub
-export async function listPackages() { return []; }
-export async function getPackage() { return null; }
-export async function getPackageByToken() { return null; }
-export async function createPackage() { throw new Error("Handoff packages not uploaded yet"); }
-export async function updatePackage() { return null; }
-export async function sharePackage() { return null; }
-export async function getMusicPrefs() { return null; }
-export async function saveMusicPrefs() { return null; }
-export async function getAttire() { return null; }
-export async function saveAttire() { return null; }
-export async function updateAttireMemberSelf() { return null; }
-export async function listPolls() { return []; }
-export async function getPoll() { return null; }
-export async function createPoll() { throw new Error("Polls not uploaded yet"); }
-export async function castVote() { return null; }
-export async function closePoll() { return null; }
-export async function getDayOf() { return null; }
-export async function saveDayOf() { return null; }
-export async function patchDayOfCheckIn() { return null; }
-export async function addDayOfUpdate() { return null; }
-export async function listEvents() { return []; }
-export async function getEvent() { return null; }
-export async function createEvent() { throw new Error("Events not uploaded yet"); }
-export async function updateEvent() { return null; }
-export async function listVendors() { return []; }
-export async function getVendor() { return null; }
-export async function createVendor() { throw new Error("Vendors not uploaded yet"); }
-export async function updateVendor() { return null; }
-export async function createVendorsBulk() { return []; }
-export async function getBudget() { return null; }
-export async function saveBudget() { return null; }
-export async function getMoodboard() { return null; }
-export async function saveMoodboard() { return null; }
-export async function getNotes() { return null; }
-export async function saveNotes() { return null; }
-export async function addNoteEntry() { return null; }
