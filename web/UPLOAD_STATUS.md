@@ -1,29 +1,27 @@
-# Upload status — core modules complete
+# Upload status — P0 hardening on main
 
 ## On GitHub now
 - Login (demo)
-- Dashboard
-- Tasks
-- Guests (list, add, edit, CSV import)
-- Seating (create tables, assign guests)
-- Vendors
-- Handoffs (DJ / day-of / photographer + share link)
-- Decisions (priorities, style, venue wizards)
-- Budget
-- Music (must-play / do-not-play)
-- Notes
-- Neon / Prisma schema (Milestone A foundation)
+- Dashboard + sample seed
+- Tasks, guests, seating, vendors, handoffs, decisions
+- Budget, music, notes, payments, traditions, events, day-of
+- Neon / Prisma schema (not the runtime store yet)
+
+## P0 (this pull)
+- Settings: Reset sample data (wipe `.data` + reseed)
+- Payments: `vendorId` + name fallback
+- Handoffs: refresh confirm + last-refreshed stamp
+- `web/docs/SMOKE_CHECKLIST.md`
 
 ## Not in this demo slice
 - Live polls with ranked voting UI
 - Full AR/3D floor plan
 - Production Auth.js email magic links
-- Wedding-party restricted portal polish
-- Moodboard media uploads
+- Phase 3 Neon as the default store
 
 ## Update on Mac
 ```bash
-cd ~/Documents/wedding-os
+cd ~/Documents/wedding-os-fresh
 git pull
 cd web
 npm install

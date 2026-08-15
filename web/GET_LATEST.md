@@ -1,19 +1,35 @@
 # Get the latest code on your Mac
 
-1. Stop the server (Ctrl+C in Terminal)
-2. Download ZIP from https://github.com/indiaroseclifton/wedding-os
-3. Unzip to Downloads
-4. Copy your .env into the new web folder:
-   `cp /path/to/old/web/.env /path/to/new/web/.env`
-5. `cd` into the new `web` folder
-6. `npm install && npm run dev`
+```bash
+cd ~/Documents/wedding-os-fresh
+git pull
+cd web
+npm install
+npm run dev
+```
+
+If that folder is missing:
+
+```bash
+cd ~/Documents
+git clone https://github.com/indiaroseclifton/wedding-os.git wedding-os-fresh
+cd wedding-os-fresh/web
+cp ../.env .env 2>/dev/null || true
+npm install
+DEMO_AUTH=1 npm run dev
+```
+
+## This pull — P0 hardening
+
+- Settings → **Reset sample data** (confirm, wipe, reseed)
+- Payments stay linked to a vendor (`vendorId`)
+- Handoff refresh asks before overwrite + shows last-refreshed
+- Smoke checklist: `web/docs/SMOKE_CHECKLIST.md`
 
 ## Upload progress
 
 - [x] Login + dashboard shell
-- [x] Prisma schema + migrate support
-- [x] Validation / handoff labels
-- [ ] Full data store (store.ts) — in progress
-- [ ] Guests, seating, tasks, decisions pages — in progress
-
-Re-download after each batch when I say a batch is ready.
+- [x] Phase 1 collaboration core
+- [x] Phase 2 Waves 1–3
+- [x] P0 hardening
+- [ ] Phase 3 — Neon / real auth / deploy

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type Payment = {
   id: string;
+  vendorId?: string;
   vendorName: string;
   label: string;
   kind?: string;
@@ -13,6 +14,8 @@ type Payment = {
   paidAt?: string;
   contractLink?: string;
 };
+
+type Vendor = { id: string; name: string };
 
 function isOverdue(p: Payment) {
   if (p.status === "PAID") return false;
@@ -25,8 +28,22 @@ function isOverdue(p: Payment) {
   return due < today;
 }
 
+function vendorKey(p: Payment) {
+  return p.vendorId || `name:${p.vendorName}`;
+}
+
+function vendorLabel(p: Payment, vendors: Vendor[]) {
+  if (p.vendorId) {
+    const match = vendors.find((v) => v.id === p.vendorId);
+    if (match) return match.name;
+  }
+  return p.vendorName;
+}
+
 export default function PaymentsPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [vendorId, setVendorId] = useState("");
   const [vendorName, setVendorName] = useState("");
   const [label, setLabel] = useState("Deposit");
   const [kind, setKind] = useState("DEPOSIT");
@@ -34,10 +51,17 @@ export default function PaymentsPage() {
   const [dueDate, setDueDate] = useState("");
 
   async function load() {
-    const res = await fetch("/api/payments");
-    if (res.ok) {
-      const data = await res.json();
+    const [payRes, venRes] = await Promise.all([
+      fetch("/api/payments"),
+      fetch("/api/vendors"),
+    ]);
+    if (payRes.ok) {
+      const data = await payRes.json();
       setPayments(data.payments || []);
+    }
+    if (venRes.ok) {
+      const data = await venRes.json();
+      setVendors(data.vendors || []);
     }
   }
 
@@ -50,10 +74,18 @@ export default function PaymentsPage() {
     const res = await fetch("/api/payments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ vendorName, label, amount, dueDate, kind }),
+      body: JSON.stringify({
+        vendorId: vendorId || undefined,
+        vendorName,
+        label,
+        amount,
+        dueDate,
+        kind,
+      }),
     });
     if (res.ok) {
       setVendorName("");
+      setVendorId("");
       setAmount(0);
       setDueDate("");
       load();
@@ -69,8 +101,11 @@ export default function PaymentsPage() {
     load();
   }
 
-  async function addFinalForVendor(vendor: string) {
-    setVendorName(vendor);
+  function addFinalForVendor(rows: Payment[]) {
+    const first = rows[0];
+    if (!first) return;
+    setVendorId(first.vendorId || "");
+    setVendorName(vendorLabel(first, vendors));
     setLabel("Final balance");
     setKind("FINAL");
   }
@@ -85,19 +120,22 @@ export default function PaymentsPage() {
   const byVendor = useMemo(() => {
     const map = new Map<string, Payment[]>();
     for (const p of payments) {
-      const list = map.get(p.vendorName) || [];
+      const key = vendorKey(p);
+      const list = map.get(key) || [];
       list.push(p);
-      map.set(p.vendorName, list);
+      map.set(key, list);
     }
-    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [payments]);
+    return Array.from(map.entries()).sort((a, b) =>
+      vendorLabel(a[1][0], vendors).localeCompare(vendorLabel(b[1][0], vendors)),
+    );
+  }, [payments, vendors]);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Payments</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Deposit → final by vendor. Mark paid when money moves.
+          Deposit → final by vendor. Payments stay with a vendor even if you rename them.
         </p>
       </div>
 
@@ -115,11 +153,31 @@ export default function PaymentsPage() {
         onSubmit={add}
         className="grid gap-2 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-2"
       >
+        <select
+          value={vendorId}
+          onChange={(e) => {
+            const next = e.target.value;
+            setVendorId(next);
+            const match = vendors.find((v) => v.id === next);
+            if (match) setVendorName(match.name);
+          }}
+          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+        >
+          <option value="">Vendor (type a name if not listed)</option>
+          {vendors.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.name}
+            </option>
+          ))}
+        </select>
         <input
           value={vendorName}
-          onChange={(e) => setVendorName(e.target.value)}
-          required
-          placeholder="Vendor"
+          onChange={(e) => {
+            setVendorName(e.target.value);
+            if (vendorId) setVendorId("");
+          }}
+          required={!vendorId}
+          placeholder="Vendor name"
           className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
         />
         <select
@@ -155,7 +213,7 @@ export default function PaymentsPage() {
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           type="date"
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm sm:col-span-2"
+          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
         />
         <button
           type="submit"
@@ -166,14 +224,15 @@ export default function PaymentsPage() {
       </form>
 
       <div className="space-y-4">
-        {byVendor.map(([vendor, rows]) => {
+        {byVendor.map(([key, rows]) => {
+          const name = vendorLabel(rows[0], vendors);
           const open = rows.filter((p) => p.status !== "PAID");
           const hasFinal = rows.some((p) => p.kind === "FINAL" || /final/i.test(p.label));
           return (
-            <div key={vendor} className="rounded-xl border border-slate-200 bg-white">
+            <div key={key} className="rounded-xl border border-slate-200 bg-white">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold">{vendor}</p>
+                  <p className="text-sm font-semibold">{name}</p>
                   <p className="text-xs text-slate-500">
                     {open.length} open · {rows.length} total
                   </p>
@@ -181,7 +240,7 @@ export default function PaymentsPage() {
                 {!hasFinal && (
                   <button
                     type="button"
-                    onClick={() => addFinalForVendor(vendor)}
+                    onClick={() => addFinalForVendor(rows)}
                     className="text-xs font-medium underline"
                   >
                     + Final balance

@@ -28,7 +28,7 @@ function dietarySections(guests: Awaited<ReturnType<typeof getWorkspaceGuests>>)
 
 export async function POST(
   _request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   const access = await requireCoupleApi();
   if (!access.ok) return access.response;
@@ -39,7 +39,7 @@ export async function POST(
 
   const { workspace } = await ensureDemoWorkspace();
   let sections = { ...pkg.sections };
-  let source: string | null = null;
+  let source: "music" | "guests" | null = null;
 
   if (pkg.template === "DJ") {
     const music = await getMusic(workspace.id);
@@ -63,14 +63,20 @@ export async function POST(
   } else {
     return NextResponse.json(
       { error: "Refresh is available for DJ and Catering packages only" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const updated = await updatePackage(id, { sections });
+  const now = new Date().toISOString();
+  const updated = await updatePackage(id, {
+    sections,
+    lastRefreshedAt: now,
+    lastRefreshedFrom: source,
+  });
   return NextResponse.json({
     package: updated,
     refreshedFrom: source,
+    lastRefreshedAt: now,
     message:
       source === "music"
         ? "Pulled latest must-play / do-not-play from Music"

@@ -19,6 +19,8 @@ export type StoredPackage = {
   sections: Record<string, string>;
   shareVersion: number;
   sharedAt?: string;
+  lastRefreshedAt?: string;
+  lastRefreshedFrom?: "music" | "guests";
   createdAt: string;
   updatedAt: string;
 };
@@ -102,7 +104,7 @@ export async function getPackage(id: string) {
 export async function getPackageByToken(token: string) {
   return (
     (await readJson<StoredPackage>(packagesFile)).find(
-      (r) => r.shareToken === token && r.status === "SHARED"
+      (r) => r.shareToken === token && r.status === "SHARED",
     ) ?? null
   );
 }
@@ -151,8 +153,10 @@ export async function updatePackage(
       | "shareToken"
       | "sharedAt"
       | "shareVersion"
+      | "lastRefreshedAt"
+      | "lastRefreshedFrom"
     >
-  >
+  >,
 ) {
   const rows = await readJson<StoredPackage>(packagesFile);
   const row = rows.find((r) => r.id === id);

@@ -35,7 +35,21 @@ type Pkg = {
   recipientName?: string;
   sections: Record<string, string>;
   shareToken?: string;
+  lastRefreshedAt?: string;
+  lastRefreshedFrom?: "music" | "guests";
 };
+
+function formatStamp(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
 
 export default function HandoffDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -80,6 +94,14 @@ export default function HandoffDetailPage() {
   }
 
   async function refreshFromSource() {
+    const hasContent = Object.values(sections).some((v) => (v || "").trim());
+    if (hasContent) {
+      const source = pkg?.template === "DJ" ? "Music" : "Guests";
+      const ok = window.confirm(
+        `Refresh will overwrite pulled sections with the latest ${source} data. Continue?`,
+      );
+      if (!ok) return;
+    }
     setSaving(true);
     setError(null);
     setInfo(null);
@@ -120,6 +142,7 @@ export default function HandoffDetailPage() {
   if (!pkg) return <p className="text-sm text-slate-600">Loading…</p>;
 
   const canRefresh = pkg.template === "DJ" || pkg.template === "CATERING";
+  const sourceLabel = pkg.template === "DJ" ? "Music" : "Guests";
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -145,13 +168,19 @@ export default function HandoffDetailPage() {
               ? "Refresh pulls the latest Music lists into this package."
               : "Refresh pulls the latest guest headcount and dietary notes."}
           </p>
+          {pkg.lastRefreshedAt && (
+            <p className="mt-1 text-xs text-sky-800">
+              Last refreshed {formatStamp(pkg.lastRefreshedAt)}
+              {pkg.lastRefreshedFrom ? ` from ${pkg.lastRefreshedFrom}` : ""}
+            </p>
+          )}
           <button
             type="button"
             disabled={saving}
             onClick={refreshFromSource}
             className="mt-2 rounded-lg border border-sky-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
           >
-            Refresh from {pkg.template === "DJ" ? "Music" : "Guests"}
+            Refresh from {sourceLabel}
           </button>
         </div>
       )}
