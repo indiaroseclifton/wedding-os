@@ -1,0 +1,366 @@
+// Production-oriented schema mapped from the as-built file store.
+// Use PostgreSQL in production. SQLite is fine only for local experiments.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  memberships Membership[]
+  ownedTasks  Task[]       @relation("TaskOwner")
+  accounts    Account[]
+  sessions    Session[]
+  pollVotes   PollVote[]
+  noteEntries NoteEntry[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+  decisions   DecisionRecord[]
+  tasks       Task[]
+  invites     Invite[]
+  packages    HandoffPackage[]
+  music       MusicPrefs?
+  attire      AttireBoard?
+  polls       Poll[]
+  dayOf       DayOfBoard?
+  events      RelatedEvent[]
+  vendors     Vendor[]
+  guests      Guest[]
+  budget      Budget?
+  moodboard   Moodboard?
+  notes       WorkspaceNotes?
+  tables      Table[]
+}
+
+model Membership {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model DecisionRecord {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  type           String
+  title          String
+  status         String
+  summary        String
+  payload        Json
+  participantIds Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+
+  @@unique([workspaceId, type])
+  @@index([workspaceId])
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  workspaceId String
+  title       String
+  description String?
+  ownerId     String
+  ownerName   String?
+  status      String
+  dueDate     DateTime?
+  decisionId  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  owner     User            @relation("TaskOwner", fields: [ownerId], references: [id])
+  decision  DecisionRecord? @relation(fields: [decisionId], references: [id])
+
+  @@index([workspaceId, status])
+  @@index([ownerId])
+}
+
+model Invite {
+  id          String    @id @default(cuid())
+  workspaceId String
+  email       String?
+  name        String?
+  token       String    @unique
+  role        String
+  status      String    @default("PENDING")
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  expiresAt   DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+}
+
+model HandoffPackage {
+  id                  String    @id @default(cuid())
+  workspaceId         String
+  template            String
+  title               String
+  status              String    @default("DRAFT")
+  recipientName       String?
+  recipientEmail      String?
+  shareToken          String?   @unique
+  sections            Json
+  includedDecisionIds Json
+  shareVersion        Int       @default(0)
+  sharedAt            DateTime?
+  contentUpdatedAt    DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+model MusicPrefs {
+  workspaceId String   @id
+  mustPlay    Json
+  doNotPlay   Json
+  moments     Json
+  notes       String?
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model AttireBoard {
+  workspaceId String   @id
+  palette     String   @default("")
+  styleNotes  String   @default("")
+  dressCode   String   @default("")
+  links       String   @default("")
+  members     Json
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Poll {
+  id          String    @id @default(cuid())
+  workspaceId String
+  title       String
+  description String?
+  mode        String
+  status      String    @default("OPEN")
+  options     Json
+  closedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  votes     PollVote[]
+
+  @@index([workspaceId])
+}
+
+model PollVote {
+  id        String   @id @default(cuid())
+  pollId    String
+  userId    String
+  ballot    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  poll Poll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
+}
+
+model DayOfBoard {
+  workspaceId       String   @id
+  headline          String   @default("Day-of status")
+  ceremonyTime      String?
+  locationSummary   String?
+  weatherNote       String?
+  emergencyContacts Json
+  checkIns          Json
+  updates           Json
+  updatedAt         DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model RelatedEvent {
+  id          String    @id @default(cuid())
+  workspaceId String
+  type        String
+  title       String
+  date        DateTime?
+  location    String?
+  notes       String?
+  checklist   Json
+  status      String    @default("PLANNING")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
+
+model Vendor {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  category    String
+  status      String   @default("RESEARCHING")
+  contactName String?
+  email       String?
+  phone       String?
+  website     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status])
+}
+
+model Guest {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  side        String?
+  partyName    String?
+  email       String?
+  rsvp        String   @default("UNKNOWN")
+  plusOnes    Int      @default(0)
+  dietary     String?
+  tableLabel  String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, rsvp])
+}
+
+model Budget {
+  workspaceId  String   @id
+  currency     String   @default("USD")
+  overallLimit Float?
+  lines        Json
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Moodboard {
+  workspaceId  String   @id
+  title        String   @default("Inspiration & DIY")
+  paletteNotes String   @default("")
+  diyNotes     String   @default("")
+  items        Json
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model WorkspaceNotes {
+  workspaceId String   @id
+  pinned      String   @default("")
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  entries   NoteEntry[]
+}
+
+model NoteEntry {
+  id          String   @id @default(cuid())
+  workspaceId String
+  body        String
+  authorId    String?
+  createdAt   DateTime @default(now())
+
+  notes  WorkspaceNotes @relation(fields: [workspaceId], references: [workspaceId], onDelete: Cascade)
+  author User?          @relation(fields: [authorId], references: [id])
+
+  @@index([workspaceId, createdAt])
+}
+
+model Table {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  capacity    Int      @default(8)
+  shape       String   @default("ROUND")
+  notes       String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+}
