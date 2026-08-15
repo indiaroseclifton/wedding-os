@@ -11,12 +11,14 @@ const NAV = [
   { href: "/handoffs", label: "Handoffs" },
   { href: "/decisions", label: "Decisions" },
   { href: "/polls", label: "Polls" },
+  { href: "/people", label: "People" },
   { href: "/attire", label: "Attire" },
   { href: "/day-of", label: "Day-of" },
   { href: "/budget", label: "Budget" },
   { href: "/music", label: "Music" },
   { href: "/moodboard", label: "Moodboard" },
   { href: "/notes", label: "Notes" },
+  { href: "/party", label: "Party view" },
 ];
 
 export default async function AppLayout({
