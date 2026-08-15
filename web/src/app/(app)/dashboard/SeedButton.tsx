@@ -14,7 +14,11 @@ export function SeedButton() {
     try {
       const res = await fetch("/api/dev/seed", { method: "POST" });
       const data = await res.json();
-      setMsg(data.seeded ? "Sample data added" : "Already seeded");
+      if (data.seeded) {
+        setMsg("Sample data added — open Demo walkthrough");
+      } else {
+        setMsg("Already seeded (see Demo for next steps)");
+      }
       router.refresh();
     } catch {
       setMsg("Could not seed");
@@ -24,7 +28,7 @@ export function SeedButton() {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-3">
       <button
         type="button"
         disabled={busy}

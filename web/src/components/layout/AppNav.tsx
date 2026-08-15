@@ -5,16 +5,13 @@ import { usePathname } from "next/navigation";
 
 const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
   {
-    label: "Plan",
+    label: "Core",
     items: [
       { href: "/dashboard", label: "Home" },
+      { href: "/demo", label: "Demo" },
       { href: "/search", label: "Search" },
       { href: "/tasks", label: "Tasks" },
-      { href: "/timeline", label: "Timeline" },
-      { href: "/events", label: "Events" },
       { href: "/decisions", label: "Decisions" },
-      { href: "/polls", label: "Polls" },
-      { href: "/workload", label: "Workload" },
     ],
   },
   {
@@ -32,27 +29,31 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/vendors", label: "Vendors" },
       { href: "/payments", label: "Payments" },
       { href: "/handoffs", label: "Handoffs" },
+      { href: "/music", label: "Music" },
     ],
   },
   {
     label: "Day-of",
     items: [
       { href: "/day-of", label: "Board" },
-      { href: "/attire", label: "Attire" },
       { href: "/people", label: "People" },
       { href: "/party", label: "Party view" },
+      { href: "/attire", label: "Attire" },
     ],
   },
   {
     label: "More",
     items: [
+      { href: "/timeline", label: "Timeline" },
+      { href: "/events", label: "Events" },
+      { href: "/polls", label: "Polls" },
       { href: "/traditions", label: "Traditions" },
       { href: "/legal", label: "Legal" },
       { href: "/media", label: "Media" },
       { href: "/budget", label: "Budget" },
-      { href: "/music", label: "Music" },
       { href: "/moodboard", label: "Moodboard" },
       { href: "/notes", label: "Notes" },
+      { href: "/workload", label: "Workload" },
       { href: "/settings", label: "Settings" },
     ],
   },

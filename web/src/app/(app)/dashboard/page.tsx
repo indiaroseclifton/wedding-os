@@ -41,7 +41,6 @@ export default async function DashboardPage() {
   const booked = vendors.filter((v) =>
     ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status)
   ).length;
-  const decided = decisions.filter((d) => d.status === "DECIDED").length;
   const overduePay = payments.filter((p) => {
     if (p.status === "PAID") return false;
     if (p.status === "OVERDUE") return true;
@@ -53,73 +52,7 @@ export default async function DashboardPage() {
     return due < today;
   }).length;
 
-  const recent = [
-    ...tasks.map((t) => ({
-      kind: "Task",
-      title: t.title,
-      href: "/tasks",
-      at: t.updatedAt || t.createdAt || "",
-    })),
-    ...guests.map((g) => ({
-      kind: "Guest",
-      title: g.name,
-      href: `/guests/${g.id}`,
-      at: g.updatedAt || g.createdAt || "",
-    })),
-    ...vendors.map((v) => ({
-      kind: "Vendor",
-      title: v.name,
-      href: `/vendors/${v.id}`,
-      at: v.updatedAt || v.createdAt || "",
-    })),
-    ...packages.map((p) => ({
-      kind: "Handoff",
-      title: p.title,
-      href: `/handoffs/${p.id}`,
-      at: p.updatedAt || p.createdAt || "",
-    })),
-  ]
-    .filter((r) => r.at)
-    .sort((a, b) => (a.at < b.at ? 1 : -1))
-    .slice(0, 6);
-
-  const checklist = [
-    {
-      done: decisions.some((d) => d.type === "PRIORITIES"),
-      label: "Set priorities together",
-      href: "/decisions/priorities",
-    },
-    {
-      done: decisions.some((d) => d.type === "STYLE_VIBE" || d.type === "STYLE"),
-      label: "Agree style & vibe",
-      href: "/decisions/style",
-    },
-    {
-      done: guests.length > 0,
-      label: "Start the guest list",
-      href: "/guests/new",
-    },
-    {
-      done: vendors.length > 0,
-      label: "Add key vendors",
-      href: "/vendors/new",
-    },
-    {
-      done: packages.length > 0,
-      label: "Create a handoff package",
-      href: "/handoffs/new",
-    },
-  ];
-  const remaining = checklist.filter((c) => !c.done).length;
-
-  const cards = [
-    { href: "/tasks", label: "Open tasks", value: String(openTasks) },
-    { href: "/tasks", label: "Overdue tasks", value: String(overdueTasks) },
-    { href: "/guests", label: "Headcount", value: String(headcount) },
-    { href: "/vendors", label: "Vendors booked", value: String(booked) },
-    { href: "/payments", label: "Overdue payments", value: String(overduePay) },
-    { href: "/handoffs", label: "Handoffs", value: String(packages.length) },
-  ];
+  const hasSeed = guests.length > 0 || vendors.length > 0 || tasks.length > 0;
 
   return (
     <div className="space-y-6">
@@ -131,6 +64,27 @@ export default async function DashboardPage() {
           </p>
         </div>
         <SeedButton />
+      </div>
+
+      <div className="rounded-xl border border-slate-900 bg-slate-900 p-4 text-white">
+        <p className="text-sm font-semibold">Milestone A happy path</p>
+        <p className="mt-1 text-xs text-slate-300">
+          Seed → decisions → guests → catering/DJ handoffs → party day-of.
+          Phase 2 modules can wait.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {!hasSeed && (
+            <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs">
+              Start with Load sample data
+            </span>
+          )}
+          <Link
+            href="/demo"
+            className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-slate-900"
+          >
+            Open demo walkthrough
+          </Link>
+        </div>
       </div>
 
       {(overdueTasks > 0 || overduePay > 0) && (
@@ -150,31 +104,15 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {remaining > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-sm font-semibold text-slate-900">Getting started</p>
-          <p className="mt-1 text-xs text-slate-500">
-            {remaining} of {checklist.length} still open
-          </p>
-          <ul className="mt-3 space-y-2">
-            {checklist.map((c) => (
-              <li key={c.href} className="flex items-center justify-between text-sm">
-                <span className={c.done ? "text-slate-400 line-through" : ""}>{c.label}</span>
-                {!c.done ? (
-                  <Link href={c.href} className="text-xs font-medium underline">
-                    Start
-                  </Link>
-                ) : (
-                  <span className="text-xs text-emerald-700">Done</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {cards.map((c) => (
+        {[
+          { href: "/tasks", label: "Open tasks", value: String(openTasks) },
+          { href: "/guests", label: "Guests", value: String(guests.length) },
+          { href: "/guests", label: "Headcount", value: String(headcount) },
+          { href: "/vendors", label: "Vendors booked", value: String(booked) },
+          { href: "/decisions", label: "Decisions", value: String(decisions.length) },
+          { href: "/handoffs", label: "Handoffs", value: String(packages.length) },
+        ].map((c) => (
           <Link
             key={c.label}
             href={c.href}
@@ -186,61 +124,38 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {recent.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-sm font-semibold">Recent</p>
-          <ul className="mt-3 space-y-2">
-            {recent.map((r, i) => (
-              <li key={`${r.href}-${i}`} className="flex items-center justify-between text-sm">
-                <Link href={r.href} className="hover:underline">
-                  <span className="text-xs text-slate-400">{r.kind}</span> {r.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
-          <p className="font-medium text-slate-900">Coordination</p>
+          <p className="font-medium text-slate-900">Happy-path links</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
             <li>
-              <Link href="/search" className="underline">
-                Search guests, tasks, vendors
+              <Link href="/demo" className="underline">
+                Demo walkthrough
+              </Link>
+            </li>
+            <li>
+              <Link href="/dietary" className="underline">
+                Dietary → catering
               </Link>
             </li>
             <li>
               <Link href="/handoffs/new" className="underline">
-                Create catering or DJ handoff
+                New handoff
               </Link>
             </li>
             <li>
-              <Link href="/people" className="underline">
-                Invite wedding party
+              <Link href="/party" className="underline">
+                Party portal
               </Link>
             </li>
           </ul>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
-          <p className="font-medium text-slate-900">Plan</p>
-          <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
-            <li>
-              <Link href="/timeline" className="underline">
-                Timeline milestones
-              </Link>
-            </li>
-            <li>
-              <Link href="/floorplan" className="underline">
-                Floor plan layout
-              </Link>
-            </li>
-            <li>
-              <Link href="/traditions" className="underline">
-                Cultural traditions
-              </Link>
-            </li>
-          </ul>
+          <p className="font-medium text-slate-900">Phase 2 (later)</p>
+          <p className="mt-2 text-slate-600">
+            Deeper seating studio, e-sign contracts, AI media, multi-event budgets,
+            production auth, and Neon as the default store.
+          </p>
         </div>
       </div>
     </div>
