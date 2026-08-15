@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ensureDemoWorkspace, getWorkspaceTasks } from "@/lib/data/workspace";
+import { TasksClient } from "./TasksClient";
 
 export default async function TasksPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -14,7 +14,7 @@ export default async function TasksPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Tasks</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Shared to-dos linked to decisions when useful.
+            Shared to-dos — update status without leaving the list.
           </p>
         </div>
         <Link
@@ -34,21 +34,18 @@ export default async function TasksPage() {
         />
       ) : (
         <div className="space-y-3">
-          <p className="text-xs text-slate-500">{open.length} open · {tasks.length} total</p>
-          <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-            {tasks.map((t) => (
-              <li key={t.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium text-slate-900">{t.title}</p>
-                  <p className="text-xs text-slate-500">
-                    {t.ownerName || "Unassigned"}
-                    {t.dueDate ? ` · due ${t.dueDate}` : ""}
-                  </p>
-                </div>
-                <StatusBadge status={t.status} />
-              </li>
-            ))}
-          </ul>
+          <p className="text-xs text-slate-500">
+            {open.length} open · {tasks.length} total
+          </p>
+          <TasksClient
+            tasks={tasks.map((t) => ({
+              id: t.id,
+              title: t.title,
+              ownerName: t.ownerName,
+              status: t.status,
+              dueDate: t.dueDate,
+            }))}
+          />
         </div>
       )}
     </div>
