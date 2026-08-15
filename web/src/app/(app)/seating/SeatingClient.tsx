@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SeatingChart } from "./SeatingChart";
+import { PrintButton } from "@/components/ui/PrintButton";
 
 type Table = { id: string; name: string; capacity: number; shape: string };
 type Guest = {
@@ -72,11 +73,15 @@ export function SeatingClient({
     }
   }
 
-  const unseated = guests.filter((g) => !g.tableLabel);
+  const unseated = guests.filter((g) => !g.tableLabel && g.rsvp !== "NO");
+  const overCapacity = tables.filter((t) => {
+    const n = guests.filter((g) => g.tableLabel === t.name).length;
+    return n > t.capacity;
+  });
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 print:hidden">
         <button
           type="button"
           onClick={() => setShowChart((v) => !v)}
@@ -84,11 +89,35 @@ export function SeatingClient({
         >
           {showChart ? "Hide chart" : "Show chart"}
         </button>
+        <PrintButton label="Print seating" />
       </div>
 
-      {showChart && <SeatingChart tables={tables} guests={guests} />}
+      {overCapacity.length > 0 && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900 print:hidden">
+          <p className="font-medium">Over capacity</p>
+          <ul className="mt-2 list-disc pl-5 text-xs">
+            {overCapacity.map((t) => {
+              const n = guests.filter((g) => g.tableLabel === t.name).length;
+              return (
+                <li key={t.id}>
+                  {t.name}: {n} seated / {t.capacity} capacity
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
-      <form onSubmit={addTable} className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-4">
+      {showChart && (
+        <div className="print:break-inside-avoid">
+          <SeatingChart tables={tables} guests={guests} />
+        </div>
+      )}
+
+      <form
+        onSubmit={addTable}
+        className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-4 print:hidden"
+      >
         <label className="text-sm">
           <span className="font-medium">New table</span>
           <input
@@ -131,18 +160,24 @@ export function SeatingClient({
         </button>
       </form>
 
-      {error && <p className="text-xs text-rose-600">{error}</p>}
+      {error && <p className="text-xs text-rose-600 print:hidden">{error}</p>}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 print:grid-cols-2">
         {tables.map((t) => {
           const at = guests.filter((g) => g.tableLabel === t.name);
           const over = at.length > t.capacity;
           return (
-            <div key={t.id} className="rounded-xl border border-slate-200 bg-white p-4">
+            <div
+              key={t.id}
+              className={`rounded-xl border bg-white p-4 print:break-inside-avoid ${
+                over ? "border-rose-300" : "border-slate-200"
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold">{t.name}</p>
-                <p className={`text-xs ${over ? "text-rose-600" : "text-slate-500"}`}>
+                <p className={`text-xs ${over ? "font-medium text-rose-600" : "text-slate-500"}`}>
                   {at.length}/{t.capacity}
+                  {over ? " over" : ""}
                 </p>
               </div>
               <ul className="mt-3 space-y-2">
@@ -156,7 +191,7 @@ export function SeatingClient({
                       type="button"
                       disabled={busy}
                       onClick={() => assign(g.id, null)}
-                      className="text-slate-500 underline"
+                      className="text-slate-500 underline print:hidden"
                     >
                       Unseat
                     </button>
@@ -170,7 +205,7 @@ export function SeatingClient({
       </div>
 
       {unseated.length > 0 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 print:hidden">
           <p className="text-sm font-medium text-amber-900">Need a table</p>
           <ul className="mt-3 space-y-2">
             {unseated.map((g) => (

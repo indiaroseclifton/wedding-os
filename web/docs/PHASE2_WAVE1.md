@@ -3,20 +3,27 @@
 ## Shipped
 
 ### 1. Decision → operational work
-- On **Decisions**, each record can **→ Task + timeline** or **Task only**.
-- Creates a follow-up task linked to the decision and/or a timeline milestone under category `Decision`.
+- **→ Task + timeline** or **Task only** on each decision record.
 
 ### 2. Handoff refresh from source
-- **DJ** packages: **Refresh from Music** (must-play, do-not-play, moments, notes).
-- **Catering** packages: **Refresh from Guests** (headcount + dietary summary/detail).
-- Manual edits remain possible after refresh; re-share when ready.
+- DJ ← Music; Catering ← Guests.
 
-## Demo script add-on
-1. Load sample data.
-2. Decisions → promote Priorities to task + timeline → check **Tasks** and **Timeline**.
-3. Change a guest dietary note → open Catering handoff → **Refresh from Guests**.
-4. Change Music must-play → open DJ handoff → **Refresh from Music**.
+### 3. Party “My week”
+- Party home shows open / due-in-7-days / overdue task counts for the signed-in person.
+- Quick list of their open tasks + links to tasks, attire, day-of.
 
-## Next Wave 1 candidates
-- Party portal “my week”
-- Seating print + capacity warnings
+### 4. Seating capacity + print
+- Over-capacity banner and per-table highlighting.
+- **Print seating** button (chart + table lists).
+
+## Demo add-ons
+1. Promote a decision → check Tasks + Timeline.
+2. Refresh catering/DJ handoffs after editing guests/music.
+3. Open **Party view** → see My week.
+4. Seat too many people at a table → over-capacity warning → Print seating.
+
+## Still later in Phase 2
+- Payments deposit→final workflow polish
+- Day-of hour strip
+- Traditions → timeline
+- Multi-event rollups
