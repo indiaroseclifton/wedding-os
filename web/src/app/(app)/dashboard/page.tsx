@@ -8,20 +8,32 @@ import {
 } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { listPackages } from "@/lib/data/handoffs-store";
+import { listPayments } from "@/lib/data/payments-store";
 import { SeedButton } from "./SeedButton";
+
+function taskOverdue(dueDate?: string, status?: string) {
+  if (!dueDate || status === "DONE") return false;
+  const due = new Date(dueDate);
+  if (Number.isNaN(due.getTime())) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return due < today;
+}
 
 export default async function DashboardPage() {
   const session = await getSessionUser();
   const { workspace } = await ensureDemoWorkspace();
-  const [tasks, guests, decisions, vendors, packages] = await Promise.all([
+  const [tasks, guests, decisions, vendors, packages, payments] = await Promise.all([
     getWorkspaceTasks(workspace.id),
     getWorkspaceGuests(workspace.id),
     getWorkspaceDecisions(workspace.id),
     listVendors(workspace.id),
     listPackages(workspace.id),
+    listPayments(workspace.id),
   ]);
 
   const openTasks = tasks.filter((t) => t.status !== "DONE").length;
+  const overdueTasks = tasks.filter((t) => taskOverdue(t.dueDate, t.status)).length;
   const headcount = guests.reduce((sum, g) => {
     if (g.rsvp === "NO") return sum;
     return sum + 1 + (g.plusOnes || 0);
@@ -30,6 +42,16 @@ export default async function DashboardPage() {
     ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status)
   ).length;
   const decided = decisions.filter((d) => d.status === "DECIDED").length;
+  const overduePay = payments.filter((p) => {
+    if (p.status === "PAID") return false;
+    if (p.status === "OVERDUE") return true;
+    if (!p.dueDate) return false;
+    const due = new Date(p.dueDate);
+    if (Number.isNaN(due.getTime())) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return due < today;
+  }).length;
 
   const recent = [
     ...tasks.map((t) => ({
@@ -92,10 +114,10 @@ export default async function DashboardPage() {
 
   const cards = [
     { href: "/tasks", label: "Open tasks", value: String(openTasks) },
-    { href: "/guests", label: "Guests", value: String(guests.length) },
+    { href: "/tasks", label: "Overdue tasks", value: String(overdueTasks) },
     { href: "/guests", label: "Headcount", value: String(headcount) },
     { href: "/vendors", label: "Vendors booked", value: String(booked) },
-    { href: "/decisions", label: "Decisions locked", value: String(decided) },
+    { href: "/payments", label: "Overdue payments", value: String(overduePay) },
     { href: "/handoffs", label: "Handoffs", value: String(packages.length) },
   ];
 
@@ -110,6 +132,23 @@ export default async function DashboardPage() {
         </div>
         <SeedButton />
       </div>
+
+      {(overdueTasks > 0 || overduePay > 0) && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">
+          Attention:{" "}
+          {overdueTasks > 0 && (
+            <Link href="/tasks" className="underline">
+              {overdueTasks} overdue task{overdueTasks === 1 ? "" : "s"}
+            </Link>
+          )}
+          {overdueTasks > 0 && overduePay > 0 && " · "}
+          {overduePay > 0 && (
+            <Link href="/payments" className="underline">
+              {overduePay} overdue payment{overduePay === 1 ? "" : "s"}
+            </Link>
+          )}
+        </div>
+      )}
 
       {remaining > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white p-4">

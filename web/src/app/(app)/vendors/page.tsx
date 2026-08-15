@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
+import { VendorsClient } from "./VendorsClient";
 
 export default async function VendorsPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -42,25 +42,15 @@ export default async function VendorsPage() {
           primaryLabel="Add vendor"
         />
       ) : (
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-          {vendors.map((v) => (
-            <li key={v.id} className="flex items-center justify-between gap-3 px-4 py-3">
-              <div>
-                <p className="text-sm font-medium text-slate-900">{v.name}</p>
-                <p className="text-xs text-slate-500">
-                  {v.category}
-                  {v.email ? ` · ${v.email}` : ""}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <StatusBadge status={v.status} />
-                <Link href={`/vendors/${v.id}`} className="text-xs font-medium underline">
-                  Open
-                </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <VendorsClient
+          vendors={vendors.map((v) => ({
+            id: v.id,
+            name: v.name,
+            category: v.category,
+            status: v.status,
+            email: v.email,
+          }))}
+        />
       )}
     </div>
   );
