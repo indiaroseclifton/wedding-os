@@ -21,6 +21,7 @@ export default function NewPollPage() {
           title: form.get("title"),
           description: form.get("description") || undefined,
           optionsText: form.get("optionsText"),
+          mode: form.get("mode"),
         }),
       });
       if (!res.ok) {
@@ -40,12 +41,21 @@ export default function NewPollPage() {
     <div className="mx-auto max-w-lg space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">New poll</h1>
-        <p className="mt-1 text-sm text-slate-600">One option per line. At least two.</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Single choice or ranked preference (Borda-style points).
+        </p>
       </div>
       <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
         <label className="block text-sm">
           <span className="font-medium">Question</span>
           <input name="title" required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="First dance song?" />
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium">Mode</span>
+          <select name="mode" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <option value="SINGLE">Single choice</option>
+            <option value="RANKED">Ranked preference</option>
+          </select>
         </label>
         <label className="block text-sm">
           <span className="font-medium">Options (one per line)</span>

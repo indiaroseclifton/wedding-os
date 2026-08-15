@@ -15,6 +15,7 @@ const NAV = [
   { href: "/handoffs", label: "Handoffs" },
   { href: "/decisions", label: "Decisions" },
   { href: "/polls", label: "Polls" },
+  { href: "/traditions", label: "Traditions" },
   { href: "/people", label: "People" },
   { href: "/attire", label: "Attire" },
   { href: "/day-of", label: "Day-of" },
