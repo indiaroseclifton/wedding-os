@@ -1,12 +1,35 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+type Member = { userId: string; name: string; role: string };
 
 export default function NewTaskPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [members, setMembers] = useState<Member[]>([
+    { userId: "user_alex", name: "Alex Rivera", role: "COUPLE" },
+    { userId: "user_jordan", name: "Jordan Lee", role: "COUPLE" },
+  ]);
+
+  useEffect(() => {
+    fetch("/api/invites")
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.members) && d.members.length) {
+          setMembers(
+            d.members.map((m: { userId: string; name: string; role: string }) => ({
+              userId: m.userId,
+              name: m.name,
+              role: m.role,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -39,29 +62,34 @@ export default function NewTaskPage() {
     <div className="mx-auto max-w-lg space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Add task</h1>
-        <p className="mt-1 text-sm text-slate-600">Assign work so nothing lives only in a spreadsheet.</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Assign to you, your partner, or anyone in People.
+        </p>
       </div>
       <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Title</span>
+          <span className="font-medium">Title</span>
           <input name="title" required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Description</span>
+          <span className="font-medium">Description</span>
           <textarea name="description" rows={3} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Owner</span>
+          <span className="font-medium">Owner</span>
           <select name="ownerId" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-            <option value="user_alex">Alex Rivera</option>
-            <option value="user_jordan">Jordan Lee</option>
+            {members.map((m) => (
+              <option key={m.userId} value={m.userId}>
+                {m.name} ({m.role === "WEDDING_PARTY" ? "party" : "couple"})
+              </option>
+            ))}
           </select>
         </label>
         {error && <p className="text-xs text-rose-600">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
+          className="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
         >
           {loading ? "Saving…" : "Save task"}
         </button>
