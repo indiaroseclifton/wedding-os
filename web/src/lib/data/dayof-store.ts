@@ -19,12 +19,20 @@ export type DayOfUpdate = {
   createdAt: string;
 };
 
+export type ScheduleSlot = {
+  id: string;
+  time: string;
+  title: string;
+  owner?: string;
+};
+
 export type StoredDayOf = {
   workspaceId: string;
   weatherNote?: string;
   emergencyContact?: string;
   checkIns: CheckIn[];
   updates: DayOfUpdate[];
+  schedule: ScheduleSlot[];
   updatedAt: string;
 };
 
@@ -41,6 +49,18 @@ async function writeAll(all: Record<string, StoredDayOf>) {
   await fs.writeFile(dayOfFile, JSON.stringify(all, null, 2), "utf8");
 }
 
+const DEFAULT_SCHEDULE: Omit<ScheduleSlot, "id">[] = [
+  { time: "10:00", title: "Hair & makeup start", owner: "Party" },
+  { time: "13:00", title: "Photographer arrives", owner: "Vendor" },
+  { time: "14:30", title: "First look / portraits", owner: "Couple" },
+  { time: "16:00", title: "Ceremony", owner: "All" },
+  { time: "17:00", title: "Cocktail hour", owner: "Guests" },
+  { time: "18:00", title: "Reception entrance", owner: "All" },
+  { time: "18:30", title: "Dinner service", owner: "Catering" },
+  { time: "20:00", title: "First dance", owner: "Couple" },
+  { time: "22:00", title: "Last dance / send-off", owner: "All" },
+];
+
 export async function getDayOf(workspaceId: string): Promise<StoredDayOf> {
   const all = await readAll();
   if (!all[workspaceId]) {
@@ -52,8 +72,12 @@ export async function getDayOf(workspaceId: string): Promise<StoredDayOf> {
         { id: randomUUID(), name: "Maid of honor", role: "Party", status: "NOT_STARTED" },
       ],
       updates: [],
+      schedule: DEFAULT_SCHEDULE.map((s) => ({ ...s, id: randomUUID() })),
       updatedAt: new Date().toISOString(),
     };
+    await writeAll(all);
+  } else if (!all[workspaceId].schedule) {
+    all[workspaceId].schedule = DEFAULT_SCHEDULE.map((s) => ({ ...s, id: randomUUID() }));
     await writeAll(all);
   }
   return all[workspaceId];
@@ -86,4 +110,23 @@ export async function addUpdate(workspaceId: string, body: string) {
     ...current.updates,
   ].slice(0, 50);
   return saveDayOf(workspaceId, { updates });
+}
+
+export async function addScheduleSlot(
+  workspaceId: string,
+  slot: { time: string; title: string; owner?: string }
+) {
+  const current = await getDayOf(workspaceId);
+  const schedule = [
+    ...current.schedule,
+    { id: randomUUID(), ...slot },
+  ].sort((a, b) => a.time.localeCompare(b.time));
+  return saveDayOf(workspaceId, { schedule });
+}
+
+export async function removeScheduleSlot(workspaceId: string, slotId: string) {
+  const current = await getDayOf(workspaceId);
+  return saveDayOf(workspaceId, {
+    schedule: current.schedule.filter((s) => s.id !== slotId),
+  });
 }
