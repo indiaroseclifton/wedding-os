@@ -13,6 +13,15 @@ type Task = {
 
 const STATUSES = ["NOT_STARTED", "IN_PROGRESS", "DONE", "BLOCKED"] as const;
 
+function isOverdue(dueDate?: string, status?: string) {
+  if (!dueDate || status === "DONE") return false;
+  const due = new Date(dueDate);
+  if (Number.isNaN(due.getTime())) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return due < today;
+}
+
 export function TasksClient({ tasks }: { tasks: Task[] }) {
   const router = useRouter();
   const [rows, setRows] = useState(tasks);
@@ -103,29 +112,38 @@ export function TasksClient({ tasks }: { tasks: Task[] }) {
       </div>
 
       <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-        {visible.map((t) => (
-          <li key={t.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-            <div>
-              <p className="text-sm font-medium text-slate-900">{t.title}</p>
-              <p className="text-xs text-slate-500">
-                {t.ownerName || "Unassigned"}
-                {t.dueDate ? ` · due ${t.dueDate}` : ""}
-              </p>
-            </div>
-            <select
-              disabled={busy === t.id}
-              value={t.status}
-              onChange={(e) => setStatus(t.id, e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+        {visible.map((t) => {
+          const overdue = isOverdue(t.dueDate, t.status);
+          return (
+            <li
+              key={t.id}
+              className={`flex flex-wrap items-center justify-between gap-3 px-4 py-3 ${
+                overdue ? "bg-rose-50" : ""
+              }`}
             >
-              {STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s.replaceAll("_", " ")}
-                </option>
-              ))}
-            </select>
-          </li>
-        ))}
+              <div>
+                <p className="text-sm font-medium text-slate-900">{t.title}</p>
+                <p className={`text-xs ${overdue ? "font-medium text-rose-700" : "text-slate-500"}`}>
+                  {t.ownerName || "Unassigned"}
+                  {t.dueDate ? ` · due ${t.dueDate}` : ""}
+                  {overdue ? " · overdue" : ""}
+                </p>
+              </div>
+              <select
+                disabled={busy === t.id}
+                value={t.status}
+                onChange={(e) => setStatus(t.id, e.target.value)}
+                className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+              >
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s.replaceAll("_", " ")}
+                  </option>
+                ))}
+              </select>
+            </li>
+          );
+        })}
         {!visible.length && (
           <li className="px-4 py-8 text-center text-sm text-slate-500">No tasks in this filter</li>
         )}

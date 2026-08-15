@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { ExportTextButton } from "@/components/handoffs/ExportTextButton";
+import { CopyButton } from "@/components/ui/CopyButton";
 
 const LABELS: Record<string, string> = {
   date_locations: "Date & locations",
@@ -152,7 +153,10 @@ export default function HandoffDetailPage() {
 
       {shareUrl && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm print:hidden">
-          <p className="font-medium text-emerald-900">Share this link with your vendor</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-medium text-emerald-900">Share this link with your vendor</p>
+            <CopyButton value={shareUrl} />
+          </div>
           <p className="mt-2 break-all text-emerald-800">{shareUrl}</p>
         </div>
       )}

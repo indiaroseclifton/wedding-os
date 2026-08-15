@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CopyButton } from "@/components/ui/CopyButton";
 
 type Member = {
   id: string;
@@ -91,7 +92,10 @@ export default function PeoplePage() {
 
       {lastLink && (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm">
-          <p className="font-medium text-emerald-900">Share this link</p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-medium text-emerald-900">Share this link</p>
+            <CopyButton value={lastLink} />
+          </div>
           <p className="mt-2 break-all text-emerald-800">{lastLink}</p>
         </div>
       )}
@@ -114,19 +118,23 @@ export default function PeoplePage() {
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Invites</p>
         <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-          {invites.map((i) => (
-            <li key={i.id} className="px-4 py-3 text-sm">
-              <p>
-                {i.name || i.email || "Invite"}
-                <span className="text-xs text-slate-500"> · {i.status}</span>
-              </p>
-              {i.status === "PENDING" && (
-                <p className="mt-1 break-all text-xs text-slate-500">
-                  /invite/{i.token}
-                </p>
-              )}
-            </li>
-          ))}
+          {invites.map((i) => {
+            const link =
+              typeof window !== "undefined"
+                ? `${window.location.origin}/invite/${i.token}`
+                : `/invite/${i.token}`;
+            return (
+              <li key={i.id} className="px-4 py-3 text-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p>
+                    {i.name || i.email || "Invite"}
+                    <span className="text-xs text-slate-500"> · {i.status}</span>
+                  </p>
+                  {i.status === "PENDING" && <CopyButton value={link} label="Copy link" />}
+                </div>
+              </li>
+            );
+          })}
           {!invites.length && (
             <li className="px-4 py-6 text-center text-sm text-slate-500">No invites yet</li>
           )}
