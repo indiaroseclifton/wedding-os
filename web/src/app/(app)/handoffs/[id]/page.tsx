@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { PrintButton } from "@/components/ui/PrintButton";
 
 const LABELS: Record<string, string> = {
   date_locations: "Date & locations",
@@ -95,14 +96,18 @@ export default function HandoffDetailPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{pkg.title}</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          {pkg.template.replace("_", " ")} · {pkg.status}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{pkg.title}</h1>
+          <p className="mt-1 text-sm text-slate-600">
+            {pkg.template.replace("_", " ")} · {pkg.status}
+            {pkg.recipientName ? ` · ${pkg.recipientName}` : ""}
+          </p>
+        </div>
+        <PrintButton />
       </div>
 
-      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 print:border-0 print:p-0">
         {Object.keys(sections).map((key) => (
           <label key={key} className="block text-sm">
             <span className="font-medium text-slate-800">{LABELS[key] || key}</span>
@@ -110,15 +115,15 @@ export default function HandoffDetailPage() {
               rows={3}
               value={sections[key] || ""}
               onChange={(e) => setSections((s) => ({ ...s, [key]: e.target.value }))}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm print:border-0 print:p-0"
             />
           </label>
         ))}
       </div>
 
-      {error && <p className="text-xs text-rose-600">{error}</p>}
+      {error && <p className="text-xs text-rose-600 print:hidden">{error}</p>}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 print:hidden">
         <button
           type="button"
           onClick={save}
@@ -138,7 +143,7 @@ export default function HandoffDetailPage() {
       </div>
 
       {shareUrl && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm print:hidden">
           <p className="font-medium text-emerald-900">Share this link with your vendor</p>
           <p className="mt-2 break-all text-emerald-800">{shareUrl}</p>
         </div>

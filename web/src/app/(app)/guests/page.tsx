@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
+import { ExportCsvButton } from "./ExportCsvButton";
 
 export default async function GuestsPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -24,7 +25,19 @@ export default async function GuestsPage() {
             Manage RSVPs, dietary notes, and headcount.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <ExportCsvButton
+            guests={guests.map((g) => ({
+              name: g.name,
+              email: g.email,
+              side: g.side,
+              rsvp: g.rsvp,
+              plusOnes: g.plusOnes,
+              dietary: g.dietary,
+              tableLabel: g.tableLabel,
+              notes: g.notes,
+            }))}
+          />
           <Link
             href="/guests/import"
             className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"

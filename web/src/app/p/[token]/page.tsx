@@ -3,6 +3,7 @@ import {
   getPackageByToken,
   SECTION_LABELS,
 } from "@/lib/data/handoffs-store";
+import { PrintButton } from "@/components/ui/PrintButton";
 
 export default async function PublicHandoffPage({
   params,
@@ -16,21 +17,24 @@ export default async function PublicHandoffPage({
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-4 py-10">
       <div className="space-y-6">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-            Handoff package
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">{pkg.title}</h1>
-          {pkg.recipientName && (
-            <p className="mt-1 text-sm text-slate-600">For {pkg.recipientName}</p>
-          )}
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+              Handoff package
+            </p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight">{pkg.title}</h1>
+            {pkg.recipientName && (
+              <p className="mt-1 text-sm text-slate-600">For {pkg.recipientName}</p>
+            )}
+          </div>
+          <PrintButton />
         </div>
 
         <div className="space-y-4">
           {Object.entries(pkg.sections || {}).map(([key, value]) => (
             <section
               key={key}
-              className="rounded-xl border border-slate-200 bg-white p-4"
+              className="rounded-xl border border-slate-200 bg-white p-4 print:break-inside-avoid"
             >
               <h2 className="text-sm font-semibold text-slate-900">
                 {SECTION_LABELS[key] || key}
@@ -42,7 +46,7 @@ export default async function PublicHandoffPage({
           ))}
         </div>
 
-        <p className="text-xs text-slate-400">Read-only vendor view · Wedding OS</p>
+        <p className="text-xs text-slate-400 print:hidden">Read-only vendor view · Wedding OS</p>
       </div>
     </div>
   );
