@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
+import type { Suggestion } from "@/lib/smart-home";
 import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
 
 const QUICK = [

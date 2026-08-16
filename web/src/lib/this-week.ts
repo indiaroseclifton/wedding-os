@@ -9,6 +9,7 @@ import { flagCount } from "@/lib/data/contract-review";
 import { PLAYBOOKS } from "@/lib/data/diy-playbooks";
 import { hasMailingAddress, isPendingRsvp } from "@/lib/data/guest-mail";
 import { getDismissedWeek } from "@/lib/data/week-dismiss-store";
+import type { StoredTask } from "@/lib/data/store";
 
 export type WeekUrgency = "now" | "week" | "soon";
 
