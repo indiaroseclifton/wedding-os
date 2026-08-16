@@ -341,6 +341,9 @@ export default function SettingsPage() {
         <Link href="/mobile" className="inline-block rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
           Mobile steps
         </Link>
+        <Link href="/improvements" className="ml-2 inline-block text-xs underline">
+          All improvements
+        </Link>
       </section>
 
       <section className="space-y-3 glass-panel rounded-2xl p-5 text-sm">
