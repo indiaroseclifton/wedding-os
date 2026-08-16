@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { CommandPalette } from "@/components/search/CommandPalette";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import {
@@ -36,6 +36,8 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const pane = useRef<HTMLElement>(null);
   const [rooms, setRooms] = useState(false);
   const names = firstNames(coupleNames, "Alex & Jordan");
   const date = shortWeddingDate(weddingDate);
@@ -44,10 +46,13 @@ export function AppShell({
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
-  }, []);
+    for (const item of NAV_ITEMS) router.prefetch(item.href);
+    router.prefetch("/settings");
+  }, [router]);
 
   useEffect(() => {
     setRooms(false);
+    pane.current?.scrollTo({ top: 0 });
   }, [pathname]);
 
   useEffect(() => {
@@ -72,13 +77,15 @@ export function AppShell({
   }
 
   const links = (
-    <nav className="space-y-0.5">
+    <nav className="space-y-0.5" aria-label="Rooms">
       {NAV_ITEMS.map((item) => {
         const on = tabOn(pathname, item.match);
         return (
           <Link
             key={item.href}
             href={item.href}
+            scroll={false}
+            prefetch
             className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${
               on ? "bg-white/70 font-medium text-ink shadow-sm backdrop-blur" : "text-ink-soft hover:bg-white/40"
             }`}
@@ -91,7 +98,7 @@ export function AppShell({
       <button
         type="button"
         onClick={() => setRooms(true)}
-        className="flex w-full min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-ink-soft hover:bg-white/60"
+        className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-ink-soft hover:bg-white/60"
       >
         <span className="inline-flex h-[18px] w-[18px] items-center justify-center text-lg leading-none">···</span>
         More
@@ -100,7 +107,7 @@ export function AppShell({
   );
 
   return (
-    <div className="relative min-h-screen bg-paper lg:flex">
+    <div className="relative h-dvh overflow-hidden bg-paper lg:flex">
       <a href="#main" className="skip-link">
         Skip to the desk
       </a>
@@ -109,8 +116,8 @@ export function AppShell({
         <img src={coverUrl || "/brand/tablescape.jpg"} alt="" className="h-full w-full object-cover opacity-[0.22]" />
         <div className="absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
       </div>
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-white/40 bg-surface/40 px-3 py-5 backdrop-blur-xl lg:flex">
-        <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
+      <aside className="hidden h-dvh w-56 shrink-0 flex-col border-r border-white/40 bg-surface/40 px-3 py-5 backdrop-blur-xl lg:flex">
+        <Link href="/dashboard" scroll={false} className="mb-8 flex items-center gap-2 px-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-moss text-[11px] font-medium text-ivory">
             {names
               .split(" & ")
@@ -120,7 +127,11 @@ export function AppShell({
           </span>
         </Link>
         {links}
-        <Link href="/settings" className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft hover:bg-white/40">
+        <Link
+          href="/settings"
+          scroll={false}
+          className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft hover:bg-white/40"
+        >
           <Icon name="settings" />
           Settings
         </Link>
@@ -129,8 +140,8 @@ export function AppShell({
         </button>
       </aside>
 
-      <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/40 bg-paper/55 px-4 py-3 backdrop-blur-xl print:hidden sm:px-6">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/40 bg-paper/55 px-4 py-3 backdrop-blur-xl print:hidden sm:px-6">
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold uppercase tracking-[0.14em]">{names}</p>
             <p className="truncate text-[11px] text-muted">
@@ -142,6 +153,7 @@ export function AppShell({
             <CommandPalette />
             <Link
               href="/settings"
+              scroll={false}
               aria-label="Settings"
               className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-surface/50 text-ink backdrop-blur-md"
             >
@@ -160,7 +172,14 @@ export function AppShell({
           </div>
         </header>
 
-        <main id="main" tabIndex={-1} className="px-4 py-5 pb-24 sm:px-6 lg:px-8 lg:py-7 lg:pb-10">{children}</main>
+        <main
+          id="main"
+          ref={pane}
+          tabIndex={-1}
+          className="min-h-0 flex-1 overflow-y-auto px-4 py-5 pb-24 sm:px-6 lg:px-8 lg:py-7 lg:pb-10"
+        >
+          {children}
+        </main>
       </div>
 
       {rooms && (
@@ -189,6 +208,7 @@ export function AppShell({
                 <Link
                   key={r.href}
                   href={r.href}
+                  scroll={false}
                   onClick={() => setRooms(false)}
                   className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs"
                 >
@@ -212,6 +232,8 @@ export function AppShell({
               <li key={tab.href}>
                 <Link
                   href={tab.href}
+                  scroll={false}
+                  prefetch
                   className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium ${
                     on ? "text-moss" : "text-muted"
                   }`}

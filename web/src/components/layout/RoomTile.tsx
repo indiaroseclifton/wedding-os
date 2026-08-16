@@ -19,6 +19,7 @@ export function RoomTile({
   return (
     <Link
       href={href}
+      scroll={false}
       onClick={onClick}
       className="group relative aspect-[5/4] overflow-hidden rounded-2xl border border-white/50 bg-surface/30"
     >
