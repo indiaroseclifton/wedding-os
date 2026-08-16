@@ -84,3 +84,7 @@
 ## Wave 19 (done)
 - Home is This week: overdue money, RSVPs, addresses, contract flags, ROS holes, DIY day-beats, checklist
 - Nav label: This week
+
+## Wave 20 (done)
+- Phone shell: sticky header, slide-over menu, bottom tabs (Week / Guests / Vendors / DIY / Day-of)
+- Safe-area padding; guest site less top-heavy on small screens

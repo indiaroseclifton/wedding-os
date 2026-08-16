@@ -43,7 +43,7 @@ export default async function WeddingSitePage({
 
   return (
     <div className="min-h-screen bg-[#f6f3ee] text-stone-900">
-      <main className="mx-auto max-w-xl px-5 py-16">
+      <main className="mx-auto max-w-xl px-5 py-10 sm:py-16">
         <p className="text-center text-xs uppercase tracking-[0.25em] text-stone-500">
           You're invited
         </p>
