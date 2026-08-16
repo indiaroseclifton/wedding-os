@@ -11,6 +11,7 @@ type Vendor = {
   category: string;
   status: string;
   email?: string;
+  moneyHint?: string;
 };
 
 const STATUSES = [
@@ -54,6 +55,7 @@ export function VendorsClient({ vendors }: { vendors: Vendor[] }) {
             <p className="text-xs text-slate-500">
               {v.category}
               {v.email ? ` · ${v.email}` : ""}
+              {v.moneyHint ? ` · ${v.moneyHint}` : ""}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">

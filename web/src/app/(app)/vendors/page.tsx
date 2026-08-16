@@ -2,11 +2,13 @@ import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
+import { listPayments, paymentsForVendor } from "@/lib/data/payments-store";
 import { VendorsClient } from "./VendorsClient";
 
 export default async function VendorsPage() {
   const { workspace } = await ensureDemoWorkspace();
   const vendors = await listVendors(workspace.id);
+  const payments = await listPayments(workspace.id);
   const booked = vendors.filter((v) =>
     ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status)
   ).length;
@@ -51,13 +53,23 @@ export default async function VendorsPage() {
         />
       ) : (
         <VendorsClient
-          vendors={vendors.map((v) => ({
-            id: v.id,
-            name: v.name,
-            category: v.category,
-            status: v.status,
-            email: v.email,
-          }))}
+          vendors={vendors.map((v) => {
+            const mine = paymentsForVendor(payments, v);
+            const dep = mine.find((p) => p.kind === "DEPOSIT");
+            let moneyHint = "";
+            if (dep?.status === "PAID") moneyHint = "deposit paid";
+            else if (dep?.dueDate) moneyHint = `deposit due ${dep.dueDate}`;
+            else if (dep) moneyHint = "deposit logged";
+            else if (v.contractUrl) moneyHint = "contract attached";
+            return {
+              id: v.id,
+              name: v.name,
+              category: v.category,
+              status: v.status,
+              email: v.email,
+              moneyHint,
+            };
+          })}
         />
       )}
     </div>

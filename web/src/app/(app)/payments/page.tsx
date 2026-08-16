@@ -273,6 +273,14 @@ export default function PaymentsPage() {
                           {p.dueDate ? ` · due ${p.dueDate}` : ""}
                           {p.paidAt ? ` · paid ${p.paidAt.slice(0, 10)}` : ""}
                           {overdue ? " · overdue" : ""}
+                          {p.contractLink ? (
+                            <>
+                              {" · "}
+                              <a href={p.contractLink} className="underline" target="_blank" rel="noreferrer">
+                                contract
+                              </a>
+                            </>
+                          ) : null}
                         </p>
                       </div>
                       <select

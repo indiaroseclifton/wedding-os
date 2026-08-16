@@ -1,6 +1,6 @@
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
+import { dataDir, ensureDir, readText, writeText } from "./store-io";
 
 const paymentsFile = path.join(dataDir, "payments.json");
 
@@ -55,7 +55,7 @@ export function paymentVendorKey(p: Pick<PaymentItem, "vendorId" | "vendorName">
 
 export function resolvePaymentVendorName(
   p: Pick<PaymentItem, "vendorId" | "vendorName">,
-  vendors: { id: string; name: string }[],
+  vendors: { id: string; name: string }[]
 ) {
   if (p.vendorId) {
     const match = vendors.find((v) => v.id === p.vendorId);
@@ -122,4 +122,60 @@ export async function patchPayment(id: string, patch: Partial<PaymentItem>) {
   }
   await writeJson(rows);
   return normalize(row);
+}
+
+export async function upsertVendorMilestone(input: {
+  workspaceId: string;
+  vendorId: string;
+  vendorName: string;
+  kind: PaymentKind;
+  amount: number;
+  dueDate?: string;
+  contractLink?: string;
+  status?: PaymentItem["status"];
+}) {
+  const rows = await readJson();
+  const existing = rows.find(
+    (p) =>
+      p.workspaceId === input.workspaceId &&
+      p.vendorId === input.vendorId &&
+      normalize(p).kind === input.kind
+  );
+  if (existing) {
+    existing.amount = input.amount;
+    existing.vendorName = input.vendorName;
+    if (input.dueDate !== undefined) existing.dueDate = input.dueDate || undefined;
+    if (input.contractLink) existing.contractLink = input.contractLink;
+    if (input.status) {
+      existing.status = input.status;
+      existing.paidAt =
+        input.status === "PAID" ? existing.paidAt || new Date().toISOString() : undefined;
+    }
+    await writeJson(rows);
+    return normalize(existing);
+  }
+  const created = await addPayment({
+    workspaceId: input.workspaceId,
+    vendorId: input.vendorId,
+    vendorName: input.vendorName,
+    label: input.kind === "DEPOSIT" ? "Deposit" : input.kind === "FINAL" ? "Final" : "Payment",
+    kind: input.kind,
+    amount: input.amount,
+    dueDate: input.dueDate,
+    contractLink: input.contractLink,
+  });
+  if (input.status && input.status !== created.status) {
+    return (await patchPayment(created.id, { status: input.status })) || created;
+  }
+  return created;
+}
+
+export function paymentsForVendor(
+  payments: PaymentItem[],
+  vendor: { id: string; name: string }
+) {
+  const name = vendor.name.toLowerCase();
+  return payments.filter(
+    (p) => p.vendorId === vendor.id || (!p.vendorId && p.vendorName.toLowerCase() === name)
+  );
 }

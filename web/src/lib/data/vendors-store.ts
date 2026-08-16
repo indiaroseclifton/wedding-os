@@ -15,6 +15,7 @@ export type StoredVendor = {
   phone?: string;
   website?: string;
   notes?: string;
+  contractUrl?: string;
   directorySlug?: string;
   createdAt: string;
   updatedAt: string;

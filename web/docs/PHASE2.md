@@ -62,7 +62,7 @@
 - DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
 - Run of show by audience (couple / party / vendor / guests)
 
-## Wave 14 (done)
-- Floor plan seats people: unseated rail, tap or drag onto a table
-- Table chips show names + fill; inspect to unseat
-- Print room + roster
+## Wave 15 (done)
+- Vendor contract URL + deposit/final on the vendor card
+- Payments keyed by vendor id (rename-safe)
+- List shows “deposit due / paid”
