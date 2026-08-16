@@ -8,7 +8,7 @@ import { getBudget } from "@/lib/data/budget-store";
 import { flagCount } from "@/lib/data/contract-review";
 import { PLAYBOOKS } from "@/lib/data/diy-playbooks";
 import { hasMailingAddress, isPendingRsvp } from "@/lib/data/guest-mail";
-import type { StoredTask } from "@/lib/data/store";
+import { getDismissedWeek } from "@/lib/data/week-dismiss-store";
 
 export type WeekUrgency = "now" | "week" | "soon";
 
@@ -280,13 +280,15 @@ export async function loadThisWeek(
 
   const rank: Record<WeekUrgency, number> = { now: 0, week: 1, soon: 2 };
   items.sort((a, b) => rank[a.urgency] - rank[b.urgency]);
+  const dismissed = new Set(await getDismissedWeek(workspaceId));
+  const visible = items.filter((i) => !dismissed.has(i.id));
 
-  const now = items.filter((i) => i.urgency === "now").length;
-  const week = items.filter((i) => i.urgency === "week").length;
+  const now = visible.filter((i) => i.urgency === "now").length;
+  const week = visible.filter((i) => i.urgency === "week").length;
 
   return {
     days,
-    items: items.slice(0, 12),
+    items: visible.slice(0, 12),
     now,
     week,
     counts: {

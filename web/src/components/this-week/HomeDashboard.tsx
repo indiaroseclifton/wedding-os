@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
-import type { Suggestion } from "@/lib/smart-home";
+import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
 
 const QUICK = [
   { href: "/guests/new", label: "Add guest", line: "One name, or a plus-one", photo: "/brand/setting.jpg" },
@@ -86,30 +86,7 @@ export function HomeDashboard({
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <article className="rounded-2xl border border-line bg-surface p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">This Week</h2>
-            <Link href="/checklist" className="text-[11px] font-medium uppercase tracking-wide text-muted">
-              View all
-            </Link>
-          </div>
-          <ul className="mt-4 space-y-3">
-            {weekItems.slice(0, 4).map((item) => (
-              <li key={item.id}>
-                <Link href={item.href} className="flex items-start justify-between gap-3 text-sm">
-                  <span className="flex items-start gap-2">
-                    <span className="mt-0.5 inline-block h-4 w-4 rounded border border-line" />
-                    {item.title}
-                  </span>
-                  <span className="shrink-0 text-[11px] text-muted">
-                    {item.urgency === "now" ? "Today" : item.urgency === "week" ? "This week" : "Soon"}
-                  </span>
-                </Link>
-              </li>
-            ))}
-            {!weekItems.length && <li className="text-sm text-muted">You’re clear this week.</li>}
-          </ul>
-        </article>
+        <ThisWeekWidget items={weekItems} />
 
         <article className="rounded-2xl border border-line bg-surface p-5">
           <div className="flex items-center justify-between">
@@ -122,6 +99,11 @@ export function HomeDashboard({
           </div>
           <p className="mt-2 text-right text-[11px] text-muted">{pct}%</p>
         </article>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <RsvpWidget />
+        <PayWidget />
       </div>
 
       {suggestions.length > 0 && (
