@@ -13,6 +13,7 @@ import {
   type HandoffTemplate,
 } from "@/lib/data/handoffs-store";
 import { getMusic } from "@/lib/data/music-store";
+import { cuesAsHandoff, mergeCues } from "@/lib/dj-cues";
 import { dietarySections } from "@/lib/data/dietary";
 import { listVendors } from "@/lib/data/vendors-store";
 import { getTravel } from "@/lib/data/travel-store";
@@ -101,9 +102,7 @@ export async function POST(request: Request) {
           must_play: (music.mustPlay || []).join("\n"),
           do_not_play: (music.doNotPlay || []).join("\n"),
           tone_notes: music.notes || "",
-          music_moments: (music.moments || [])
-            .map((m) => (m.song ? `${m.label}: ${m.song}` : m.label))
-            .join("\n"),
+          music_moments: cuesAsHandoff(mergeCues(music.cues || music.moments)),
         },
       });
       const refreshed = await getPackage(pkg.id);

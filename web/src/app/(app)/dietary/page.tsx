@@ -47,6 +47,9 @@ export default async function DietaryPage() {
           <p className="mt-1 text-sm text-muted">Meals and allergies the caterer can actually cook from.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Link href="/dietary/packet" className="rounded-full border border-line px-4 py-2 text-sm">
+            Caterer packet
+          </Link>
           <PrintButton />
           <Link href="/handoffs" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
             Catering handoff

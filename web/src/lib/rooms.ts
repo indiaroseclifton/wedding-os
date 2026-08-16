@@ -63,10 +63,9 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
         { href: "/guests/import", label: "Import" },
       ],
     },
-    { href: "/seating", label: "Seating" },
-    { href: "/floorplan", label: "Floor plan" },
+    { href: "/seating", label: "Room planner" },
     { href: "/travel", label: "Travel" },
-    { href: "/dietary", label: "Dietary" },
+    { href: "/dietary", label: "Dietary", children: [{ href: "/dietary", label: "Rollup" }, { href: "/dietary/packet", label: "Caterer packet" }] },
     {
       href: "/site",
       label: "Guest site",
@@ -79,7 +78,7 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
   day: [
     { href: "/day-of", label: "Board" },
     { href: "/run-of-show", label: "Run of show" },
-    { href: "/music", label: "Music" },
+    { href: "/music", label: "Music", children: [{ href: "/music", label: "Cue book" }, { href: "/music/print", label: "DJ print" }] },
     { href: "/packet", label: "Packet" },
     { href: "/people", label: "People" },
     { href: "/attire", label: "Attire" },

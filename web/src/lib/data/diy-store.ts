@@ -42,6 +42,15 @@ export type FloralMockup = {
     z: number;
   }[];
   updatedAt: string;
+  kind?: "floral" | "table";
+  shape?: string;
+  seats?: number;
+  tables?: number;
+  runner?: boolean;
+  candles?: number;
+  buds?: number;
+  bowl?: boolean;
+  plates?: boolean;
 };
 
 export type StoredDiy = {
@@ -218,6 +227,40 @@ export async function pushFloralShop(
         bought: false,
         estEach: line.estEach,
         note: "From floral studio",
+      });
+    }
+  }
+  return patchProject(workspaceId, project.id, { shopping, tables });
+}
+
+export async function pushTableShop(
+  workspaceId: string,
+  lines: { label: string; qty: number; estEach: number }[],
+  tables: number
+) {
+  let current = await getDiy(workspaceId);
+  let project = current.projects.find((p) => p.playbookSlug === "table-decor");
+  if (!project) {
+    current = await startProject(workspaceId, { playbookSlug: "table-decor", tables });
+    project = current.projects.find((p) => p.playbookSlug === "table-decor");
+  }
+  if (!project) return current;
+  const shopping = [...project.shopping];
+  for (const line of lines) {
+    const qty = Math.max(1, Math.round(line.qty * Math.max(1, tables)));
+    const existing = shopping.find((s) => s.label === line.label);
+    if (existing) {
+      existing.qty = qty;
+      existing.estEach = line.estEach;
+    } else {
+      shopping.push({
+        id: randomUUID(),
+        label: line.label,
+        qty,
+        unit: "ea",
+        bought: false,
+        estEach: line.estEach,
+        note: "From tablescape studio",
       });
     }
   }

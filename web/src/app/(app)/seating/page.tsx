@@ -20,18 +20,12 @@ export default async function SeatingPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-serif text-4xl">Seating</h1>
+          <h1 className="font-serif text-4xl">Room planner</h1>
           <p className="mt-1 text-sm text-muted">
-            Drag a person onto a chair. Plus-ones take the next seats. Print when you’re happy.
+            Place the room, then the chairs. Dance floor, buffet, bar — then print escort cards.
           </p>
         </div>
         <div className="flex gap-2">
-          <Link
-            href="/floorplan"
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
-          >
-            Floor plan
-          </Link>
           <Link
             href="/guests"
             className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"

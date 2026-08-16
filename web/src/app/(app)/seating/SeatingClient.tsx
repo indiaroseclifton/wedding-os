@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { SeatingChart } from "./SeatingChart";
 import { SeatCanvas } from "./SeatCanvas";
+import { RoomCanvas } from "./RoomCanvas";
 import { PrintButton } from "@/components/ui/PrintButton";
 import {
   type SeatGuest,
@@ -28,7 +29,8 @@ export function SeatingClient({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showChart, setShowChart] = useState(false);
-  const [printMode, setPrintMode] = useState<"board" | "escort" | "cards">("board");
+  const [printMode, setPrintMode] = useState<"room" | "board" | "escort" | "cards">("room");
+  const [view, setView] = useState<"room" | "chairs">("room");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
@@ -226,6 +228,24 @@ export function SeatingClient({
         </div>
       </div>
 
+      <div className="flex flex-wrap gap-2 print:hidden">
+        {(["room", "chairs"] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setView(v)}
+            className={`min-h-11 rounded-full px-4 text-sm ${
+              view === v ? "bg-moss text-ivory" : "border border-line"
+            }`}
+          >
+            {v === "room" ? "Room" : "Chairs"}
+          </button>
+        ))}
+      </div>
+
+      {view === "room" ? (
+        <RoomCanvas tables={tables} guests={guests} selected={selected} onAssign={(ids, name) => assign(ids, name)} />
+      ) : (
       <section className="grid gap-6 rounded-2xl border border-line bg-surface/60 p-4 sm:grid-cols-2">
         {tables.map((t) => (
           <SeatCanvas
@@ -237,6 +257,7 @@ export function SeatingClient({
         ))}
         {!tables.length && <p className="text-sm text-muted">Add a table to place chairs.</p>}
       </section>
+      )}
 
       <div className="flex flex-wrap items-center gap-2 print:hidden">
         <button
@@ -259,6 +280,7 @@ export function SeatingClient({
           onChange={(e) => setPrintMode(e.target.value as typeof printMode)}
           className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
         >
+          <option value="room">Print: room</option>
           <option value="board">Print: board</option>
           <option value="escort">Print: escort list</option>
           <option value="cards">Print: table cards</option>

@@ -11,6 +11,7 @@ import {
   saveMockup,
   deleteMockup,
   pushFloralShop,
+  pushTableShop,
   startProject,
   toggleShopItem,
 } from "@/lib/data/diy-store";
@@ -86,6 +87,15 @@ export async function POST(request: Request) {
         vessel: String(body.vessel || "bouquet"),
         story: String(body.story || "linen"),
         pieces: Array.isArray(body.pieces) ? body.pieces : [],
+        kind: body.kind === "table" ? "table" : "floral",
+        shape: body.shape,
+        seats: body.seats,
+        tables: body.tables,
+        runner: body.runner,
+        candles: body.candles,
+        buds: body.buds,
+        bowl: body.bowl,
+        plates: body.plates,
       });
       return NextResponse.json({ diy });
     }
@@ -99,6 +109,19 @@ export async function POST(request: Request) {
         workspace.id,
         lines.map((l: { label?: string; qty?: number; estEach?: number }) => ({
           label: String(l.label || "Stems").slice(0, 80),
+          qty: Number(l.qty) || 1,
+          estEach: Number(l.estEach) || 0,
+        })),
+        Number(body.tables) || 1
+      );
+      return NextResponse.json({ diy });
+    }
+    if (body.action === "push_table") {
+      const lines = Array.isArray(body.lines) ? body.lines : [];
+      const diy = await pushTableShop(
+        workspace.id,
+        lines.map((l: { label?: string; qty?: number; estEach?: number }) => ({
+          label: String(l.label || "Item").slice(0, 80),
           qty: Number(l.qty) || 1,
           estEach: Number(l.estEach) || 0,
         })),

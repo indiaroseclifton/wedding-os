@@ -248,6 +248,7 @@ export type MusicCue = {
   who?: string;
   notes?: string;
   skip?: boolean;
+  energy?: number;
 };
 
 export function mergeCues(saved: MusicCue[] | { label: string; song?: string }[] | undefined): MusicCue[] {

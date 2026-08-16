@@ -1,49 +1,66 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { TABLE_KITS, TABLE_SHAPES, tableShop, type TableLook } from "@/lib/table-studio";
 
-const SHAPES = [
-  { id: "round", name: "Round 60\"" },
-  { id: "farm", name: "Farm table" },
-] as const;
-
-const KITS = [
-  { id: "linen", name: "Linen + taper", runner: true, candles: 4, bud: 3, plates: true },
-  { id: "garden", name: "Garden low bowl", runner: false, candles: 3, bud: 0, plates: true },
-  { id: "bare", name: "Wood + olive", runner: false, candles: 2, bud: 5, plates: true },
-] as const;
+type Saved = { id: string; title: string; kind?: string; shape?: string; seats?: number; tables?: number; runner?: boolean; candles?: number; buds?: number; bowl?: boolean; plates?: boolean };
 
 export function TableStudio() {
-  const [shape, setShape] = useState<(typeof SHAPES)[number]["id"]>("round");
-  const [seats, setSeats] = useState(8);
-  const [tables, setTables] = useState(10);
-  const [runner, setRunner] = useState(true);
-  const [candles, setCandles] = useState(4);
-  const [buds, setBuds] = useState(3);
-  const [bowl, setBowl] = useState(true);
-  const [plates, setPlates] = useState(true);
+  const [look, setLook] = useState<TableLook>({
+    shape: "round",
+    seats: 8,
+    tables: 10,
+    runner: true,
+    candles: 4,
+    buds: 3,
+    bowl: false,
+    plates: true,
+  });
+  const [title, setTitle] = useState("Head table look");
+  const [saved, setSaved] = useState<Saved[]>([]);
+  const [msg, setMsg] = useState<string | null>(null);
+  const shop = useMemo(() => tableShop(look), [look]);
 
-  const list = useMemo(() => {
-    const per = [
-      plates ? { label: "Place settings", qty: seats, est: 2.5 } : null,
-      runner ? { label: "Runner or linen", qty: 1, est: 18 } : null,
-      candles ? { label: "Tapers / votives", qty: candles, est: 1.2 } : null,
-      buds ? { label: "Bud vases + stems", qty: buds, est: 6 } : null,
-      bowl ? { label: "Low bowl centerpiece", qty: 1, est: 28 } : null,
-    ].filter(Boolean) as { label: string; qty: number; est: number }[];
-    const one = per.reduce((s, r) => s + r.qty * r.est, 0);
-    return { per, one, all: one * tables };
-  }, [seats, tables, runner, candles, buds, bowl, plates]);
+  useEffect(() => {
+    fetch("/api/diy")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setSaved((d?.diy?.mockups || []).filter((m: Saved) => m.kind === "table")))
+      .catch(() => {});
+  }, []);
 
   function applyKit(id: string) {
-    const k = KITS.find((x) => x.id === id);
+    const k = TABLE_KITS.find((x) => x.id === id);
     if (!k) return;
-    setRunner(k.runner);
-    setCandles(k.candles);
-    setBuds(k.bud);
-    setBowl(id === "garden");
-    setPlates(k.plates);
+    setLook((l) => ({ ...l, runner: k.runner, candles: k.candles, buds: k.buds, bowl: k.bowl, plates: k.plates }));
+  }
+
+  async function saveLook() {
+    setMsg(null);
+    const res = await fetch("/api/diy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "save_mockup", kind: "table", title, ...look, vessel: look.shape, story: "linen", pieces: [] }),
+    });
+    setMsg(res.ok ? "Look saved" : "Could not save");
+    if (res.ok) {
+      const d = await res.json();
+      setSaved((d.diy?.mockups || []).filter((m: Saved) => m.kind === "table"));
+    }
+  }
+
+  async function pushShop() {
+    setMsg(null);
+    const res = await fetch("/api/diy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "push_table",
+        tables: look.tables,
+        lines: shop.per.map((r) => ({ label: r.label, qty: r.qty, estEach: r.estEach })),
+      }),
+    });
+    setMsg(res.ok ? "On the table-decor shopping list" : "Could not push");
   }
 
   return (
@@ -52,18 +69,13 @@ export function TableStudio() {
         <p className="text-[11px] uppercase tracking-[0.2em] text-moss">DIY · Tablescape</p>
         <h1 className="mt-1 font-serif text-4xl">Set one table. Multiply it.</h1>
         <p className="mt-1 text-sm text-muted">
-          See the height, the candles, the talk-over line — then the shopping math for every table.
+          Height, candles, talk-over line — then shopping for every table. Save the look like floral.
         </p>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {KITS.map((k) => (
-          <button
-            key={k.id}
-            type="button"
-            onClick={() => applyKit(k.id)}
-            className="rounded-full border border-line px-3 py-1.5 text-xs"
-          >
+        {TABLE_KITS.map((k) => (
+          <button key={k.id} type="button" onClick={() => applyKit(k.id)} className="min-h-11 rounded-full border border-line px-3 text-xs">
             {k.name}
           </button>
         ))}
@@ -71,152 +83,124 @@ export function TableStudio() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="relative aspect-[5/4] overflow-hidden rounded-[1.6rem] border border-line bg-[#c4b49a]">
-          <img src="/brand/tablescape.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
+          <img src="/brand/rooms/guests.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />
           <div
             className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#efe6d4] shadow-inner ${
-              shape === "round" ? "h-[72%] w-[72%] rounded-full" : "h-[58%] w-[86%] rounded-xl"
+              look.shape === "round" ? "h-[72%] w-[72%] rounded-full" : "h-[58%] w-[86%] rounded-xl"
             }`}
           >
-            {runner && shape === "farm" && (
-              <div className="absolute inset-x-[12%] inset-y-[38%] rounded-sm bg-[#d9cbb4]" />
+            {look.runner && look.shape === "farm" && (
+              <div className="absolute inset-y-[12%] left-1/2 w-[18%] -translate-x-1/2 bg-[#c9b7a0]/80" />
             )}
-            {bowl && (
-              <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-4 border-[#c9b89a]">
-                <img src="/brand/flowers.jpg" alt="" className="h-full w-full object-cover" />
+            {look.bowl && (
+              <div className="absolute left-1/2 top-1/2 h-[28%] w-[28%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full">
+                <img src="/diy/floral/rose.jpg" alt="" className="h-full w-full object-cover" />
               </div>
             )}
-            {Array.from({ length: buds }).map((_, i) => {
-              const a = (i / Math.max(1, buds)) * Math.PI * 2;
-              return (
-                <div
-                  key={`b${i}`}
-                  className="absolute h-6 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#8a9a86]"
-                  style={{
-                    left: `${50 + Math.cos(a) * 18}%`,
-                    top: `${50 + Math.sin(a) * 16}%`,
-                  }}
-                />
-              );
-            })}
-            {Array.from({ length: candles }).map((_, i) => {
-              const a = (i / Math.max(1, candles)) * Math.PI * 2 + 0.4;
-              return (
-                <div
-                  key={`c${i}`}
-                  className="absolute h-5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-[#f4efe6]"
-                  style={{
-                    left: `${50 + Math.cos(a) * 12}%`,
-                    top: `${50 + Math.sin(a) * 10}%`,
-                  }}
-                />
-              );
-            })}
-            {plates &&
-              Array.from({ length: seats }).map((_, i) => {
-                const a = (i / seats) * Math.PI * 2 - Math.PI / 2;
-                const r = shape === "round" ? 42 : 38;
-                return (
-                  <div
-                    key={`p${i}`}
-                    className="absolute h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#d7cbb4] bg-[#f7f2e8]"
-                    style={{
-                      left: `${50 + Math.cos(a) * r}%`,
-                      top: `${50 + Math.sin(a) * (shape === "round" ? r : 32)}%`,
-                    }}
-                  />
-                );
-              })}
-          </div>
-        </div>
-
-        <aside className="space-y-3 text-sm">
-          <div className="flex gap-2">
-            {SHAPES.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setShape(s.id)}
-                className={`rounded-full px-3 py-1.5 text-xs ${
-                  shape === s.id ? "bg-moss text-ivory" : "border border-line"
-                }`}
-              >
-                {s.name}
-              </button>
+            {Array.from({ length: look.candles }).map((_, i) => (
+              <span
+                key={i}
+                className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ivory shadow"
+                style={{
+                  left: `${50 + Math.cos((i / look.candles) * Math.PI * 2) * 22}%`,
+                  top: `${50 + Math.sin((i / look.candles) * Math.PI * 2) * 22}%`,
+                }}
+              />
             ))}
           </div>
+        </div>
+        <aside className="space-y-3">
           <label className="block text-xs">
-            Seats
-            <input
-              type="range"
-              min={4}
-              max={12}
-              value={seats}
-              onChange={(e) => setSeats(Number(e.target.value))}
-              className="w-full"
-            />
-            {seats}
-          </label>
-          <label className="flex items-center gap-2 text-xs">
-            <input type="checkbox" checked={plates} onChange={(e) => setPlates(e.target.checked)} />
-            Place settings
-          </label>
-          <label className="flex items-center gap-2 text-xs">
-            <input type="checkbox" checked={runner} onChange={(e) => setRunner(e.target.checked)} />
-            Runner
-          </label>
-          <label className="flex items-center gap-2 text-xs">
-            <input type="checkbox" checked={bowl} onChange={(e) => setBowl(e.target.checked)} />
-            Low bowl
+            Shape
+            <select
+              value={look.shape}
+              onChange={(e) => setLook((l) => ({ ...l, shape: e.target.value as TableLook["shape"] }))}
+              className="mt-1 block min-h-11 w-full rounded-xl border border-line px-2"
+            >
+              {TABLE_SHAPES.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
           </label>
           <label className="block text-xs">
-            Candles {candles}
-            <input
-              type="range"
-              min={0}
-              max={8}
-              value={candles}
-              onChange={(e) => setCandles(Number(e.target.value))}
-              className="w-full"
-            />
-          </label>
-          <label className="block text-xs">
-            Bud vases {buds}
-            <input
-              type="range"
-              min={0}
-              max={7}
-              value={buds}
-              onChange={(e) => setBuds(Number(e.target.value))}
-              className="w-full"
-            />
+            Seats / table
+            <input type="number" min={4} max={16} value={look.seats} onChange={(e) => setLook((l) => ({ ...l, seats: Number(e.target.value) || 8 }))} className="mt-1 block min-h-11 w-full rounded-xl border border-line px-2" />
           </label>
           <label className="block text-xs">
             Tables
-            <input
-              type="number"
-              min={1}
-              value={tables}
-              onChange={(e) => setTables(Number(e.target.value) || 1)}
-              className="mt-1 w-full rounded-lg border border-line px-2 py-1.5"
-            />
+            <input type="number" min={1} max={80} value={look.tables} onChange={(e) => setLook((l) => ({ ...l, tables: Number(e.target.value) || 1 }))} className="mt-1 block min-h-11 w-full rounded-xl border border-line px-2" />
           </label>
-          <ul className="space-y-1 text-xs text-muted">
-            {list.per.map((r) => (
-              <li key={r.label}>
-                {r.qty} × {r.label}
-              </li>
-            ))}
-          </ul>
-          <p className="font-serif text-2xl">${list.one.toFixed(0)} / table</p>
-          <p className="text-sm text-muted">${list.all.toFixed(0)} for {tables} tables</p>
-          <Link href="/diy/studio/floral" className="block text-xs underline">
-            Build the bowl in Floral
-          </Link>
-          <Link href="/diy/table-decor" className="block text-xs underline">
-            Table-decor playbook
-          </Link>
+          <label className="flex items-center gap-2 text-xs">
+            <input type="checkbox" checked={look.plates} onChange={(e) => setLook((l) => ({ ...l, plates: e.target.checked }))} />
+            Place settings
+          </label>
+          <label className="flex items-center gap-2 text-xs">
+            <input type="checkbox" checked={look.runner} onChange={(e) => setLook((l) => ({ ...l, runner: e.target.checked }))} />
+            Runner
+          </label>
+          <label className="block text-xs">
+            Candles
+            <input type="range" min={0} max={8} value={look.candles} onChange={(e) => setLook((l) => ({ ...l, candles: Number(e.target.value) }))} />
+          </label>
+          <label className="block text-xs">
+            Bud vases
+            <input type="range" min={0} max={8} value={look.buds} onChange={(e) => setLook((l) => ({ ...l, buds: Number(e.target.value) }))} />
+          </label>
+          <label className="flex items-center gap-2 text-xs">
+            <input type="checkbox" checked={look.bowl} onChange={(e) => setLook((l) => ({ ...l, bowl: e.target.checked }))} />
+            Low bowl
+          </label>
         </aside>
       </div>
+
+      <section className="glass-panel rounded-2xl p-4">
+        <p className="text-sm font-medium">${shop.one.toFixed(0)} per table · ${shop.all.toFixed(0)} for {look.tables}</p>
+        <ul className="mt-2 space-y-1 text-xs text-muted">
+          {shop.per.map((r) => (
+            <li key={r.label}>{r.label} × {r.qty} · ${r.estEach}</li>
+          ))}
+        </ul>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="min-h-11 rounded-xl border border-line px-3 text-sm" />
+          <button type="button" onClick={saveLook} className="min-h-11 rounded-full bg-moss px-4 text-xs text-ivory">Save look</button>
+          <button type="button" onClick={pushShop} className="min-h-11 rounded-full border border-line px-4 text-xs">Add to shop</button>
+          {look.bowl && (
+            <Link href="/diy/studio/floral" scroll={false} className="inline-flex min-h-11 items-center text-xs underline">
+              Open floral for the bowl
+            </Link>
+          )}
+        </div>
+        {msg && <p role="status" className="mt-2 text-xs text-moss">{msg}</p>}
+      </section>
+
+      {saved.length > 0 && (
+        <section>
+          <p className="mb-2 text-xs uppercase tracking-wide text-muted">Your looks</p>
+          <div className="flex flex-wrap gap-2">
+            {saved.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() =>
+                  setLook({
+                    shape: m.shape === "farm" ? "farm" : "round",
+                    seats: m.seats || 8,
+                    tables: m.tables || 10,
+                    runner: Boolean(m.runner),
+                    candles: m.candles || 0,
+                    buds: m.buds || 0,
+                    bowl: Boolean(m.bowl),
+                    plates: m.plates !== false,
+                  })
+                }
+                className="rounded-full border border-line px-3 py-2 text-xs"
+              >
+                {m.title}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

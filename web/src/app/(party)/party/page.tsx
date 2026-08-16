@@ -123,6 +123,20 @@ export default async function PartyHomePage() {
           </p>
         </Link>
         <Link
+          href="/party/stay"
+          className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+        >
+          <p className="text-sm font-semibold">Stay</p>
+          <p className="text-xs text-slate-500">Hotel block, shuttle, parking</p>
+        </Link>
+        <Link
+          href="/party/speech"
+          className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+        >
+          <p className="text-sm font-semibold">Speech</p>
+          <p className="text-xs text-slate-500">Draft and mark ready</p>
+        </Link>
+        <Link
           href="/party/day-of"
           className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
         >

@@ -5,7 +5,7 @@ import {
   getWorkspaceGuests,
   getWorkspaceTables,
 } from "@/lib/data/workspace";
-import { getFloorPlan, savePositions } from "@/lib/data/floorplan-store";
+import { getFloorPlan, saveFloorPlan } from "@/lib/data/floorplan-store";
 
 export async function GET() {
   const access = await requireCoupleApi();
@@ -25,11 +25,13 @@ export async function GET() {
         id: g.id,
         name: g.name,
         tableLabel: g.tableLabel || null,
+        seatIndex: g.seatIndex ?? null,
         dietary: g.dietary || null,
         rsvp: g.rsvp,
         side: g.side || null,
         partyName: g.partyName || null,
         plusOnes: g.plusOnes || 0,
+        plusOneNames: g.plusOneNames || [],
       })),
   });
 }
@@ -39,7 +41,10 @@ export async function POST(request: Request) {
   if (!access.ok) return access.response;
   const body = await request.json();
   const { workspace } = await ensureDemoWorkspace();
-  const positions = Array.isArray(body.positions) ? body.positions : [];
-  const floor = await savePositions(workspace.id, positions);
+  const floor = await saveFloorPlan(workspace.id, {
+    positions: Array.isArray(body.positions) ? body.positions : undefined,
+    objects: Array.isArray(body.objects) ? body.objects : undefined,
+    room: body.room && typeof body.room === "object" ? body.room : undefined,
+  });
   return NextResponse.json({ floor });
 }

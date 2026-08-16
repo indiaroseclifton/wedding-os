@@ -8,15 +8,17 @@ import {
 import { listInvites } from "@/lib/data/store";
 import { getAttire } from "@/lib/data/attire-store";
 import { getDayOf } from "@/lib/data/dayof-store";
+import { getSpeeches } from "@/lib/data/speech-store";
 
 export default async function PartyHubPage() {
   const { workspace } = await ensureDemoWorkspace();
-  const [members, invites, attire, tasks, dayOf] = await Promise.all([
+  const [members, invites, attire, tasks, dayOf, speeches] = await Promise.all([
     getWorkspaceMembers(workspace.id),
     listInvites(workspace.id),
     getAttire(workspace.id),
     getWorkspaceTasks(workspace.id),
     getDayOf(workspace.id),
+    getSpeeches(workspace.id),
   ]);
 
   const party = members.filter((m) => m.role === "WEDDING_PARTY");
@@ -28,6 +30,7 @@ export default async function PartyHubPage() {
       const theirs = tasks.filter((t) => t.ownerId === m.userId);
       const open = theirs.filter((t) => t.status !== "DONE").length;
       const check = dayOf.checkIns.find((c) => c.name.toLowerCase() === m.name.toLowerCase());
+      const speech = speeches.rows.find((s) => s.memberKey === m.name.toLowerCase());
       return {
         key: m.id,
         name: m.name,
@@ -38,6 +41,7 @@ export default async function PartyHubPage() {
         size: dress?.size,
         open,
         checkIn: check?.status,
+        speech: speech?.status,
       };
     }),
     ...pending.map((i) => ({
@@ -50,6 +54,7 @@ export default async function PartyHubPage() {
       size: undefined as string | undefined,
       open: 0,
       checkIn: undefined as string | undefined,
+      speech: undefined as string | undefined,
     })),
   ];
 
@@ -86,6 +91,10 @@ export default async function PartyHubPage() {
               {r.size ? ` · ${r.size}` : ""}
             </p>
             <p className="text-sm text-ink-soft">{r.open} open</p>
+            <p className="text-xs text-muted">
+              Speech {r.speech ? r.speech.replace("_", " ") : "—"}
+              {r.checkIn ? ` · day ${r.checkIn.toLowerCase()}` : ""}
+            </p>
           </li>
         ))}
         {!rows.length && (

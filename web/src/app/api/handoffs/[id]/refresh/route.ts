@@ -3,6 +3,7 @@ import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { getPackage, updatePackage } from "@/lib/data/handoffs-store";
 import { getMusic } from "@/lib/data/music-store";
+import { cuesAsHandoff, mergeCues } from "@/lib/dj-cues";
 
 function dietarySections(guests: Awaited<ReturnType<typeof getWorkspaceGuests>>) {
   const attending = guests.filter((g) => g.rsvp !== "NO");
@@ -50,9 +51,7 @@ export async function POST(
       spotify_playlist: music.spotify?.playlistUrl || sections.spotify_playlist || "",
       apple_music_playlist: music.appleMusic?.playlistUrl || sections.apple_music_playlist || "",
       tone_notes: music.notes || sections.tone_notes || "",
-      music_moments: (music.moments || [])
-        .map((m) => (m.song ? `${m.label}: ${m.song}` : m.label))
-        .join("\n"),
+      music_moments: cuesAsHandoff(mergeCues(music.cues || music.moments)),
     };
     source = "music";
   } else if (pkg.template === "CATERING") {

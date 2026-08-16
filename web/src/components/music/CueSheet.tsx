@@ -118,6 +118,18 @@ export function CueSheet({
                         placeholder="Fade at 1:30, start at the chorus, announce as…"
                         className="w-full rounded-lg border border-line bg-paper/50 px-3 py-2 text-sm"
                       />
+                      <label className="block text-xs">
+                        Energy {row.energy || 3}
+                        <input
+                          type="range"
+                          min={1}
+                          max={5}
+                          aria-label={`Energy for ${def.label}`}
+                          value={row.energy || 3}
+                          onChange={(e) => patch(def.id, { energy: Number(e.target.value) })}
+                          className="mt-1 w-full"
+                        />
+                      </label>
                       <div>
                         <p className="mb-1 text-[11px] uppercase tracking-wider text-muted">Inspiration</p>
                         <div className="flex flex-wrap gap-1.5">
@@ -145,6 +157,8 @@ export function CueSheet({
           );
         })}
       </ul>
+
+      <EnergyGraph cues={cues} />
 
       <div className="space-y-3 rounded-2xl border border-line bg-surface/70 p-4">
         <p className="text-sm font-medium">How the night should feel</p>
@@ -175,6 +189,31 @@ export function CueSheet({
           No line dances ({DJ_BANNED_STARTERS.slice(0, 3).join(", ")}…)
         </label>
       </div>
+    </div>
+  );
+}
+
+function EnergyGraph({ cues }: { cues: MusicCue[] }) {
+  const pts = DJ_CUES.map((d, i) => {
+    const row = cues.find((c) => c.id === d.id);
+    return { x: i, y: row?.skip ? 0 : row?.energy || 3, skip: !!row?.skip, label: d.label };
+  });
+  const w = 320;
+  const h = 72;
+  const path = pts
+    .map((p, i) => {
+      const x = (i / Math.max(1, pts.length - 1)) * w;
+      const y = h - (p.y / 5) * (h - 8) - 4;
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
+  return (
+    <div className="rounded-2xl border border-line bg-surface/70 p-4">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted">Night energy</p>
+      <svg viewBox={`0 0 ${w} ${h}`} className="mt-2 h-16 w-full" aria-hidden>
+        <path d={path} fill="none" stroke="currentColor" className="text-moss" strokeWidth="2" />
+      </svg>
+      <p className="text-[11px] text-muted">Prelude quiet → dancing loud. Skip is a flat zero.</p>
     </div>
   );
 }
