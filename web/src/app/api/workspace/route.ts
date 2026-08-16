@@ -44,6 +44,11 @@ export async function POST(request: Request) {
       kidsWelcome: typeof body.kidsWelcome === "boolean" ? body.kidsWelcome : undefined,
       unplugged: typeof body.unplugged === "boolean" ? body.unplugged : undefined,
       guestSitePublic: typeof body.guestSitePublic === "boolean" ? body.guestSitePublic : undefined,
+      onboarded: typeof body.onboarded === "boolean" ? body.onboarded : undefined,
+      diyBias:
+        body.diyBias === "hire" || body.diyBias === "diy" || body.diyBias === "mix"
+          ? body.diyBias
+          : undefined,
       defaultPlusOnes:
         typeof body.defaultPlusOnes === "number" ? Math.max(0, Math.min(4, body.defaultPlusOnes)) : undefined,
     });

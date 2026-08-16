@@ -92,6 +92,7 @@ export type StoredGuest = {
   meal?: string;
   rsvpToken?: string;
   tableLabel?: string;
+  seatIndex?: number;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -482,13 +483,37 @@ export async function assignGuestToTable(guestId: string, tableName: string | nu
   return updateGuest(guestId, { tableLabel: tableName || undefined });
 }
 
-export async function assignGuestsToTable(guestIds: string[], tableName: string | null) {
+export async function assignGuestsToTable(
+  guestIds: string[],
+  tableName: string | null,
+  seatIndex?: number
+) {
   const rows = await readJson<StoredGuest>(guestsFile);
   const now = new Date().toISOString();
   const ids = new Set(guestIds);
+  const taken = new Set(
+    rows
+      .filter((r) => r.tableLabel === tableName && r.seatIndex != null && !ids.has(r.id))
+      .map((r) => r.seatIndex as number)
+  );
+  let next = typeof seatIndex === "number" ? seatIndex : 0;
+  while (taken.has(next)) next += 1;
   for (const row of rows) {
     if (!ids.has(row.id)) continue;
-    row.tableLabel = tableName || undefined;
+    if (!tableName) {
+      row.tableLabel = undefined;
+      row.seatIndex = undefined;
+    } else {
+      row.tableLabel = tableName;
+      if (typeof seatIndex === "number" && guestIds.length === 1) {
+        row.seatIndex = seatIndex;
+      } else {
+        while (taken.has(next)) next += 1;
+        row.seatIndex = next;
+        taken.add(next);
+        next += 1 + Math.max(0, row.plusOnes || 0);
+      }
+    }
     row.updatedAt = now;
   }
   await writeJson(guestsFile, rows);
@@ -584,6 +609,8 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
     defaultPlusOnes: row.defaultPlusOnes,
     timezone: row.timezone,
     guestSitePublic: row.guestSitePublic,
+    onboarded: row.onboarded === true,
+    diyBias: row.diyBias,
   };
 }
 

@@ -184,8 +184,12 @@ export async function seatGuest(guestId: string, tableName: string | null) {
   return assignGuestToTable(guestId, tableName);
 }
 
-export async function seatGuests(guestIds: string[], tableName: string | null) {
-  return assignGuestsToTable(guestIds, tableName);
+export async function seatGuests(
+  guestIds: string[],
+  tableName: string | null,
+  seatIndex?: number
+) {
+  return assignGuestsToTable(guestIds, tableName, seatIndex);
 }
 
 export async function remapSeats(

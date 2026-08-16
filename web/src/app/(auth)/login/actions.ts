@@ -12,7 +12,7 @@ export async function sendMagicLink(formData: FormData) {
     return { error: "Enter a valid email." };
   }
   try {
-    await signIn("resend", { email, redirectTo: "/dashboard" });
+    await signIn("resend", { email, redirectTo: "/onboard" });
   } catch (error) {
     const digest =
       typeof error === "object" && error && "digest" in error

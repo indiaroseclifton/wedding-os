@@ -13,66 +13,10 @@ import {
   shortWeddingDate,
 } from "@/lib/visual-rooms";
 
+import { Icon } from "@/components/icons";
+
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
-}
-
-function NavIcon({ name }: { name: string }) {
-  const cn = "h-[18px] w-[18px]";
-  if (name === "home") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
-        <path d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-8.5Z" />
-      </svg>
-    );
-  }
-  if (name === "guests") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
-        <circle cx="9" cy="8" r="3" />
-        <path d="M3.5 19a5.5 5.5 0 0 1 11 0" />
-        <circle cx="17" cy="9" r="2.2" />
-        <path d="M16 19a4.5 4.5 0 0 1 5-4.4" />
-      </svg>
-    );
-  }
-  if (name === "vendors") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
-        <path d="M4 10h16l-1 10H5L4 10Z" />
-        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-      </svg>
-    );
-  }
-  if (name === "planning") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
-        <rect x="4" y="5" width="16" height="15" rx="2" />
-        <path d="M8 3v4M16 3v4M4 10h16" />
-      </svg>
-    );
-  }
-  if (name === "day") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
-      </svg>
-    );
-  }
-  if (name === "budget") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
-        <rect x="3" y="6" width="18" height="13" rx="2" />
-        <path d="M3 10h18M8 15h3" />
-      </svg>
-    );
-  }
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
-      <path d="M12 5v14M6 9h4l2 3 2-3h4" />
-    </svg>
-  );
 }
 
 export function AppShell({
@@ -123,7 +67,7 @@ export function AppShell({
               on ? "bg-white/70 font-medium text-ink shadow-sm backdrop-blur" : "text-ink-soft hover:bg-white/40"
             }`}
           >
-            <NavIcon name={item.icon} />
+            <Icon name={item.icon} />
             {item.label}
           </Link>
         );
@@ -254,7 +198,7 @@ export function AppShell({
                     on ? "text-moss" : "text-muted"
                   }`}
                 >
-                  <NavIcon name={tab.icon} />
+                  <Icon name={tab.icon} />
                   {tab.label}
                 </Link>
               </li>

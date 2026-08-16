@@ -58,6 +58,8 @@ export type WorkspacePrefs = {
   defaultPlusOnes?: number;
   timezone?: string;
   guestSitePublic?: boolean;
+  onboarded?: boolean;
+  diyBias?: "hire" | "diy" | "mix";
 };
 
 export function packsForFaith(faith?: string, extra?: string[]) {

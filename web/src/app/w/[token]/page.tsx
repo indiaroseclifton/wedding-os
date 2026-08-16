@@ -9,6 +9,7 @@ import { listEvents } from "@/lib/data/events-store";
 import { slotTitle, slotVisible } from "@/lib/data/run-of-show";
 import { formatRange } from "@/lib/data/run-of-show";
 import { GuestHero } from "@/components/site/GuestHero";
+import { Icon } from "@/components/icons";
 import { DEMO_WORKSPACE } from "@/lib/data/workspace";
 
 function prettyDate(iso?: string) {
@@ -43,8 +44,13 @@ export default async function WeddingSitePage({
   const date = prettyDate(meta.weddingDate);
 
   return (
-    <div className="min-h-screen bg-paper text-ink">
-      <GuestHero names={names} date={date} location={meta.location} />
+    <div className="min-h-screen bg-paper text-ink" data-theme={meta.theme || "linen"}>
+      <GuestHero
+        names={names}
+        date={date}
+        location={meta.location}
+        coverUrl={meta.coverUrl}
+      />
       <main className="mx-auto max-w-xl px-5 py-10 sm:py-12">
 
         {site.headline && (
@@ -70,7 +76,9 @@ export default async function WeddingSitePage({
 
         {site.scheduleNote && (
           <section className="mt-12">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Day of</h2>
+            <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
+              <Icon name="sun" className="h-3.5 w-3.5" /> Day of
+            </h2>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-ink-soft">
               {site.scheduleNote}
             </p>
@@ -91,7 +99,9 @@ export default async function WeddingSitePage({
         )}
         {!site.scheduleNote && guestSlots.length > 0 && (
           <section className="mt-12">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Day of</h2>
+            <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
+              <Icon name="sun" className="h-3.5 w-3.5" /> Day of
+            </h2>
             <ol className="mt-4 space-y-2">
               {guestSlots.map((s) => (
                 <li key={s.id} className="flex gap-3 text-sm">
@@ -105,8 +115,8 @@ export default async function WeddingSitePage({
 
         {extraEvents.length > 0 && (
           <section className="mt-12">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted">
-              Also this weekend
+            <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
+              <Icon name="calendar" className="h-3.5 w-3.5" /> Also this weekend
             </h2>
             <ul className="mt-3 space-y-2">
               {extraEvents.map((ev) => (
@@ -123,16 +133,25 @@ export default async function WeddingSitePage({
 
         {site.dressCode && (
           <section className="mt-8">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted">
-              What to wear
+            <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
+              <Icon name="shirt" className="h-3.5 w-3.5" /> What to wear
             </h2>
             <p className="mt-2 whitespace-pre-wrap text-sm text-ink-soft">{site.dressCode}</p>
+          </section>
+        )}
+        {(meta.unplugged || meta.kidsWelcome === false || meta.formality) && (
+          <section className="mt-8 grid gap-2 text-sm text-ink-soft">
+            {meta.formality && <p>Dress: {meta.formality}</p>}
+            {meta.unplugged && <p>Unplugged ceremony — phones down, photographer’s got it.</p>}
+            {meta.kidsWelcome === false && <p>Adults-only reception.</p>}
           </section>
         )}
 
         {travel && (travel.hotels.length > 0 || travel.airport || travel.shuttle) && (
           <section className="mt-8">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Travel</h2>
+            <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
+              <Icon name="plane" className="h-3.5 w-3.5" /> Travel
+            </h2>
             {travel.airport && <p className="mt-2 text-sm">{travel.airport}</p>}
             {travel.shuttle && <p className="mt-1 text-sm">{travel.shuttle}</p>}
             {travel.parking && <p className="mt-1 text-sm">{travel.parking}</p>}
@@ -159,7 +178,9 @@ export default async function WeddingSitePage({
 
         {registry && registry.links.length > 0 && (
           <section className="mt-8">
-            <h2 className="text-xs font-medium uppercase tracking-wide text-muted">Registry</h2>
+            <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
+              <Icon name="gift" className="h-3.5 w-3.5" /> Registry
+            </h2>
             <ul className="mt-3 space-y-1 text-sm">
               {registry.links.map((l) => (
                 <li key={l.url}>

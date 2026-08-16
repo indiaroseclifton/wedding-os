@@ -3,6 +3,7 @@ import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
 import type { Suggestion } from "@/lib/smart-home";
 import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
+import { Icon } from "@/components/icons";
 
 const QUICK = [
   { href: "/guests/new", label: "Add guest", line: "One name, or a plus-one", photo: "/brand/setting.jpg" },
@@ -22,6 +23,7 @@ export function HomeDashboard({
   brief,
   next,
   suggestions,
+  onboarded,
 }: {
   days: number | null;
   coverUrl: string;
@@ -31,6 +33,7 @@ export function HomeDashboard({
   brief: string;
   next: WeekItem | null;
   suggestions: Suggestion[];
+  onboarded?: boolean;
 }) {
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
   const headline =
@@ -39,23 +42,17 @@ export function HomeDashboard({
 
   return (
     <div className="space-y-6">
-      <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-moss/20 bg-moss-soft/60 px-4 py-3 text-sm">
-        <p>
-          <span className="font-medium">New on the desk — </span>
-          DJ cue sheet, themes, phone import, and a public vendor marketplace.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/music" className="rounded-full bg-moss px-3 py-1 text-xs font-medium text-ivory">
-            Music cues
+      {!onboarded && (
+        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-moss/25 bg-moss-soft px-4 py-3 text-sm">
+          <p className="flex items-center gap-2">
+            <Icon name="spark" />
+            Four questions and the desk builds around your wedding.
+          </p>
+          <Link href="/onboard" className="rounded-full bg-moss px-3 py-1 text-xs font-medium text-ivory">
+            Start setup
           </Link>
-          <Link href="/settings" className="rounded-full border border-line px-3 py-1 text-xs">
-            Themes
-          </Link>
-          <Link href="/discover" className="rounded-full border border-line px-3 py-1 text-xs">
-            Discover
-          </Link>
-        </div>
-      </aside>
+        </aside>
+      )}
       <section className="relative overflow-hidden rounded-[1.6rem]">
         <img src={coverUrl} alt="" className="h-56 w-full object-cover object-center sm:h-72" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
@@ -153,12 +150,15 @@ export function HomeDashboard({
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {VISUAL_ROOMS.map((room) => (
             <Link key={room.href} href={room.href} className="group text-center">
-              <div className="overflow-hidden rounded-2xl">
+              <div className="relative overflow-hidden rounded-2xl">
                 <img
                   src={room.photo}
                   alt=""
                   className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
                 />
+                <span className="absolute bottom-1.5 left-1.5 rounded-full bg-paper/80 p-1 text-ink backdrop-blur">
+                  <Icon name={room.icon} className="h-3.5 w-3.5" />
+                </span>
               </div>
               <p className="mt-1.5 text-[11px] font-medium">{room.label}</p>
             </Link>

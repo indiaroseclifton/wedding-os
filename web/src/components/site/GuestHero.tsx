@@ -6,22 +6,24 @@ export function GuestHero({
   names,
   date,
   location,
+  coverUrl,
 }: {
   names: string;
   date?: string | null;
   location?: string;
+  coverUrl?: string;
 }) {
   return (
-    <div className="relative h-[52vh] min-h-[280px] overflow-hidden">
+    <div className="relative h-[56vh] min-h-[300px] overflow-hidden">
       <motion.img
-        src="/brand/garden.jpg"
+        src={coverUrl || "/brand/garden.jpg"}
         alt=""
         initial={{ scale: 1.08 }}
         animate={{ scale: 1 }}
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
         className="absolute inset-0 h-full w-full object-cover object-center"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/20 to-ink/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/25 to-ink/30" />
       <motion.div
         variants={stagger}
         initial="hidden"

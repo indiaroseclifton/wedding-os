@@ -22,7 +22,11 @@ export async function POST(request: Request) {
         : [];
     if (!ids.length) return NextResponse.json({ error: "No guests" }, { status: 400 });
     const tableName = body.tableName == null || body.tableName === "" ? null : String(body.tableName);
-    await seatGuests(ids, tableName);
+    await seatGuests(
+      ids,
+      tableName,
+      typeof body.seatIndex === "number" ? body.seatIndex : undefined
+    );
     const [tables, guests] = await Promise.all([
       getWorkspaceTables(workspace.id),
       getWorkspaceGuests(workspace.id),

@@ -2,6 +2,7 @@ export type SeatGuest = {
   id: string;
   name: string;
   tableLabel?: string | null;
+  seatIndex?: number | null;
   dietary?: string | null;
   rsvp: string;
   side?: string | null;

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { SeatingChart } from "./SeatingChart";
+import { SeatCanvas } from "./SeatCanvas";
 import { PrintButton } from "@/components/ui/PrintButton";
 import {
   type SeatGuest,
@@ -71,6 +72,7 @@ export function SeatingClient({
             side: g.side || null,
             partyName: g.partyName || null,
             plusOnes: g.plusOnes || 0,
+            seatIndex: g.seatIndex ?? null,
           }))
       );
     }
@@ -97,7 +99,7 @@ export function SeatingClient({
     }
   }
 
-  async function assign(guestIds: string[], tableName: string | null) {
+  async function assign(guestIds: string[], tableName: string | null, seatIndex?: number) {
     if (!guestIds.length) return;
     setBusy(true);
     setError(null);
@@ -105,7 +107,7 @@ export function SeatingClient({
       const res = await fetch("/api/seating", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "assign", guestIds, tableName }),
+        body: JSON.stringify({ action: "assign", guestIds, tableName, seatIndex }),
       });
       if (!res.ok) throw new Error("Could not assign");
       const data = await res.json();
@@ -222,6 +224,18 @@ export function SeatingClient({
           <p className="text-xs text-slate-500">Still open</p>
         </div>
       </div>
+
+      <section className="grid gap-6 rounded-2xl border border-line bg-surface/60 p-4 sm:grid-cols-2">
+        {tables.map((t) => (
+          <SeatCanvas
+            key={t.id}
+            table={t}
+            guests={guests}
+            onDropSeat={(id, tableName, seatIndex) => assign([id], tableName, seatIndex)}
+          />
+        ))}
+        {!tables.length && <p className="text-sm text-muted">Add a table to place chairs.</p>}
+      </section>
 
       <div className="flex flex-wrap items-center gap-2 print:hidden">
         <button
@@ -377,7 +391,10 @@ export function SeatingClient({
                         <button
                           type="button"
                           draggable
-                          onDragStart={(e) => e.dataTransfer.setData("text/plain", g.id)}
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData("text/plain", g.id);
+                            e.dataTransfer.setData("text/guest-id", g.id);
+                          }}
                           onClick={() => toggle(g.id)}
                           className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs ${
                             selected.includes(g.id)

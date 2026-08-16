@@ -20,9 +20,9 @@ export default async function SeatingPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Seating</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Drag or tap people onto tables. Households stay together. Plus-ones count as seats.
+          <h1 className="font-serif text-4xl">Seating</h1>
+          <p className="mt-1 text-sm text-muted">
+            Drag a person onto a chair. Plus-ones take the next seats. Print when you’re happy.
           </p>
         </div>
         <div className="flex gap-2">
@@ -65,6 +65,7 @@ export default async function SeatingPage() {
             side: g.side || null,
             partyName: g.partyName || null,
             plusOnes: g.plusOnes || 0,
+            seatIndex: g.seatIndex ?? null,
           }))}
         />
       )}

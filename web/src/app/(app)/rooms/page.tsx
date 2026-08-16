@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MORE_ROOMS, VISUAL_ROOMS } from "@/lib/visual-rooms";
+import { Icon } from "@/components/icons";
 
 export default function RoomsPage() {
   return (
@@ -14,7 +15,10 @@ export default function RoomsPage() {
             <img src={room.photo} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-4 text-ivory">
-              <p className="font-serif text-2xl">{room.label}</p>
+              <p className="flex items-center gap-2 font-serif text-2xl">
+                <Icon name={room.icon} className="h-5 w-5" />
+                {room.label}
+              </p>
               <p className="mt-1 text-xs text-white/70">{room.line}</p>
             </div>
           </Link>
