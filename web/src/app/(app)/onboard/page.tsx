@@ -50,7 +50,7 @@ export default function OnboardPage() {
       setMsg("Could not save");
       return;
     }
-    router.push("/dashboard");
+    router.push("/start");
     router.refresh();
   }
 
@@ -178,7 +178,7 @@ export default function OnboardPage() {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ onboarded: true }),
-            }).then(() => router.push("/dashboard"));
+            }).then(() => router.push("/start"));
           }}
           className="text-xs text-muted underline"
         >

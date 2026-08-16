@@ -49,6 +49,7 @@ export async function POST(request: Request) {
     requireAddress: Boolean(body.requireAddress),
     template: body.template === "garden" || body.template === "midnight" ? body.template : "letter",
     rsvpClose: typeof body.rsvpClose === "string" ? body.rsvpClose.slice(0, 12) : undefined,
+    gate: typeof body.gate === "string" ? body.gate.slice(0, 80) : undefined,
     gallery: Array.isArray(body.gallery)
       ? body.gallery.map((u: unknown) => String(u).slice(0, 500)).filter(Boolean).slice(0, 12)
       : typeof body.galleryText === "string"

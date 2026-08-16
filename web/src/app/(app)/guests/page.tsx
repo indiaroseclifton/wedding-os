@@ -125,6 +125,8 @@ export default async function GuestsPage() {
             name: g.name,
             rsvp: g.rsvp,
             plusOnes: g.plusOnes,
+            plusOneNames: g.plusOneNames,
+            partyName: g.partyName,
             dietary: g.dietary,
             tableLabel: g.tableLabel,
             side: g.side,

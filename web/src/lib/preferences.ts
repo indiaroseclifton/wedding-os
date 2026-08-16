@@ -59,6 +59,7 @@ export type WorkspacePrefs = {
   timezone?: string;
   guestSitePublic?: boolean;
   onboarded?: boolean;
+  firstWalkDone?: boolean;
   diyBias?: "hire" | "diy" | "mix";
 };
 

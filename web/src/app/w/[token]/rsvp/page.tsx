@@ -31,6 +31,7 @@ function PublicRsvpInner() {
   const [name, setName] = useState("");
   const [rsvp, setRsvp] = useState("YES");
   const [plusOnes, setPlusOnes] = useState(0);
+  const [plusNames, setPlusNames] = useState<string[]>([]);
   const [dietary, setDietary] = useState("");
   const [meal, setMeal] = useState("");
   const [notes, setNotes] = useState("");
@@ -62,6 +63,7 @@ function PublicRsvpInner() {
         setName(data.guest.name);
         if (["YES", "NO", "MAYBE"].includes(data.guest.rsvp)) setRsvp(data.guest.rsvp);
         setPlusOnes(data.guest.plusOnes || 0);
+        setPlusNames(data.guest.plusOneNames || []);
         setDietary(data.guest.dietary || "");
         setMeal(data.guest.meal || "");
         setNotes(data.guest.notes || "");
@@ -120,6 +122,7 @@ function PublicRsvpInner() {
         rsvpToken: guestToken,
         rsvp,
         plusOnes,
+        plusOneNames: plusNames,
         dietary,
         meal,
         notes,
@@ -251,10 +254,36 @@ function PublicRsvpInner() {
                     min={0}
                     max={8}
                     value={plusOnes}
-                    onChange={(e) => setPlusOnes(Number(e.target.value) || 0)}
+                    onChange={(e) => {
+                      const n = Number(e.target.value) || 0;
+                      setPlusOnes(n);
+                      setPlusNames((prev) => {
+                        const next = prev.slice(0, n);
+                        while (next.length < n) next.push("");
+                        return next;
+                      });
+                    }}
                     className="mt-1 w-24 rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
                 </label>
+                {plusOnes > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Their names</p>
+                    {Array.from({ length: plusOnes }).map((_, i) => (
+                      <input
+                        key={i}
+                        value={plusNames[i] || ""}
+                        onChange={(e) => {
+                          const next = [...plusNames];
+                          next[i] = e.target.value;
+                          setPlusNames(next);
+                        }}
+                        placeholder={`Guest ${i + 1}`}
+                        className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
+                      />
+                    ))}
+                  </div>
+                )}
                 <label className="block text-sm">
                   Meal
                   <select

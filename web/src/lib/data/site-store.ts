@@ -23,6 +23,7 @@ export type StoredSite = {
   template?: "letter" | "garden" | "midnight";
   gallery?: string[];
   rsvpClose?: string;
+  gate?: string;
   updatedAt: string;
 };
 
@@ -71,6 +72,7 @@ export async function getSite(workspaceId: string): Promise<StoredSite> {
     template: (site.template === "garden" || site.template === "midnight" ? site.template : "letter") as StoredSite["template"],
     gallery: Array.isArray(site.gallery) ? site.gallery.filter(Boolean).slice(0, 12) : [],
     rsvpClose: site.rsvpClose || "",
+    gate: site.gate || "",
   };
 }
 
@@ -104,6 +106,7 @@ export async function getSiteByToken(token: string) {
     template: (site.template === "garden" || site.template === "midnight" ? site.template : "letter") as StoredSite["template"],
     gallery: Array.isArray(site.gallery) ? site.gallery.filter(Boolean).slice(0, 12) : [],
     rsvpClose: site.rsvpClose || "",
+    gate: site.gate || "",
   };
 }
 

@@ -24,6 +24,7 @@ export function HomeDashboard({
   next,
   suggestions,
   onboarded,
+  firstWalkDone,
 }: {
   days: number | null;
   coverUrl: string;
@@ -34,6 +35,7 @@ export function HomeDashboard({
   next: WeekItem | null;
   suggestions: Suggestion[];
   onboarded?: boolean;
+  firstWalkDone?: boolean;
 }) {
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
   const headline =
@@ -50,6 +52,14 @@ export function HomeDashboard({
           </p>
           <Link href="/onboard" className="rounded-full bg-moss px-3 py-1 text-xs font-medium text-ivory">
             Start setup
+          </Link>
+        </aside>
+      )}
+      {onboarded && !firstWalkDone && (
+        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3 text-sm">
+          <p>Names, one vendor, publish the site. Ten minutes.</p>
+          <Link href="/start" className="rounded-full bg-moss px-3 py-1 text-xs font-medium text-ivory">
+            First wedding
           </Link>
         </aside>
       )}

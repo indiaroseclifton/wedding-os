@@ -46,6 +46,7 @@ export async function POST(request: Request) {
       unplugged: typeof body.unplugged === "boolean" ? body.unplugged : undefined,
       guestSitePublic: typeof body.guestSitePublic === "boolean" ? body.guestSitePublic : undefined,
       onboarded: typeof body.onboarded === "boolean" ? body.onboarded : undefined,
+      firstWalkDone: typeof body.firstWalkDone === "boolean" ? body.firstWalkDone : undefined,
       diyBias:
         body.diyBias === "hire" || body.diyBias === "diy" || body.diyBias === "mix"
           ? body.diyBias

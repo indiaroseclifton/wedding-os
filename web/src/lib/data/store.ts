@@ -88,6 +88,7 @@ export type StoredGuest = {
   answers?: Record<string, string>;
   rsvp: string;
   plusOnes: number;
+  plusOneNames?: string[];
   dietary?: string;
   meal?: string;
   rsvpToken?: string;
@@ -610,6 +611,7 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
     timezone: row.timezone,
     guestSitePublic: row.guestSitePublic,
     onboarded: row.onboarded === true,
+    firstWalkDone: row.firstWalkDone === true,
     diyBias: row.diyBias,
   };
 }

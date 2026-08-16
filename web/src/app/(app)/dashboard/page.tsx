@@ -37,6 +37,7 @@ export default async function DashboardPage() {
       next={nextBestAction(week.items)}
       suggestions={await loadSuggestions(workspace.id, week.days, spent, cap)}
       onboarded={meta.onboarded === true}
+      firstWalkDone={meta.firstWalkDone === true}
     />
   );
 }

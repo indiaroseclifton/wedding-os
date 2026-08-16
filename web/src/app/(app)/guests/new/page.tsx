@@ -23,6 +23,7 @@ export default function NewGuestPage() {
           side: form.get("side") || "OTHER",
           rsvp: form.get("rsvp") || "UNKNOWN",
           plusOnes: Number(form.get("plusOnes") || 0),
+          plusOneText: form.get("plusOneText") || "",
           dietary: form.get("dietary") || undefined,
           address: form.get("address") || undefined,
           city: form.get("city") || undefined,
@@ -82,8 +83,14 @@ export default function NewGuestPage() {
           </label>
         </div>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Plus-ones</span>
+          <span className="font-medium text-slate-800">Plus-ones — names if you know them</span>
           <input name="plusOnes" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <textarea
+            name="plusOneText"
+            rows={2}
+            placeholder="One name per line — Sam Chen"
+            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
         </label>
         <label className="block text-sm">
           <span className="font-medium text-slate-800">Street</span>

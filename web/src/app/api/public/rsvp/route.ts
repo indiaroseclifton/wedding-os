@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { parsePlusOneNames, withPlusOnes } from "@/lib/households";
 import { getSiteByToken, rsvpIsOpen } from "@/lib/data/site-store";
 import {
   ensureGuestRsvpTokens,
@@ -46,6 +47,7 @@ export async function GET(request: Request) {
       name: guest.name,
       rsvp: guest.rsvp,
       plusOnes: guest.plusOnes,
+      plusOneNames: guest.plusOneNames || [],
       dietary: guest.dietary,
       meal: guest.meal,
       notes: guest.notes,
@@ -117,9 +119,11 @@ export async function POST(request: Request) {
         answers[q.id] = String((body.answers as Record<string, string>)[q.id] || "").slice(0, 300);
       }
     }
+    const extras = withPlusOnes(plusOnes, parsePlusOneNames(body.plusOneNames ?? body.plusOneText));
     const updated = await updateGuest(guest.id, {
       rsvp,
-      plusOnes,
+      plusOnes: extras.plusOnes,
+      plusOneNames: extras.plusOneNames,
       dietary: String(body.dietary || "").slice(0, 500) || undefined,
       meal: String(body.meal || "").slice(0, 80) || undefined,
       notes: String(body.notes || "").slice(0, 1000) || guest.notes,

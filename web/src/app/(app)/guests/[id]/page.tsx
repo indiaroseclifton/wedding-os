@@ -10,6 +10,7 @@ type Guest = {
   side?: string;
   rsvp: string;
   plusOnes: number;
+  plusOneNames?: string[];
   dietary?: string;
   tableLabel?: string;
   notes?: string;
@@ -56,6 +57,7 @@ export default function EditGuestPage() {
           side: form.get("side"),
           rsvp: form.get("rsvp"),
           plusOnes: Number(form.get("plusOnes") || 0),
+          plusOneText: form.get("plusOneText") || "",
           dietary: form.get("dietary") || undefined,
           tableLabel: form.get("tableLabel") || undefined,
           address: form.get("address") || undefined,
@@ -130,8 +132,15 @@ export default function EditGuestPage() {
           </label>
         </div>
         <label className="block text-sm">
-          <span className="font-medium">Plus-ones</span>
+          <span className="font-medium">Plus-ones — names</span>
           <input name="plusOnes" type="number" min={0} defaultValue={guest.plusOnes || 0} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <textarea
+            name="plusOneText"
+            rows={2}
+            defaultValue={(guest.plusOneNames || []).join("\n")}
+            placeholder="One name per line"
+            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
         </label>
         <label className="block text-sm">
           <span className="font-medium">Table label</span>

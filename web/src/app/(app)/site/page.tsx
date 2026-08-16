@@ -22,6 +22,7 @@ type Site = {
   template?: "letter" | "garden" | "midnight";
   gallery?: string[];
   rsvpClose?: string;
+  gate?: string;
 };
 
 type Guest = { id: string; name: string; rsvp: string; rsvpToken?: string };
@@ -93,6 +94,9 @@ export default function SiteEditorPage() {
               Open site
             </Link>
           )}
+          <Link href="/site/preview" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            Preview
+          </Link>
         </div>
       </div>
 
@@ -103,6 +107,8 @@ export default function SiteEditorPage() {
           <CopyButton value={url} />
         </div>
       )}
+
+      <ShareCard url={site.published ? url : `${origin}/site/preview`} headline={site.headline} rsvpClose={site.rsvpClose} />
 
       <form onSubmit={save} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
         <label className="block text-sm">
@@ -140,6 +146,15 @@ export default function SiteEditorPage() {
             type="date"
             value={site.rsvpClose || ""}
             onChange={(e) => setSite({ ...site, rsvpClose: e.target.value })}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
+        <label className="block text-sm">
+          Password (optional)
+          <input
+            value={site.gate || ""}
+            onChange={(e) => setSite({ ...site, gate: e.target.value })}
+            placeholder="Leave blank if anyone with the link can open it"
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
@@ -306,6 +321,52 @@ export default function SiteEditorPage() {
         <p className="mt-2 text-xs text-slate-500">
           Guests can open their own link (no name lookup). Their reply updates headcount and catering.
         </p>
+      </div>
+    </div>
+  );
+}
+
+function ShareCard({
+  url,
+  headline,
+  rsvpClose,
+}: {
+  url: string;
+  headline?: string;
+  rsvpClose?: string;
+}) {
+  const [names, setNames] = useState("Our wedding");
+  const [date, setDate] = useState("");
+  const [place, setPlace] = useState("");
+
+  useEffect(() => {
+    fetch("/api/workspace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d?.meta) return;
+        if (d.meta.coupleNames) setNames(d.meta.coupleNames);
+        if (d.meta.weddingDate) setDate(d.meta.weddingDate);
+        if (d.meta.location) setPlace(d.meta.location);
+      })
+      .catch(() => {});
+  }, []);
+
+  const blurb = [
+    names,
+    headline,
+    [date, place].filter(Boolean).join(" · "),
+    rsvpClose ? `Please RSVP by ${rsvpClose}.` : "RSVP at the link.",
+    url,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return (
+    <div className="rounded-2xl border border-line bg-surface p-4">
+      <p className="text-sm font-medium">Text this</p>
+      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-ink-soft">{blurb}</p>
+      <div className="mt-3">
+        <CopyButton value={blurb} />
       </div>
     </div>
   );

@@ -72,6 +72,7 @@ export function SeatingClient({
             side: g.side || null,
             partyName: g.partyName || null,
             plusOnes: g.plusOnes || 0,
+            plusOneNames: g.plusOneNames || [],
             seatIndex: g.seatIndex ?? null,
           }))
       );

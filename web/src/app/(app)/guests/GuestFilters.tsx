@@ -12,6 +12,8 @@ type Guest = {
   tableLabel?: string;
   side?: string;
   plusOnes?: number;
+  plusOneNames?: string[];
+  partyName?: string;
   missingAddress?: boolean;
   eventStatus?: Record<string, string>;
 };
@@ -333,6 +335,11 @@ export function GuestFilters({
                 />
                 <Link href={`/guests/${g.id}`} className="truncate text-sm font-medium">
                   {g.name}
+                  {g.plusOneNames?.length
+                    ? ` + ${g.plusOneNames.join(", ")}`
+                    : g.plusOnes
+                      ? ` +${g.plusOnes}`
+                      : ""}
                 </Link>
               </div>
               <p className="text-sm text-ink-soft">

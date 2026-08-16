@@ -22,11 +22,13 @@ function occupy(guests: SeatGuest[], tableName: string, capacity: number) {
     while (used.has(start)) start += 1;
     map.set(start, { id: g.id, label: firstName(g.name) });
     used.add(start);
-    const extra = Math.max(0, g.plusOnes || 0);
-    for (let k = 1; k <= extra; k++) {
-      let n = start + k;
+    const extras = g.plusOneNames?.length
+      ? g.plusOneNames
+      : Array.from({ length: Math.max(0, g.plusOnes || 0) }, (_, k) => `${firstName(g.name)} +${k + 1}`);
+    for (let k = 0; k < extras.length; k++) {
+      let n = start + k + 1;
       while (used.has(n)) n += 1;
-      map.set(n, { id: g.id, label: `${firstName(g.name)} +${k}`, plus: true });
+      map.set(n, { id: g.id, label: extras[k] || `+${k + 1}`, plus: true });
       used.add(n);
     }
   }

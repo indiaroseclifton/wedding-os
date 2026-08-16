@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { getSiteByToken, rsvpIsOpen } from "@/lib/data/site-store";
 import { getWorkspaceMeta } from "@/lib/data/store";
@@ -9,7 +10,9 @@ import { listEvents } from "@/lib/data/events-store";
 import { slotTitle, slotVisible } from "@/lib/data/run-of-show";
 import { formatRange } from "@/lib/data/run-of-show";
 import { GuestHero } from "@/components/site/GuestHero";
+import { SiteGate } from "@/components/site/SiteGate";
 import { Icon } from "@/components/icons";
+import { getSessionUser } from "@/lib/auth/session";
 import { DEMO_WORKSPACE } from "@/lib/data/workspace";
 
 function prettyDate(iso?: string) {
@@ -31,7 +34,17 @@ export default async function WeddingSitePage({
 }) {
   const { token } = await params;
   const site = await getSiteByToken(token);
-  if (!site || !site.published) notFound();
+  if (!site) notFound();
+  if (!site.published) {
+    const session = await getSessionUser();
+    if (!session) notFound();
+  }
+  if (site.gate) {
+    const jar = await cookies();
+    if (jar.get(`wos_gate_${token}`)?.value !== "ok") {
+      return <SiteGate token={token} />;
+    }
+  }
   const meta = await getWorkspaceMeta(site.workspaceId, DEMO_WORKSPACE.name);
   const travel = site.showTravel ? await getTravel(site.workspaceId) : null;
   const registry = site.showRegistry ? await getRegistry(site.workspaceId) : null;

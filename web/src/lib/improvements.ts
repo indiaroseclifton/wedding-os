@@ -30,7 +30,9 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
     items: [
       { id: "stripe", title: "Stripe for deposits", body: "Ledger is honest. Charging cards is a different product.", href: "/payments", status: "later" },
       { id: "seating-rules", title: "Don’t sit X with Y", body: "Chair seating works. Constraints and a venue floor photo come after.", href: "/seating", status: "later" },
-      { id: "households", title: "Households as people", body: "partyName is a string. Named plus-ones belong on the RSVP.", href: "/guests", status: "later" },
+      { id: "households", title: "Households as people", body: "Named plus-ones on the RSVP, the list, and the chairs.", href: "/guests", status: "shipped" },
+      { id: "site-share", title: "Guest site you can send", body: "Password, a text-this card, preview without publishing.", href: "/site", status: "shipped" },
+      { id: "start", title: "First-wedding walkthrough", body: "Names, one vendor, publish. After the four questions.", href: "/start", status: "shipped" },
       { id: "camera", title: "Camera into the moodboard", body: "After the Capacitor wrapper runs on your phone.", href: "/mobile", status: "later" },
       { id: "push", title: "Push for dues and RSVPs", body: "Needs a worker and store listing. Page nudges stay until then.", href: "/mobile", status: "later" },
     ],

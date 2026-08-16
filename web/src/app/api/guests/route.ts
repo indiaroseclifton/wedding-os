@@ -5,6 +5,7 @@ import {
   ensureDemoWorkspace,
   getWorkspaceGuests,
 } from "@/lib/data/workspace";
+import { parsePlusOneNames, withPlusOnes } from "@/lib/households";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 const RSVP = new Set(["UNKNOWN", "INVITED", "YES", "NO", "MAYBE"]);
@@ -30,6 +31,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const name = requiredString(body.name, "Name", 200);
     const { workspace } = await ensureDemoWorkspace();
+    const extras = withPlusOnes(
+      typeof body.plusOnes === "number" ? Math.max(0, body.plusOnes) : 0,
+      parsePlusOneNames(body.plusOneNames ?? body.plusOneText)
+    );
     const guest = await addGuest({
       workspaceId: workspace.id,
       name,
@@ -42,7 +47,8 @@ export async function POST(request: Request) {
       postal: optionalString(body.postal, 20),
       phone: optionalString(body.phone, 40),
       rsvp: RSVP.has(body.rsvp) ? body.rsvp : "UNKNOWN",
-      plusOnes: typeof body.plusOnes === "number" ? Math.max(0, body.plusOnes) : 0,
+      plusOnes: extras.plusOnes,
+      plusOneNames: extras.plusOneNames,
       dietary: optionalString(body.dietary, 500),
       notes: optionalString(body.notes, 2000),
     });

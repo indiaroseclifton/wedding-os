@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { getGuestById, patchGuest, removeGuest } from "@/lib/data/workspace";
+import { parsePlusOneNames, withPlusOnes } from "@/lib/households";
 
 export async function GET(
   _request: Request,
@@ -42,6 +43,14 @@ export async function PATCH(
   const patch: Record<string, unknown> = {};
   for (const key of allowed) {
     if (key in body) patch[key] = body[key];
+  }
+  if ("plusOneNames" in body || "plusOneText" in body || "plusOnes" in body) {
+    const extras = withPlusOnes(
+      Number(body.plusOnes) || 0,
+      parsePlusOneNames(body.plusOneNames ?? body.plusOneText)
+    );
+    patch.plusOnes = extras.plusOnes;
+    patch.plusOneNames = extras.plusOneNames;
   }
   const guest = await patchGuest(id, patch);
   if (!guest) return NextResponse.json({ error: "Not found" }, { status: 404 });

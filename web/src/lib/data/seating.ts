@@ -8,6 +8,7 @@ export type SeatGuest = {
   side?: string | null;
   partyName?: string | null;
   plusOnes?: number;
+  plusOneNames?: string[];
 };
 
 export function seatWeight(g: SeatGuest) {
