@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 type Member = {
   id: string;
@@ -76,6 +77,7 @@ export default function AttirePage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="planning" />
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Attire</h1>
         <p className="mt-1 text-sm text-slate-600">

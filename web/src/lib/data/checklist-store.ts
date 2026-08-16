@@ -1,6 +1,7 @@
 import path from "path";
 import { randomUUID } from "crypto";
 import { dataDir, ensureDir, readText, writeText } from "./store-io";
+import { PARTY_STARTER } from "./checklist-actions";
 
 const checklistFile = path.join(dataDir, "checklist.json");
 
@@ -99,7 +100,18 @@ export async function getChecklist(workspaceId: string): Promise<StoredChecklist
   if (!all[workspaceId]) {
     all[workspaceId] = {
       workspaceId,
-      items: STARTER.map((s) => ({ ...s, id: randomUUID() })),
+      items: [...STARTER, ...PARTY_STARTER].map((s) => ({ ...s, id: randomUUID() })),
+      updatedAt: new Date().toISOString(),
+    };
+    await writeAll(all);
+    return all[workspaceId];
+  }
+  const have = new Set(all[workspaceId].items.map((i) => i.title));
+  const missing = PARTY_STARTER.filter((s) => !have.has(s.title));
+  if (missing.length) {
+    all[workspaceId] = {
+      ...all[workspaceId],
+      items: [...all[workspaceId].items, ...missing.map((s) => ({ ...s, id: randomUUID() }))],
       updatedAt: new Date().toISOString(),
     };
     await writeAll(all);

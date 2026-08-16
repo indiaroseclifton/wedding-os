@@ -5,6 +5,8 @@ export const ROOM_SUBNAV = {
     { href: "/checklist", label: "Checklist" },
     { href: "/timeline", label: "Timeline" },
     { href: "/decisions/path", label: "Hire or make" },
+    { href: "/planning/party", label: "Wedding party" },
+    { href: "/attire", label: "Attire" },
     { href: "/diy", label: "DIY studio" },
     { href: "/moodboard", label: "Moodboard" },
   ],
