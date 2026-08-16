@@ -7,6 +7,7 @@ export type SpotifyTrack = {
   artist: string;
   uri: string;
   url: string;
+  previewUrl?: string;
 };
 
 export function spotifyConfigured() {
@@ -89,6 +90,7 @@ export async function refreshAccess(refreshToken: string) {
 function mapTrack(item: {
   name?: string;
   uri?: string;
+  preview_url?: string | null;
   external_urls?: { spotify?: string };
   artists?: { name: string }[];
 }): SpotifyTrack {
@@ -97,6 +99,7 @@ function mapTrack(item: {
     artist: (item.artists || []).map((a) => a.name).join(", "),
     uri: item.uri || "",
     url: item.external_urls?.spotify || "",
+    previewUrl: item.preview_url || undefined,
   };
 }
 

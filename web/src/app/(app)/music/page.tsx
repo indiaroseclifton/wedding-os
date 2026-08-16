@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { TrackPreview } from "@/components/music/TrackPreview";
 
 type Request = { id: string; song: string; from?: string; status: string };
 type Track = {
@@ -13,6 +14,7 @@ type Track = {
   url?: string;
   appleId?: string;
   source?: string;
+  previewUrl?: string;
 };
 
 declare global {
@@ -59,6 +61,7 @@ function MusicInner() {
   const [catalog, setCatalog] = useState<"spotify" | "apple">("spotify");
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<Track[]>([]);
+  const [listening, setListening] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -125,6 +128,7 @@ function MusicInner() {
       return;
     }
     setHits(data.tracks || []);
+    setListening(null);
   }
 
   async function addTrack(t: Track, ban = false) {
@@ -227,7 +231,7 @@ function MusicInner() {
         <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">DJ packet</p>
         <h1 className="mt-1 text-2xl font-medium tracking-tight">Music</h1>
         <p className="mt-1 text-sm text-ink-soft">
-          Search Spotify or Apple Music, lock must-play / do-not-play, then export a playlist the DJ can open.
+          Search Spotify or Apple Music, preview in this page, then lock must-play / do-not-play.
         </p>
       </div>
 
@@ -379,25 +383,34 @@ function MusicInner() {
             </button>
           </div>
           <ul className="divide-y divide-line">
-            {hits.map((t) => (
-              <li
-                key={t.uri || t.appleId || `${t.title}-${t.artist}`}
-                className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm"
-              >
-                <div>
-                  <p className="font-medium">{t.title}</p>
-                  <p className="text-xs text-muted">{t.artist}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => addTrack(t)} className="text-xs font-medium underline">
-                    Must-play
-                  </button>
-                  <button type="button" onClick={() => addTrack(t, true)} className="text-xs text-muted underline">
-                    Ban
-                  </button>
-                </div>
-              </li>
-            ))}
+            {hits.map((t) => {
+              const key = t.uri || t.appleId || `${t.title}-${t.artist}`;
+              return (
+                <li key={key} className="space-y-2 py-3 text-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="font-medium">{t.title}</p>
+                      <p className="text-xs text-muted">{t.artist}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => addTrack(t)} className="text-xs font-medium underline">
+                        Must-play
+                      </button>
+                      <button type="button" onClick={() => addTrack(t, true)} className="text-xs text-muted underline">
+                        Ban
+                      </button>
+                    </div>
+                  </div>
+                  <TrackPreview
+                    previewUrl={t.previewUrl}
+                    uri={t.uri}
+                    url={t.url}
+                    open={listening === key}
+                    onToggle={() => setListening((cur) => (cur === key ? null : key))}
+                  />
+                </li>
+              );
+            })}
           </ul>
         </form>
       )}

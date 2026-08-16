@@ -7,6 +7,7 @@ export type AppleTrack = {
   artist: string;
   appleId: string;
   url: string;
+  previewUrl?: string;
 };
 
 export function appleMusicConfigured() {
@@ -70,12 +71,13 @@ export async function searchAppleSongs(query: string, storefront = appleStorefro
   const items = data.results?.songs?.data || [];
   return items.map((item: {
     id: string;
-    attributes?: { name?: string; artistName?: string; url?: string };
+    attributes?: { name?: string; artistName?: string; url?: string; previews?: { url?: string }[] };
   }) => ({
     title: item.attributes?.name || "Untitled",
     artist: item.attributes?.artistName || "",
     appleId: item.id,
     url: item.attributes?.url || "",
+    previewUrl: item.attributes?.previews?.[0]?.url,
   }));
 }
 

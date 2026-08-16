@@ -18,6 +18,7 @@ export async function GET(request: Request) {
         artist: t.artist,
         appleId: t.appleId,
         url: t.url,
+        previewUrl: t.previewUrl,
         source: "apple",
       })),
     });
