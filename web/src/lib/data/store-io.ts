@@ -162,11 +162,14 @@ export async function wipeDataDir() {
     await prisma.jsonStore.deleteMany();
     return;
   }
-  await fs.mkdir(dataDir, { recursive: true });
-  const entries = await fs.readdir(dataDir);
+  await fs.mkdir(/*turbopackIgnore: true*/ dataDir, { recursive: true });
+  const entries = await fs.readdir(/*turbopackIgnore: true*/ dataDir);
   await Promise.all(
     entries.map((name) =>
-      fs.rm(path.join(dataDir, name), { recursive: true, force: true }),
+      fs.rm(/*turbopackIgnore: true*/ path.join(/*turbopackIgnore: true*/ dataDir, name), {
+        recursive: true,
+        force: true,
+      }),
     ),
   );
 }
