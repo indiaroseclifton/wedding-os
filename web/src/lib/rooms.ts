@@ -1,17 +1,40 @@
-export const ROOM_SUBNAV = {
+export type NavNode = {
+  href: string;
+  label: string;
+  children?: { href: string; label: string }[];
+};
+
+export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budget", NavNode[]> = {
   planning: [
     { href: "/planning", label: "Overview" },
     { href: "/planning/vision", label: "My vision" },
-    { href: "/decisions", label: "Decisions" },
+    {
+      href: "/decisions",
+      label: "Decisions",
+      children: [
+        { href: "/decisions", label: "All" },
+        { href: "/decisions/path", label: "Hire or make" },
+        { href: "/decisions/venue", label: "Venue" },
+        { href: "/decisions/style", label: "Style" },
+        { href: "/decisions/priorities", label: "Priorities" },
+      ],
+    },
     { href: "/checklist", label: "Checklist" },
     { href: "/traditions", label: "Traditions" },
     { href: "/timeline", label: "Timeline" },
-    { href: "/decisions/path", label: "Hire or make" },
     { href: "/planning/party", label: "Wedding party" },
     { href: "/attire", label: "Attire" },
-    { href: "/diy", label: "DIY studio" },
-    { href: "/diy/studio/floral", label: "Floral tool" },
-    { href: "/diy/studio/trends", label: "Trends" },
+    {
+      href: "/diy",
+      label: "DIY studio",
+      children: [
+        { href: "/diy", label: "Playbooks" },
+        { href: "/diy/studio/floral", label: "Floral" },
+        { href: "/diy/studio/table", label: "Tablescape" },
+        { href: "/diy/studio/trends", label: "Trends" },
+        { href: "/diy/calendar", label: "Week-of" },
+      ],
+    },
     { href: "/moodboard", label: "Moodboard" },
   ],
   vendors: [
@@ -23,12 +46,27 @@ export const ROOM_SUBNAV = {
     { href: "/handoffs", label: "Handoffs" },
   ],
   guests: [
-    { href: "/guests", label: "List" },
+    {
+      href: "/guests",
+      label: "List",
+      children: [
+        { href: "/guests", label: "Everyone" },
+        { href: "/guests/new", label: "Add one" },
+        { href: "/guests/import", label: "Import" },
+      ],
+    },
     { href: "/seating", label: "Seating" },
     { href: "/floorplan", label: "Floor plan" },
     { href: "/travel", label: "Travel" },
     { href: "/dietary", label: "Dietary" },
-    { href: "/site", label: "Guest site" },
+    {
+      href: "/site",
+      label: "Guest site",
+      children: [
+        { href: "/site", label: "Build" },
+        { href: "/site/preview", label: "Preview" },
+      ],
+    },
   ],
   day: [
     { href: "/day-of", label: "Board" },
@@ -43,6 +81,14 @@ export const ROOM_SUBNAV = {
     { href: "/payments", label: "Payments" },
     { href: "/registry", label: "Registry" },
   ],
+};
+
+export const ROOM_SUBNAV = {
+  planning: ROOM_TREE.planning.map(({ href, label }) => ({ href, label })),
+  vendors: ROOM_TREE.vendors.map(({ href, label }) => ({ href, label })),
+  guests: ROOM_TREE.guests.map(({ href, label }) => ({ href, label })),
+  day: ROOM_TREE.day.map(({ href, label }) => ({ href, label })),
+  budget: ROOM_TREE.budget.map(({ href, label }) => ({ href, label })),
 } as const;
 
 export const TEAM_ROLES = [
