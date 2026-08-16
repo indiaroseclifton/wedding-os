@@ -1,6 +1,7 @@
 import path from "path";
 import { randomUUID } from "crypto";
 import { dataDir, readJson, writeJson } from "./store-io";
+import type { ContractReview } from "./contract-review";
 
 const vendorsFile = path.join(dataDir, "vendors.json");
 
@@ -24,6 +25,7 @@ export type StoredVendor = {
   website?: string;
   notes?: string;
   contractUrl?: string;
+  contractReview?: ContractReview;
   inquiries?: VendorInquiry[];
   directorySlug?: string;
   createdAt: string;

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
+import { reviewHint } from "@/lib/data/contract-review";
 import { listPayments, paymentsForVendor } from "@/lib/data/payments-store";
 import { VendorsClient } from "./VendorsClient";
 
@@ -61,6 +62,8 @@ export default async function VendorsPage() {
             else if (dep?.dueDate) moneyHint = `deposit due ${dep.dueDate}`;
             else if (dep) moneyHint = "deposit logged";
             else if (v.contractUrl) moneyHint = "contract attached";
+            const review = reviewHint(v.contractReview);
+            if (review) moneyHint = moneyHint ? `${moneyHint} · ${review}` : review;
             return {
               id: v.id,
               name: v.name,

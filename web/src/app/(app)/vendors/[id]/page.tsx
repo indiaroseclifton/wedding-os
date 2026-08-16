@@ -3,6 +3,13 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  CONTRACT_CLAUSES,
+  flagCount,
+  type ClauseId,
+  type ClauseMark,
+  type ContractReview,
+} from "@/lib/data/contract-review";
 
 type Vendor = {
   id: string;
@@ -14,6 +21,7 @@ type Vendor = {
   website?: string;
   notes?: string;
   contractUrl?: string;
+  contractReview?: ContractReview;
   inquiries?: { id: string; at: string; direction: "out" | "in"; body: string; emailedAt?: string }[];
 };
 
@@ -45,11 +53,29 @@ export default function VendorDetailPage() {
   const [threadBody, setThreadBody] = useState("");
   const [threadDir, setThreadDir] = useState<"out" | "in">("out");
   const [busy, setBusy] = useState(false);
+  const [review, setReview] = useState<ContractReview>({
+    depositRefundable: "unknown",
+    clauses: {},
+    coiReceived: false,
+  });
+  const [reviewMsg, setReviewMsg] = useState<string | null>(null);
+
+  function setClause(id: ClauseId, mark: ClauseMark) {
+    setReview((r) => ({ ...r, clauses: { ...r.clauses, [id]: mark } }));
+  }
 
   function apply(data: { vendor?: Vendor; payments?: Payment[] }) {
     if (data.vendor) {
       setVendor(data.vendor);
       setContractUrl(data.vendor.contractUrl || "");
+      if (data.vendor.contractReview) {
+        setReview({
+          depositRefundable: "unknown",
+          clauses: {},
+          coiReceived: false,
+          ...data.vendor.contractReview,
+        });
+      }
     }
     if (data.payments) {
       setPayments(data.payments);
@@ -106,6 +132,25 @@ export default function VendorDetailPage() {
     setMsg("Saved — also on Payments and Budget");
   }
 
+  async function saveReview(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setReviewMsg(null);
+    const res = await fetch(`/api/vendors/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "review", review }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) {
+      setReviewMsg(data.error || "Could not save");
+      return;
+    }
+    apply(data);
+    setReviewMsg("Saved on this vendor");
+  }
+
   async function markPaid(paymentId: string) {
     const res = await fetch(`/api/vendors/${id}`, {
       method: "POST",
@@ -120,6 +165,7 @@ export default function VendorDetailPage() {
 
   const openPay = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + p.amount, 0);
   const depositRow = payments.find((p) => p.kind === "DEPOSIT");
+  const flags = flagCount(vendor.contractReview);
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -136,6 +182,11 @@ export default function VendorDetailPage() {
               : depositRow.dueDate
                 ? ` · deposit due ${depositRow.dueDate}`
                 : " · deposit logged"
+            : ""}
+          {vendor.contractReview?.reviewedAt
+            ? flags
+              ? ` · ${flags} flag${flags === 1 ? "" : "s"}`
+              : " · contract reviewed"
             : ""}
         </p>
       </div>
@@ -229,6 +280,138 @@ export default function VendorDetailPage() {
           className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
           {busy ? "Saving…" : "Save contract & payments"}
+        </button>
+      </form>
+
+      <form onSubmit={saveReview} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+        <p className="text-sm font-semibold">Review the contract</p>
+        <p className="text-xs text-slate-500">
+          Not legal advice — five minutes so the PDF is more than a link. Mark what looks good and flag what
+          you’d ask about before you pay.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="block text-sm">
+            Signed
+            <input
+              type="date"
+              value={review.signedAt || ""}
+              onChange={(e) => setReview((r) => ({ ...r, signedAt: e.target.value }))}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block text-sm">
+            Deposit refundable?
+            <select
+              value={review.depositRefundable || "unknown"}
+              onChange={(e) =>
+                setReview((r) => ({
+                  ...r,
+                  depositRefundable: e.target.value as ContractReview["depositRefundable"],
+                }))
+              }
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            >
+              <option value="unknown">Not sure</option>
+              <option value="yes">Yes</option>
+              <option value="partial">Partial / tiered</option>
+              <option value="no">No</option>
+            </select>
+          </label>
+          <label className="col-span-2 block text-sm">
+            Named person on site
+            <input
+              value={review.namedLead || ""}
+              onChange={(e) => setReview((r) => ({ ...r, namedLead: e.target.value }))}
+              placeholder="Who actually shows up"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block text-sm">
+            Hours
+            <input
+              value={review.hours || ""}
+              onChange={(e) => setReview((r) => ({ ...r, hours: e.target.value }))}
+              placeholder="2pm–10pm"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block text-sm">
+            Overtime
+            <input
+              value={review.overtimeRate || ""}
+              onChange={(e) => setReview((r) => ({ ...r, overtimeRate: e.target.value }))}
+              placeholder="$200/hr"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block text-sm">
+            Delivery date
+            <input
+              type="date"
+              value={review.deliveryDate || ""}
+              onChange={(e) => setReview((r) => ({ ...r, deliveryDate: e.target.value }))}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="flex items-end gap-2 pb-2 text-sm">
+            <input
+              type="checkbox"
+              checked={Boolean(review.coiReceived)}
+              onChange={(e) => setReview((r) => ({ ...r, coiReceived: e.target.checked }))}
+            />
+            COI received
+          </label>
+        </div>
+        <ul className="space-y-3">
+          {CONTRACT_CLAUSES.map((c) => {
+            const mark = review.clauses?.[c.id] || "skip";
+            return (
+              <li key={c.id} className="rounded-lg bg-slate-50 px-3 py-2">
+                <p className="text-sm font-medium">{c.label}</p>
+                <p className="mt-0.5 text-[11px] text-slate-500">
+                  Good: {c.good}. Flag: {c.flag}.
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
+                  {(["good", "flag", "skip"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setClause(c.id, m)}
+                      className={`rounded-full px-2.5 py-1 ${
+                        mark === m
+                          ? m === "flag"
+                            ? "bg-rose-700 text-white"
+                            : m === "good"
+                              ? "bg-emerald-800 text-white"
+                              : "bg-slate-900 text-white"
+                          : "border border-slate-300"
+                      }`}
+                    >
+                      {m === "good" ? "Looks good" : m === "flag" ? "Flag" : "Skip"}
+                    </button>
+                  ))}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <label className="block text-sm">
+          Notes
+          <textarea
+            value={review.notes || ""}
+            onChange={(e) => setReview((r) => ({ ...r, notes: e.target.value }))}
+            rows={2}
+            placeholder="What you’ll ask before you pay…"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
+        {reviewMsg && <p className="text-xs text-slate-500">{reviewMsg}</p>}
+        <button
+          type="submit"
+          disabled={busy}
+          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+        >
+          {busy ? "Saving…" : "Save review"}
         </button>
       </form>
 

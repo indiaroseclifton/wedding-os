@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { appendVendorInquiry, getVendor, updateVendor } from "@/lib/data/vendors-store";
+import { sanitizeContractReview } from "@/lib/data/contract-review";
 import {
   listPayments,
   paymentsForVendor,
@@ -94,6 +95,14 @@ export async function POST(
       });
     }
     const next = await getVendor(id);
+    const payments = paymentsForVendor(await listPayments(workspace.id), vendor);
+    return NextResponse.json({ vendor: next, payments });
+  }
+
+  if (body.action === "review") {
+    const next = await updateVendor(id, {
+      contractReview: sanitizeContractReview(body.review),
+    });
     const payments = paymentsForVendor(await listPayments(workspace.id), vendor);
     return NextResponse.json({ vendor: next, payments });
   }

@@ -75,3 +75,8 @@
 - Directory inquire copies onto the vendor when you hire
 - Listing shows messages you already sent
 - Vendor thread: You / Them + Email again
+
+## Wave 18 (done)
+- Contract review on the vendor: signed date, refundable, named lead, hours, overtime, delivery, COI
+- Nine clauses marked Looks good / Flag / Skip
+- Flag count on My vendors
