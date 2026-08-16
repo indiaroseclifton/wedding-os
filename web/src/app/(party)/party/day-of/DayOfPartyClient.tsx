@@ -21,7 +21,13 @@ type DayOf = {
   schedule?: RunSlot[];
 };
 
-export function DayOfPartyClient({ initial }: { initial: DayOf }) {
+export function DayOfPartyClient({
+  initial,
+  selfName,
+}: {
+  initial: DayOf;
+  selfName?: string;
+}) {
   const [dayOf, setDayOf] = useState(initial);
 
   async function setStatus(id: string, status: string) {
@@ -63,7 +69,9 @@ export function DayOfPartyClient({ initial }: { initial: DayOf }) {
       )}
 
       <ul className="space-y-2">
-        {dayOf.checkIns.map((c) => (
+        {dayOf.checkIns.map((c) => {
+          const mine = selfName && c.name.toLowerCase() === selfName.toLowerCase();
+          return (
           <li
             key={c.id}
             className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm"
@@ -74,8 +82,9 @@ export function DayOfPartyClient({ initial }: { initial: DayOf }) {
             </span>
             <select
               value={c.status}
+              disabled={!mine}
               onChange={(e) => setStatus(c.id, e.target.value)}
-              className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs"
+              className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs disabled:opacity-50"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -84,7 +93,8 @@ export function DayOfPartyClient({ initial }: { initial: DayOf }) {
               ))}
             </select>
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       <ul className="space-y-2">

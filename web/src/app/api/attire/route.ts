@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireCoupleApi } from "@/lib/auth/access";
+import { requireCoupleApi, requireSession } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import {
   addAttireMember,
@@ -10,7 +10,7 @@ import {
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
-  const access = await requireCoupleApi();
+  const access = await requireSession();
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
   const attire = await getAttire(workspace.id);
@@ -18,11 +18,31 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const access = await requireCoupleApi();
-  if (!access.ok) return access.response;
+  const session = await requireSession();
+  if (!session.ok) return session.response;
   try {
     const body = await request.json();
     const { workspace } = await ensureDemoWorkspace();
+
+    if (body.action === "update_mine") {
+      const attire = await getAttire(workspace.id);
+      const mine =
+        attire.members.find((m) => m.name.toLowerCase() === session.session.name.toLowerCase()) ||
+        attire.members.find((m) => m.id === body.id);
+      if (!mine) return NextResponse.json({ error: "No attire row for you" }, { status: 404 });
+      const patch: { size?: string; status?: typeof mine.status; notes?: string } = {};
+      if (typeof body.size === "string") patch.size = body.size.slice(0, 40);
+      if (typeof body.notes === "string") patch.notes = body.notes.slice(0, 400);
+      if (["NOT_STARTED", "ORDERED", "ALTERING", "READY"].includes(String(body.status))) {
+        patch.status = body.status;
+      }
+      const next = await updateAttireMember(workspace.id, mine.id, patch);
+      return NextResponse.json({ attire: next });
+    }
+
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+
     if (body.action === "palette") {
       const attire = await saveAttire(workspace.id, {
         paletteNotes: String(body.paletteNotes || ""),

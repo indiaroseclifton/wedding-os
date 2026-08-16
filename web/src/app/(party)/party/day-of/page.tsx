@@ -19,7 +19,7 @@ export default async function PartyDayOfPage() {
           Portal home
         </Link>
       </div>
-      <DayOfPartyClient initial={dayOf} />
+      <DayOfPartyClient initial={dayOf} selfName={session.name} />
     </div>
   );
 }

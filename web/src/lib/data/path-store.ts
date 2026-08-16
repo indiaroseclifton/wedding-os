@@ -55,3 +55,16 @@ export async function setPathChoice(workspaceId: string, category: string, choic
   await writeAll(all);
   return all[workspaceId];
 }
+
+export async function applyDiyBias(workspaceId: string, bias: PathChoice) {
+  if (bias === "undecided") return getPath(workspaceId);
+  const current = await getPath(workspaceId);
+  const choices = { ...current.choices };
+  for (const c of PATH_CATEGORIES) {
+    if (!choices[c.id] || choices[c.id] === "undecided") choices[c.id] = bias;
+  }
+  const all = await readAll();
+  all[workspaceId] = { ...current, choices, updatedAt: new Date().toISOString() };
+  await writeAll(all);
+  return all[workspaceId];
+}

@@ -8,6 +8,7 @@ import {
 import { optionalString, requiredString, ValidationError } from "@/lib/validation";
 import { FAITHS, THEMES } from "@/lib/preferences";
 import { syncFaithToPlanning } from "@/lib/data/sync-faith";
+import { applyDiyBias } from "@/lib/data/path-store";
 
 export async function GET() {
   const access = await requireCoupleApi();
@@ -54,6 +55,9 @@ export async function POST(request: Request) {
     });
     if (body.faith || faithPacks) {
       await syncFaithToPlanning(workspace.id, meta.faith, meta.faithPacks);
+    }
+    if (meta.diyBias) {
+      await applyDiyBias(workspace.id, meta.diyBias);
     }
     return NextResponse.json({ meta });
   } catch (error) {

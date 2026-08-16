@@ -291,18 +291,38 @@ export function GuestFilters({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-line bg-surface">
-        <div className="hidden grid-cols-[1.4fr_1fr_0.7fr_0.8fr_1fr_5rem] gap-2 border-b border-line px-4 py-2 text-[10px] font-medium uppercase tracking-wide text-muted sm:grid">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+        <div
+          className="hidden gap-2 border-b border-line px-4 py-2 text-[10px] font-medium uppercase tracking-wide text-muted sm:grid"
+          style={{
+            gridTemplateColumns: `minmax(10rem,1.4fr) 1fr 4.5rem 5rem 1fr 5rem ${eventCols
+              .map(() => "4.2rem")
+              .join(" ")}`,
+          }}
+        >
           <span>Name</span>
           <span>Status</span>
-          <span>Plus one</span>
+          <span>Plus</span>
           <span>Table</span>
           <span>Dietary</span>
           <span>RSVP</span>
+          {eventCols.map((e) => (
+            <span key={e.id} className="truncate" title={e.short}>
+              {e.short}
+            </span>
+          ))}
         </div>
         <ul className="divide-y divide-line">
           {visible.map((g) => (
-            <li key={g.id} className="grid items-center gap-2 px-4 py-3 sm:grid-cols-[1.4fr_1fr_0.7fr_0.8fr_1fr_5rem]">
+            <li
+              key={g.id}
+              className="grid items-center gap-2 px-4 py-3"
+              style={{
+                gridTemplateColumns: `minmax(10rem,1.4fr) 1fr 4.5rem 5rem 1fr 5rem ${eventCols
+                  .map(() => "4.2rem")
+                  .join(" ")}`,
+              }}
+            >
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -316,7 +336,13 @@ export function GuestFilters({
                 </Link>
               </div>
               <p className="text-sm text-ink-soft">
-                {g.rsvp === "YES" ? "Attending" : g.rsvp === "NO" ? "Not attending" : g.rsvp === "MAYBE" ? "Maybe" : "No response"}
+                {g.rsvp === "YES"
+                  ? "Attending"
+                  : g.rsvp === "NO"
+                    ? "Not attending"
+                    : g.rsvp === "MAYBE"
+                      ? "Maybe"
+                      : "No response"}
               </p>
               <p className="text-sm text-ink-soft">{g.plusOnes ? "Yes" : "—"}</p>
               <p className="text-sm text-ink-soft">{g.tableLabel || "—"}</p>
@@ -333,6 +359,16 @@ export function GuestFilters({
                   </option>
                 ))}
               </select>
+              {eventCols.map((e) => {
+                const st = g.eventStatus?.[e.id] || "";
+                const label =
+                  st === "YES" ? "Yes" : st === "NO" ? "No" : st === "MAYBE" ? "Maybe" : "—";
+                return (
+                  <p key={e.id} className="text-xs text-ink-soft" title={e.short}>
+                    {label}
+                  </p>
+                );
+              })}
             </li>
           ))}
           {!visible.length && (
