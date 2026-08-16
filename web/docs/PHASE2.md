@@ -123,3 +123,6 @@
 ## Wave 30 (done)
 - Personalized This week (names, city, their cover). Developer sitemap replaced with visual rooms
 
+## Wave 31 (done)
+- Locked night / ivory / champagne / clay-soft in Tailwind. No hex in components
+

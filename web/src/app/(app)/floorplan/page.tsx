@@ -280,7 +280,7 @@ export default function FloorPlanPage() {
             onPointerMove={onBoardMove}
             onPointerUp={onBoardUp}
             onPointerLeave={onBoardUp}
-            className="relative h-[32rem] w-full touch-none overflow-hidden rounded-2xl border-2 border-dashed border-slate-300 bg-[#f4f1ea] print:h-[9in] print:border print:bg-white"
+            className="relative h-[32rem] w-full touch-none overflow-hidden rounded-2xl border-2 border-dashed border-slate-300 bg-paper print:h-[9in] print:border print:bg-white"
           >
             <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded bg-slate-800/80 px-3 py-1 text-[10px] font-medium text-white print:bg-slate-200 print:text-slate-800">
               Dance floor

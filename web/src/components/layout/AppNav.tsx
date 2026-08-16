@@ -153,7 +153,7 @@ export function AppNav({
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-black/5" />
-                  <div className="absolute inset-x-0 bottom-0 p-3 text-[#f6f1e8]">
+                  <div className="absolute inset-x-0 bottom-0 p-3 text-ivory">
                     <p className="font-serif text-xl leading-tight">{room.label}</p>
                     <p className="text-[11px] text-white/70">{room.line}</p>
                   </div>

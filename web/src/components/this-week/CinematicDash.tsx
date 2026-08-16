@@ -6,8 +6,8 @@ import { VISUAL_ROOMS, firstNames, prettyWeddingDate } from "@/lib/visual-rooms"
 import type { WeekItem, WeekUrgency } from "@/lib/this-week";
 
 const URGENCY: Record<WeekUrgency, { label: string; className: string }> = {
-  now: { label: "Do now", className: "bg-[#c45c4a]/20 text-[#f3c4bb]" },
-  week: { label: "This week", className: "bg-white/10 text-[#eadec8]" },
+  now: { label: "Do now", className: "bg-clay/20 text-clay-soft" },
+  week: { label: "This week", className: "bg-white/10 text-champagne" },
   soon: { label: "Soon", className: "bg-white/5 text-white/55" },
 };
 
@@ -64,7 +64,7 @@ export function CinematicDash({
           >
             <motion.p
               variants={fadeUp}
-              className="text-[11px] font-medium uppercase tracking-[0.28em] text-[#eadec8]/85"
+              className="text-[11px] font-medium uppercase tracking-[0.28em] text-champagne/85"
             >
               {hello}
             </motion.p>
@@ -86,7 +86,7 @@ export function CinematicDash({
             <motion.div variants={fadeUp} className="mt-6 flex flex-wrap gap-2">
               <Link
                 href="/settings"
-                className="rounded-full bg-[#eadec8] px-4 py-2 text-xs font-medium text-[#1a1814]"
+                className="rounded-full bg-champagne px-4 py-2 text-xs font-medium text-night"
               >
                 This is us
               </Link>
@@ -116,7 +116,7 @@ export function CinematicDash({
                 className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-3 text-[#f6f1e8]">
+              <div className="absolute inset-x-0 bottom-0 p-3 text-ivory">
                 <p className="font-serif text-xl">{room.label}</p>
                 <p className="text-[11px] text-white/70">{room.line}</p>
               </div>
@@ -146,7 +146,7 @@ export function CinematicDash({
                     <p className="mt-1.5 font-serif text-xl tracking-tight">{item.title}</p>
                     <p className="mt-0.5 text-xs text-white/55">{item.detail}</p>
                   </div>
-                  <span className="rounded-full bg-[#eadec8] px-3 py-1.5 text-[11px] font-medium text-[#1a1814]">
+                  <span className="rounded-full bg-champagne px-3 py-1.5 text-[11px] font-medium text-night">
                     {item.cta}
                   </span>
                 </Link>

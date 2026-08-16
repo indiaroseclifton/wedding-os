@@ -29,7 +29,7 @@ const CARDS = [
 export function LandingView() {
   return (
     <MotionRoot>
-      <div className="min-h-screen bg-[#0c0e0b] text-[#f6f1e8]">
+      <div className="min-h-screen bg-night text-ivory">
         <section className="relative min-h-screen overflow-hidden">
           <motion.img
             src="/brand/tablescape.jpg"
@@ -44,12 +44,12 @@ export function LandingView() {
 
           <header className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 py-5 sm:px-10">
             <p className="flex items-center gap-2 font-serif text-lg tracking-tight">
-              <BrandMark className="text-[#eadec8]" />
+              <BrandMark className="text-champagne" />
               Wedding OS
             </p>
             <Link
               href="/login"
-              className="rounded-full bg-[#eadec8] px-4 py-2 text-xs font-medium text-[#1a1814]"
+              className="rounded-full bg-champagne px-4 py-2 text-xs font-medium text-night"
             >
               Sign in
             </Link>
@@ -59,7 +59,7 @@ export function LandingView() {
             <motion.div variants={stagger} initial="hidden" animate="show">
               <motion.p
                 variants={fadeUp}
-                className="text-[11px] font-medium uppercase tracking-[0.34em] text-[#eadec8]"
+                className="text-[11px] font-medium uppercase tracking-[0.34em] text-champagne"
               >
                 Hire or make it yourself
               </motion.p>
@@ -80,7 +80,7 @@ export function LandingView() {
               <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/login"
-                  className="rounded-full bg-[#eadec8] px-6 py-2.5 text-sm font-medium text-[#1a1814]"
+                  className="rounded-full bg-champagne px-6 py-2.5 text-sm font-medium text-night"
                 >
                   Open your wedding
                 </Link>
@@ -124,7 +124,7 @@ export function LandingView() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-5">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-[#eadec8]">{c.k}</p>
+                <p className="text-[11px] uppercase tracking-[0.22em] text-champagne">{c.k}</p>
                 <h2 className="mt-1 font-serif text-2xl leading-tight">{c.t}</h2>
                 <p className="mt-2 text-sm leading-6 text-white/70">{c.d}</p>
               </div>

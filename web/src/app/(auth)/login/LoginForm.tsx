@@ -56,7 +56,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0c0e0b] text-[#f6f1e8]">
+    <div className="relative min-h-screen overflow-hidden bg-night text-ivory">
       <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-black/55" />
       <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
@@ -74,7 +74,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
             </p>
           </div>
           {verify ? (
-            <p className="rounded-lg bg-white/10 px-3 py-2 text-sm text-[#eadec8]">
+            <p className="rounded-lg bg-white/10 px-3 py-2 text-sm text-champagne">
               Link sent. Open it on this device.
             </p>
           ) : (
@@ -87,13 +87,13 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
                   required
                   disabled={!emailReady || sending}
                   placeholder="you@email.com"
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-[#f6f1e8] outline-none placeholder:text-white/35 focus:border-[#eadec8] disabled:opacity-50"
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-ivory outline-none placeholder:text-white/35 focus:border-champagne disabled:opacity-50"
                 />
               </label>
               <button
                 type="submit"
                 disabled={!emailReady || sending}
-                className="flex w-full items-center justify-center rounded-lg bg-[#eadec8] px-4 py-2.5 text-sm font-medium text-[#1a1814] disabled:opacity-50"
+                className="flex w-full items-center justify-center rounded-lg bg-champagne px-4 py-2.5 text-sm font-medium text-night disabled:opacity-50"
               >
                 {sending ? "Sending…" : "Email me a sign-in link"}
               </button>
@@ -106,13 +106,13 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
                 type="button"
                 disabled={!!loadingId}
                 onClick={() => signInDemo(user)}
-                className="flex w-full items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium text-[#f6f1e8] disabled:opacity-50"
+                className="flex w-full items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium text-ivory disabled:opacity-50"
               >
                 {loadingId === user.userId ? "Signing in…" : user.label}
               </button>
             ))}
           </div>
-          {error && <p className="text-xs text-[#f3c4bb]">{error}</p>}
+          {error && <p className="text-xs text-clay-soft">{error}</p>}
         </div>
       </div>
     </div>

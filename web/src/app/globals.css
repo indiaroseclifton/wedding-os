@@ -11,6 +11,10 @@
   --color-moss-fg: #f6f5f2;
   --color-moss-soft: #e6eeea;
   --color-clay: #9a4034;
+  --color-clay-soft: #f3c4bb;
+  --color-night: #0c0e0b;
+  --color-ivory: #f6f1e8;
+  --color-champagne: #eadec8;
 
   --color-slate-50: #f6f5f2;
   --color-slate-100: #eceae4;
@@ -72,10 +76,10 @@ body {
 }
 
 .glass {
-  background: rgba(12, 14, 11, 0.5);
-  border: 1px solid rgba(234, 222, 200, 0.22);
+  background: color-mix(in srgb, var(--color-night) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-champagne) 22%, transparent);
   box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.55);
-  color: #f6f1e8;
+  color: var(--color-ivory);
 }
 
 @supports ((-webkit-backdrop-filter: blur(16px)) or (backdrop-filter: blur(16px))) {
@@ -87,7 +91,7 @@ body {
 
 @media (prefers-reduced-transparency: reduce) {
   .glass {
-    background: #1a1c18;
+    background: var(--color-night);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

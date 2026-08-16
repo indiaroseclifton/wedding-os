@@ -131,7 +131,7 @@ export function CommandPalette() {
                 if (e.key === "Enter" && items[active]) go(items[active].href);
               }}
               placeholder="Jump to a room, guest, vendor…"
-              className="w-full border-b border-white/10 bg-transparent px-4 py-3 text-sm text-[#f6f1e8] outline-none placeholder:text-white/40"
+              className="w-full border-b border-white/10 bg-transparent px-4 py-3 text-sm text-ivory outline-none placeholder:text-white/40"
             />
             <ul className="max-h-80 overflow-y-auto py-1">
               {items.map((item, i) => (
