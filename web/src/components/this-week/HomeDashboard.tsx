@@ -138,6 +138,9 @@ export function HomeDashboard({
       <ToolTable />
 
       <section>
+        <div className="mb-4 flex items-end justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Rooms</p>
             <h2 className="font-serif text-3xl">Where you work</h2>
           </div>
           <Link href="/rooms" className="text-xs text-muted underline">
