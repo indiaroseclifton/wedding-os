@@ -78,3 +78,19 @@ export async function addBudgetLine(
   };
   return saveBudget(workspaceId, { lines: [...budget.lines, line] });
 }
+
+export async function updateBudgetLine(
+  workspaceId: string,
+  id: string,
+  patch: Partial<Pick<BudgetLine, "category" | "label" | "planned" | "actual">>
+) {
+  const budget = await getBudget(workspaceId);
+  return saveBudget(workspaceId, {
+    lines: budget.lines.map((line) => (line.id === id ? { ...line, ...patch } : line)),
+  });
+}
+
+export async function deleteBudgetLine(workspaceId: string, id: string) {
+  const budget = await getBudget(workspaceId);
+  return saveBudget(workspaceId, { lines: budget.lines.filter((line) => line.id !== id) });
+}

@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
-import { addBudgetLine, getBudget, saveBudget } from "@/lib/data/budget-store";
+import {
+  addBudgetLine,
+  deleteBudgetLine,
+  getBudget,
+  saveBudget,
+  updateBudgetLine,
+} from "@/lib/data/budget-store";
 import { requiredString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -28,9 +34,24 @@ export async function POST(request: Request) {
       });
       return NextResponse.json({ budget });
     }
+    if (body.action === "update_line") {
+      const budget = await updateBudgetLine(workspace.id, String(body.id), {
+        category: body.category,
+        label: body.label,
+        planned: body.planned == null ? undefined : Number(body.planned) || 0,
+        actual: body.actual == null ? undefined : Number(body.actual) || 0,
+      });
+      return NextResponse.json({ budget });
+    }
+    if (body.action === "delete_line") {
+      const budget = await deleteBudgetLine(workspace.id, String(body.id));
+      return NextResponse.json({ budget });
+    }
     if (body.action === "set_limit") {
       const budget = await saveBudget(workspace.id, {
-        overallLimit: Number(body.overallLimit) || undefined,
+        overallLimit: body.overallLimit === "" || body.overallLimit == null
+          ? undefined
+          : Number(body.overallLimit) || 0,
       });
       return NextResponse.json({ budget });
     }

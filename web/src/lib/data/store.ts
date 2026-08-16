@@ -446,21 +446,34 @@ export async function assignGuestToTable(guestId: string, tableName: string | nu
 export async function getWorkspaceMeta(workspaceId: string, fallbackName: string) {
   await ensureFile(workspaceMetaFile, "{}");
   const raw = await readText(workspaceMetaFile);
-  const all = JSON.parse(raw || "{}") as Record<string, { name?: string; weddingDate?: string }>;
+  const all = JSON.parse(raw || "{}") as Record<
+    string,
+    { name?: string; weddingDate?: string; location?: string; coupleNames?: string }
+  >;
   if (!all[workspaceId]) {
     all[workspaceId] = { name: fallbackName };
     await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
   }
-  return { workspaceId, name: all[workspaceId].name || fallbackName, weddingDate: all[workspaceId].weddingDate };
+  const row = all[workspaceId];
+  return {
+    workspaceId,
+    name: row.name || fallbackName,
+    weddingDate: row.weddingDate,
+    location: row.location,
+    coupleNames: row.coupleNames,
+  };
 }
 
 export async function saveWorkspaceMeta(
   workspaceId: string,
-  patch: { name?: string; weddingDate?: string }
+  patch: { name?: string; weddingDate?: string; location?: string; coupleNames?: string }
 ) {
   await ensureFile(workspaceMetaFile, "{}");
   const raw = await readText(workspaceMetaFile);
-  const all = JSON.parse(raw || "{}") as Record<string, { name?: string; weddingDate?: string }>;
+  const all = JSON.parse(raw || "{}") as Record<
+    string,
+    { name?: string; weddingDate?: string; location?: string; coupleNames?: string }
+  >;
   all[workspaceId] = { ...all[workspaceId], ...patch };
   await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
   return all[workspaceId];

@@ -6,6 +6,7 @@ import {
   getWorkspaceInvites,
   getWorkspaceMembers,
 } from "@/lib/data/workspace";
+import { sendAppEmail, requestOrigin } from "@/lib/email/send";
 import { optionalString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -31,9 +32,28 @@ export async function POST(request: Request) {
       name: optionalString(body.name, 120),
       role: body.role === "COUPLE" ? "COUPLE" : "WEDDING_PARTY",
     });
+    const invitePath = `/invite/${invite.token}`;
+    let emailed = false;
+    let emailError: string | undefined;
+    if (invite.email) {
+      const origin = requestOrigin(request);
+      const link = `${origin}${invitePath}`;
+      const result = await sendAppEmail({
+        to: invite.email,
+        subject: `You're invited to help plan ${workspace.name}`,
+        text: `${invite.name || "Hey"} — open this link to join the wedding party portal:\n${link}`,
+        html: `<p>${invite.name || "Hey"} — you're invited to help plan <strong>${workspace.name}</strong>.</p>
+<p><a href="${link}">Open your invite</a></p>
+<p style="color:#64748b;font-size:13px">If the button doesn't work: ${link}</p>`,
+      });
+      emailed = result.ok;
+      if (!result.ok) emailError = result.error;
+    }
     return NextResponse.json({
       invite,
-      invitePath: `/invite/${invite.token}`,
+      invitePath,
+      emailed,
+      emailError,
     });
   } catch (error) {
     if (error instanceof ValidationError) {

@@ -1,17 +1,52 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SettingsPage() {
   const router = useRouter();
   const [msg, setMsg] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [name, setName] = useState("");
+  const [coupleNames, setCoupleNames] = useState("");
+  const [weddingDate, setWeddingDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/workspace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data?.meta) return;
+        setName(data.meta.name || "");
+        setCoupleNames(data.meta.coupleNames || "");
+        setWeddingDate(data.meta.weddingDate || "");
+        setLocation(data.meta.location || "");
+      })
+      .catch(() => {});
+  }, []);
+
+  async function saveDetails(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setMsg(null);
+    const res = await fetch("/api/workspace", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, coupleNames, weddingDate, location }),
+    });
+    setSaving(false);
+    if (!res.ok) {
+      setMsg("Could not save wedding details");
+      return;
+    }
+    setMsg("Wedding details saved");
+    router.refresh();
+  }
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-    // Clear demo cookie client-side as well
     document.cookie = "wedding_os_user=; Max-Age=0; path=/";
     router.push("/login");
     router.refresh();
@@ -26,7 +61,7 @@ export default function SettingsPage() {
   async function resetSample() {
     if (!confirmReset) {
       setConfirmReset(true);
-      setMsg("This wipes local sample data and reseeds. Click again to confirm.");
+      setMsg("This wipes sample data and reseeds. Click again to confirm.");
       return;
     }
     setBusy(true);
@@ -52,14 +87,61 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-lg space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-slate-600">Demo session and sample data.</p>
+        <p className="mt-1 text-sm text-slate-600">Your wedding, session, and sample data.</p>
       </div>
+
+      <form onSubmit={saveDetails} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <p className="font-medium">Wedding</p>
+        <label className="block">
+          <span className="text-xs font-medium text-slate-600">Wedding name</span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
+        <label className="block">
+          <span className="text-xs font-medium text-slate-600">Couple names</span>
+          <input
+            value={coupleNames}
+            onChange={(e) => setCoupleNames(e.target.value)}
+            placeholder="India & …"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block">
+            <span className="text-xs font-medium text-slate-600">Date</span>
+            <input
+              type="date"
+              value={weddingDate}
+              onChange={(e) => setWeddingDate(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs font-medium text-slate-600">City</span>
+            <input
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Atlanta, GA"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+        </div>
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+        >
+          {saving ? "Saving…" : "Save wedding details"}
+        </button>
+      </form>
 
       <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 text-sm">
         <p className="font-medium">Session</p>
-        <p className="text-slate-600">
-          Demo auth uses Alex / Jordan cookies. Log out to switch users.
-        </p>
+        <p className="text-slate-600">Sign out to switch accounts or use a demo person.</p>
         <button
           type="button"
           onClick={logout}
@@ -72,7 +154,7 @@ export default function SettingsPage() {
       <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 text-sm">
         <p className="font-medium">Sample data</p>
         <p className="text-slate-600">
-          Adds a few guests, vendors, and tasks once per local data folder.
+          Adds a few guests, vendors, and tasks so you can click around. Reset wipes and reseeds.
         </p>
         <button
           type="button"
@@ -81,10 +163,6 @@ export default function SettingsPage() {
         >
           Load sample data
         </button>
-        <p className="pt-2 text-slate-600">
-          Reset wipes the local data folder and reseeds. Use this after a messy
-          demo — do not force-seed without a wipe (that duplicates rows).
-        </p>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"

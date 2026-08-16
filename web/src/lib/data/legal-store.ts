@@ -76,3 +76,23 @@ export async function patchLegalItem(
   const items = current.items.map((i) => (i.id === itemId ? { ...i, ...patch } : i));
   return saveLegal(workspaceId, { items });
 }
+
+export async function addLegalItem(
+  workspaceId: string,
+  input: { title: string; category?: string; dueDate?: string }
+) {
+  const current = await getLegal(workspaceId);
+  const item: LegalItem = {
+    id: randomUUID(),
+    title: input.title,
+    category: input.category || "Other",
+    dueDate: input.dueDate,
+    done: false,
+  };
+  return saveLegal(workspaceId, { items: [...current.items, item] });
+}
+
+export async function deleteLegalItem(workspaceId: string, itemId: string) {
+  const current = await getLegal(workspaceId);
+  return saveLegal(workspaceId, { items: current.items.filter((i) => i.id !== itemId) });
+}

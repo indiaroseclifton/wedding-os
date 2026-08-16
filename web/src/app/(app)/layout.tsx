@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
-import { ensureEmailMember } from "@/lib/data/workspace";
+import { ensureDemoWorkspace, ensureEmailMember } from "@/lib/data/workspace";
 import { AppNav } from "@/components/layout/AppNav";
 
 export default async function AppLayout({
@@ -13,10 +13,15 @@ export default async function AppLayout({
   if (session.email && !session.email.endsWith("@example.com")) {
     await ensureEmailMember(session);
   }
+  const { workspace, meta } = await ensureDemoWorkspace();
 
   return (
     <div className="min-h-screen">
-      <AppNav userName={session.name} />
+      <AppNav
+        userName={session.name}
+        weddingName={workspace.name}
+        weddingDate={meta.weddingDate}
+      />
       <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
     </div>
   );

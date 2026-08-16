@@ -20,9 +20,18 @@ function taskOverdue(dueDate?: string, status?: string) {
   return due < today;
 }
 
+function daysUntil(date?: string) {
+  if (!date) return null;
+  const due = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(due.getTime())) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.round((due.getTime() - today.getTime()) / 86400000);
+}
+
 export default async function DashboardPage() {
   const session = await getSessionUser();
-  const { workspace } = await ensureDemoWorkspace();
+  const { workspace, meta } = await ensureDemoWorkspace();
   const [tasks, guests, decisions, vendors, packages, payments] = await Promise.all([
     getWorkspaceTasks(workspace.id),
     getWorkspaceGuests(workspace.id),
@@ -51,38 +60,52 @@ export default async function DashboardPage() {
     today.setHours(0, 0, 0, 0);
     return due < today;
   }).length;
-
-  const hasSeed = guests.length > 0 || vendors.length > 0 || tasks.length > 0;
+  const days = daysUntil(meta.weddingDate);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{workspace.name}</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Welcome{session ? `, ${session.name}` : ""}. {workspace.name}
+            Welcome{session ? `, ${session.name}` : ""}.
+            {meta.coupleNames ? ` ${meta.coupleNames}.` : ""}
+            {meta.location ? ` ${meta.location}.` : ""}
           </p>
         </div>
         <SeedButton />
       </div>
 
       <div className="rounded-xl border border-slate-900 bg-slate-900 p-4 text-white">
-        <p className="text-sm font-semibold">Milestone A happy path</p>
-        <p className="mt-1 text-xs text-slate-300">
-          Seed → decisions → guests → catering/DJ handoffs → party day-of.
-          Phase 2 modules can wait.
-        </p>
+        {days != null ? (
+          <>
+            <p className="text-3xl font-semibold tracking-tight">
+              {days === 0 ? "Today" : days > 0 ? `${days} days` : `${Math.abs(days)} days ago`}
+            </p>
+            <p className="mt-1 text-xs text-slate-300">
+              {days >= 0 ? "until the wedding" : "since the wedding"} · {meta.weddingDate}
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-sm font-semibold">Set your date</p>
+            <p className="mt-1 text-xs text-slate-300">
+              Add names, date, and city in Settings so this home screen is yours.
+            </p>
+          </>
+        )}
         <div className="mt-3 flex flex-wrap gap-2">
-          {!hasSeed && (
-            <span className="rounded-lg bg-white/10 px-3 py-1.5 text-xs">
-              Start with Load sample data
-            </span>
-          )}
           <Link
-            href="/demo"
+            href="/settings"
             className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-slate-900"
           >
-            Open demo walkthrough
+            Wedding details
+          </Link>
+          <Link
+            href="/people"
+            className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white"
+          >
+            Invite someone
           </Link>
         </div>
       </div>
@@ -126,36 +149,38 @@ export default async function DashboardPage() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
-          <p className="font-medium text-slate-900">Happy-path links</p>
+          <p className="font-medium text-slate-900">Keep planning</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
             <li>
-              <Link href="/demo" className="underline">
-                Demo walkthrough
+              <Link href="/guests" className="underline">
+                Guest list & RSVPs
               </Link>
             </li>
             <li>
-              <Link href="/dietary" className="underline">
-                Dietary → catering
+              <Link href="/budget" className="underline">
+                Budget vs payments
               </Link>
             </li>
             <li>
-              <Link href="/handoffs/new" className="underline">
-                New handoff
+              <Link href="/legal" className="underline">
+                License & admin
               </Link>
             </li>
             <li>
-              <Link href="/party" className="underline">
-                Party portal
+              <Link href="/day-of" className="underline">
+                Day-of board
               </Link>
             </li>
           </ul>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
-          <p className="font-medium text-slate-900">Phase 2 (later)</p>
+          <p className="font-medium text-slate-900">Share with the party</p>
           <p className="mt-2 text-slate-600">
-            Deeper seating studio, e-sign contracts, AI media, multi-event budgets,
-            production auth, and Neon as the default store.
+            People can email an invite. They land in a simpler portal for tasks, attire, and day-of.
           </p>
+          <Link href="/people" className="mt-3 inline-block text-xs font-medium underline">
+            Open People
+          </Link>
         </div>
       </div>
     </div>

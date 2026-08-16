@@ -3,6 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+function formatNavDate(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
   {
     label: "Core",
@@ -59,13 +69,26 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
   },
 ];
 
-export function AppNav({ userName }: { userName: string }) {
+export function AppNav({
+  userName,
+  weddingName,
+  weddingDate,
+}: {
+  userName: string;
+  weddingName?: string;
+  weddingDate?: string;
+}) {
   const pathname = usePathname();
 
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <p className="text-sm font-semibold tracking-tight">Wedding OS</p>
+        <div>
+          <p className="text-sm font-semibold tracking-tight">{weddingName || "Wedding OS"}</p>
+          {weddingDate && (
+            <p className="text-[11px] text-slate-500">{formatNavDate(weddingDate)}</p>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           <p className="text-xs text-slate-500">{userName}</p>
           <button

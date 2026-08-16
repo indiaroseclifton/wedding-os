@@ -24,5 +24,12 @@
 ## Phase 3
 - Demo deploy on Vercel (done)
 - Durable store via Neon / `JsonStore` (done)
-- Email magic-link login (Resend) — UI live; needs `RESEND_API_KEY`
+- Email magic-link login (Resend) (done)
 - Custom domain / email-from your domain (later)
+
+## Wave 4 (done)
+- Settings: wedding name, couple names, date, city
+- Dashboard countdown + your wedding name
+- People: email invite links via Resend
+- Budget: categories, cap, actuals, delete
+- Legal: add items, due dates, push open items to Timeline
