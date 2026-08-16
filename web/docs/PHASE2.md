@@ -126,6 +126,3 @@
 ## Wave 31 (done)
 - Locked night / ivory / champagne / clay-soft in Tailwind. No hex in components
 
-## Wave 32 (done)
-- Public process deck at /process — ideation to now
-

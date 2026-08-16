@@ -198,12 +198,6 @@ export default function SettingsPage() {
           )}
         </div>
         {msg && <p className="text-xs text-slate-500">{msg}</p>}
-        <p className="pt-2 text-xs text-muted">
-          <a href="/process" className="underline">
-            Process notes
-          </a>{" "}
-          — just for you.
-        </p>
       </div>
     </div>
   );
