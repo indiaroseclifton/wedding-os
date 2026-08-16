@@ -47,6 +47,36 @@ export function FloralStudio() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (!sel) return;
+      const step = e.shiftKey ? 4 : 1.5;
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        patch(sel, { x: Math.max(6, (pieces.find((p) => p.id === sel)?.x || 50) - step) });
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        patch(sel, { x: Math.min(94, (pieces.find((p) => p.id === sel)?.x || 50) + step) });
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        patch(sel, { y: Math.max(8, (pieces.find((p) => p.id === sel)?.y || 42) - step) });
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        patch(sel, { y: Math.min(88, (pieces.find((p) => p.id === sel)?.y || 42) + step) });
+      }
+      if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        setPieces((p) => p.filter((x) => x.id !== sel));
+        setSel(null);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [sel, pieces]);
+
   const library = STEMS.filter((s) => {
     if (kind !== "all" && s.kind !== kind) return false;
     if (story !== "all" && !s.stories.includes(story)) return false;
@@ -256,7 +286,7 @@ export function FloralStudio() {
                   key={s.id}
                   type="button"
                   onClick={() => setStory(s.id)}
-                  className={`flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] ${
+                  className={`min-h-11 rounded-full px-2.5 py-1 text-[11px] ${
                     story === s.id ? "bg-moss text-ivory" : "border border-line"
                   }`}
                 >
@@ -368,6 +398,7 @@ export function FloralStudio() {
                       key={p.id}
                       type="button"
                       onPointerDown={(e) => onPointerDown(e, p.id)}
+                      aria-label={`Place ${stem.name}`}
                       className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none rounded-full shadow-md ${
                         sel === p.id ? "ring-2 ring-moss" : ""
                       }`}
@@ -390,7 +421,7 @@ export function FloralStudio() {
                 })}
               {!pieces.length && (
                 <p className="absolute inset-0 flex items-center justify-center px-8 text-center text-sm text-ink/70">
-                  Tap a stem on the left — or steal a look from Inspiration.
+                  Tap a stem on the left — or steal a look from Inspiration. Select one and use the arrows to move it.
                 </p>
               )}
             </div>
@@ -403,6 +434,7 @@ export function FloralStudio() {
                     type="range"
                     min={-180}
                     max={180}
+                    aria-label="Rotate stem"
                     value={selected.rot}
                     onChange={(e) => patch(selected.id, { rot: Number(e.target.value) })}
                   />
@@ -413,6 +445,7 @@ export function FloralStudio() {
                     type="range"
                     min={50}
                     max={160}
+                    aria-label="Scale stem"
                     value={Math.round(selected.scale * 100)}
                     onChange={(e) => patch(selected.id, { scale: Number(e.target.value) / 100 })}
                   />

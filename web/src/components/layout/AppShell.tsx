@@ -56,6 +56,15 @@ export function AppShell({
     };
   }, [rooms]);
 
+  useEffect(() => {
+    if (!rooms) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setRooms(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [rooms]);
+
   async function signOut() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/login";
@@ -69,7 +78,7 @@ export function AppShell({
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${
+            className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${
               on ? "bg-white/70 font-medium text-ink shadow-sm backdrop-blur" : "text-ink-soft hover:bg-white/40"
             }`}
           >
@@ -81,7 +90,7 @@ export function AppShell({
       <button
         type="button"
         onClick={() => setRooms(true)}
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-ink-soft hover:bg-white/60"
+        className="flex w-full min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-ink-soft hover:bg-white/60"
       >
         <span className="inline-flex h-[18px] w-[18px] items-center justify-center text-lg leading-none">···</span>
         More
@@ -91,6 +100,9 @@ export function AppShell({
 
   return (
     <div className="relative min-h-screen bg-paper lg:flex">
+      <a href="#main" className="skip-link">
+        Skip to the desk
+      </a>
       <ThemeProvider />
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <img src={coverUrl || "/brand/tablescape.jpg"} alt="" className="h-full w-full object-cover opacity-[0.22]" />
@@ -130,7 +142,7 @@ export function AppShell({
             <Link
               href="/settings"
               aria-label="Settings"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-surface/50 text-ink backdrop-blur-md"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-surface/50 text-ink backdrop-blur-md"
             >
               <Icon name="settings" />
             </Link>
@@ -140,14 +152,14 @@ export function AppShell({
             <button
               type="button"
               onClick={() => setRooms(true)}
-              className="rounded-full border border-line px-3 py-2 text-xs font-medium lg:hidden"
+              className="min-h-11 rounded-full border border-line px-3 py-2 text-xs font-medium lg:hidden"
             >
               More
             </button>
           </div>
         </header>
 
-        <main className="px-4 py-5 pb-24 sm:px-6 lg:px-8 lg:py-7 lg:pb-10">{children}</main>
+        <main id="main" tabIndex={-1} className="px-4 py-5 pb-24 sm:px-6 lg:px-8 lg:py-7 lg:pb-10">{children}</main>
       </div>
 
       {rooms && (

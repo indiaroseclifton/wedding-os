@@ -221,7 +221,7 @@ export default function SettingsPage() {
                   set("glass", g.id);
                   applyLook({ glass: g.id });
                 }}
-                className={`rounded-full px-3 py-1.5 text-xs ${
+                className={`min-h-11 rounded-full px-3 py-1.5 text-xs ${
                   form.glass === g.id ? "bg-moss text-ivory" : "border border-line"
                 }`}
               >
@@ -229,6 +229,11 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+          {form.glass === "high" && (
+            <p className="mt-2 text-xs text-clay">
+              Frost looks beautiful and can fail contrast on busy photos. Use Matte if anyone is reading this in bright sun.
+            </p>
+          )}
         </div>
         <div>
           <p className="mb-1 text-xs text-muted">Spacing</p>
@@ -414,7 +419,11 @@ export default function SettingsPage() {
       >
         {saving ? "Saving…" : "Save settings"}
       </button>
-      {msg && <p className="text-xs text-moss">{msg}</p>}
+      {msg && (
+        <p role="status" aria-live="polite" className="text-xs text-moss">
+          {msg}
+        </p>
+      )}
 
       <section className="space-y-3 glass-panel rounded-2xl p-5 text-sm">
         <p className="font-medium">Phone</p>

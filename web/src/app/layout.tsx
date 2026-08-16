@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist } from "next/font/google";
+import { MotionRoot } from "@/components/motion";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -48,10 +49,12 @@ export default function RootLayout({
     <html lang="en" className={`${fraunces.variable} ${geist.variable}`}>
       <script
         dangerouslySetInnerHTML={{
-          __html: `try{var m=document.cookie.match(/wedding_os_theme=([^;]+)/);if(m)document.documentElement.dataset.theme=m[1]}catch(e){}`,
+          __html: `try{var t=document.cookie.match(/wedding_os_theme=([^;]+)/);if(t)document.documentElement.dataset.theme=t[1];var g=document.cookie.match(/wedding_os_glass=([^;]+)/);if(g)document.documentElement.dataset.glass=g[1];var d=document.cookie.match(/wedding_os_density=([^;]+)/);if(d)document.documentElement.dataset.density=d[1];var y=document.cookie.match(/wedding_os_type=([^;]+)/);if(y)document.documentElement.dataset.type=y[1]}catch(e){}`,
         }}
       />
-      <body className="min-h-screen bg-paper font-sans text-ink antialiased">{children}</body>
+      <body className="min-h-screen bg-paper font-sans text-ink antialiased">
+        <MotionRoot>{children}</MotionRoot>
+      </body>
     </html>
   );
 }

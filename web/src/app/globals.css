@@ -5,7 +5,7 @@
   --color-surface: #fffcf7;
   --color-ink: #12110f;
   --color-ink-soft: #5a564f;
-  --color-muted: #7a756c;
+  --color-muted: #5c5850;
   --color-line: #e4e0d8;
   --color-moss: #1c3d32;
   --color-moss-fg: #f6f5f2;
@@ -279,6 +279,64 @@ body {
     background: var(--color-surface);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 80;
+  border-radius: 999px;
+  background: var(--color-moss);
+  color: var(--color-moss-fg);
+  padding: 0.6rem 1rem;
+  font-size: 0.875rem;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 3px;
+}
+
+html {
+  scroll-padding-top: 5.5rem;
+}
+
+.hit {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .group:hover img,
+  img {
+    transform: none !important;
   }
 }
 
