@@ -35,6 +35,7 @@ export default function DirectoryProfilePage() {
   const [message, setMessage] = useState("");
   const [replyEmail, setReplyEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [history, setHistory] = useState<{ message: string; createdAt: string }[]>([]);
   const [mailNote, setMailNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [missing, setMissing] = useState(false);
@@ -51,6 +52,7 @@ export default function DirectoryProfilePage() {
     setListing(found);
     setSaved((data.shortlist || []).includes(slug));
     setHired((data.hiredSlugs || []).includes(slug));
+    setHistory((data.inquiries || []).filter((i: { slug: string }) => i.slug === slug));
     setSent((data.inquiries || []).some((i: { slug: string }) => i.slug === slug));
     if (data.yourEmail && !data.yourEmail.endsWith("@example.com")) {
       setReplyEmail((prev) => prev || data.yourEmail);
@@ -74,6 +76,9 @@ export default function DirectoryProfilePage() {
       if (body.action === "shortlist") setSaved((data.shortlist || []).includes(slug));
       if (body.action === "inquire") {
         setSent(true);
+        if (Array.isArray(data.inquiries)) {
+          setHistory(data.inquiries.filter((i: { slug: string }) => i.slug === slug));
+        }
         const bits = [];
         if (data.emailedYou) bits.push("copy emailed to you");
         if (data.emailedVendor) bits.push("sent to the vendor");
@@ -203,8 +208,18 @@ export default function DirectoryProfilePage() {
       >
         <p className="text-sm font-medium">Ask a question</p>
         <p className="text-xs text-slate-500">
-          Saves on your shortlist and emails a copy to you. Demo listings don't have a real inbox yet.
+          Saves on your shortlist and emails a copy to you. If they’re already on My vendors, it lands on their thread.
         </p>
+        {history.length > 0 && (
+          <ul className="space-y-2 rounded-lg bg-slate-50 p-3">
+            {history.map((h) => (
+              <li key={h.createdAt + h.message.slice(0, 12)} className="text-xs">
+                <p className="text-slate-500">You · {h.createdAt.slice(0, 10)}</p>
+                <p className="whitespace-pre-wrap text-slate-800">{h.message}</p>
+              </li>
+            ))}
+          </ul>
+        )}
         <input
           type="email"
           value={replyEmail}

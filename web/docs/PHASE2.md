@@ -70,3 +70,8 @@
 - ROS rain plan, party assignee, vendor comments + confirm, “got it”
 - Day-of packet print, DIY week-of beats + calendar + bar/cake-table
 - Hire vs DIY on budget; vendor inquiry thread; shortlist compare
+
+## Wave 17 (done)
+- Directory inquire copies onto the vendor when you hire
+- Listing shows messages you already sent
+- Vendor thread: You / Them + Email again

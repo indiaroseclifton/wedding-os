@@ -1,7 +1,13 @@
 import path from "path";
 import { dataDir, ensureDir, readText, writeText } from "./store-io";
 import { getDirectoryVendor } from "./vendor-directory";
-import { createVendor, listVendors } from "./vendors-store";
+import {
+  appendVendorInquiry,
+  createVendor,
+  listVendors,
+  mergeInquiries,
+  updateVendor,
+} from "./vendors-store";
 
 const file = path.join(dataDir, "directory.json");
 
@@ -67,13 +73,23 @@ export async function addInquiry(workspaceId: string, slug: string, message: str
   const shortlist = current.shortlist.includes(slug)
     ? current.shortlist
     : [...current.shortlist, slug];
-  return save(workspaceId, {
+  const createdAt = new Date().toISOString();
+  const next = await save(workspaceId, {
     shortlist,
     inquiries: [
       ...current.inquiries,
-      { slug, message: message.slice(0, 2000), createdAt: new Date().toISOString() },
+      { slug, message: message.slice(0, 2000), createdAt },
     ],
   });
+  const hired = (await listVendors(workspaceId)).find((v) => v.directorySlug === slug);
+  if (hired) {
+    await appendVendorInquiry(hired.id, {
+      at: createdAt,
+      direction: "out",
+      body: message.slice(0, 2000),
+    });
+  }
+  return next;
 }
 
 export async function hireFromDirectory(
@@ -83,8 +99,22 @@ export async function hireFromDirectory(
 ) {
   const listing = getDirectoryVendor(slug);
   if (!listing) throw new Error("Unknown listing");
+  const dir = await getDirectoryState(workspaceId);
+  const copied = dir.inquiries
+    .filter((i) => i.slug === slug)
+    .map((i) => ({
+      id: `dir-${i.createdAt}`,
+      at: i.createdAt,
+      direction: "out" as const,
+      body: i.message,
+    }));
   const existing = (await listVendors(workspaceId)).find((v) => v.directorySlug === slug);
-  if (existing) return { vendor: existing, created: false };
+  if (existing) {
+    const vendor = await updateVendor(existing.id, {
+      inquiries: mergeInquiries(existing.inquiries || [], copied),
+    });
+    return { vendor: vendor || existing, created: false };
+  }
   const vendor = await createVendor({
     workspaceId,
     name: listing.name,
@@ -93,6 +123,7 @@ export async function hireFromDirectory(
     email: listing.email,
     notes: `${listing.blurb}\n\n${listing.afterBook}`,
     directorySlug: slug,
+    inquiries: copied,
   });
   return { vendor, created: true };
 }

@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
-import { getVendor, updateVendor } from "@/lib/data/vendors-store";
+import { appendVendorInquiry, getVendor, updateVendor } from "@/lib/data/vendors-store";
 import {
   listPayments,
   paymentsForVendor,
   patchPayment,
   upsertVendorMilestone,
 } from "@/lib/data/payments-store";
-import { ensureDemoWorkspace } from "@/lib/data/workspace";
+import { ensureDemoWorkspace, loadWorkspaceMeta } from "@/lib/data/workspace";
+import { sendInquiryEmails } from "@/lib/email/resend";
 
 export async function GET(
   _request: Request,
@@ -109,20 +110,43 @@ export async function POST(
   }
 
   if (body.action === "note") {
-    const vendor = await getVendor(id);
-    if (!vendor) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    const inquiries: NonNullable<(typeof vendor)["inquiries"]> = [
-      ...(vendor.inquiries || []),
-      {
-        id: crypto.randomUUID(),
-        at: new Date().toISOString(),
-        direction: (body.direction === "in" ? "in" : "out") as "in" | "out",
-        body: String(body.body || "").slice(0, 2000),
-      },
-    ];
-    const next = await updateVendor(id, { inquiries });
+    const next = await appendVendorInquiry(id, {
+      direction: body.direction === "in" ? "in" : "out",
+      body: String(body.body || ""),
+    });
     const payments = paymentsForVendor(await listPayments(workspace.id), vendor);
     return NextResponse.json({ vendor: next, payments });
+  }
+
+  if (body.action === "email") {
+    const text = String(body.body || "").trim();
+    if (!text) return NextResponse.json({ error: "Write a note first" }, { status: 400 });
+    const replyEmail = String(body.replyEmail || access.session.email || "").trim();
+    const meta = await loadWorkspaceMeta(workspace.id, workspace.name);
+    const mailed = await sendInquiryEmails({
+      coupleTo: replyEmail,
+      vendorTo: vendor.email,
+      vendorName: vendor.name,
+      coupleName: access.session.name || meta.coupleNames || "The couple",
+      weddingName: meta.name || workspace.name,
+      date: meta.weddingDate,
+      location: meta.location,
+      replyEmail,
+      message: text,
+    });
+    const next = await appendVendorInquiry(id, {
+      direction: "out",
+      body: text,
+      emailedAt: mailed.emailedYou || mailed.emailedVendor ? new Date().toISOString() : undefined,
+    });
+    const payments = paymentsForVendor(await listPayments(workspace.id), vendor);
+    return NextResponse.json({
+      vendor: next,
+      payments,
+      emailedYou: mailed.emailedYou,
+      emailedVendor: mailed.emailedVendor,
+      emailError: mailed.error || undefined,
+    });
   }
 
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });

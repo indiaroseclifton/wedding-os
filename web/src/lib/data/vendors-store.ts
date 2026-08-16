@@ -4,6 +4,14 @@ import { dataDir, readJson, writeJson } from "./store-io";
 
 const vendorsFile = path.join(dataDir, "vendors.json");
 
+export type VendorInquiry = {
+  id: string;
+  at: string;
+  direction: "out" | "in";
+  body: string;
+  emailedAt?: string;
+};
+
 export type StoredVendor = {
   id: string;
   workspaceId: string;
@@ -16,7 +24,7 @@ export type StoredVendor = {
   website?: string;
   notes?: string;
   contractUrl?: string;
-  inquiries?: { id: string; at: string; direction: "out" | "in"; body: string }[];
+  inquiries?: VendorInquiry[];
   directorySlug?: string;
   createdAt: string;
   updatedAt: string;
@@ -58,4 +66,26 @@ export async function deleteVendor(id: string) {
   if (next.length === rows.length) return false;
   await writeJson(vendorsFile, next);
   return true;
+}
+
+export function mergeInquiries(existing: VendorInquiry[], incoming: VendorInquiry[]) {
+  const have = new Set(existing.map((e) => `${e.at}|${e.body}`));
+  const extra = incoming.filter((i) => !have.has(`${i.at}|${i.body}`));
+  return [...existing, ...extra].sort((a, b) => a.at.localeCompare(b.at));
+}
+
+export async function appendVendorInquiry(
+  id: string,
+  note: Omit<VendorInquiry, "id" | "at"> & { id?: string; at?: string }
+) {
+  const row = await getVendor(id);
+  if (!row) return null;
+  const next: VendorInquiry = {
+    id: note.id || randomUUID(),
+    at: note.at || new Date().toISOString(),
+    direction: note.direction,
+    body: note.body.slice(0, 2000),
+    emailedAt: note.emailedAt,
+  };
+  return updateVendor(id, { inquiries: mergeInquiries(row.inquiries || [], [next]) });
 }

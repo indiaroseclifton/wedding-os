@@ -14,7 +14,7 @@ type Vendor = {
   website?: string;
   notes?: string;
   contractUrl?: string;
-  inquiries?: { id: string; at: string; direction: "out" | "in"; body: string }[];
+  inquiries?: { id: string; at: string; direction: "out" | "in"; body: string; emailedAt?: string }[];
 };
 
 type Payment = {
@@ -43,6 +43,7 @@ export default function VendorDetailPage() {
   const [finalDue, setFinalDue] = useState("");
   const [finalPaid, setFinalPaid] = useState(false);
   const [threadBody, setThreadBody] = useState("");
+  const [threadDir, setThreadDir] = useState<"out" | "in">("out");
   const [busy, setBusy] = useState(false);
 
   function apply(data: { vendor?: Vendor; payments?: Payment[] }) {
@@ -281,7 +282,7 @@ export default function VendorDetailPage() {
           const res = await fetch(`/api/vendors/${id}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "note", body: threadBody, direction: "out" }),
+            body: JSON.stringify({ action: "note", body: threadBody, direction: threadDir }),
           });
           if (res.ok) {
             apply(await res.json());
@@ -291,28 +292,86 @@ export default function VendorDetailPage() {
         className="space-y-2 rounded-xl border border-slate-200 bg-white p-4"
       >
         <p className="text-sm font-semibold">Inquiry thread</p>
+        <p className="text-xs text-slate-500">
+          Asks from Browse land here when you add them. Paste their reply as Them.
+        </p>
         <ul className="space-y-2 text-sm">
           {(vendor.inquiries || []).map((m) => (
-            <li key={m.id} className="rounded-lg bg-slate-50 px-3 py-2">
+            <li
+              key={m.id}
+              className={`rounded-lg px-3 py-2 ${
+                m.direction === "in" ? "bg-emerald-50" : "bg-slate-50"
+              }`}
+            >
               <p className="text-[11px] text-slate-500">
                 {m.direction === "in" ? "Them" : "You"} · {m.at.slice(0, 10)}
+                {m.emailedAt ? " · emailed" : ""}
               </p>
-              <p>{m.body}</p>
+              <p className="whitespace-pre-wrap">{m.body}</p>
             </li>
           ))}
           {!(vendor.inquiries || []).length && (
-            <li className="text-xs text-slate-500">Paste emails you sent or they replied.</li>
+            <li className="text-xs text-slate-500">Nothing yet — send from Browse or add a note.</li>
           )}
         </ul>
+        <div className="flex gap-2 text-xs">
+          <button
+            type="button"
+            onClick={() => setThreadDir("out")}
+            className={`rounded-full px-2.5 py-1 ${
+              threadDir === "out" ? "bg-slate-900 text-white" : "border border-slate-300"
+            }`}
+          >
+            You
+          </button>
+          <button
+            type="button"
+            onClick={() => setThreadDir("in")}
+            className={`rounded-full px-2.5 py-1 ${
+              threadDir === "in" ? "bg-slate-900 text-white" : "border border-slate-300"
+            }`}
+          >
+            Them
+          </button>
+        </div>
         <textarea
           value={threadBody}
           onChange={(e) => setThreadBody(e.target.value)}
           rows={2}
+          placeholder={threadDir === "in" ? "Paste their reply…" : "What you asked…"}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
         />
-        <button type="submit" className="text-xs underline">
-          Add note
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button type="submit" className="text-xs underline">
+            Save note
+          </button>
+          <button
+            type="button"
+            disabled={busy || !threadBody.trim()}
+            onClick={async () => {
+              setBusy(true);
+              setMsg(null);
+              const res = await fetch(`/api/vendors/${id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "email", body: threadBody }),
+              });
+              const data = await res.json().catch(() => ({}));
+              setBusy(false);
+              if (res.ok) {
+                apply(data);
+                setThreadBody("");
+                const bits = [];
+                if (data.emailedYou) bits.push("copy to you");
+                if (data.emailedVendor) bits.push("sent to vendor");
+                setMsg(bits.length ? `Emailed: ${bits.join(", ")}` : data.emailError || "Saved (demo inbox skipped)");
+              } else setMsg(data.error || "Could not send");
+            }}
+            className="text-xs underline disabled:opacity-50"
+          >
+            Email again
+          </button>
+        </div>
       </form>
 
       <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
