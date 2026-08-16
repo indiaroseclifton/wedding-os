@@ -3,14 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FAITHS } from "@/lib/preferences";
+import { ENTER_CARDS, SHAPE_CARDS, type EnterHow, type WeddingShape } from "@/lib/shape";
 import { Icon } from "@/components/icons";
 
-const STEPS = ["When", "Where", "Faith", "Make or hire"];
+const STEPS = ["Shape", "Enter", "When", "Where", "Faith", "Make"];
 
 export default function OnboardPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [shape, setShape] = useState<WeddingShape>("weekend");
+  const [enterHow, setEnterHow] = useState<EnterHow>("one-then");
   const [weddingDate, setWeddingDate] = useState("");
+  const [gatheringDate, setGatheringDate] = useState("");
   const [location, setLocation] = useState("");
   const [faith, setFaith] = useState("none");
   const [diyBias, setDiyBias] = useState<"hire" | "diy" | "mix">("mix");
@@ -23,7 +27,10 @@ export default function OnboardPage() {
       .then((d) => {
         if (!d?.meta) return;
         if (d.meta.onboarded) router.replace("/dashboard");
+        if (d.meta.shape) setShape(d.meta.shape);
+        if (d.meta.enterHow) setEnterHow(d.meta.enterHow);
         if (d.meta.weddingDate) setWeddingDate(d.meta.weddingDate);
+        if (d.meta.gatheringDate) setGatheringDate(d.meta.gatheringDate);
         if (d.meta.location) setLocation(d.meta.location);
         if (d.meta.faith) setFaith(d.meta.faith);
         if (d.meta.diyBias) setDiyBias(d.meta.diyBias);
@@ -38,11 +45,15 @@ export default function OnboardPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        shape,
+        enterHow,
         weddingDate,
+        gatheringDate: shape === "two" ? gatheringDate : undefined,
         location,
         faith,
         diyBias,
         onboarded: true,
+        applyShapeDefaults: true,
       }),
     });
     setBusy(false);
@@ -55,38 +66,89 @@ export default function OnboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg space-y-8 py-6">
+    <div className="mx-auto max-w-2xl space-y-8 py-6">
       <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">Four questions</p>
-        <h1 className="mt-2 font-serif text-4xl">We’ll build the desk around this.</h1>
-        <p className="mt-2 text-sm text-muted">
-          Date, city, tradition, and whether you’re hiring or making. The checklist and vendors follow.
+        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">The desk follows this</p>
+        <h1 className="mt-2 font-serif text-4xl sm:text-5xl">What kind of day is it?</h1>
+        <p className="mt-2 max-w-lg text-sm text-muted">
+          Not a theme. Whether there’s an aisle, a dinner, or just the two of you. Everything else reads this.
         </p>
       </div>
 
       <ol className="flex gap-2">
         {STEPS.map((s, i) => (
-          <li
-            key={s}
-            className={`h-1 flex-1 rounded-full ${i <= step ? "bg-moss" : "bg-line"}`}
-          />
+          <li key={s} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-moss" : "bg-line"}`} />
         ))}
       </ol>
 
       {step === 0 && (
-        <label className="block space-y-2">
-          <span className="flex items-center gap-2 text-sm font-medium">
-            <Icon name="calendar" /> When is the day?
-          </span>
-          <input
-            type="date"
-            value={weddingDate}
-            onChange={(e) => setWeddingDate(e.target.value)}
-            className="w-full rounded-xl border border-line bg-surface px-3 py-3"
-          />
-        </label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {SHAPE_CARDS.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setShape(c.id)}
+              className={`overflow-hidden rounded-[1.4rem] border text-left transition ${
+                shape === c.id ? "border-moss ring-2 ring-moss/30" : "border-line"
+              }`}
+            >
+              <img src={c.cover} alt="" className="h-32 w-full object-cover" />
+              <div className="bg-surface px-4 py-3">
+                <p className="font-serif text-2xl leading-tight">{c.title}</p>
+                <p className="mt-1 text-xs text-muted">{c.line}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       )}
+
       {step === 1 && (
+        <div className="space-y-3">
+          <p className="text-sm font-medium">How do you enter?</p>
+          {ENTER_CARDS.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setEnterHow(c.id)}
+              className={`w-full rounded-2xl border px-4 py-4 text-left ${
+                enterHow === c.id ? "border-moss bg-moss-soft" : "border-line bg-surface"
+              }`}
+            >
+              <p className="font-serif text-xl">{c.title}</p>
+              <p className="mt-1 text-xs text-muted">{c.line}</p>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="space-y-4">
+          <label className="block space-y-2">
+            <span className="flex items-center gap-2 text-sm font-medium">
+              <Icon name="calendar" /> {shape === "two" ? "When do you marry?" : "When is the day?"}
+            </span>
+            <input
+              type="date"
+              value={weddingDate}
+              onChange={(e) => setWeddingDate(e.target.value)}
+              className="w-full rounded-xl border border-line bg-surface px-3 py-3"
+            />
+          </label>
+          {shape === "two" && (
+            <label className="block space-y-2">
+              <span className="text-sm font-medium">When do you gather?</span>
+              <input
+                type="date"
+                value={gatheringDate}
+                onChange={(e) => setGatheringDate(e.target.value)}
+                className="w-full rounded-xl border border-line bg-surface px-3 py-3"
+              />
+            </label>
+          )}
+        </div>
+      )}
+
+      {step === 3 && (
         <label className="block space-y-2">
           <span className="flex items-center gap-2 text-sm font-medium">
             <Icon name="pin" /> Which city?
@@ -99,7 +161,8 @@ export default function OnboardPage() {
           />
         </label>
       )}
-      {step === 2 && (
+
+      {step === 4 && (
         <div className="space-y-3">
           <p className="flex items-center gap-2 text-sm font-medium">
             <Icon name="heart" /> Any religious or cultural ceremony?
@@ -120,15 +183,16 @@ export default function OnboardPage() {
           </div>
         </div>
       )}
-      {step === 3 && (
+
+      {step === 5 && (
         <div className="space-y-3">
           <p className="flex items-center gap-2 text-sm font-medium">
             <Icon name="flower" /> Hire the work, or make it?
           </p>
           {(
             [
-              ["hire", "Hire vendors", "We’ll point you at florists, cake, tables."],
-              ["diy", "Mostly DIY", "Playbooks, lists, cost compare — like you did the flowers."],
+              ["hire", "Hire vendors", "We’ll point you at the people this day actually needs."],
+              ["diy", "Mostly DIY", "Playbooks and lists — no fake ballroom."],
               ["mix", "A mix", "Pick a lane per category later."],
             ] as const
           ).map(([id, title, line]) => (
@@ -149,15 +213,15 @@ export default function OnboardPage() {
 
       <div className="flex flex-wrap gap-2">
         {step > 0 && (
-          <button type="button" onClick={() => setStep((s) => s - 1)} className="rounded-full border border-line px-4 py-2 text-sm">
+          <button type="button" onClick={() => setStep((s) => s - 1)} className="min-h-11 rounded-full border border-line px-4 text-sm">
             Back
           </button>
         )}
-        {step < 3 ? (
+        {step < 5 ? (
           <button
             type="button"
             onClick={() => setStep((s) => s + 1)}
-            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-ivory"
+            className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory"
           >
             Continue
           </button>
@@ -166,7 +230,7 @@ export default function OnboardPage() {
             type="button"
             disabled={busy}
             onClick={finish}
-            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-ivory disabled:opacity-50"
+            className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
           >
             {busy ? "Building…" : "Open my desk"}
           </button>

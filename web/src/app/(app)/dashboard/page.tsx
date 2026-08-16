@@ -6,11 +6,13 @@ import { getMoodboard } from "@/lib/data/moodboard-store";
 import { loadThisWeek } from "@/lib/this-week";
 import { morningBrief, nextBestAction, loadSuggestions } from "@/lib/smart-home";
 import { HomeDashboard } from "@/components/this-week/HomeDashboard";
+import { nextShapeDate } from "@/lib/shape";
 
 export default async function DashboardPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
+  const countDate = nextShapeDate(meta.weddingDate, meta.gatheringDate) || meta.weddingDate;
   const [week, budget, payments, media, mood] = await Promise.all([
-    loadThisWeek(workspace.id, meta.weddingDate),
+    loadThisWeek(workspace.id, countDate),
     getBudget(workspace.id),
     listPayments(workspace.id),
     getMedia(workspace.id),
@@ -38,6 +40,7 @@ export default async function DashboardPage() {
       suggestions={await loadSuggestions(workspace.id, week.days, spent, cap)}
       onboarded={meta.onboarded === true}
       firstWalkDone={meta.firstWalkDone === true}
+      shape={meta.shape}
     />
   );
 }

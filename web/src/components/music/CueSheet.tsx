@@ -17,6 +17,7 @@ export function CueSheet({
   noLineDances,
   announceNames,
   onMeta,
+  hiddenIds,
 }: {
   cues: MusicCue[];
   onChange: (next: MusicCue[]) => void;
@@ -25,10 +26,16 @@ export function CueSheet({
   noLineDances: boolean;
   announceNames: string;
   onMeta: (p: { genres?: string; energy?: string; noLineDances?: boolean; announceNames?: string }) => void;
+  hiddenIds?: string[];
 }) {
+  const hide = new Set(hiddenIds || []);
   const [act, setAct] = useState<(typeof ACTS)[number]["id"]>("ceremony");
-  const [openId, setOpenId] = useState<string | null>("processional");
-  const rows = useMemo(() => DJ_CUES.filter((c) => c.act === act), [act]);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const visibleCues = DJ_CUES.filter((c) => !hide.has(c.id));
+  const rows = useMemo(
+    () => visibleCues.filter((c) => c.act === act),
+    [act, hiddenIds]
+  );
 
   function patch(id: string, p: Partial<MusicCue>) {
     onChange(cues.map((c) => (c.id === id ? { ...c, ...p } : c)));
@@ -43,7 +50,7 @@ export function CueSheet({
           <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">Cue sheet</p>
           <h2 className="font-serif text-3xl">What the DJ actually needs</h2>
           <p className="mt-1 text-sm text-muted">
-            {filled} of {DJ_CUES.length} moments set. Skip the ones you’re not doing.
+            {filled} of {visibleCues.length} moments set. Skip the ones you’re not doing.
           </p>
         </div>
       </div>

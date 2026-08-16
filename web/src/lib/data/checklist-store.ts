@@ -2,6 +2,9 @@ import path from "path";
 import { randomUUID } from "crypto";
 import { dataDir, ensureDir, readText, writeText } from "./store-io";
 import { PARTY_STARTER } from "./checklist-actions";
+import { getWorkspaceMeta } from "./store";
+import { shapeOf } from "@/lib/shape";
+import { SHAPE_STARTERS } from "@/lib/shape-checklists";
 
 const checklistFile = path.join(dataDir, "checklist.json");
 
@@ -22,6 +25,7 @@ export type StoredChecklist = {
 };
 
 export const PHASES = [
+  { id: "now", label: "Now" },
   { id: "12-18", label: "12–18 months" },
   { id: "9-11", label: "9–11 months" },
   { id: "6-8", label: "6–8 months" },
@@ -33,7 +37,7 @@ export const PHASES = [
 ] as const;
 
 /** Original items synthesized from common 12-month planner structure. */
-const STARTER: Omit<ChecklistItem, "id">[] = [
+export const STARTER: Omit<ChecklistItem, "id">[] = [
   { phase: "12-18", title: "Set a total budget and who contributes", done: false },
   { phase: "12-18", title: "Write down the top three priorities", done: false },
   { phase: "12-18", title: "Pick a date (or a few options)", done: false },
@@ -100,16 +104,24 @@ async function writeAll(all: Record<string, StoredChecklist>) {
 export async function getChecklist(workspaceId: string): Promise<StoredChecklist> {
   const all = await readAll();
   if (!all[workspaceId]) {
+    const meta = await getWorkspaceMeta(workspaceId, "");
+    const shape = shapeOf(meta.shape);
+    const seed =
+      shape === "weekend"
+        ? [...STARTER, ...PARTY_STARTER]
+        : SHAPE_STARTERS[shape].map((s) => ({ ...s, done: false, source: "starter" as const }));
     all[workspaceId] = {
       workspaceId,
-      items: [...STARTER, ...PARTY_STARTER].map((s) => ({ ...s, id: randomUUID() })),
+      items: seed.map((s) => ({ ...s, id: randomUUID() })),
       updatedAt: new Date().toISOString(),
     };
     await writeAll(all);
     return all[workspaceId];
   }
   const have = new Set(all[workspaceId].items.map((i) => i.title));
-  const missing = PARTY_STARTER.filter((s) => !have.has(s.title));
+  const meta = await getWorkspaceMeta(workspaceId, "");
+  const missing =
+    shapeOf(meta.shape) === "weekend" ? PARTY_STARTER.filter((s) => !have.has(s.title)) : [];
   if (missing.length) {
     all[workspaceId] = {
       ...all[workspaceId],

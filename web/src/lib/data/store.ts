@@ -671,6 +671,10 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
     onboarded: row.onboarded === true,
     firstWalkDone: row.firstWalkDone === true,
     diyBias: row.diyBias,
+    shape: row.shape,
+    enterHow: row.enterHow,
+    gatheringDate: row.gatheringDate,
+    siteMode: row.siteMode,
   };
 }
 

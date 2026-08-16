@@ -7,6 +7,8 @@ import { Suspense } from "react";
 import { TrackPreview } from "@/components/music/TrackPreview";
 import { CueSheet } from "@/components/music/CueSheet";
 import { mergeCues, type MusicCue } from "@/lib/dj-cues";
+import { DJ_CUES } from "@/lib/dj-cues";
+import { cueHidden } from "@/lib/shape";
 
 type Request = { id: string; song: string; from?: string; status: string };
 type Track = {
@@ -50,6 +52,7 @@ function MusicInner() {
   const [doNotPlay, setDoNotPlay] = useState("");
   const [notes, setNotes] = useState("");
   const [cues, setCues] = useState<MusicCue[]>(mergeCues([]));
+  const [hiddenIds, setHiddenIds] = useState<string[]>([]);
   const [genres, setGenres] = useState("");
   const [energy, setEnergy] = useState("");
   const [noLineDances, setNoLineDances] = useState(false);
@@ -100,6 +103,13 @@ function MusicInner() {
 
   useEffect(() => {
     load();
+    fetch("/api/workspace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d?.meta) return;
+        setHiddenIds(DJ_CUES.filter((c) => cueHidden(c.id, d.meta.enterHow, d.meta.shape)).map((c) => c.id));
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -292,6 +302,7 @@ function MusicInner() {
               if (p.noLineDances !== undefined) setNoLineDances(p.noLineDances);
               if (p.announceNames !== undefined) setAnnounceNames(p.announceNames);
             }}
+            hiddenIds={hiddenIds}
           />
           <button
             type="button"

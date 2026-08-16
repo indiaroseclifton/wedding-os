@@ -14,6 +14,7 @@ import { SiteGate } from "@/components/site/SiteGate";
 import { Icon } from "@/components/icons";
 import { getSessionUser } from "@/lib/auth/session";
 import { DEMO_WORKSPACE } from "@/lib/data/workspace";
+import { siteModeFor } from "@/lib/shape";
 
 function prettyDate(iso?: string) {
   if (!iso) return null;
@@ -56,6 +57,7 @@ export default async function WeddingSitePage({
   const names = meta.coupleNames || meta.name;
   const date = prettyDate(meta.weddingDate);
   const open = rsvpIsOpen(site);
+  const announce = meta.siteMode === "announce" || siteModeFor(meta.shape) === "announce";
   const gallery = site.gallery || [];
   const night = site.template === "midnight";
   const garden = site.template === "garden";
@@ -88,7 +90,11 @@ export default async function WeddingSitePage({
           </div>
         )}
 
-        {open && (
+        {announce && !site.headline?.trim() && (
+          <p className="mt-10 text-center font-serif text-3xl leading-snug">We got married.</p>
+        )}
+
+        {open && !announce && (
           <div className="mt-10 text-center">
             <Link
               href={`/w/${token}/rsvp`}
@@ -101,7 +107,7 @@ export default async function WeddingSitePage({
             )}
           </div>
         )}
-        {!open && (
+        {!open && !announce && (
           <p className="mt-10 text-center text-sm text-muted">
             RSVP is closed{site.rsvpClose ? ` (was ${site.rsvpClose})` : ""}.
           </p>

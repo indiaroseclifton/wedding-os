@@ -22,6 +22,7 @@ export default async function AppLayout({
       weddingDate={meta.weddingDate}
       location={meta.location}
       coverUrl={meta.coverUrl}
+      shape={meta.shape}
     >
       {children}
     </AppShell>

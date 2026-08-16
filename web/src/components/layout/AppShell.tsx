@@ -5,13 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CommandPalette } from "@/components/search/CommandPalette";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import {
-  MORE_ROOMS,
-  NAV_ITEMS,
-  VISUAL_ROOMS,
-  firstNames,
-  shortWeddingDate,
-} from "@/lib/visual-rooms";
+import { MORE_ROOMS, NAV_ITEMS, VISUAL_ROOMS, firstNames, shortWeddingDate } from "@/lib/visual-rooms";
+import { roomVisible } from "@/lib/shape";
 
 import { Icon } from "@/components/icons";
 import { RoomTile } from "@/components/layout/RoomTile";
@@ -27,6 +22,7 @@ export function AppShell({
   weddingDate,
   location,
   coverUrl,
+  shape,
   children,
 }: {
   userName: string;
@@ -34,6 +30,7 @@ export function AppShell({
   weddingDate?: string;
   location?: string;
   coverUrl?: string;
+  shape?: string;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -99,7 +96,7 @@ export function AppShell({
               .slice(0, 2)}
           </span>
         </Link>
-        <DeskNav />
+        <DeskNav shape={shape} />
         <button
           type="button"
           onClick={() => setRooms(true)}
@@ -181,12 +178,12 @@ export function AppShell({
               </button>
             </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-              {VISUAL_ROOMS.map((room) => (
+              {VISUAL_ROOMS.filter((room) => roomVisible(room.href, shape)).map((room) => (
                 <RoomTile key={room.href} {...room} onClick={() => setRooms(false)} />
               ))}
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
-              {MORE_ROOMS.map((r) => (
+              {MORE_ROOMS.filter((r) => roomVisible(r.href, shape)).map((r) => (
                 <Link
                   key={r.href}
                   href={r.href}

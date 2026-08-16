@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { DECISION_GROUPS, type CatalogDecision } from "@/lib/planner-decisions";
+import { decisionHints, skipDecisions } from "@/lib/shape";
 import { PromoteButtons } from "./PromoteButtons";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
@@ -18,6 +19,8 @@ type Saved = {
 export function DecisionsDesk() {
   const [saved, setSaved] = useState<Saved[]>([]);
   const [catalog, setCatalog] = useState<CatalogDecision[]>([]);
+  const [shape, setShape] = useState<string>("weekend");
+  const [enterHow, setEnterHow] = useState<string>("one-then");
   const [filter, setFilter] = useState<"open" | "decided" | "all">("open");
   const [group, setGroup] = useState("All");
   const [custom, setCustom] = useState("");
@@ -35,6 +38,13 @@ export function DecisionsDesk() {
 
   useEffect(() => {
     load();
+    fetch("/api/workspace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.meta?.shape) setShape(d.meta.shape);
+        if (d?.meta?.enterHow) setEnterHow(d.meta.enterHow);
+      })
+      .catch(() => {});
   }, []);
 
   const byCatalog = useMemo(() => {
@@ -74,7 +84,9 @@ export function DecisionsDesk() {
     }
   }
 
+  const skip = skipDecisions(shape);
   const visibleCatalog = catalog.filter((c) => {
+    if (skip.has(c.id)) return false;
     if (group !== "All" && c.group !== group) return false;
     const row = byCatalog.get(c.id);
     if (filter === "decided") return row?.status === "DECIDED";
@@ -188,7 +200,7 @@ export function DecisionsDesk() {
                     title={item.title}
                     ask={item.ask}
                     when={item.when}
-                    hints={item.hints}
+                    hints={decisionHints(item.id, shape, enterHow) || item.hints}
                     status={row?.status || "OPEN"}
                     open={!!id && openId === id}
                     answer={id && openId === id ? answer : String(row?.payload?.answer || "")}

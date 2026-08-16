@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
+import { roomVisible, shapeCard } from "@/lib/shape";
 import type { WeekItem } from "@/lib/this-week";
 import type { Suggestion } from "@/lib/smart-home";
 import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
@@ -27,6 +28,7 @@ export function HomeDashboard({
   suggestions,
   onboarded,
   firstWalkDone,
+  shape,
 }: {
   days: number | null;
   coverUrl: string;
@@ -38,19 +40,21 @@ export function HomeDashboard({
   suggestions: Suggestion[];
   onboarded?: boolean;
   firstWalkDone?: boolean;
+  shape?: string;
 }) {
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
   const headline =
     days == null ? "Set the date" : days === 0 ? "Today" : days > 0 ? String(days) : String(Math.abs(days));
   const sub = days == null ? "Add your date in Settings" : days === 0 ? "It’s the day" : days > 0 ? "days to go" : "days ago";
-  const lead = VISUAL_ROOMS.filter((r) => r.rank === "lead");
-  const support = VISUAL_ROOMS.filter((r) => r.rank !== "lead");
+  const lead = VISUAL_ROOMS.filter((r) => r.rank === "lead" && roomVisible(r.href, shape));
+  const support = VISUAL_ROOMS.filter((r) => r.rank !== "lead" && roomVisible(r.href, shape));
+  const card = shapeCard(shape);
 
   return (
     <div className="space-y-10">
       {!onboarded && (
         <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-moss px-4 py-3 text-sm text-ivory">
-          <p>Four questions and the desk builds around your wedding.</p>
+          <p>What kind of day — then the desk builds around it.</p>
           <Link href="/onboard" className="min-h-11 rounded-full bg-ivory px-4 py-2 text-xs font-medium text-moss">
             Start setup
           </Link>
@@ -71,6 +75,7 @@ export function HomeDashboard({
         <div className="absolute inset-x-0 bottom-0 space-y-4 p-6 sm:p-10">
           <p className="font-serif text-[clamp(4.5rem,14vw,8rem)] leading-none tracking-tight text-ink">{headline}</p>
           <p className="text-sm uppercase tracking-[0.22em] text-ink-soft">{sub}</p>
+          <p className="text-sm text-ink-soft">{card.title} · {card.line}</p>
           <SundayCard next={next} brief={brief} />
         </div>
       </section>

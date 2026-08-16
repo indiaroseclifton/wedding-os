@@ -87,6 +87,10 @@ export type WorkspacePrefs = {
   onboarded?: boolean;
   firstWalkDone?: boolean;
   diyBias?: "hire" | "diy" | "mix";
+  shape?: "us" | "small" | "weekend" | "two";
+  enterHow?: "together" | "one-then" | "already" | "none";
+  gatheringDate?: string;
+  siteMode?: "invite" | "announce";
   glass?: "low" | "mid" | "high";
   density?: "roomy" | "regular" | "compact";
   typeScale?: "small" | "regular" | "large";

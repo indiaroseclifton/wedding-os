@@ -6,6 +6,7 @@ import { DIRECTORY_CATEGORIES } from "@/lib/data/vendor-directory";
 import { TEAM_ROLES } from "@/lib/rooms";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { vibeMatchesStyles } from "@/lib/vision-match";
+import { vendorCatsFor } from "@/lib/shape";
 
 type Listing = {
   slug: string;
@@ -70,6 +71,7 @@ export default function VendorBrowsePage() {
   const [hiring, setHiring] = useState<string | null>(null);
   const [vibe, setVibe] = useState("");
   const [followVision, setFollowVision] = useState(true);
+  const [allowedCats, setAllowedCats] = useState<string[] | null>(null);
 
   async function load() {
     const res = await fetch("/api/directory");
@@ -89,6 +91,10 @@ export default function VendorBrowsePage() {
     const cat = new URLSearchParams(window.location.search).get("category");
     if (cat) setCategory(cat);
     load();
+    fetch("/api/workspace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setAllowedCats(vendorCatsFor(d?.meta?.shape)))
+      .catch(() => {});
     fetch("/api/decisions/style-vibe")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
@@ -208,7 +214,7 @@ export default function VendorBrowsePage() {
           </p>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {TEAM_ROLES.map((role) => {
+          {TEAM_ROLES.filter((role) => !allowedCats || allowedCats.includes(role.category)).map((role) => {
             const on = roleFilled(role.category);
             return (
               <button
@@ -230,7 +236,7 @@ export default function VendorBrowsePage() {
       <section>
         <p className="mb-2 text-sm font-semibold">Categories</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-          {DIRECTORY_CATEGORIES.map((c) => (
+          {DIRECTORY_CATEGORIES.filter((c) => !allowedCats || allowedCats.includes(c)).map((c) => (
             <button
               key={c}
               type="button"

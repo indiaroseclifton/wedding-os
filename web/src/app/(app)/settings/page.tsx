@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { COVER_PRESETS, DENSITY, FAITHS, GLASS_LEVELS, PACK_OPTIONS, THEMES, TYPE_SCALES } from "@/lib/preferences";
 import { applyLook, applyTheme } from "@/components/theme/ThemeProvider";
+import { ENTER_CARDS, SHAPE_CARDS, type EnterHow, type WeddingShape } from "@/lib/shape";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -34,6 +35,10 @@ export default function SettingsPage() {
     unplugged: false,
     guestSitePublic: true,
     defaultPlusOnes: 0,
+    shape: "weekend" as WeddingShape,
+    enterHow: "one-then" as EnterHow,
+    gatheringDate: "",
+    applyShapeDefaults: false,
   });
 
   function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
@@ -68,6 +73,10 @@ export default function SettingsPage() {
           unplugged: !!data.meta.unplugged,
           guestSitePublic: data.meta.guestSitePublic !== false,
           defaultPlusOnes: data.meta.defaultPlusOnes || 0,
+          shape: data.meta.shape || "weekend",
+          enterHow: data.meta.enterHow || "one-then",
+          gatheringDate: data.meta.gatheringDate || "",
+          applyShapeDefaults: false,
         }));
         if (data.meta.theme || data.meta.glass) {
           applyLook({
@@ -171,7 +180,7 @@ export default function SettingsPage() {
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <label>
-            <span className="text-xs text-muted">Date</span>
+            <span className="text-xs text-muted">{form.shape === "two" ? "Marrying date" : "Date"}</span>
             <input type="date" value={form.weddingDate} onChange={(e) => set("weddingDate", e.target.value)} className="mt-1 w-full rounded-lg border border-line bg-surface/70 px-3 py-2" />
           </label>
           <label>
@@ -179,6 +188,63 @@ export default function SettingsPage() {
             <input value={form.location} onChange={(e) => set("location", e.target.value)} placeholder="Atlanta, GA" className="mt-1 w-full rounded-lg border border-line bg-surface/70 px-3 py-2" />
           </label>
         </div>
+        {form.shape === "two" && (
+          <label>
+            <span className="text-xs text-muted">Gathering date</span>
+            <input type="date" value={form.gatheringDate} onChange={(e) => set("gatheringDate", e.target.value)} className="mt-1 w-full rounded-lg border border-line bg-surface/70 px-3 py-2" />
+          </label>
+        )}
+        <div>
+          <p className="text-xs text-muted">The shape of the day</p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            {SHAPE_CARDS.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => set("shape", c.id)}
+                className={`overflow-hidden rounded-2xl border text-left ${
+                  form.shape === c.id ? "border-moss ring-2 ring-moss/30" : "border-line"
+                }`}
+              >
+                <img src={c.cover} alt="" className="h-20 w-full object-cover" />
+                <span className="block px-3 py-2">
+                  <span className="block font-serif text-lg">{c.title}</span>
+                  <span className="text-[11px] text-muted">{c.line}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-xs text-muted">How you enter</p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            {ENTER_CARDS.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => set("enterHow", c.id)}
+                className={`rounded-xl border px-3 py-3 text-left ${
+                  form.enterHow === c.id ? "border-moss bg-moss-soft" : "border-line"
+                }`}
+              >
+                <span className="block text-sm font-medium">{c.title}</span>
+                <span className="text-[11px] text-muted">{c.line}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <label className="flex items-start gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={form.applyShapeDefaults}
+            onChange={(e) => set("applyShapeDefaults", e.target.checked)}
+            className="mt-1"
+          />
+          <span>
+            Reset checklist and day plan to this shape.
+            <span className="block text-xs text-muted">Keeps anything you’ve already checked off. Money stays.</span>
+          </span>
+        </label>
         <label>
           <span className="text-xs text-muted">Timezone</span>
           <input value={form.timezone} onChange={(e) => set("timezone", e.target.value)} placeholder="America/New_York" className="mt-1 w-full rounded-lg border border-line bg-surface/70 px-3 py-2" />

@@ -9,6 +9,8 @@ import { optionalString, requiredString, ValidationError } from "@/lib/validatio
 import { FAITHS, THEMES } from "@/lib/preferences";
 import { syncFaithToPlanning } from "@/lib/data/sync-faith";
 import { applyDiyBias } from "@/lib/data/path-store";
+import { applyShape } from "@/lib/data/apply-shape";
+import { isEnterHow, isShape } from "@/lib/shape";
 
 export async function GET() {
   const access = await requireCoupleApi();
@@ -63,7 +65,19 @@ export async function POST(request: Request) {
           : undefined,
       defaultPlusOnes:
         typeof body.defaultPlusOnes === "number" ? Math.max(0, Math.min(4, body.defaultPlusOnes)) : undefined,
+      shape: isShape(body.shape) ? body.shape : undefined,
+      enterHow: isEnterHow(body.enterHow) ? body.enterHow : undefined,
+      gatheringDate: optionalString(body.gatheringDate, 40),
+      siteMode: body.siteMode === "announce" || body.siteMode === "invite" ? body.siteMode : undefined,
     });
+    if (isShape(body.shape)) {
+      await applyShape(workspace.id, {
+        shape: body.shape,
+        enterHow: isEnterHow(body.enterHow) ? body.enterHow : undefined,
+        gatheringDate: typeof body.gatheringDate === "string" ? body.gatheringDate : undefined,
+        resetDefaults: body.applyShapeDefaults === true,
+      });
+    }
     if (body.faith || faithPacks) {
       await syncFaithToPlanning(workspace.id, meta.faith, meta.faithPacks);
     }

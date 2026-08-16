@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "@/components/icons";
 import { ROOM_TREE, type NavNode } from "@/lib/rooms";
 import { NAV_ITEMS } from "@/lib/visual-rooms";
+import { roomVisible } from "@/lib/shape";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -32,7 +33,7 @@ function leafOn(pathname: string, href: string, parentHref: string) {
   return false;
 }
 
-export function DeskNav() {
+export function DeskNav({ shape }: { shape?: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const current = roomForPath(pathname);
@@ -42,7 +43,7 @@ export function DeskNav() {
   useEffect(() => {
     if (current) setOpenRoom(current);
     if (!current) return;
-    const tree = ROOM_TREE[current];
+    const tree = ROOM_TREE[current].filter((n) => roomVisible(n.href, shape));
     const branch = tree.find((n) => n.children?.some((c) => pathname === c.href || pathname.startsWith(c.href + "/")));
     setOpenBranch(branch?.href ?? null);
   }, [current, pathname]);
@@ -60,7 +61,14 @@ export function DeskNav() {
     <nav className="space-y-0.5" aria-label="Rooms">
       {NAV_ITEMS.map((item) => {
         const on = tabOn(pathname, item.match);
-        const kids = item.room ? ROOM_TREE[item.room] : null;
+        const kids = item.room
+          ? ROOM_TREE[item.room]
+              .filter((n) => roomVisible(n.href, shape))
+              .map((n) => ({
+                ...n,
+                children: n.children?.filter((c) => roomVisible(c.href, shape)),
+              }))
+          : null;
         const expanded = item.room != null && openRoom === item.room;
         return (
           <div key={item.href}>
