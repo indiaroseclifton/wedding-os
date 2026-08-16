@@ -21,6 +21,7 @@ export default async function AppLayout({
         userName={session.name}
         weddingName={workspace.name}
         weddingDate={meta.weddingDate}
+        coupleNames={meta.coupleNames}
       />
       <main className="mx-auto max-w-6xl px-4 py-5 pb-24 lg:py-8 lg:pb-8">{children}</main>
     </div>

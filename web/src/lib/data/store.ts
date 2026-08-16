@@ -514,31 +514,59 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
   const raw = await readText(workspaceMetaFile);
   const all = JSON.parse(raw || "{}") as Record<
     string,
-    { name?: string; weddingDate?: string; location?: string; coupleNames?: string }
+    { name?: string; weddingDate?: string; location?: string; coupleNames?: string; coverUrl?: string }
   >;
   if (!all[workspaceId]) {
-    all[workspaceId] = { name: fallbackName };
+    all[workspaceId] = {
+      name: fallbackName,
+      coupleNames: "Alex & Jordan",
+      weddingDate: "2026-10-17",
+      location: "Atlanta, GA",
+      coverUrl: "/brand/tablescape.jpg",
+    };
     await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
   }
   const row = all[workspaceId];
+  let dirty = false;
+  if (!row.coupleNames) {
+    row.coupleNames = "Alex & Jordan";
+    dirty = true;
+  }
+  if (!row.weddingDate) {
+    row.weddingDate = "2026-10-17";
+    dirty = true;
+  }
+  if (!row.location) {
+    row.location = "Atlanta, GA";
+    dirty = true;
+  }
+  if (!row.coverUrl) {
+    row.coverUrl = "/brand/tablescape.jpg";
+    dirty = true;
+  }
+  if (dirty) {
+    all[workspaceId] = row;
+    await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
+  }
   return {
     workspaceId,
     name: row.name || fallbackName,
     weddingDate: row.weddingDate,
     location: row.location,
     coupleNames: row.coupleNames,
+    coverUrl: row.coverUrl,
   };
 }
 
 export async function saveWorkspaceMeta(
   workspaceId: string,
-  patch: { name?: string; weddingDate?: string; location?: string; coupleNames?: string }
+  patch: { name?: string; weddingDate?: string; location?: string; coupleNames?: string; coverUrl?: string }
 ) {
   await ensureFile(workspaceMetaFile, "{}");
   const raw = await readText(workspaceMetaFile);
   const all = JSON.parse(raw || "{}") as Record<
     string,
-    { name?: string; weddingDate?: string; location?: string; coupleNames?: string }
+    { name?: string; weddingDate?: string; location?: string; coupleNames?: string; coverUrl?: string }
   >;
   all[workspaceId] = { ...all[workspaceId], ...patch };
   await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));

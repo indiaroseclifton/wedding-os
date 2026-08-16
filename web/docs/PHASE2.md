@@ -120,3 +120,6 @@
 ## Wave 29 (done)
 - One `.glass` token: landing week, login, This week caption, ⌘K. Reduced transparency respected
 
+## Wave 30 (done)
+- Personalized This week (names, city, their cover). Developer sitemap replaced with visual rooms
+

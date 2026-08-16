@@ -26,6 +26,7 @@ export async function POST(request: Request) {
       weddingDate: optionalString(body.weddingDate, 40),
       location: optionalString(body.location, 160),
       coupleNames: optionalString(body.coupleNames, 160),
+      coverUrl: optionalString(body.coverUrl, 500),
     });
     return NextResponse.json({ meta });
   } catch (error) {

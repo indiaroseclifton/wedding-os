@@ -12,6 +12,7 @@ export default function SettingsPage() {
   const [coupleNames, setCoupleNames] = useState("");
   const [weddingDate, setWeddingDate] = useState("");
   const [location, setLocation] = useState("");
+  const [coverUrl, setCoverUrl] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export default function SettingsPage() {
         setCoupleNames(data.meta.coupleNames || "");
         setWeddingDate(data.meta.weddingDate || "");
         setLocation(data.meta.location || "");
+        setCoverUrl(data.meta.coverUrl || "");
       })
       .catch(() => {});
   }, []);
@@ -34,7 +36,7 @@ export default function SettingsPage() {
     const res = await fetch("/api/workspace", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, coupleNames, weddingDate, location }),
+      body: JSON.stringify({ name, coupleNames, weddingDate, location, coverUrl }),
     });
     setSaving(false);
     if (!res.ok) {
@@ -130,6 +132,15 @@ export default function SettingsPage() {
             />
           </label>
         </div>
+        <label className="block">
+          <span className="text-xs font-medium text-slate-600">Cover photo URL</span>
+          <input
+            value={coverUrl}
+            onChange={(e) => setCoverUrl(e.target.value)}
+            placeholder="A photo of you two — or leave the default"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
         <button
           type="submit"
           disabled={saving}

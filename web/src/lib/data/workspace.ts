@@ -218,7 +218,7 @@ export async function loadWorkspaceMeta(workspaceId: string, fallbackName: strin
 
 export async function updateWorkspaceMeta(
   workspaceId: string,
-  patch: { name?: string; weddingDate?: string; location?: string; coupleNames?: string }
+  patch: { name?: string; weddingDate?: string; location?: string; coupleNames?: string; coverUrl?: string }
 ) {
   return saveWorkspaceMeta(workspaceId, patch);
 }
