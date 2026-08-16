@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSessionUser } from "@/lib/auth/session";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { DIRECTORY, DIRECTORY_CATEGORIES } from "@/lib/data/vendor-directory";
+import { DiscoverNear } from "@/components/discover/DiscoverNear";
 
 export default async function DiscoverVendorsPage({
   searchParams,
@@ -20,8 +21,11 @@ export default async function DiscoverVendorsPage({
           <p className="text-[11px] uppercase tracking-[0.28em] text-moss">Marketplace</p>
           <h1 className="mt-2 font-serif text-5xl">Find vendors</h1>
           <p className="mt-2 max-w-xl text-sm text-muted">
-            Demo listings for Atlanta — real search lives on your desk once you sign in (Google Places).
+            Search a city without signing in. Demo Atlanta listings stay below as a fallback.
           </p>
+          <div className="mt-8">
+            <DiscoverNear />
+          </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <Link
               href="/discover/vendors"

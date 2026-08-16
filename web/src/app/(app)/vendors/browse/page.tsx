@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DIRECTORY_CATEGORIES } from "@/lib/data/vendor-directory";
 import { TEAM_ROLES } from "@/lib/rooms";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { vibeMatchesStyles } from "@/lib/vision-match";
 
 type Listing = {
   slug: string;
@@ -67,6 +68,8 @@ export default function VendorBrowsePage() {
   const [placesMsg, setPlacesMsg] = useState<string | null>(null);
   const [near, setNear] = useState("");
   const [hiring, setHiring] = useState<string | null>(null);
+  const [vibe, setVibe] = useState("");
+  const [followVision, setFollowVision] = useState(true);
 
   async function load() {
     const res = await fetch("/api/directory");
@@ -86,6 +89,13 @@ export default function VendorBrowsePage() {
     const cat = new URLSearchParams(window.location.search).get("category");
     if (cat) setCategory(cat);
     load();
+    fetch("/api/decisions/style-vibe")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const v = d?.decision?.payload?.vibe;
+        if (typeof v === "string") setVibe(v);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -154,13 +164,14 @@ export default function VendorBrowsePage() {
       if (band !== "All" && v.priceBand !== band) return false;
       if (city !== "All" && v.city !== city) return false;
       if (style !== "All" && !v.styles.includes(style)) return false;
+      if (followVision && vibe && !vibeMatchesStyles(vibe, v.styles)) return false;
       if (q.trim()) {
         const hay = `${v.name} ${v.city} ${v.blurb} ${v.styles.join(" ")}`.toLowerCase();
         if (!hay.includes(q.trim().toLowerCase())) return false;
       }
       return true;
     });
-  }, [listings, category, band, city, style, q]);
+  }, [listings, category, band, city, style, q, followVision, vibe]);
 
   function roleFilled(cat: string) {
     return hiredCats.some((c) => c.toLowerCase().includes(cat.split(" ")[0].toLowerCase())) ||
@@ -177,6 +188,16 @@ export default function VendorBrowsePage() {
         <p className="mt-1 text-sm text-muted">
           Every seat on a typical team — then shortlist and run them here. Not a link farm.
         </p>
+        {vibe && (
+          <label className="mt-3 flex items-center gap-2 text-xs">
+            <input
+              type="checkbox"
+              checked={followVision}
+              onChange={(e) => setFollowVision(e.target.checked)}
+            />
+            Match my vision ({vibe})
+          </label>
+        )}
       </div>
 
       <section className="rounded-2xl border border-line bg-surface p-4">

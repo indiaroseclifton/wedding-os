@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { diyPhoto } from "@/lib/brand";
 import { motion, fadeUp, stagger } from "@/components/motion";
+import { playbookFitsVibe } from "@/lib/vision-match";
 
 type Project = {
   id: string;
@@ -20,6 +21,7 @@ type Book = { slug: string; title: string; summary: string };
 export default function DiyHubPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [vibe, setVibe] = useState("");
 
   async function load() {
     const res = await fetch("/api/diy");
@@ -38,6 +40,13 @@ export default function DiyHubPage() {
 
   useEffect(() => {
     load();
+    fetch("/api/decisions/style-vibe")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const v = d?.decision?.payload?.vibe;
+        if (typeof v === "string") setVibe(v);
+      })
+      .catch(() => {});
   }, []);
 
   return (
@@ -83,7 +92,10 @@ export default function DiyHubPage() {
         animate="show"
         className="grid gap-3 sm:grid-cols-2"
       >
-        {books.map((b) => (
+        {books
+          .slice()
+          .sort((a, b) => Number(playbookFitsVibe(b.slug, vibe)) - Number(playbookFitsVibe(a.slug, vibe)))
+          .map((b) => (
           <motion.div
             key={b.slug}
             variants={fadeUp}
@@ -99,6 +111,9 @@ export default function DiyHubPage() {
               </div>
               <div className="p-4">
                 <p className="text-base font-medium tracking-tight">{b.title}</p>
+                {vibe && playbookFitsVibe(b.slug, vibe) && (
+                  <p className="mt-1 text-[11px] text-moss">Fits {vibe}</p>
+                )}
                 <p className="mt-1 text-xs text-ink-soft">{b.summary}</p>
               </div>
             </Link>

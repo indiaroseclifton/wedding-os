@@ -47,6 +47,17 @@ export async function POST(request: Request) {
     rsvpOpen: body.rsvpOpen !== false,
     collectAddress: body.collectAddress !== false,
     requireAddress: Boolean(body.requireAddress),
+    template: body.template === "garden" || body.template === "midnight" ? body.template : "letter",
+    rsvpClose: typeof body.rsvpClose === "string" ? body.rsvpClose.slice(0, 12) : undefined,
+    gallery: Array.isArray(body.gallery)
+      ? body.gallery.map((u: unknown) => String(u).slice(0, 500)).filter(Boolean).slice(0, 12)
+      : typeof body.galleryText === "string"
+        ? String(body.galleryText)
+            .split("\n")
+            .map((u) => u.trim())
+            .filter(Boolean)
+            .slice(0, 12)
+        : undefined,
     rsvpQuestions: Array.isArray(body.rsvpQuestions)
       ? body.rsvpQuestions
           .map((q: { id?: string; prompt?: string }) => ({

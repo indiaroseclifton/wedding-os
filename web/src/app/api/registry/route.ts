@@ -3,12 +3,16 @@ import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import {
   addGift,
+  addRegistryItem,
   addRegistryLink,
   deleteGift,
+  deleteRegistryItem,
   deleteRegistryLink,
   getRegistry,
   patchGift,
+  patchRegistryItem,
 } from "@/lib/data/registry-store";
+import { importGiftsAsThanks } from "@/lib/data/thanks-store";
 import { optionalString, requiredString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -37,6 +41,28 @@ export async function POST(request: Request) {
       const registry = await deleteRegistryLink(workspace.id, String(body.id));
       return NextResponse.json({ registry });
     }
+    if (body.action === "add_item") {
+      const registry = await addRegistryItem(workspace.id, {
+        name: requiredString(body.name, "Item", 160),
+        url: optionalString(body.url, 400),
+        qty: body.qty,
+        price: body.price == null ? undefined : Number(body.price) || 0,
+      });
+      return NextResponse.json({ registry });
+    }
+    if (body.action === "patch_item") {
+      const registry = await patchRegistryItem(workspace.id, String(body.id), {
+        status: body.status,
+        claimedBy: body.claimedBy,
+        qty: body.qty,
+        name: body.name,
+      });
+      return NextResponse.json({ registry });
+    }
+    if (body.action === "delete_item") {
+      const registry = await deleteRegistryItem(workspace.id, String(body.id));
+      return NextResponse.json({ registry });
+    }
     if (body.action === "add_gift") {
       const registry = await addGift(workspace.id, {
         from: requiredString(body.from, "From", 120),
@@ -53,6 +79,17 @@ export async function POST(request: Request) {
     if (body.action === "delete_gift") {
       const registry = await deleteGift(workspace.id, String(body.id));
       return NextResponse.json({ registry });
+    }
+    if (body.action === "to_thanks") {
+      const registry = await getRegistry(workspace.id);
+      const gifts = [
+        ...registry.gifts.filter((g) => g.received).map((g) => ({ from: g.from, description: g.description })),
+        ...registry.items
+          .filter((i) => i.status === "PURCHASED" && i.claimedBy)
+          .map((i) => ({ from: i.claimedBy || "Someone", description: i.name })),
+      ];
+      await importGiftsAsThanks(workspace.id, gifts);
+      return NextResponse.json({ registry, imported: gifts.length });
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {

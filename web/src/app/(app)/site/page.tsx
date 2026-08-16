@@ -19,6 +19,9 @@ type Site = {
   collectAddress?: boolean;
   requireAddress?: boolean;
   rsvpQuestions?: { id: string; prompt: string }[];
+  template?: "letter" | "garden" | "midnight";
+  gallery?: string[];
+  rsvpClose?: string;
 };
 
 type Guest = { id: string; name: string; rsvp: string; rsvpToken?: string };
@@ -102,6 +105,44 @@ export default function SiteEditorPage() {
       )}
 
       <form onSubmit={save} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+        <label className="block text-sm">
+          Look
+          <select
+            value={site.template || "letter"}
+            onChange={(e) =>
+              setSite({ ...site, template: e.target.value as Site["template"] })
+            }
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="letter">Letter — one column, quiet</option>
+            <option value="garden">Garden — more photo, greener</option>
+            <option value="midnight">Midnight — dark, champagne type</option>
+          </select>
+        </label>
+        <label className="block text-sm">
+          Gallery URLs (one per line)
+          <textarea
+            value={(site.gallery || []).join("\n")}
+            onChange={(e) =>
+              setSite({
+                ...site,
+                gallery: e.target.value.split("\n").map((u) => u.trim()).filter(Boolean),
+              })
+            }
+            rows={3}
+            placeholder="https://…jpg"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
+        <label className="block text-sm">
+          RSVP closes
+          <input
+            type="date"
+            value={site.rsvpClose || ""}
+            onChange={(e) => setSite({ ...site, rsvpClose: e.target.value })}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
         <label className="block text-sm">
           Headline
           <input

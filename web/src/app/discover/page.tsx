@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getSessionUser } from "@/lib/auth/session";
 import { MarketingNav } from "@/components/landing/MarketingNav";
 import { DIRECTORY, DIRECTORY_CATEGORIES } from "@/lib/data/vendor-directory";
+import { DiscoverNear } from "@/components/discover/DiscoverNear";
 
 const PHOTOS: Record<string, string> = {
   Venue: "/brand/garden.jpg",
@@ -28,6 +29,7 @@ export default async function DiscoverPage() {
       </div>
 
       <div className="mx-auto max-w-6xl space-y-12 px-5 py-12 sm:px-10">
+        <DiscoverNear />
         <section>
           <div className="flex items-end justify-between">
             <h2 className="font-serif text-3xl">Vendor categories</h2>

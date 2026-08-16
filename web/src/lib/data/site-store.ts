@@ -20,6 +20,9 @@ export type StoredSite = {
   collectAddress: boolean;
   requireAddress: boolean;
   rsvpQuestions: { id: string; prompt: string }[];
+  template?: "letter" | "garden" | "midnight";
+  gallery?: string[];
+  rsvpClose?: string;
   updatedAt: string;
 };
 
@@ -47,6 +50,8 @@ function fresh(workspaceId: string): StoredSite {
     collectAddress: true,
     requireAddress: false,
     rsvpQuestions: [],
+    template: "letter",
+    gallery: [],
     updatedAt: new Date().toISOString(),
   };
 }
@@ -63,7 +68,19 @@ export async function getSite(workspaceId: string): Promise<StoredSite> {
     collectAddress: site.collectAddress !== false,
     requireAddress: Boolean(site.requireAddress),
     rsvpQuestions: Array.isArray(site.rsvpQuestions) ? site.rsvpQuestions : [],
+    template: (site.template === "garden" || site.template === "midnight" ? site.template : "letter") as StoredSite["template"],
+    gallery: Array.isArray(site.gallery) ? site.gallery.filter(Boolean).slice(0, 12) : [],
+    rsvpClose: site.rsvpClose || "",
   };
+}
+
+export function rsvpIsOpen(site: StoredSite) {
+  if (!site.rsvpOpen) return false;
+  if (site.rsvpClose) {
+    const close = new Date(`${site.rsvpClose}T23:59:59`);
+    if (!Number.isNaN(close.getTime()) && Date.now() > close.getTime()) return false;
+  }
+  return true;
 }
 
 export async function saveSite(workspaceId: string, patch: Partial<StoredSite>) {
@@ -84,6 +101,9 @@ export async function getSiteByToken(token: string) {
     collectAddress: site.collectAddress !== false,
     requireAddress: Boolean(site.requireAddress),
     rsvpQuestions: Array.isArray(site.rsvpQuestions) ? site.rsvpQuestions : [],
+    template: (site.template === "garden" || site.template === "midnight" ? site.template : "letter") as StoredSite["template"],
+    gallery: Array.isArray(site.gallery) ? site.gallery.filter(Boolean).slice(0, 12) : [],
+    rsvpClose: site.rsvpClose || "",
   };
 }
 

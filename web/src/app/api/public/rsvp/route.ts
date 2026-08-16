@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSiteByToken } from "@/lib/data/site-store";
+import { getSiteByToken, rsvpIsOpen } from "@/lib/data/site-store";
 import {
   ensureGuestRsvpTokens,
   getGuestByRsvpToken,
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   if (!site || !site.published) {
     return NextResponse.json({ error: "Site not found" }, { status: 404 });
   }
-  if (!site.rsvpOpen) {
+  if (!rsvpIsOpen(site)) {
     return NextResponse.json({ error: "RSVP is closed" }, { status: 400 });
   }
 

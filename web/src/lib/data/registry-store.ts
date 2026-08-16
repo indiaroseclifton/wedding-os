@@ -11,6 +11,16 @@ export type RegistryLink = {
   notes?: string;
 };
 
+export type RegistryItem = {
+  id: string;
+  name: string;
+  url?: string;
+  qty: number;
+  status: "OPEN" | "CLAIMED" | "PURCHASED";
+  claimedBy?: string;
+  price?: number;
+};
+
 export type Gift = {
   id: string;
   from: string;
@@ -21,6 +31,7 @@ export type Gift = {
 export type StoredRegistry = {
   workspaceId: string;
   links: RegistryLink[];
+  items: RegistryItem[];
   gifts: Gift[];
   updatedAt: string;
 };
@@ -44,12 +55,14 @@ export async function getRegistry(workspaceId: string): Promise<StoredRegistry> 
     all[workspaceId] = {
       workspaceId,
       links: [],
+      items: [],
       gifts: [],
       updatedAt: new Date().toISOString(),
     };
     await writeAll(all);
   }
-  return all[workspaceId];
+  const row = all[workspaceId];
+  return { ...row, items: Array.isArray(row.items) ? row.items : [] };
 }
 
 export async function saveRegistry(workspaceId: string, patch: Partial<StoredRegistry>) {
@@ -93,4 +106,36 @@ export async function patchGift(workspaceId: string, id: string, patch: Partial<
 export async function deleteGift(workspaceId: string, id: string) {
   const current = await getRegistry(workspaceId);
   return saveRegistry(workspaceId, { gifts: current.gifts.filter((g) => g.id !== id) });
+}
+
+export async function addRegistryItem(
+  workspaceId: string,
+  input: { name: string; url?: string; qty?: number; price?: number }
+) {
+  const current = await getRegistry(workspaceId);
+  const item: RegistryItem = {
+    id: randomUUID(),
+    name: input.name,
+    url: input.url,
+    qty: Math.max(1, Number(input.qty) || 1),
+    status: "OPEN",
+    price: input.price,
+  };
+  return saveRegistry(workspaceId, { items: [...current.items, item] });
+}
+
+export async function patchRegistryItem(
+  workspaceId: string,
+  id: string,
+  patch: Partial<RegistryItem>
+) {
+  const current = await getRegistry(workspaceId);
+  return saveRegistry(workspaceId, {
+    items: current.items.map((i) => (i.id === id ? { ...i, ...patch } : i)),
+  });
+}
+
+export async function deleteRegistryItem(workspaceId: string, id: string) {
+  const current = await getRegistry(workspaceId);
+  return saveRegistry(workspaceId, { items: current.items.filter((i) => i.id !== id) });
 }

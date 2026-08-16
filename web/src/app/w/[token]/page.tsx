@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSiteByToken } from "@/lib/data/site-store";
+import { getSiteByToken, rsvpIsOpen } from "@/lib/data/site-store";
 import { getWorkspaceMeta } from "@/lib/data/store";
 import { getTravel } from "@/lib/data/travel-store";
 import { getRegistry } from "@/lib/data/registry-store";
@@ -42,16 +42,23 @@ export default async function WeddingSitePage({
   const guestSlots = (dayOf.schedule || []).filter((s) => slotVisible(s, "guests"));
   const names = meta.coupleNames || meta.name;
   const date = prettyDate(meta.weddingDate);
+  const open = rsvpIsOpen(site);
+  const gallery = site.gallery || [];
+  const night = site.template === "midnight";
+  const garden = site.template === "garden";
 
   return (
-    <div className="min-h-screen bg-paper text-ink" data-theme={meta.theme || "linen"}>
+    <div
+      className={`min-h-screen ${night ? "bg-[#141311] text-[#f3efe6]" : "bg-paper text-ink"}`}
+      data-theme={meta.theme || "linen"}
+    >
       <GuestHero
         names={names}
         date={date}
         location={meta.location}
         coverUrl={meta.coverUrl}
       />
-      <main className="mx-auto max-w-xl px-5 py-10 sm:py-12">
+      <main className={`mx-auto max-w-xl px-5 py-10 sm:py-12 ${garden ? "max-w-2xl" : ""}`}>
 
         {site.headline && (
           <p className="mt-8 text-center text-base text-ink-soft">{site.headline}</p>
@@ -60,7 +67,15 @@ export default async function WeddingSitePage({
           <p className="mt-6 whitespace-pre-wrap text-sm leading-6 text-ink-soft">{site.story}</p>
         )}
 
-        {site.rsvpOpen && (
+        {gallery.length > 0 && (
+          <div className={`mt-10 grid gap-2 ${gallery.length > 1 ? "grid-cols-2" : ""}`}>
+            {gallery.map((src) => (
+              <img key={src} src={src} alt="" className="aspect-[4/5] w-full rounded-2xl object-cover" />
+            ))}
+          </div>
+        )}
+
+        {open && (
           <div className="mt-10 text-center">
             <Link
               href={`/w/${token}/rsvp`}
@@ -72,6 +87,11 @@ export default async function WeddingSitePage({
               <p className="mt-3 text-xs text-muted">{site.rsvpNote}</p>
             )}
           </div>
+        )}
+        {!open && (
+          <p className="mt-10 text-center text-sm text-muted">
+            RSVP is closed{site.rsvpClose ? ` (was ${site.rsvpClose})` : ""}.
+          </p>
         )}
 
         {site.scheduleNote && (
@@ -176,12 +196,28 @@ export default async function WeddingSitePage({
           </section>
         )}
 
-        {registry && registry.links.length > 0 && (
+        {registry && (registry.links.length > 0 || (registry.items || []).length > 0) && (
           <section className="mt-8">
             <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
               <Icon name="gift" className="h-3.5 w-3.5" /> Registry
             </h2>
-            <ul className="mt-3 space-y-1 text-sm">
+            <ul className="mt-3 space-y-2 text-sm">
+              {(registry.items || []).map((item) => (
+                <li key={item.id} className="flex justify-between gap-2">
+                  <span>
+                    {item.url ? (
+                      <a href={item.url} className="underline" target="_blank" rel="noreferrer">
+                        {item.name}
+                      </a>
+                    ) : (
+                      item.name
+                    )}
+                  </span>
+                  <span className="text-xs text-muted">
+                    {item.status === "PURCHASED" ? "Purchased" : item.status === "CLAIMED" ? "Claimed" : "Open"}
+                  </span>
+                </li>
+              ))}
               {registry.links.map((l) => (
                 <li key={l.url}>
                   <a href={l.url} className="underline" target="_blank" rel="noreferrer">

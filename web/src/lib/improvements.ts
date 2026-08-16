@@ -18,16 +18,11 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
       { id: "budget", title: "Budget envelopes", body: "Typical wedding split, bars, who pays, coming due.", href: "/budget", status: "shipped" },
       { id: "phone", title: "Phone path + Capacitor shell", body: "Home screen today. Native wrapper in mobile/.", href: "/mobile", status: "shipped" },
       { id: "dietary", title: "Dietary that catering can use", body: "Meals, veg / GF / nut tags, every guest, one tap to the catering handoff.", href: "/dietary", status: "shipped" },
-    ],
-  },
-  {
-    phase: "Next — still feel thin",
-    items: [
-      { id: "registry", title: "Registry as a store", body: "Items with claimed / purchased, not just a pasted Zola link. Thank-yous from the same list.", href: "/registry", status: "next" },
-      { id: "site", title: "Guest site as a wedding website", body: "Templates, a gallery, a close date on RSVP. Right now it’s one letter.", href: "/site", status: "next" },
-      { id: "vision", title: "Vision that actually steers", body: "Colors and vibe should filter vendors and DIY, not sit in a chip picker.", href: "/planning/vision", status: "next" },
-      { id: "discover", title: "Public Discover with real places", body: "People who aren’t signed in should search near a city, not 25 demo names.", href: "/discover", status: "next" },
-      { id: "packet", title: "Packet you can trim", body: "Pick sections and audience. Email to the coordinator.", href: "/packet", status: "next" },
+      { id: "registry", title: "Registry as a store", body: "Items with open / claimed / purchased. Thank-yous from the same list.", href: "/registry", status: "shipped" },
+      { id: "site", title: "Guest site as a wedding website", body: "Letter, garden, or midnight. Gallery. RSVP close date.", href: "/site", status: "shipped" },
+      { id: "vision", title: "Vision that actually steers", body: "Browse and DIY follow the locked vibe.", href: "/planning/vision", status: "shipped" },
+      { id: "discover", title: "Public Discover with real places", body: "Search a city without signing in.", href: "/discover/vendors", status: "shipped" },
+      { id: "packet", title: "Packet you can trim", body: "Pick sections. Email the coordinator.", href: "/packet", status: "shipped" },
     ],
   },
   {
