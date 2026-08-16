@@ -4,6 +4,7 @@ import type { WeekItem } from "@/lib/this-week";
 import type { Suggestion } from "@/lib/smart-home";
 import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
 import { RoomTile } from "@/components/layout/RoomTile";
+import { ToolTable } from "@/components/layout/ToolTable";
 
 const QUICK = [
   { href: "/guests/new", label: "Add a guest" },
@@ -134,10 +135,9 @@ export function HomeDashboard({
         </section>
       )}
 
+      <ToolTable />
+
       <section>
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Rooms</p>
             <h2 className="font-serif text-3xl">Where you work</h2>
           </div>
           <Link href="/rooms" className="text-xs text-muted underline">

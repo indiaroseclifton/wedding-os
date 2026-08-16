@@ -139,6 +139,51 @@ export function Icon({
           <path d="M8 6 12 8l4-2 3 3-3 2v9H8V9L5 7l3-3Z" />
         </svg>
       );
+    case "table":
+    case "room":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
+          <ellipse cx="12" cy="10" rx="8" ry="3.5" />
+          <path d="M4 10v3c0 2 3.6 3.5 8 3.5s8-1.5 8-3.5v-3M8 16.2V20M16 16.2V20" />
+        </svg>
+      );
+    case "plate":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
+          <circle cx="12" cy="12" r="8" />
+          <circle cx="12" cy="12" r="4" />
+        </svg>
+      );
+    case "contract":
+    case "scroll":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
+          <path d="M7 4h10a2 2 0 0 1 2 2v14l-3-1.5L13 20l-3-1.5L7 20V6a2 2 0 0 1 2-2" />
+          <path d="M10 9h6M10 13h6" />
+        </svg>
+      );
+    case "fork":
+    case "dietary":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
+          <path d="M8 3v7M6 3v5a2 2 0 0 0 4 0V3M8 10v11M16 3v8h2v10M14 3c0 3 2 4 2 8" />
+        </svg>
+      );
+    case "mic":
+    case "speech":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
+          <rect x="9" y="3" width="6" height="10" rx="3" />
+          <path d="M7 11a5 5 0 0 0 10 0M12 16v5M9 21h6" />
+        </svg>
+      );
+    case "dance":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
+          <circle cx="12" cy="5" r="2" />
+          <path d="M12 7v5l-4 3M12 12l4 2M8 21l4-6 4 6" />
+        </svg>
+      );
     default:
       return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>

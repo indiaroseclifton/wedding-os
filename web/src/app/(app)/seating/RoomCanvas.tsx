@@ -8,18 +8,19 @@ import {
   newFixture,
 } from "@/lib/data/floorplan-store";
 import { type SeatGuest, tableFill } from "@/lib/data/seating";
+import { Icon } from "@/components/icons";
 
 type Table = { id: string; name: string; capacity: number; shape: string };
 
-const FIXTURES: Exclude<FloorKind, "TABLE">[] = [
-  "DANCE_FLOOR",
-  "BUFFET",
-  "BAR",
-  "CAKE",
-  "DJ",
-  "KIDS",
-  "PHOTO",
-  "ESCORT",
+const FIXTURES: { kind: Exclude<FloorKind, "TABLE">; icon: string; label: string }[] = [
+  { kind: "DANCE_FLOOR", icon: "dance", label: "Dance floor" },
+  { kind: "BUFFET", icon: "fork", label: "Buffet" },
+  { kind: "BAR", icon: "spark", label: "Bar" },
+  { kind: "CAKE", icon: "gift", label: "Cake" },
+  { kind: "DJ", icon: "music", label: "DJ" },
+  { kind: "KIDS", icon: "users", label: "Kids" },
+  { kind: "PHOTO", icon: "heart", label: "Photo" },
+  { kind: "ESCORT", icon: "mail", label: "Escort" },
 ];
 
 export function RoomCanvas({
@@ -106,14 +107,15 @@ export function RoomCanvas({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 print:hidden">
-        {FIXTURES.map((k) => (
+        {FIXTURES.map((f) => (
           <button
-            key={k}
+            key={f.kind}
             type="button"
-            onClick={() => addFixture(k)}
-            className="min-h-11 rounded-full border border-line px-3 text-xs"
+            onClick={() => addFixture(f.kind)}
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line px-3 text-xs"
           >
-            + {k.replace("_", " ").toLowerCase()}
+            <Icon name={f.icon} className="h-3.5 w-3.5" />
+            {f.label}
           </button>
         ))}
         <label className="ml-auto flex items-center gap-1 text-xs text-muted">

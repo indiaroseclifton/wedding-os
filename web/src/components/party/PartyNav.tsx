@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Icon } from "@/components/icons";
 
 const TABS = [
-  { href: "/party", label: "Home" },
-  { href: "/party/tasks", label: "Tasks" },
-  { href: "/party/attire", label: "Dress" },
-  { href: "/party/stay", label: "Stay" },
-  { href: "/party/speech", label: "Speech" },
-  { href: "/party/day-of", label: "Day" },
+  { href: "/party", label: "Home", icon: "home" },
+  { href: "/party/tasks", label: "Tasks", icon: "check" },
+  { href: "/party/attire", label: "Dress", icon: "shirt" },
+  { href: "/party/stay", label: "Stay", icon: "pin" },
+  { href: "/party/speech", label: "Speech", icon: "mic" },
+  { href: "/party/day-of", label: "Day", icon: "sun" },
 ] as const;
 
 export function PartyNav() {
@@ -27,10 +28,11 @@ export function PartyNav() {
               <Link
                 href={t.href}
                 scroll={false}
-                className={`flex min-h-11 items-center justify-center text-[11px] ${
+                className={`flex min-h-11 flex-col items-center justify-center gap-0.5 text-[10px] ${
                   on ? "font-medium text-moss" : "text-muted"
                 }`}
               >
+                <Icon name={t.icon} className="h-4 w-4" />
                 {t.label}
               </Link>
             </li>
