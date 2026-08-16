@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   COLOR_STORIES,
   LOOKS,
@@ -22,7 +23,9 @@ type Saved = {
 };
 
 export function FloralStudio() {
-  const [story, setStory] = useState("linen");
+  const params = useSearchParams();
+  const fromUrl = params.get("story");
+  const [story, setStory] = useState(fromUrl && COLOR_STORIES.some((s) => s.id === fromUrl) ? fromUrl : "linen");
   const [vessel, setVessel] = useState("bouquet");
   const [kind, setKind] = useState<"all" | "face" | "filler" | "green" | "dried">("all");
   const [material, setMaterial] = useState<"all" | "fresh" | "silk" | "mix">("all");

@@ -11,6 +11,7 @@ export const ROOM_SUBNAV = {
     { href: "/attire", label: "Attire" },
     { href: "/diy", label: "DIY studio" },
     { href: "/diy/studio/floral", label: "Floral tool" },
+    { href: "/diy/studio/trends", label: "Trends" },
     { href: "/moodboard", label: "Moodboard" },
   ],
   vendors: [

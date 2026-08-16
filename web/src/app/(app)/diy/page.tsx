@@ -89,6 +89,23 @@ export default function DiyHubPage() {
             <p className="mt-1 text-sm text-muted">Set one table. See the math for all of them.</p>
           </div>
         </Link>
+        <Link
+          href="/diy/studio/trends"
+          className="group overflow-hidden rounded-2xl border border-line bg-surface sm:col-span-2"
+        >
+          <div className="grid sm:grid-cols-2">
+            <div className="aspect-[16/8] overflow-hidden sm:aspect-auto">
+              <img src="/brand/candles.jpg" alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+            </div>
+            <div className="p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-moss">2026</p>
+              <p className="mt-1 font-serif text-2xl">Decoration trends</p>
+              <p className="mt-1 text-sm text-muted">
+                Meadow aisles, fruit on the table, little lamps — and the DIY version of each.
+              </p>
+            </div>
+          </div>
+        </Link>
       </section>
 
       {projects.length > 0 && (
