@@ -4,16 +4,18 @@ import { getDayOf } from "@/lib/data/dayof-store";
 import { listTimeline } from "@/lib/data/timeline-store";
 import { getTravel } from "@/lib/data/travel-store";
 import { getSpeeches } from "@/lib/data/speech-store";
+import { listPayments } from "@/lib/data/payments-store";
 import { type CalEvent, nextDay, timed, ymd } from "./ics";
 
 export async function collectCalendar(workspaceId: string, fallbackName: string): Promise<{ name: string; events: CalEvent[] }> {
-  const [meta, events, dayOf, timeline, travel, speeches] = await Promise.all([
+  const [meta, events, dayOf, timeline, travel, speeches, payments] = await Promise.all([
     getWorkspaceMeta(workspaceId, fallbackName),
     listEvents(workspaceId),
     getDayOf(workspaceId),
     listTimeline(workspaceId),
     getTravel(workspaceId),
     getSpeeches(workspaceId),
+    listPayments(workspaceId),
   ]);
   const name = `${meta.coupleNames || meta.name || "Wedding"}`;
   const day = meta.weddingDate || "";
@@ -90,6 +92,18 @@ export async function collectCalendar(workspaceId: string, fallbackName: string)
       start: ymd(row.due),
       end: nextDay(ymd(row.due)),
       allDay: true,
+    });
+  }
+
+  for (const p of payments) {
+    if (p.status === "PAID" || !p.dueDate || !/^\d{4}-\d{2}-\d{2}/.test(p.dueDate)) continue;
+    out.push({
+      uid: `pay-${p.id}`,
+      title: `${p.label} — ${p.vendorName}`,
+      start: ymd(p.dueDate),
+      end: nextDay(ymd(p.dueDate)),
+      allDay: true,
+      description: `$${Math.round(p.amount || 0).toLocaleString()} due`,
     });
   }
 

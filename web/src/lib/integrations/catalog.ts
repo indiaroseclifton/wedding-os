@@ -47,7 +47,7 @@ export const INTEGRATIONS: Integration[] = [
     name: "Calendar subscribe",
     status: "live",
     href: "/timeline",
-    what: "Subscribe once. The day, extra events, run of show, and hotel cutoffs land on your phone.",
+    what: "Subscribe once. The day, extra events, run of show, hotel cutoffs, and payment dues land on your phone.",
     needs: "Nothing. Use Add to calendar on Timeline.",
   },
   {
@@ -55,7 +55,7 @@ export const INTEGRATIONS: Integration[] = [
     name: "File uploads",
     status: "live",
     href: "/moodboard",
-    what: "Photos on the moodboard. PDFs on contracts. Paste still works.",
+    what: "Photos on the moodboard. PDFs on contracts. Receipts on the ledger. Paste still works.",
     needs: "Optional BLOB_READ_WRITE_TOKEN on Vercel so files survive deploys.",
   },
   {
@@ -65,6 +65,14 @@ export const INTEGRATIONS: Integration[] = [
     href: "/diy/studio/floral",
     what: "Stems marked in / off season from your city and wedding month.",
     needs: "City and date in Settings.",
+  },
+  {
+    id: "ledger",
+    name: "Vendor ledger",
+    status: "live",
+    href: "/payments",
+    what: "Deposit, progress, final. Receipts. Paid hits the budget. Dues land on the calendar.",
+    needs: "Nothing. Stripe later if you want to charge cards.",
   },
   {
     id: "gcal",
@@ -95,7 +103,7 @@ export const INTEGRATIONS: Integration[] = [
     name: "Stripe",
     status: "next",
     href: "/payments",
-    what: "Send a deposit invoice and mark it paid when it clears.",
+    what: "The ledger already tracks deposits. Stripe would send the invoice and mark it paid.",
     needs: "Stripe account.",
   },
   {

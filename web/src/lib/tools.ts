@@ -35,4 +35,10 @@ export const DESK_TOOLS = [
     label: "Bridesmaid OS",
     line: "Tasks, dress, stay, speech — their own desk.",
   },
+  {
+    href: "/payments",
+    icon: "wallet",
+    label: "Vendor ledger",
+    line: "Deposit, progress, final. Receipts. Paid hits the budget.",
+  },
 ] as const;

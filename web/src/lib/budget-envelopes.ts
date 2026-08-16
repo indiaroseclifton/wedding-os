@@ -41,9 +41,10 @@ export function envelopeForPath(pathId: string): EnvelopeId | null {
   return PATH_TO_ENVELOPE[pathId] || null;
 }
 
-export function envelopeForVendor(name: string): EnvelopeId {
+export function envelopeForVendor(name: string, category?: string): EnvelopeId {
+  const hay = `${name} ${category || ""}`;
   for (const h of VENDOR_HINTS) {
-    if (h.re.test(name)) return h.cat;
+    if (h.re.test(hay)) return h.cat;
   }
   return "Other";
 }

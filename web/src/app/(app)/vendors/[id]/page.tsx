@@ -48,6 +48,9 @@ export default function VendorDetailPage() {
   const [deposit, setDeposit] = useState("");
   const [depositDue, setDepositDue] = useState("");
   const [depositPaid, setDepositPaid] = useState(false);
+  const [progress, setProgress] = useState("");
+  const [progressDue, setProgressDue] = useState("");
+  const [progressPaid, setProgressPaid] = useState(false);
   const [finalAmt, setFinalAmt] = useState("");
   const [finalDue, setFinalDue] = useState("");
   const [finalPaid, setFinalPaid] = useState(false);
@@ -81,12 +84,18 @@ export default function VendorDetailPage() {
     if (data.payments) {
       setPayments(data.payments);
       const dep = data.payments.find((p) => p.kind === "DEPOSIT");
+      const mid = data.payments.find((p) => p.kind === "PROGRESS");
       const fin = data.payments.find((p) => p.kind === "FINAL");
       if (dep) {
         setDeposit(String(dep.amount));
         setDepositDue(dep.dueDate || "");
         setDepositPaid(dep.status === "PAID");
         if (!data.vendor?.contractUrl && dep.contractLink) setContractUrl(dep.contractLink);
+      }
+      if (mid) {
+        setProgress(String(mid.amount));
+        setProgressDue(mid.dueDate || "");
+        setProgressPaid(mid.status === "PAID");
       }
       if (fin) {
         setFinalAmt(String(fin.amount));
@@ -118,6 +127,9 @@ export default function VendorDetailPage() {
         deposit,
         depositDue,
         depositPaid,
+        progress,
+        progressDue,
+        progressPaid,
         final: finalAmt,
         finalDue,
         finalPaid,
@@ -165,7 +177,7 @@ export default function VendorDetailPage() {
   if (!vendor) return <p className="text-sm text-slate-600">Loading…</p>;
 
   const openPay = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + p.amount, 0);
-  const depositRow = payments.find((p) => p.kind === "DEPOSIT");
+  const paidPay = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
   const flags = flagCount(vendor.contractReview);
 
   return (
@@ -177,12 +189,8 @@ export default function VendorDetailPage() {
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{vendor.name}</h1>
         <p className="mt-1 text-sm text-slate-600">
           {vendor.category} · {vendor.status.replaceAll("_", " ")}
-          {depositRow
-            ? depositRow.status === "PAID"
-              ? " · deposit paid"
-              : depositRow.dueDate
-                ? ` · deposit due ${depositRow.dueDate}`
-                : " · deposit logged"
+          {payments.length
+            ? ` · $${paidPay.toLocaleString()} paid · $${openPay.toLocaleString()} open`
             : ""}
           {vendor.contractReview?.reviewedAt
             ? flags
@@ -277,6 +285,35 @@ export default function VendorDetailPage() {
             onChange={(e) => setDepositPaid(e.target.checked)}
           />
           Deposit paid
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="block text-sm">
+            Progress $
+            <input
+              value={progress}
+              onChange={(e) => setProgress(e.target.value)}
+              type="number"
+              min={0}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block text-sm">
+            Due
+            <input
+              value={progressDue}
+              onChange={(e) => setProgressDue(e.target.value)}
+              type="date"
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </label>
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={progressPaid}
+            onChange={(e) => setProgressPaid(e.target.checked)}
+          />
+          Progress paid
         </label>
         <div className="grid grid-cols-2 gap-2">
           <label className="block text-sm">
@@ -482,7 +519,7 @@ export default function VendorDetailPage() {
           ))}
           {!payments.length && (
             <li className="px-4 py-6 text-center text-sm text-slate-500">
-              Save a deposit above — it stays if you rename this vendor.
+              Save a deposit, progress, or final above — it stays if you rename this vendor.
             </li>
           )}
         </ul>

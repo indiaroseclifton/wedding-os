@@ -4,7 +4,7 @@ import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { reviewHint } from "@/lib/data/contract-review";
-import { listPayments, paymentsForVendor } from "@/lib/data/payments-store";
+import { listPayments, paymentsForVendor, vendorMoneyHint } from "@/lib/data/payments-store";
 import { VendorsClient } from "./VendorsClient";
 
 export default async function VendorsPage() {
@@ -64,12 +64,8 @@ export default async function VendorsPage() {
         <VendorsClient
           vendors={vendors.map((v) => {
             const mine = paymentsForVendor(payments, v);
-            const dep = mine.find((p) => p.kind === "DEPOSIT");
-            let moneyHint = "";
-            if (dep?.status === "PAID") moneyHint = "deposit paid";
-            else if (dep?.dueDate) moneyHint = `deposit due ${dep.dueDate}`;
-            else if (dep) moneyHint = "deposit logged";
-            else if (v.contractUrl) moneyHint = "contract attached";
+            let moneyHint = vendorMoneyHint(mine);
+            if (!moneyHint && v.contractUrl) moneyHint = "contract attached";
             const review = reviewHint(v.contractReview);
             if (review) moneyHint = moneyHint ? `${moneyHint} · ${review}` : review;
             return {

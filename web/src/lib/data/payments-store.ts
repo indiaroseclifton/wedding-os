@@ -4,7 +4,7 @@ import { dataDir, ensureDir, readText, writeText } from "./store-io";
 
 const paymentsFile = path.join(dataDir, "payments.json");
 
-export type PaymentKind = "DEPOSIT" | "FINAL" | "OTHER";
+export type PaymentKind = "DEPOSIT" | "PROGRESS" | "FINAL" | "OTHER";
 
 export type PaymentItem = {
   id: string;
@@ -17,6 +17,7 @@ export type PaymentItem = {
   dueDate?: string;
   status: "UPCOMING" | "DUE" | "PAID" | "OVERDUE";
   contractLink?: string;
+  receiptUrl?: string;
   notes?: string;
   paidAt?: string;
   createdAt: string;
@@ -42,13 +43,14 @@ function normalize(row: PaymentItem): PaymentItem {
       row.kind ||
       (row.label?.toLowerCase().includes("final")
         ? "FINAL"
-        : row.label?.toLowerCase().includes("deposit")
-          ? "DEPOSIT"
-          : "OTHER"),
+        : row.label?.toLowerCase().includes("progress")
+          ? "PROGRESS"
+          : row.label?.toLowerCase().includes("deposit")
+            ? "DEPOSIT"
+            : "OTHER"),
   };
 }
 
-/** Group key: prefer vendor id so a rename does not split the vendor's payments. */
 export function paymentVendorKey(p: Pick<PaymentItem, "vendorId" | "vendorName">) {
   return p.vendorId || `name:${p.vendorName}`;
 }
@@ -62,6 +64,37 @@ export function resolvePaymentVendorName(
     if (match) return match.name;
   }
   return p.vendorName;
+}
+
+export function effectiveStatus(p: PaymentItem): PaymentItem["status"] {
+  if (p.status === "PAID") return "PAID";
+  if (!p.dueDate) return p.status === "OVERDUE" ? "OVERDUE" : p.status === "DUE" ? "DUE" : "UPCOMING";
+  const due = new Date(p.dueDate);
+  if (Number.isNaN(due.getTime())) return p.status;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (due < today) return "OVERDUE";
+  const soon = new Date(today);
+  soon.setDate(soon.getDate() + 14);
+  if (due <= soon) return "DUE";
+  return "UPCOMING";
+}
+
+export function paymentRollup(payments: PaymentItem[]) {
+  let paid = 0;
+  let open = 0;
+  let overdue = 0;
+  let next: PaymentItem | null = null;
+  for (const p of payments) {
+    const status = effectiveStatus(p);
+    if (status === "PAID") paid += p.amount || 0;
+    else {
+      open += p.amount || 0;
+      if (status === "OVERDUE") overdue += p.amount || 0;
+      if (!next || (p.dueDate || "9999") < (next.dueDate || "9999")) next = p;
+    }
+  }
+  return { paid, open, overdue, next, count: payments.length };
 }
 
 export async function listPayments(workspaceId: string) {
@@ -79,6 +112,7 @@ export async function addPayment(input: {
   amount: number;
   dueDate?: string;
   contractLink?: string;
+  receiptUrl?: string;
   notes?: string;
   kind?: PaymentKind;
 }) {
@@ -87,9 +121,11 @@ export async function addPayment(input: {
     input.kind ||
     (input.label.toLowerCase().includes("final")
       ? "FINAL"
-      : input.label.toLowerCase().includes("deposit")
-        ? "DEPOSIT"
-        : "OTHER");
+      : input.label.toLowerCase().includes("progress")
+        ? "PROGRESS"
+        : input.label.toLowerCase().includes("deposit")
+          ? "DEPOSIT"
+          : "OTHER");
   const row: PaymentItem = {
     id: randomUUID(),
     workspaceId: input.workspaceId,
@@ -101,6 +137,7 @@ export async function addPayment(input: {
     dueDate: input.dueDate,
     status: "UPCOMING",
     contractLink: input.contractLink,
+    receiptUrl: input.receiptUrl,
     notes: input.notes,
     createdAt: new Date().toISOString(),
   };
@@ -113,7 +150,11 @@ export async function patchPayment(id: string, patch: Partial<PaymentItem>) {
   const rows = await readJson();
   const row = rows.find((p) => p.id === id);
   if (!row) return null;
-  Object.assign(row, patch);
+  const next: Partial<PaymentItem> = {};
+  for (const [key, value] of Object.entries(patch) as [keyof PaymentItem, PaymentItem[keyof PaymentItem]][]) {
+    if (value !== undefined) next[key] = value as never;
+  }
+  Object.assign(row, next);
   if (patch.status === "PAID" && !row.paidAt) {
     row.paidAt = new Date().toISOString();
   }
@@ -122,6 +163,14 @@ export async function patchPayment(id: string, patch: Partial<PaymentItem>) {
   }
   await writeJson(rows);
   return normalize(row);
+}
+
+export async function deletePayment(id: string) {
+  const rows = await readJson();
+  const next = rows.filter((p) => p.id !== id);
+  if (next.length === rows.length) return false;
+  await writeJson(next);
+  return true;
 }
 
 export async function upsertVendorMilestone(input: {
@@ -158,7 +207,14 @@ export async function upsertVendorMilestone(input: {
     workspaceId: input.workspaceId,
     vendorId: input.vendorId,
     vendorName: input.vendorName,
-    label: input.kind === "DEPOSIT" ? "Deposit" : input.kind === "FINAL" ? "Final" : "Payment",
+    label:
+      input.kind === "DEPOSIT"
+        ? "Deposit"
+        : input.kind === "FINAL"
+          ? "Final"
+          : input.kind === "PROGRESS"
+            ? "Progress"
+            : "Payment",
     kind: input.kind,
     amount: input.amount,
     dueDate: input.dueDate,
@@ -178,4 +234,19 @@ export function paymentsForVendor(
   return payments.filter(
     (p) => p.vendorId === vendor.id || (!p.vendorId && p.vendorName.toLowerCase() === name)
   );
+}
+
+export function vendorMoneyHint(payments: PaymentItem[]): string {
+  if (!payments.length) return "";
+  const open = payments.filter((p) => p.status !== "PAID");
+  const paid = payments.filter((p) => p.status === "PAID");
+  if (!open.length) return paid.length > 1 ? "paid in full" : `${paid[0].label.toLowerCase()} paid`;
+  const overdue = open.filter((p) => effectiveStatus(p) === "OVERDUE");
+  if (overdue.length) {
+    const amt = overdue.reduce((s, p) => s + (p.amount || 0), 0);
+    return `${overdue.length} overdue · $${Math.round(amt).toLocaleString()}`;
+  }
+  const next = [...open].sort((a, b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999"))[0];
+  if (next?.dueDate) return `${next.label} due ${next.dueDate}`;
+  return `${open.length} open`;
 }

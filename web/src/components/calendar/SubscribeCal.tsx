@@ -31,7 +31,7 @@ export function SubscribeCal() {
       <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Calendar</p>
       <p className="mt-1 font-serif text-2xl">Subscribe</p>
       <p className="mt-1 text-sm text-muted">
-        The day, extra events, run of show, hotel cutoffs. Add once — it updates.
+        The day, extra events, run of show, hotel cutoffs, payment dues. Add once — it updates.
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         <a href={webcal} className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm text-ivory">

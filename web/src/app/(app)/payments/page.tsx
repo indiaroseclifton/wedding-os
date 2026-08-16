@@ -1,6 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { FileUpload } from "@/components/ui/FileUpload";
+import { money } from "@/lib/budget-envelopes";
 
 type Payment = {
   id: string;
@@ -13,20 +17,11 @@ type Payment = {
   status: string;
   paidAt?: string;
   contractLink?: string;
+  receiptUrl?: string;
 };
 
-type Vendor = { id: string; name: string };
-
-function isOverdue(p: Payment) {
-  if (p.status === "PAID") return false;
-  if (p.status === "OVERDUE") return true;
-  if (!p.dueDate) return false;
-  const due = new Date(p.dueDate);
-  if (Number.isNaN(due.getTime())) return false;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return due < today;
-}
+type Vendor = { id: string; name: string; category?: string };
+type Filter = "all" | "overdue" | "due" | "paid";
 
 function vendorKey(p: Payment) {
   return p.vendorId || `name:${p.vendorName}`;
@@ -47,22 +42,20 @@ export default function PaymentsPage() {
   const [vendorName, setVendorName] = useState("");
   const [label, setLabel] = useState("Deposit");
   const [kind, setKind] = useState("DEPOSIT");
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
+  const [msg, setMsg] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editAmt, setEditAmt] = useState("");
+  const [editDue, setEditDue] = useState("");
 
   async function load() {
-    const [payRes, venRes] = await Promise.all([
-      fetch("/api/payments"),
-      fetch("/api/vendors"),
-    ]);
-    if (payRes.ok) {
-      const data = await payRes.json();
-      setPayments(data.payments || []);
-    }
-    if (venRes.ok) {
-      const data = await venRes.json();
-      setVendors(data.vendors || []);
-    }
+    const res = await fetch("/api/payments");
+    if (!res.ok) return;
+    const data = await res.json();
+    setPayments(data.payments || []);
+    setVendors(data.vendors || []);
   }
 
   useEffect(() => {
@@ -71,6 +64,7 @@ export default function PaymentsPage() {
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
+    setMsg(null);
     const res = await fetch("/api/payments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -78,7 +72,7 @@ export default function PaymentsPage() {
         vendorId: vendorId || undefined,
         vendorName,
         label,
-        amount,
+        amount: Number(amount) || 0,
         dueDate,
         kind,
       }),
@@ -86,10 +80,11 @@ export default function PaymentsPage() {
     if (res.ok) {
       setVendorName("");
       setVendorId("");
-      setAmount(0);
+      setAmount("");
       setDueDate("");
+      setMsg("Added to the ledger");
       load();
-    }
+    } else setMsg("Could not add");
   }
 
   async function setStatus(id: string, status: string) {
@@ -101,69 +96,130 @@ export default function PaymentsPage() {
     load();
   }
 
-  function addFinalForVendor(rows: Payment[]) {
-    const first = rows[0];
-    if (!first) return;
-    setVendorId(first.vendorId || "");
-    setVendorName(vendorLabel(first, vendors));
-    setLabel("Final balance");
-    setKind("FINAL");
+  async function attachReceipt(id: string, url: string) {
+    await fetch("/api/payments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "receipt", id, receiptUrl: url }),
+    });
+    setMsg("Receipt attached");
+    load();
   }
 
-  const outstanding = payments
-    .filter((p) => p.status !== "PAID")
-    .reduce((s, p) => s + (p.amount || 0), 0);
-  const paid = payments
-    .filter((p) => p.status === "PAID")
-    .reduce((s, p) => s + (p.amount || 0), 0);
+  function startEdit(p: Payment) {
+    setEditing(p.id);
+    setEditAmt(String(p.amount));
+    setEditDue(p.dueDate || "");
+  }
+
+  async function saveEdit(id: string) {
+    await fetch("/api/payments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "update", id, amount: Number(editAmt) || 0, dueDate: editDue }),
+    });
+    setEditing(null);
+    setMsg("Updated");
+    load();
+  }
+
+  async function remove(id: string) {
+    await fetch("/api/payments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", id }),
+    });
+    setMsg("Removed");
+    load();
+  }
+
+  const visible = useMemo(() => {
+    return payments.filter((p) => {
+      if (filter === "overdue") return p.status === "OVERDUE";
+      if (filter === "due") return p.status === "DUE" || p.status === "UPCOMING";
+      if (filter === "paid") return p.status === "PAID";
+      return true;
+    });
+  }, [payments, filter]);
 
   const byVendor = useMemo(() => {
     const map = new Map<string, Payment[]>();
-    for (const p of payments) {
+    for (const p of visible) {
       const key = vendorKey(p);
       const list = map.get(key) || [];
       list.push(p);
       map.set(key, list);
     }
     return Array.from(map.entries()).sort((a, b) =>
-      vendorLabel(a[1][0], vendors).localeCompare(vendorLabel(b[1][0], vendors)),
+      vendorLabel(a[1][0], vendors).localeCompare(vendorLabel(b[1][0], vendors))
     );
-  }, [payments, vendors]);
+  }, [visible, vendors]);
+
+  const paid = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
+  const open = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + p.amount, 0);
+  const overdue = payments.filter((p) => p.status === "OVERDUE").reduce((s, p) => s + p.amount, 0);
+  const next = payments
+    .filter((p) => p.status !== "PAID" && p.dueDate)
+    .sort((a, b) => (a.dueDate || "").localeCompare(b.dueDate || ""))[0];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Payments</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Deposit → final by vendor. Payments stay with a vendor even if you rename them.
+      <RoomSubnav room="vendors" />
+      <div className="flex flex-wrap items-end justify-between gap-3 print:hidden">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Vendor ledger</p>
+          <h1 className="mt-1 font-serif text-4xl">Payments</h1>
+          <p className="mt-1 text-sm text-muted">
+            Deposit, progress, final — by vendor. Paid rolls into the budget. Due dates land on the calendar.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link
+            href="/payments/print"
+            className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm"
+          >
+            Print statement
+          </Link>
+          <Link href="/budget" className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm">
+            Budget
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-4">
+        <p className="glass-panel rounded-2xl p-4">
+          <span className="block text-[11px] uppercase tracking-wide text-muted">Paid</span>
+          <span className="font-serif text-3xl">{money(paid)}</span>
+        </p>
+        <p className="glass-panel rounded-2xl p-4">
+          <span className="block text-[11px] uppercase tracking-wide text-muted">Still open</span>
+          <span className="font-serif text-3xl">{money(open)}</span>
+        </p>
+        <p className="glass-panel rounded-2xl p-4">
+          <span className="block text-[11px] uppercase tracking-wide text-muted">Overdue</span>
+          <span className={`font-serif text-3xl ${overdue ? "text-clay" : ""}`}>{money(overdue)}</span>
+        </p>
+        <p className="glass-panel rounded-2xl p-4">
+          <span className="block text-[11px] uppercase tracking-wide text-muted">Next due</span>
+          <span className="font-serif text-2xl leading-tight">
+            {next ? next.dueDate : "—"}
+          </span>
+          {next && <span className="mt-1 block text-xs text-muted">{next.label} · {vendorLabel(next, vendors)}</span>}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm">
-          Outstanding{" "}
-          <span className="font-semibold">${outstanding.toLocaleString()}</span>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm">
-          Paid <span className="font-semibold">${paid.toLocaleString()}</span>
-        </div>
-      </div>
-
-      <form
-        onSubmit={add}
-        className="grid gap-2 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-2"
-      >
+      <form onSubmit={add} className="glass-panel grid gap-2 rounded-2xl p-4 sm:grid-cols-2 print:hidden">
         <select
           value={vendorId}
           onChange={(e) => {
-            const next = e.target.value;
-            setVendorId(next);
-            const match = vendors.find((v) => v.id === next);
+            const nextId = e.target.value;
+            setVendorId(nextId);
+            const match = vendors.find((v) => v.id === nextId);
             if (match) setVendorName(match.name);
           }}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="min-h-11 rounded-xl border border-line px-3 text-sm"
         >
-          <option value="">Vendor (type a name if not listed)</option>
+          <option value="">Pick a vendor</option>
           {vendors.map((v) => (
             <option key={v.id} value={v.id}>
               {v.name}
@@ -177,20 +233,22 @@ export default function PaymentsPage() {
             if (vendorId) setVendorId("");
           }}
           required={!vendorId}
-          placeholder="Vendor name"
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          placeholder="Or type a name"
+          className="min-h-11 rounded-xl border border-line px-3 text-sm"
         />
         <select
           value={kind}
           onChange={(e) => {
             setKind(e.target.value);
             if (e.target.value === "DEPOSIT") setLabel("Deposit");
+            if (e.target.value === "PROGRESS") setLabel("Progress");
             if (e.target.value === "FINAL") setLabel("Final balance");
             if (e.target.value === "OTHER") setLabel("Payment");
           }}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="min-h-11 rounded-xl border border-line px-3 text-sm"
         >
           <option value="DEPOSIT">Deposit</option>
+          <option value="PROGRESS">Progress</option>
           <option value="FINAL">Final</option>
           <option value="OTHER">Other</option>
         </select>
@@ -199,109 +257,173 @@ export default function PaymentsPage() {
           onChange={(e) => setLabel(e.target.value)}
           required
           placeholder="Label"
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="min-h-11 rounded-xl border border-line px-3 text-sm"
         />
         <input
           type="number"
           min={0}
           value={amount}
-          onChange={(e) => setAmount(Number(e.target.value) || 0)}
+          onChange={(e) => setAmount(e.target.value)}
           placeholder="Amount"
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="min-h-11 rounded-xl border border-line px-3 text-sm"
         />
         <input
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
           type="date"
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="min-h-11 rounded-xl border border-line px-3 text-sm"
         />
-        <button
-          type="submit"
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white sm:col-span-2"
-        >
-          Add payment
+        <button type="submit" className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory sm:col-span-2">
+          Add to ledger
         </button>
+        {msg && (
+          <p role="status" className="text-xs text-moss sm:col-span-2">
+            {msg}
+          </p>
+        )}
       </form>
+
+      <div className="flex flex-wrap gap-2 print:hidden">
+        {(
+          [
+            ["all", "All"],
+            ["overdue", "Overdue"],
+            ["due", "Open"],
+            ["paid", "Paid"],
+          ] as const
+        ).map(([id, name]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setFilter(id)}
+            className={`min-h-11 rounded-full px-3 text-xs ${
+              filter === id ? "bg-moss text-ivory" : "border border-line"
+            }`}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
 
       <div className="space-y-4">
         {byVendor.map(([key, rows]) => {
           const name = vendorLabel(rows[0], vendors);
-          const open = rows.filter((p) => p.status !== "PAID");
-          const hasFinal = rows.some((p) => p.kind === "FINAL" || /final/i.test(p.label));
+          const all = payments.filter((p) => vendorKey(p) === key);
+          const total = all.reduce((s, p) => s + p.amount, 0);
+          const settled = all.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
+          const pct = total ? Math.round((settled / total) * 100) : 0;
+          const href = rows[0].vendorId ? `/vendors/${rows[0].vendorId}` : "/vendors";
           return (
-            <div key={key} className="rounded-xl border border-slate-200 bg-white">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3">
+            <section key={key} className="overflow-hidden rounded-2xl border border-line bg-surface/70">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold">{name}</p>
-                  <p className="text-xs text-slate-500">
-                    {open.length} open · {rows.length} total
+                  <Link href={href} scroll={false} className="font-serif text-2xl">
+                    {name}
+                  </Link>
+                  <p className="text-xs text-muted">
+                    {money(settled)} paid of {money(total)} · {pct}%
                   </p>
                 </div>
-                {!hasFinal && (
-                  <button
-                    type="button"
-                    onClick={() => addFinalForVendor(rows)}
-                    className="text-xs font-medium underline"
-                  >
-                    + Final balance
-                  </button>
-                )}
+                <div className="h-1.5 w-28 overflow-hidden rounded-full bg-line">
+                  <div className="h-full bg-moss" style={{ width: `${pct}%` }} />
+                </div>
               </div>
-              <ul className="divide-y divide-slate-100">
-                {rows.map((p) => {
-                  const overdue = isOverdue(p);
-                  return (
-                    <li
-                      key={p.id}
-                      className={`flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm ${
-                        overdue ? "bg-rose-50" : ""
-                      }`}
-                    >
-                      <div>
-                        <p className="font-medium">
-                          {p.label}
-                          <span className="ml-2 text-[10px] uppercase tracking-wide text-slate-400">
-                            {p.kind || "OTHER"}
-                          </span>
-                        </p>
-                        <p
-                          className={`text-xs ${
-                            overdue ? "font-medium text-rose-700" : "text-slate-500"
-                          }`}
-                        >
-                          ${p.amount.toLocaleString()}
-                          {p.dueDate ? ` · due ${p.dueDate}` : ""}
-                          {p.paidAt ? ` · paid ${p.paidAt.slice(0, 10)}` : ""}
-                          {overdue ? " · overdue" : ""}
-                          {p.contractLink ? (
-                            <>
-                              {" · "}
-                              <a href={p.contractLink} className="underline" target="_blank" rel="noreferrer">
-                                contract
-                              </a>
-                            </>
-                          ) : null}
-                        </p>
-                      </div>
-                      <select
-                        value={p.status}
-                        onChange={(e) => setStatus(p.id, e.target.value)}
-                        className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs"
-                      >
-                        <option value="UPCOMING">Upcoming</option>
-                        <option value="DUE">Due</option>
-                        <option value="PAID">Paid</option>
-                        <option value="OVERDUE">Overdue</option>
-                      </select>
-                    </li>
-                  );
-                })}
+              <ul className="divide-y divide-line">
+                {rows.map((p) => (
+                  <li
+                    key={p.id}
+                    className={`flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm ${
+                      p.status === "OVERDUE" ? "bg-clay/10" : ""
+                    }`}
+                  >
+                    <div>
+                      <p className="font-medium">
+                        {p.label}
+                        <span className="ml-2 text-[10px] uppercase tracking-wide text-muted">
+                          {p.kind || "OTHER"}
+                        </span>
+                      </p>
+                      <p className={`text-xs ${p.status === "OVERDUE" ? "font-medium text-clay" : "text-muted"}`}>
+                        {money(p.amount)}
+                        {p.dueDate ? ` · due ${p.dueDate}` : ""}
+                        {p.paidAt ? ` · paid ${p.paidAt.slice(0, 10)}` : ""}
+                        {p.status === "OVERDUE" ? " · overdue" : ""}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 print:hidden">
+                      {editing === p.id ? (
+                        <>
+                          <input
+                            type="number"
+                            min={0}
+                            value={editAmt}
+                            onChange={(e) => setEditAmt(e.target.value)}
+                            className="w-24 min-h-11 rounded-xl border border-line px-2 text-sm"
+                          />
+                          <input
+                            type="date"
+                            value={editDue}
+                            onChange={(e) => setEditDue(e.target.value)}
+                            className="min-h-11 rounded-xl border border-line px-2 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => saveEdit(p.id)}
+                            className="min-h-11 rounded-full bg-moss px-3 text-xs text-ivory"
+                          >
+                            Save
+                          </button>
+                          <button type="button" onClick={() => setEditing(null)} className="text-xs underline">
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {p.receiptUrl ? (
+                            <a href={p.receiptUrl} target="_blank" rel="noreferrer" className="text-xs underline">
+                              Receipt
+                            </a>
+                          ) : (
+                            <FileUpload
+                              label="Receipt"
+                              accept="image/jpeg,image/png,application/pdf"
+                              onUploaded={(url) => attachReceipt(p.id, url)}
+                            />
+                          )}
+                          {p.status !== "PAID" ? (
+                            <button
+                              type="button"
+                              onClick={() => setStatus(p.id, "PAID")}
+                              className="min-h-11 rounded-full bg-moss px-3 text-xs text-ivory"
+                            >
+                              Mark paid
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setStatus(p.id, "UPCOMING")}
+                              className="text-xs underline"
+                            >
+                              Undo
+                            </button>
+                          )}
+                          <button type="button" onClick={() => startEdit(p)} className="text-xs underline">
+                            Edit
+                          </button>
+                          <button type="button" onClick={() => remove(p.id)} className="text-xs underline">
+                            Remove
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                ))}
               </ul>
-            </div>
+            </section>
           );
         })}
         {!payments.length && (
-          <p className="text-center text-sm text-slate-500">No payments yet</p>
+          <p className="text-center text-sm text-muted">No payments yet. Add a deposit from a booked vendor.</p>
         )}
       </div>
     </div>

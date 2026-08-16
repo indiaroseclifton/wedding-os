@@ -106,12 +106,22 @@ export function RsvpWidget() {
 }
 
 export function PayWidget() {
+  const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
+  const [vendorId, setVendorId] = useState("");
   const [vendor, setVendor] = useState("");
   const [label, setLabel] = useState("Deposit");
   const [amount, setAmount] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [paid, setPaid] = useState(true);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/vendors")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setVendors(d?.vendors || []))
+      .catch(() => {});
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -121,10 +131,13 @@ export function PayWidget() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        vendorId: vendorId || undefined,
         vendorName: vendor,
         label,
         amount: Number(amount) || 0,
-        kind: label.toLowerCase().includes("final") ? "FINAL" : "DEPOSIT",
+        dueDate: dueDate || undefined,
+        kind: label.toLowerCase().includes("final") ? "FINAL" : label.toLowerCase().includes("progress") ? "PROGRESS" : "DEPOSIT",
+        paid,
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -133,17 +146,12 @@ export function PayWidget() {
       setMsg(data.error || "Could not save");
       return;
     }
-    if (paid && data.payment?.id) {
-      await fetch("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "status", id: data.payment.id, status: "PAID" }),
-      });
-    }
     setBusy(false);
     setVendor("");
+    setVendorId("");
     setAmount("");
-    setMsg("Logged.");
+    setDueDate("");
+    setMsg("On the ledger.");
   }
 
   return (
@@ -151,13 +159,32 @@ export function PayWidget() {
       <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-moss">Money</p>
       <h2 className="mt-1 text-sm font-semibold">Log a payment</h2>
       <form onSubmit={submit} className="mt-3 space-y-2">
-        <input
-          value={vendor}
-          onChange={(e) => setVendor(e.target.value)}
-          required
-          placeholder="Vendor"
+        <select
+          value={vendorId}
+          onChange={(e) => {
+            const id = e.target.value;
+            setVendorId(id);
+            const match = vendors.find((v) => v.id === id);
+            if (match) setVendor(match.name);
+          }}
           className="w-full rounded-lg border border-line px-3 py-2 text-sm"
-        />
+        >
+          <option value="">Vendor</option>
+          {vendors.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.name}
+            </option>
+          ))}
+        </select>
+        {!vendorId && (
+          <input
+            value={vendor}
+            onChange={(e) => setVendor(e.target.value)}
+            required
+            placeholder="Or type a name"
+            className="w-full rounded-lg border border-line px-3 py-2 text-sm"
+          />
+        )}
         <div className="grid grid-cols-2 gap-2">
           <input
             value={label}
@@ -171,6 +198,12 @@ export function PayWidget() {
             required
             inputMode="decimal"
             placeholder="800"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
+          />
+          <input
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            type="date"
             className="rounded-lg border border-line px-3 py-2 text-sm"
           />
         </div>

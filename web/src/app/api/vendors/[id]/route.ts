@@ -84,7 +84,19 @@ export async function POST(
         amount: Number(body.deposit) || 0,
         dueDate: body.depositDue || undefined,
         contractLink: contractUrl || undefined,
-        status: body.depositPaid ? "PAID" : undefined,
+        status: body.depositPaid ? "PAID" : "UPCOMING",
+      });
+    }
+    if (body.progress != null && body.progress !== "") {
+      await upsertVendorMilestone({
+        workspaceId: workspace.id,
+        vendorId: vendor.id,
+        vendorName: vendor.name,
+        kind: "PROGRESS",
+        amount: Number(body.progress) || 0,
+        dueDate: body.progressDue || undefined,
+        contractLink: contractUrl || undefined,
+        status: body.progressPaid ? "PAID" : "UPCOMING",
       });
     }
     if (body.final != null && body.final !== "") {
@@ -96,7 +108,7 @@ export async function POST(
         amount: Number(body.final) || 0,
         dueDate: body.finalDue || undefined,
         contractLink: contractUrl || undefined,
-        status: body.finalPaid ? "PAID" : undefined,
+        status: body.finalPaid ? "PAID" : "UPCOMING",
       });
     }
     const next = await getVendor(id);

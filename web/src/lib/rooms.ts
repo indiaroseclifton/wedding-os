@@ -50,7 +50,15 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
     { href: "/vendors/browse", label: "Find vendors" },
     { href: "/vendors/checklists", label: "Checklists" },
     { href: "/vendors/shortlist", label: "Compare" },
-    { href: "/payments", label: "Payments" },
+    {
+      href: "/payments",
+      label: "Payments",
+      children: [
+        { href: "/payments", label: "Ledger" },
+        { href: "/payments/print", label: "Statement" },
+        { href: "/budget", label: "Budget" },
+      ],
+    },
     { href: "/handoffs", label: "Handoffs" },
   ],
   guests: [

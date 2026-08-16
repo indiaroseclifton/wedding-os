@@ -10,7 +10,7 @@ import {
 } from "./workspace";
 import { createVendor } from "./vendors-store";
 import { saveMusic } from "./music-store";
-import { addPayment } from "./payments-store";
+import { addPayment, patchPayment } from "./payments-store";
 import { createPackage } from "./handoffs-store";
 import { saveSite } from "./site-store";
 import { wipeDataDir, dataDir, pathExists, writeText } from "./store-io";
@@ -114,21 +114,50 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
     category: "DJ",
     status: "PROPOSAL",
   });
-  await createVendor({
+  const catering = await createVendor({
     workspaceId: ws,
     name: "Harvest Catering",
     category: "Catering",
     status: "BOOKED",
   });
 
-  await addPayment({
+  const venueDep = await addPayment({
     workspaceId: ws,
     vendorId: venue.id,
     vendorName: venue.name,
     label: "Venue deposit",
+    kind: "DEPOSIT",
     amount: 2500,
     dueDate: "2026-09-01",
     notes: "Sample payment",
+  });
+  await patchPayment(venueDep.id, { status: "PAID" });
+  await addPayment({
+    workspaceId: ws,
+    vendorId: venue.id,
+    vendorName: venue.name,
+    label: "Progress",
+    kind: "PROGRESS",
+    amount: 4000,
+    dueDate: "2026-09-15",
+  });
+  await addPayment({
+    workspaceId: ws,
+    vendorId: venue.id,
+    vendorName: venue.name,
+    label: "Final balance",
+    kind: "FINAL",
+    amount: 3500,
+    dueDate: "2026-10-01",
+  });
+  await addPayment({
+    workspaceId: ws,
+    vendorId: catering.id,
+    vendorName: catering.name,
+    label: "Catering deposit",
+    kind: "DEPOSIT",
+    amount: 1800,
+    dueDate: "2026-08-25",
   });
 
   // Music for DJ handoff prefill

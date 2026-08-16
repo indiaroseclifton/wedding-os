@@ -10,6 +10,7 @@ import {
   updateBudgetLine,
 } from "@/lib/data/budget-store";
 import { listPayments } from "@/lib/data/payments-store";
+import { listVendors } from "@/lib/data/vendors-store";
 import { diyEstimate, getDiy } from "@/lib/data/diy-store";
 import { getPath } from "@/lib/data/path-store";
 import { requiredString, ValidationError } from "@/lib/validation";
@@ -43,13 +44,18 @@ function rollup(
 
 function envelopes(
   budget: Awaited<ReturnType<typeof getBudget>>,
-  payments: Awaited<ReturnType<typeof listPayments>>
+  payments: Awaited<ReturnType<typeof listPayments>>,
+  vendors: { id: string; name: string; category: string }[]
 ) {
+  const byId = new Map(vendors.map((v) => [v.id, v]));
   return BUDGET_ENVELOPES.map((env) => {
     const lines = budget.lines.filter((l) => l.category === env.id);
     const planned = lines.reduce((s, l) => s + (l.planned || 0), 0);
     const lineActual = lines.reduce((s, l) => s + (l.actual || 0), 0);
-    const pay = payments.filter((p) => envelopeForVendor(p.vendorName) === env.id);
+    const pay = payments.filter((p) => {
+      const v = p.vendorId ? byId.get(p.vendorId) : undefined;
+      return envelopeForVendor(p.vendorName, v?.category) === env.id;
+    });
     const paid = pay.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
     const open = pay.filter((p) => p.status !== "PAID").reduce((s, p) => s + p.amount, 0);
     const spent = lineActual + paid;
@@ -69,11 +75,12 @@ export async function GET() {
   const access = await requireCoupleApi();
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
-  const [budget, payments, diy, path] = await Promise.all([
+  const [budget, payments, diy, path, vendors] = await Promise.all([
     getBudget(workspace.id),
     listPayments(workspace.id),
     getDiy(workspace.id),
     getPath(workspace.id),
+    listVendors(workspace.id),
   ]);
   const upcoming = payments
     .filter((p) => p.status !== "PAID")
@@ -84,7 +91,7 @@ export async function GET() {
     payments,
     path: path.choices,
     upcoming,
-    envelopes: envelopes(budget, payments),
+    envelopes: envelopes(budget, payments, vendors),
     rollup: rollup(budget, payments, diy),
   });
 }
