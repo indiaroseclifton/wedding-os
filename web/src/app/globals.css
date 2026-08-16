@@ -353,7 +353,6 @@ html {
 @media print {
   header,
   nav,
-  .print\\:hidden,
   button {
     display: none !important;
   }

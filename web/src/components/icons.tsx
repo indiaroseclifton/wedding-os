@@ -21,7 +21,7 @@ import {
   TShirt,
   Users,
   Wallet,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/ssr";
 
 const CHROME: Record<string, PhIcon> = {
   settings: Gear,

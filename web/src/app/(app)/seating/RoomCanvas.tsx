@@ -6,7 +6,7 @@ import {
   type FloorObject,
   type TablePosition,
   newFixture,
-} from "@/lib/data/floorplan-store";
+} from "@/lib/floorplan";
 import { type SeatGuest, tableFill } from "@/lib/data/seating";
 import { Icon } from "@/components/icons";
 
