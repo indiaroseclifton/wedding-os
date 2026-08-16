@@ -19,6 +19,17 @@ type Listing = {
   leadWeeks?: string;
 };
 
+type Place = {
+  placeId: string;
+  name: string;
+  address: string;
+  rating?: number;
+  ratings?: number;
+  mapsUrl: string;
+  website?: string;
+  phone?: string;
+};
+
 const PHOTOS: Record<string, string> = {
   Venue: "/brand/garden.jpg",
   Photographer: "/brand/setting.jpg",
@@ -50,6 +61,12 @@ export default function VendorBrowsePage() {
   const [city, setCity] = useState("All");
   const [style, setStyle] = useState("All");
   const [q, setQ] = useState("");
+  const [source, setSource] = useState<"curated" | "near">("near");
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [placesOn, setPlacesOn] = useState(false);
+  const [placesMsg, setPlacesMsg] = useState<string | null>(null);
+  const [near, setNear] = useState("");
+  const [hiring, setHiring] = useState<string | null>(null);
 
   async function load() {
     const res = await fetch("/api/directory");
@@ -70,6 +87,48 @@ export default function VendorBrowsePage() {
     if (cat) setCategory(cat);
     load();
   }, []);
+
+  useEffect(() => {
+    if (source !== "near") return;
+    void runPlaces(category === "All" ? "Photographer" : category);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source, category]);
+
+  async function runPlaces(cat = category) {
+    const params = new URLSearchParams({
+      category: cat === "All" ? "Photographer" : cat,
+    });
+    if (q.trim()) params.set("q", q.trim());
+    if (near.trim()) params.set("near", near.trim());
+    const res = await fetch(`/api/integrations/places/search?${params}`);
+    const d = await res.json().catch(() => ({}));
+    setPlacesOn(Boolean(d.configured));
+    setPlaces(d.places || []);
+    setPlacesMsg(d.error || (d.configured ? null : "Add GOOGLE_PLACES_API_KEY in Vercel to search near you."));
+    if (d.near && !near) setNear(d.near);
+  }
+
+  async function hirePlace(p: Place) {
+    setHiring(p.placeId);
+    const res = await fetch("/api/integrations/places/hire", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        placeId: p.placeId,
+        name: p.name,
+        category: category === "All" ? "Other" : category,
+        address: p.address,
+        website: p.website,
+        phone: p.phone,
+        mapsUrl: p.mapsUrl,
+      }),
+    });
+    setHiring(null);
+    if (res.ok) {
+      setHiredCats((c) => [...c, category === "All" ? "Other" : category]);
+      window.location.href = "/vendors";
+    }
+  }
 
   async function toggle(slug: string) {
     const res = await fetch("/api/directory", {
@@ -171,6 +230,100 @@ export default function VendorBrowsePage() {
         )}
       </section>
 
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setSource("near")}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+            source === "near" ? "bg-moss text-ivory" : "border border-line"
+          }`}
+        >
+          Near you
+        </button>
+        <button
+          type="button"
+          onClick={() => setSource("curated")}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+            source === "curated" ? "bg-moss text-ivory" : "border border-line"
+          }`}
+        >
+          Curated demo
+        </button>
+      </div>
+
+      {source === "near" && (
+        <div className="space-y-3">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void runPlaces();
+            }}
+            className="flex flex-wrap gap-2"
+          >
+            <input
+              value={near}
+              onChange={(e) => setNear(e.target.value)}
+              placeholder="City (Atlanta, GA)"
+              className="rounded-lg border border-line px-3 py-2 text-sm"
+            />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Or type a search"
+              className="min-w-[12rem] flex-1 rounded-lg border border-line px-3 py-2 text-sm"
+            />
+            <button type="submit" className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory">
+              Search
+            </button>
+          </form>
+          {placesMsg && (
+            <p className="text-sm text-muted">
+              {placesMsg}{" "}
+              {!placesOn && (
+                <Link href="/integrations" className="underline">
+                  How
+                </Link>
+              )}
+            </p>
+          )}
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {places.map((p) => (
+              <li key={p.placeId} className="rounded-2xl border border-line bg-surface p-4">
+                <p className="font-medium">{p.name}</p>
+                <p className="text-[11px] text-muted">{p.address}</p>
+                {p.rating != null && (
+                  <p className="mt-1 text-xs text-ink-soft">
+                    {p.rating} ★{p.ratings ? ` · ${p.ratings} reviews` : ""}
+                  </p>
+                )}
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {p.mapsUrl && (
+                    <a href={p.mapsUrl} target="_blank" rel="noreferrer" className="text-xs underline">
+                      Maps
+                    </a>
+                  )}
+                  {p.website && (
+                    <a href={p.website} target="_blank" rel="noreferrer" className="text-xs underline">
+                      Site
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    disabled={hiring === p.placeId}
+                    onClick={() => hirePlace(p)}
+                    className="text-xs font-medium underline"
+                  >
+                    {hiring === p.placeId ? "Adding…" : "Add to my team"}
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {source === "curated" && (
+        <>
       <div className="flex flex-wrap gap-2">
         <input
           value={q}
@@ -238,6 +391,8 @@ export default function VendorBrowsePage() {
         })}
       </ul>
       {rows.length === 0 && <p className="text-sm text-muted">No listings match those filters.</p>}
+        </>
+      )}
     </div>
   );
 }

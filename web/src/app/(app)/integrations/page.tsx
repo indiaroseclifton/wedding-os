@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { INTEGRATIONS } from "@/lib/integrations/catalog";
 import { appleMusicConfigured } from "@/lib/integrations/apple-music";
+import { placesConfigured } from "@/lib/integrations/google-places";
 import { spotifyConfigured } from "@/lib/integrations/spotify";
 
 export default function IntegrationsPage() {
   const spotifyReady = spotifyConfigured();
   const appleReady = appleMusicConfigured();
+  const placesReady = placesConfigured();
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -98,6 +100,27 @@ export default function IntegrationsPage() {
         </ol>
         <p className="mt-3 text-xs text-muted">
           Keys on this project: {appleReady ? "present — you can connect." : "not set yet."}
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-line bg-surface p-4 text-sm">
+        <p className="font-medium">Turn on Google Places</p>
+        <ol className="mt-2 list-decimal space-y-1 pl-5 text-ink-soft">
+          <li>
+            In{" "}
+            <a href="https://console.cloud.google.com/apis/library/places.googleapis.com" className="underline" target="_blank" rel="noreferrer">
+              Google Cloud
+            </a>
+            , enable <strong>Places API (New)</strong>.
+          </li>
+          <li>Create an API key. Restrict it to Places API if you can.</li>
+          <li>
+            In Vercel → Environment Variables, add <code className="text-xs">GOOGLE_PLACES_API_KEY</code> (Production).
+          </li>
+          <li>Redeploy, then open Find vendors → Near you.</li>
+        </ol>
+        <p className="mt-3 text-xs text-muted">
+          Key on this project: {placesReady ? "present — search should work." : "not set yet."}
         </p>
       </div>
     </div>

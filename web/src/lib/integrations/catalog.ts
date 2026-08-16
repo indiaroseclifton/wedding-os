@@ -35,6 +35,14 @@ export const INTEGRATIONS: Integration[] = [
     needs: "Apple Developer MusicKit key in Vercel.",
   },
   {
+    id: "places",
+    name: "Google Places",
+    status: "live",
+    href: "/vendors/browse",
+    what: "Search real vendors near the wedding city. Add them to your team.",
+    needs: "GOOGLE_PLACES_API_KEY (Places API New) in Vercel.",
+  },
+  {
     id: "calendar",
     name: "Google Calendar",
     status: "next",
