@@ -29,10 +29,10 @@ export const INTEGRATIONS: Integration[] = [
   {
     id: "apple-music",
     name: "Apple Music",
-    status: "next",
-    href: "/integrations",
-    what: "Same must-play export for people who don’t have Spotify.",
-    needs: "Apple Developer + MusicKit.",
+    status: "live",
+    href: "/music",
+    what: "Search the catalog, add must-play, export a playlist the DJ can open in Apple Music.",
+    needs: "Apple Developer MusicKit key in Vercel.",
   },
   {
     id: "calendar",

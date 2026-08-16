@@ -10,6 +10,7 @@ import {
   setSongRequestStatus,
 } from "@/lib/data/music-store";
 import { spotifyConfigured } from "@/lib/integrations/spotify";
+import { appleMusicConfigured } from "@/lib/integrations/apple-music";
 
 function publicMusic(music: Awaited<ReturnType<typeof getMusic>>) {
   return {
@@ -20,6 +21,13 @@ function publicMusic(music: Awaited<ReturnType<typeof getMusic>>) {
           displayName: music.spotify.displayName,
           playlistId: music.spotify.playlistId,
           playlistUrl: music.spotify.playlistUrl,
+        }
+      : { connected: false },
+    appleMusic: music.appleMusic
+      ? {
+          connected: true,
+          playlistId: music.appleMusic.playlistId,
+          playlistUrl: music.appleMusic.playlistUrl,
         }
       : { connected: false },
   };
@@ -33,6 +41,7 @@ export async function GET() {
   return NextResponse.json({
     music: publicMusic(music),
     spotifyConfigured: spotifyConfigured(),
+    appleConfigured: appleMusicConfigured(),
   });
 }
 
@@ -59,6 +68,7 @@ export async function POST(request: Request) {
       artist: body.artist ? String(body.artist) : undefined,
       uri: body.uri ? String(body.uri) : undefined,
       url: body.url ? String(body.url) : undefined,
+      appleId: body.appleId ? String(body.appleId) : undefined,
     });
     return NextResponse.json({ music: publicMusic(music) });
   }

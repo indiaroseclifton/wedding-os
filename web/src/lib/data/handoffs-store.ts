@@ -44,7 +44,7 @@ export const TEMPLATE_SECTIONS: Record<HandoffTemplate, string[]> = {
     "special_notes",
     "vendor_list",
   ],
-  DJ: ["must_play", "do_not_play", "spotify_playlist", "music_moments", "tone_notes", "day_of_contact"],
+  DJ: ["must_play", "do_not_play", "spotify_playlist", "apple_music_playlist", "music_moments", "tone_notes", "day_of_contact"],
   PHOTOGRAPHER: [
     "must_have_moments",
     "group_notes",
@@ -113,6 +113,7 @@ export const SECTION_LABELS: Record<string, string> = {
   must_play: "Must-play",
   do_not_play: "Do-not-play",
   spotify_playlist: "Spotify playlist",
+  apple_music_playlist: "Apple Music playlist",
   music_moments: "Music moments",
   tone_notes: "Tone / energy",
   day_of_contact: "Day-of contact",

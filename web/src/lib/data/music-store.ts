@@ -17,11 +17,20 @@ export type TrackRef = {
   artist?: string;
   uri?: string;
   url?: string;
+  appleId?: string;
 };
 
 export type SpotifyLink = {
   refreshToken: string;
   displayName?: string;
+  playlistId?: string;
+  playlistUrl?: string;
+  connectedAt?: string;
+};
+
+export type AppleMusicLink = {
+  userToken: string;
+  storefront?: string;
   playlistId?: string;
   playlistUrl?: string;
   connectedAt?: string;
@@ -36,6 +45,7 @@ export type StoredMusic = {
   notes?: string;
   requests: SongRequest[];
   spotify?: SpotifyLink;
+  appleMusic?: AppleMusicLink;
   updatedAt: string;
 };
 
@@ -124,10 +134,15 @@ export function lineForTrack(t: TrackRef) {
 export async function addMustPlayTrack(workspaceId: string, track: TrackRef) {
   const music = await getMusic(workspaceId);
   const line = lineForTrack(track);
-  if (music.mustPlay.includes(line)) return music;
+  const tracks = [...(music.mustPlayTracks || [])];
+  const existing = tracks.findIndex((t) => lineForTrack(t) === line);
+  if (existing >= 0) {
+    tracks[existing] = { ...tracks[existing], ...track };
+    return saveMusic(workspaceId, { mustPlayTracks: tracks });
+  }
   return saveMusic(workspaceId, {
-    mustPlay: [...music.mustPlay, line],
-    mustPlayTracks: [...(music.mustPlayTracks || []), track],
+    mustPlay: music.mustPlay.includes(line) ? music.mustPlay : [...music.mustPlay, line],
+    mustPlayTracks: [...tracks, track],
   });
 }
 

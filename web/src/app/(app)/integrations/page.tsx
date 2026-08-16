@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { INTEGRATIONS } from "@/lib/integrations/catalog";
+import { appleMusicConfigured } from "@/lib/integrations/apple-music";
 import { spotifyConfigured } from "@/lib/integrations/spotify";
 
 export default function IntegrationsPage() {
   const spotifyReady = spotifyConfigured();
+  const appleReady = appleMusicConfigured();
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -11,7 +13,7 @@ export default function IntegrationsPage() {
         <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">Connect</p>
         <h1 className="mt-1 font-serif text-3xl tracking-tight">Integrations</h1>
         <p className="mt-2 text-sm text-ink-soft">
-          Spotify and weather are live. The rest are queued — we only hook what has a real public API.
+          Spotify, Apple Music, and weather are live. The rest wait on their own keys.
         </p>
       </div>
 
@@ -67,6 +69,35 @@ export default function IntegrationsPage() {
         </ol>
         <p className="mt-3 text-xs text-muted">
           Keys on this project: {spotifyReady ? "present — you can connect." : "not set yet."}
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-line bg-surface p-4 text-sm">
+        <p className="font-medium">Turn on Apple Music</p>
+        <ol className="mt-2 list-decimal space-y-1 pl-5 text-ink-soft">
+          <li>
+            In{" "}
+            <a
+              href="https://developer.apple.com/account/resources/identifiers/list/mediaId"
+              className="underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Apple Developer → Identifiers
+            </a>
+            , create a MusicKit identifier and a key.
+          </li>
+          <li>
+            In Vercel add <code className="text-xs">APPLE_MUSIC_TEAM_ID</code>,{" "}
+            <code className="text-xs">APPLE_MUSIC_KEY_ID</code>, and{" "}
+            <code className="text-xs">APPLE_MUSIC_PRIVATE_KEY</code> (the .p8, newlines as{" "}
+            <code className="text-xs">\n</code>).
+          </li>
+          <li>Optional: <code className="text-xs">APPLE_MUSIC_STOREFRONT=us</code></li>
+          <li>Redeploy, then Connect Apple Music on the Music page (Safari works best).</li>
+        </ol>
+        <p className="mt-3 text-xs text-muted">
+          Keys on this project: {appleReady ? "present — you can connect." : "not set yet."}
         </p>
       </div>
     </div>

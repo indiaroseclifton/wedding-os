@@ -35,6 +35,7 @@ export async function loadVendorPortal(token: string) {
     live.must_play = (music.mustPlay || []).join("\n");
     live.do_not_play = (music.doNotPlay || []).join("\n");
     if (music.spotify?.playlistUrl) live.spotify_playlist = music.spotify.playlistUrl;
+    if (music.appleMusic?.playlistUrl) live.apple_music_playlist = music.appleMusic.playlistUrl;
   }
   if (pkg.template === "PLANNER" || pkg.template === "DAY_OF" || pkg.template === "VENUE") {
     const vendors = await listVendors(pkg.workspaceId);

@@ -98,3 +98,7 @@
 - Spotify: search, add to must-play, OAuth, export/update playlist, DJ handoff gets the link
 - NWS forecast pull on day-of (US cities)
 - Integrations page lists Apple Music, Calendar, Places, Drive, Stripe, registry (next / link-only)
+
+## Wave 23 (done)
+- Apple Music: catalog search, MusicKit connect, export library playlist, DJ handoff link
+

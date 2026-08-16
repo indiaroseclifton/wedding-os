@@ -6,7 +6,39 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 type Request = { id: string; song: string; from?: string; status: string };
-type Track = { title: string; artist: string; uri: string; url: string };
+type Track = {
+  title: string;
+  artist: string;
+  uri?: string;
+  url?: string;
+  appleId?: string;
+  source?: string;
+};
+
+declare global {
+  interface Window {
+    MusicKit?: {
+      configure: (c: { developerToken: string; app: { name: string; build: string } }) => Promise<unknown>;
+      getInstance: () => { authorize: () => Promise<string> };
+    };
+  }
+}
+
+async function loadMusicKit() {
+  if (window.MusicKit) return;
+  await new Promise<void>((resolve, reject) => {
+    const done = () => resolve();
+    document.addEventListener("musickitloaded", done, { once: true });
+    const s = document.createElement("script");
+    s.src = "https://js-cdn.music.apple.com/musickit/v3/musickit.js";
+    s.async = true;
+    s.onerror = () => reject(new Error("Could not load Apple Music"));
+    document.head.appendChild(s);
+    window.setTimeout(() => {
+      if (window.MusicKit) resolve();
+    }, 2500);
+  });
+}
 
 function MusicInner() {
   const params = useSearchParams();
@@ -18,9 +50,13 @@ function MusicInner() {
   const [reqFrom, setReqFrom] = useState("");
   const [saved, setSaved] = useState(false);
   const [configured, setConfigured] = useState(false);
+  const [appleConfigured, setAppleConfigured] = useState(false);
   const [connected, setConnected] = useState(false);
+  const [appleConnected, setAppleConnected] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [playlistUrl, setPlaylistUrl] = useState("");
+  const [applePlaylistUrl, setApplePlaylistUrl] = useState("");
+  const [catalog, setCatalog] = useState<"spotify" | "apple">("spotify");
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<Track[]>([]);
   const [busy, setBusy] = useState(false);
@@ -31,6 +67,7 @@ function MusicInner() {
     if (!res.ok) return;
     const d = await res.json();
     setConfigured(Boolean(d.spotifyConfigured));
+    setAppleConfigured(Boolean(d.appleConfigured));
     if (d.music) {
       setMustPlay((d.music.mustPlay || []).join("\n"));
       setDoNotPlay((d.music.doNotPlay || []).join("\n"));
@@ -39,7 +76,10 @@ function MusicInner() {
       setConnected(Boolean(d.music.spotify?.connected));
       setDisplayName(d.music.spotify?.displayName || "");
       setPlaylistUrl(d.music.spotify?.playlistUrl || "");
+      setAppleConnected(Boolean(d.music.appleMusic?.connected));
+      setApplePlaylistUrl(d.music.appleMusic?.playlistUrl || "");
     }
+    if (!d.spotifyConfigured && d.appleConfigured) setCatalog("apple");
   }
 
   useEffect(() => {
@@ -73,7 +113,11 @@ function MusicInner() {
     if (query.trim().length < 2) return;
     setBusy(true);
     setMsg(null);
-    const res = await fetch(`/api/integrations/spotify/search?q=${encodeURIComponent(query)}`);
+    const res = await fetch(
+      catalog === "apple"
+        ? `/api/integrations/apple-music/search?q=${encodeURIComponent(query)}`
+        : `/api/integrations/spotify/search?q=${encodeURIComponent(query)}`
+    );
     const data = await res.json().catch(() => ({}));
     setBusy(false);
     if (!res.ok) {
@@ -111,6 +155,51 @@ function MusicInner() {
     load();
   }
 
+  async function connectApple() {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const tokenRes = await fetch("/api/integrations/apple-music/token");
+      const tokenData = await tokenRes.json().catch(() => ({}));
+      if (!tokenRes.ok) throw new Error(tokenData.error || "No Apple developer token");
+      await loadMusicKit();
+      if (!window.MusicKit) throw new Error("Apple Music didn’t load in this browser");
+      await window.MusicKit.configure({
+        developerToken: tokenData.token,
+        app: { name: "Wedding OS", build: "1" },
+      });
+      const userToken = await window.MusicKit.getInstance().authorize();
+      const res = await fetch("/api/integrations/apple-music/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userToken }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not save Apple Music");
+      setMsg("Apple Music connected");
+      load();
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Apple Music connect failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function exportApple() {
+    setBusy(true);
+    setMsg(null);
+    const res = await fetch("/api/integrations/apple-music/export", { method: "POST" });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) {
+      setMsg(data.error || "Export failed");
+      return;
+    }
+    setApplePlaylistUrl(data.playlistUrl || "");
+    setMsg(`Wrote ${data.tracks} tracks to Apple Music`);
+    load();
+  }
+
   async function addRequest(e: React.FormEvent) {
     e.preventDefault();
     await fetch("/api/music", {
@@ -138,7 +227,7 @@ function MusicInner() {
         <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">DJ packet</p>
         <h1 className="mt-1 font-serif text-3xl tracking-tight">Music</h1>
         <p className="mt-1 text-sm text-ink-soft">
-          Search Spotify, lock must-play / do-not-play, then export a playlist the DJ can open.
+          Search Spotify or Apple Music, lock must-play / do-not-play, then export a playlist the DJ can open.
         </p>
       </div>
 
@@ -192,9 +281,88 @@ function MusicInner() {
         {msg && <p className="mt-2 text-xs text-muted">{msg}</p>}
       </div>
 
-      {configured && (
+      <div className="rounded-xl border border-line bg-surface p-4">
+        <p className="text-sm font-semibold">Apple Music</p>
+        {!appleConfigured ? (
+          <p className="mt-2 text-sm text-ink-soft">
+            Add MusicKit keys in Vercel, then connect.{" "}
+            <Link href="/integrations" className="underline">
+              How
+            </Link>
+          </p>
+        ) : appleConnected ? (
+          <div className="mt-2 space-y-2 text-sm">
+            <p className="text-ink-soft">Connected. Export writes a library playlist.</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={exportApple}
+                className="rounded-lg bg-moss px-3 py-2 text-xs font-medium text-moss-fg disabled:opacity-50"
+              >
+                {busy ? "Writing…" : applePlaylistUrl ? "Export again" : "Export must-play"}
+              </button>
+              {applePlaylistUrl && (
+                <a
+                  href={applePlaylistUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg border border-line px-3 py-2 text-xs font-medium"
+                >
+                  Open playlist
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={async () => {
+                  await fetch("/api/integrations/apple-music/disconnect", { method: "POST" });
+                  load();
+                }}
+                className="px-1 py-2 text-xs underline"
+              >
+                Disconnect
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={connectApple}
+            className="mt-3 rounded-lg bg-moss px-3 py-2 text-xs font-medium text-moss-fg disabled:opacity-50"
+          >
+            {busy ? "Connecting…" : "Connect Apple Music"}
+          </button>
+        )}
+      </div>
+
+      {(configured || appleConfigured) && (
         <form onSubmit={search} className="space-y-2 rounded-xl border border-line bg-surface p-4">
           <p className="text-sm font-semibold">Search the catalog</p>
+          <div className="flex gap-2">
+            {configured && (
+              <button
+                type="button"
+                onClick={() => setCatalog("spotify")}
+                className={`rounded-full px-3 py-1 text-[11px] font-medium ${
+                  catalog === "spotify" ? "bg-moss text-moss-fg" : "border border-line"
+                }`}
+              >
+                Spotify
+              </button>
+            )}
+            {appleConfigured && (
+              <button
+                type="button"
+                onClick={() => setCatalog("apple")}
+                className={`rounded-full px-3 py-1 text-[11px] font-medium ${
+                  catalog === "apple" ? "bg-moss text-moss-fg" : "border border-line"
+                }`}
+              >
+                Apple
+              </button>
+            )}
+          </div>
           <div className="flex gap-2">
             <input
               value={query}
@@ -212,7 +380,10 @@ function MusicInner() {
           </div>
           <ul className="divide-y divide-line">
             {hits.map((t) => (
-              <li key={t.uri} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
+              <li
+                key={t.uri || t.appleId || `${t.title}-${t.artist}`}
+                className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm"
+              >
                 <div>
                   <p className="font-medium">{t.title}</p>
                   <p className="text-xs text-muted">{t.artist}</p>
