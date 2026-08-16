@@ -25,6 +25,7 @@ export function FloralStudio() {
   const [story, setStory] = useState("linen");
   const [vessel, setVessel] = useState("bouquet");
   const [kind, setKind] = useState<"all" | "face" | "filler" | "green" | "dried">("all");
+  const [material, setMaterial] = useState<"all" | "fresh" | "silk" | "mix">("all");
   const [pieces, setPieces] = useState<PlacedStem[]>([]);
   const [sel, setSel] = useState<string | null>(null);
   const [tables, setTables] = useState(10);
@@ -46,6 +47,8 @@ export function FloralStudio() {
   const library = STEMS.filter((s) => {
     if (kind !== "all" && s.kind !== kind) return false;
     if (story !== "all" && !s.stories.includes(story)) return false;
+    if (material === "fresh" && s.material !== "fresh") return false;
+    if (material === "silk" && s.material !== "silk") return false;
     return true;
   });
 
@@ -264,6 +267,25 @@ export function FloralStudio() {
               ))}
             </div>
             <div className="flex flex-wrap gap-1">
+              {(["all", "fresh", "silk", "mix"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setMaterial(m)}
+                  className={`rounded-full px-2.5 py-1 text-[11px] ${
+                    material === m ? "bg-moss text-ivory" : "border border-line"
+                  }`}
+                >
+                  {m === "all" ? "All" : m === "fresh" ? "Real" : m === "silk" ? "Silk" : "Mix"}
+                </button>
+              ))}
+            </div>
+            {material === "mix" && (
+              <p className="text-[11px] leading-4 text-muted">
+                Silk faces + fresh hardy greens is the usual DIY mix. Don’t refrigerate silk with wet stems.
+              </p>
+            )}
+            <div className="flex flex-wrap gap-1">
               {(["all", "face", "filler", "green", "dried"] as const).map((k) => (
                 <button
                   key={k}
@@ -291,9 +313,12 @@ export function FloralStudio() {
                       className={`h-12 w-12 shrink-0 rounded-full object-cover ${s.tint}`}
                     />
                     <span>
-                      <span className="block text-xs font-medium">{s.name}</span>
+                      <span className="block text-xs font-medium">
+                        {s.name}{" "}
+                        <span className="font-normal text-muted">{s.material === "silk" ? "silk" : "real"}</span>
+                      </span>
                       <span className="block text-[10px] text-muted">
-                        ${s.estEach.toFixed(2)} · {s.hardy === "yes" ? "hardy" : s.hardy}
+                        ${s.estEach.toFixed(2)} · {s.material === "silk" ? "reusable" : s.hardy === "yes" ? "hardy" : s.hardy}
                       </span>
                     </span>
                   </button>
@@ -414,6 +439,10 @@ export function FloralStudio() {
             />
             <p className="text-sm text-muted">
               {math.stems} stems · about ${math.est.toFixed(0)} for one {vesselMeta?.name.toLowerCase()}
+              {pieces.some((p) => stemById(p.stemId)?.material === "silk") &&
+              pieces.some((p) => stemById(p.stemId)?.material === "fresh")
+                ? " · mixed real + silk"
+                : ""}
             </p>
             {vessel !== "bouquet" && vessel !== "bout" && (
               <label className="block text-xs">
