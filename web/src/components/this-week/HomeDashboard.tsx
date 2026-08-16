@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
+import type { Suggestion } from "@/lib/smart-home";
 
 export function HomeDashboard({
   days,
@@ -8,12 +9,18 @@ export function HomeDashboard({
   weekItems,
   spent,
   cap,
+  brief,
+  next,
+  suggestions,
 }: {
   days: number | null;
   coverUrl: string;
   weekItems: WeekItem[];
   spent: number;
   cap: number;
+  brief: string;
+  next: WeekItem | null;
+  suggestions: Suggestion[];
 }) {
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
   const headline =
@@ -29,6 +36,19 @@ export function HomeDashboard({
           <p className="font-serif text-[clamp(3.5rem,10vw,5.5rem)] leading-none tracking-tight">{headline}</p>
           <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.28em] text-ivory/85">{sub}</p>
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-line bg-surface p-5">
+        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-moss">This morning</p>
+        <p className="mt-2 max-w-2xl text-base leading-7 text-ink">{brief}</p>
+        {next && (
+          <Link
+            href={next.href}
+            className="mt-4 inline-flex rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory"
+          >
+            {next.cta}
+          </Link>
+        )}
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -47,7 +67,9 @@ export function HomeDashboard({
                     <span className="mt-0.5 inline-block h-4 w-4 rounded border border-line" />
                     {item.title}
                   </span>
-                  <span className="shrink-0 text-[11px] text-muted">{item.urgency === "now" ? "Today" : item.urgency === "week" ? "This week" : "Soon"}</span>
+                  <span className="shrink-0 text-[11px] text-muted">
+                    {item.urgency === "now" ? "Today" : item.urgency === "week" ? "This week" : "Soon"}
+                  </span>
                 </Link>
               </li>
             ))}
@@ -68,6 +90,25 @@ export function HomeDashboard({
         </article>
       </div>
 
+      {suggestions.length > 0 && (
+        <section>
+          <h2 className="mb-3 text-sm font-semibold">For you</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {suggestions.map((s) => (
+              <Link
+                key={s.id}
+                href={s.href}
+                className="rounded-2xl border border-line bg-surface p-4 hover:border-moss/30"
+              >
+                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-moss">{s.kind}</p>
+                <p className="mt-1 text-sm font-medium">{s.title}</p>
+                <p className="mt-1 text-xs leading-5 text-muted">{s.detail}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold">Your Rooms</h2>
@@ -79,7 +120,11 @@ export function HomeDashboard({
           {VISUAL_ROOMS.map((room) => (
             <Link key={room.href} href={room.href} className="group text-center">
               <div className="overflow-hidden rounded-2xl">
-                <img src={room.photo} alt="" className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105" />
+                <img
+                  src={room.photo}
+                  alt=""
+                  className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
+                />
               </div>
               <p className="mt-1.5 text-[11px] font-medium">{room.label}</p>
             </Link>

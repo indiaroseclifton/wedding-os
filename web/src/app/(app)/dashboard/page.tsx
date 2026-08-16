@@ -4,6 +4,7 @@ import { listPayments } from "@/lib/data/payments-store";
 import { getMedia } from "@/lib/data/media-store";
 import { getMoodboard } from "@/lib/data/moodboard-store";
 import { loadThisWeek } from "@/lib/this-week";
+import { morningBrief, nextBestAction, loadSuggestions } from "@/lib/smart-home";
 import { HomeDashboard } from "@/components/this-week/HomeDashboard";
 
 export default async function DashboardPage() {
@@ -32,6 +33,9 @@ export default async function DashboardPage() {
       weekItems={week.items}
       spent={spent}
       cap={cap}
+      brief={morningBrief(week.items, week.days)}
+      next={nextBestAction(week.items)}
+      suggestions={await loadSuggestions(workspace.id, week.days, spent, cap)}
     />
   );
 }
