@@ -28,6 +28,8 @@ export const MORE_ROOMS: { href: string; label: string }[] = [
   { href: "/site", label: "Guest site" },
   { href: "/moodboard", label: "Moodboard" },
   { href: "/settings", label: "Settings" },
+  { href: "/discover", label: "Discover" },
+  { href: "/", label: "Marketing site" },
 ];
 
 export function firstNames(coupleNames?: string, fallback = "You two") {

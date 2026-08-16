@@ -39,6 +39,23 @@ export function HomeDashboard({
 
   return (
     <div className="space-y-6">
+      <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-moss/20 bg-moss-soft/60 px-4 py-3 text-sm">
+        <p>
+          <span className="font-medium">New on the desk — </span>
+          DJ cue sheet, themes, phone import, and a public vendor marketplace.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/music" className="rounded-full bg-moss px-3 py-1 text-xs font-medium text-ivory">
+            Music cues
+          </Link>
+          <Link href="/settings" className="rounded-full border border-line px-3 py-1 text-xs">
+            Themes
+          </Link>
+          <Link href="/discover" className="rounded-full border border-line px-3 py-1 text-xs">
+            Discover
+          </Link>
+        </div>
+      </aside>
       <section className="relative overflow-hidden rounded-[1.6rem]">
         <img src={coverUrl} alt="" className="h-56 w-full object-cover object-center sm:h-72" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />

@@ -7,6 +7,8 @@ export function middleware(request: NextRequest) {
   if (
     pathname === "/" ||
     pathname.startsWith("/brand") ||
+    pathname.startsWith("/discover") ||
+    pathname.startsWith("/pricing") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/health") ||
