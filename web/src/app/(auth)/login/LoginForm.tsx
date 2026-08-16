@@ -56,74 +56,90 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-sm space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">Sign in</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            {verify
-              ? "Check your email for a sign-in link. It may take a minute."
-              : "Email a link to yourself, or use a demo person while we finish setup."}
-          </p>
-        </div>
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-paper px-4 py-12">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,_#d7e0d6_0%,_transparent_70%)]"
+      />
+      <div className="relative w-full max-w-sm">
+        <p className="text-center text-[11px] font-medium uppercase tracking-[0.28em] text-moss">
+          Wedding OS
+        </p>
+        <h1 className="mt-3 text-center font-serif text-4xl tracking-tight text-ink">
+          Plan it in one place
+        </h1>
+        <p className="mx-auto mt-3 max-w-xs text-center text-sm leading-6 text-ink-soft">
+          The coordination hub — vendors, DIY, guests, and the day itself.
+        </p>
 
-        {verify ? (
-          <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            Link sent. Open it on this device.
-          </p>
-        ) : (
-          <form action={onEmail} className="space-y-3">
-            <label className="block text-xs font-medium text-slate-600">
-              Email
-              <input
-                type="email"
-                name="email"
-                required
+        <div className="mt-8 space-y-6 rounded-xl border border-line bg-surface p-6 shadow-[0_1px_0_rgba(28,25,21,0.04)]">
+          <div>
+            <h2 className="font-serif text-xl text-ink">Sign in</h2>
+            <p className="mt-2 text-sm text-ink-soft">
+              {verify
+                ? "Check your email for a sign-in link. It may take a minute."
+                : "Email a link to yourself, or use a demo person while we finish setup."}
+            </p>
+          </div>
+
+          {verify ? (
+            <p className="rounded-lg bg-moss-soft px-3 py-2 text-sm text-moss">
+              Link sent. Open it on this device.
+            </p>
+          ) : (
+            <form action={onEmail} className="space-y-3">
+              <label className="block text-xs font-medium text-ink-soft">
+                Email
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  disabled={!emailReady || sending}
+                  placeholder="you@email.com"
+                  className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-moss focus:ring-2 focus:ring-moss/20 disabled:bg-paper"
+                />
+              </label>
+              <button
+                type="submit"
                 disabled={!emailReady || sending}
-                placeholder="you@email.com"
-                className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none ring-slate-900 focus:ring-2 disabled:bg-slate-50"
-              />
-            </label>
-            <button
-              type="submit"
-              disabled={!emailReady || sending}
-              className="flex w-full items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-            >
-              {sending ? "Sending…" : "Email me a sign-in link"}
-            </button>
-            {!emailReady && (
-              <p className="text-xs text-slate-500">
-                Email login connects after the Resend key is added. Demo buttons still work.
-              </p>
-            )}
-          </form>
-        )}
+                className="flex w-full items-center justify-center rounded-lg bg-moss px-4 py-2.5 text-sm font-medium text-moss-fg hover:bg-moss/90 disabled:opacity-50"
+              >
+                {sending ? "Sending…" : "Email me a sign-in link"}
+              </button>
+              {!emailReady && (
+                <p className="text-xs text-muted">
+                  Email login connects after the Resend key is added. Demo buttons still work.
+                </p>
+              )}
+            </form>
+          )}
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-200" />
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-line" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-surface px-2 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                Demo
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center">
-            <span className="bg-white px-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-              Demo
-            </span>
-          </div>
-        </div>
 
-        <div className="space-y-2">
-          {DEMO_USERS.map((user) => (
-            <button
-              key={user.userId}
-              type="button"
-              disabled={!!loadingId}
-              onClick={() => signInDemo(user)}
-              className="flex w-full items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:opacity-50"
-            >
-              {loadingId === user.userId ? "Signing in…" : user.label}
-            </button>
-          ))}
+          <div className="space-y-2">
+            {DEMO_USERS.map((user) => (
+              <button
+                key={user.userId}
+                type="button"
+                disabled={!!loadingId}
+                onClick={() => signInDemo(user)}
+                className="flex w-full items-center justify-center rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink hover:bg-paper disabled:opacity-50"
+              >
+                {loadingId === user.userId ? "Signing in…" : user.label}
+              </button>
+            ))}
+          </div>
+          {error && <p className="text-xs text-clay">{error}</p>}
         </div>
-        {error && <p className="text-xs text-rose-600">{error}</p>}
       </div>
     </div>
   );

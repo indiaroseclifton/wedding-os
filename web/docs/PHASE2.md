@@ -88,3 +88,8 @@
 ## Wave 20 (done)
 - Phone shell: sticky header, slide-over menu, bottom tabs (Week / Guests / Vendors / DIY / Day-of)
 - Safe-area padding; guest site less top-heavy on small screens
+
+## Wave 21 (done)
+- Paper + ink + moss brand: Fraunces + Source Sans 3
+- Warm paper canvas; moss primary on login, This week, guest RSVP
+- Slate remapped so the rest of the rooms follow

@@ -24,7 +24,7 @@ export function EmptyState({
           {primaryHref && primaryLabel ? (
             <Link
               href={primaryHref}
-              className="inline-flex w-full items-center justify-center rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-moss px-3 py-2.5 text-sm font-medium text-moss-fg hover:bg-moss/90 sm:w-auto"
             >
               {primaryLabel}
             </Link>

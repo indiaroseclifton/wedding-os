@@ -1,16 +1,75 @@
 @import "tailwindcss";
 
+@theme {
+  --color-paper: #f3eee4;
+  --color-surface: #faf6ef;
+  --color-ink: #1c1915;
+  --color-ink-soft: #534c41;
+  --color-muted: #6f6759;
+  --color-line: #ddd4c4;
+  --color-moss: #2f4a3a;
+  --color-moss-fg: #f3eee4;
+  --color-moss-soft: #e4ebe4;
+  --color-clay: #8b4336;
+
+  --color-slate-50: #f3eee4;
+  --color-slate-100: #ebe4d6;
+  --color-slate-200: #ddd4c4;
+  --color-slate-300: #c9beab;
+  --color-slate-400: #9a907f;
+  --color-slate-500: #6f6759;
+  --color-slate-600: #534c41;
+  --color-slate-700: #3a342c;
+  --color-slate-800: #2a251f;
+  --color-slate-900: #1c1915;
+  --color-white: #faf6ef;
+
+  --color-emerald-50: #e4ebe4;
+  --color-emerald-800: #2f4a3a;
+  --color-rose-50: #f3e4df;
+  --color-rose-600: #8b4336;
+  --color-rose-700: #7a382d;
+  --color-rose-800: #6a3028;
+  --color-rose-900: #5a2822;
+  --color-amber-50: #f3ead4;
+  --color-amber-800: #6b4e1e;
+  --color-amber-900: #4e3a16;
+
+  --font-sans: var(--font-source), "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), "Fraunces", ui-serif, Georgia, serif;
+  --radius-lg: 0.7rem;
+  --radius-xl: 0.95rem;
+}
+
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f3eee4;
+  --foreground: #1c1915;
+}
+
+html {
+  background: var(--color-paper);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
   overflow-x: hidden;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  h1,
+  h2,
+  .font-display {
+    font-family: var(--font-serif);
+    font-weight: 520;
+    letter-spacing: -0.02em;
+  }
 }
 
 @media print {

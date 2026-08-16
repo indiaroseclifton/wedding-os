@@ -210,11 +210,11 @@ export function AppNav({
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/dashboard" className="min-w-0">
-            <p className="truncate text-sm font-semibold tracking-tight">
+            <p className="truncate font-serif text-base tracking-tight text-ink">
               {weddingName || "Wedding OS"}
             </p>
             {weddingDate && (
-              <p className="text-[11px] text-slate-500">{formatNavDate(weddingDate)}</p>
+              <p className="text-[11px] text-muted">{formatNavDate(weddingDate)}</p>
             )}
           </Link>
           <div className="flex items-center gap-2">
@@ -292,7 +292,7 @@ export function AppNav({
                 <Link
                   href={tab.href}
                   className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium ${
-                    on ? "text-slate-900" : "text-slate-500"
+                    on ? "text-moss" : "text-muted"
                   }`}
                 >
                   <Icon name={tab.icon} />

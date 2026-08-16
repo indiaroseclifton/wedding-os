@@ -16,7 +16,7 @@ type ExtraEvent = {
 
 export default function PublicRsvpPage() {
   return (
-    <Suspense fallback={<p className="p-8 text-sm text-stone-500">Loading…</p>}>
+    <Suspense fallback={<p className="p-8 text-sm text-muted">Loading…</p>}>
       <PublicRsvpInner />
     </Suspense>
   );
@@ -147,15 +147,15 @@ function PublicRsvpInner() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f3ee] px-5 py-12 text-stone-900">
+    <div className="min-h-screen bg-paper px-5 py-12 text-ink">
       <div className="mx-auto max-w-md">
-        <Link href={`/w/${token}`} className="text-xs underline">
+        <Link href={`/w/${token}`} className="text-xs text-moss underline">
           Back to the wedding
         </Link>
-        <h1 className="mt-4 font-serif text-3xl">RSVP</h1>
+        <h1 className="mt-4 font-serif text-4xl tracking-tight">RSVP</h1>
 
         {done ? (
-          <p className="mt-6 text-sm text-stone-700">
+          <p className="mt-6 text-sm text-ink-soft">
             Thank you{name ? `, ${name}` : ""}. We have you as{" "}
             <span className="font-medium">{rsvp === "YES" ? "yes" : rsvp === "NO" ? "no" : "maybe"}</span>
             {events.length
@@ -170,27 +170,27 @@ function PublicRsvpInner() {
           </p>
         ) : !guestToken ? (
           <form onSubmit={lookup} className="mt-6 space-y-3">
-            <p className="text-sm text-stone-600">Type your name as it appears on the invite.</p>
+            <p className="text-sm text-ink-soft">Type your name as it appears on the invite.</p>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               required
               minLength={3}
               placeholder="Your name"
-              className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
             />
             {error && <p className="text-xs text-rose-700">{error}</p>}
             <button
               type="submit"
               disabled={busy}
-              className="rounded-full bg-stone-900 px-5 py-2 text-sm font-medium text-white"
+              className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-moss-fg"
             >
               {busy ? "Looking…" : "Find me"}
             </button>
             {matches && (
-              <ul className="divide-y divide-stone-200 rounded-xl border border-stone-200 bg-white">
+              <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
                 {matches.length === 0 && (
-                  <li className="px-4 py-4 text-sm text-stone-500">
+                  <li className="px-4 py-4 text-sm text-muted">
                     No match. Try the name the couple used, or message them.
                   </li>
                 )}
@@ -202,7 +202,7 @@ function PublicRsvpInner() {
                         setGuestToken(m.rsvpToken);
                         setName(m.name);
                       }}
-                      className="w-full px-4 py-3 text-left text-sm hover:bg-stone-50"
+                      className="w-full px-4 py-3 text-left text-sm hover:bg-paper"
                     >
                       {m.name}
                     </button>
@@ -252,7 +252,7 @@ function PublicRsvpInner() {
                     max={8}
                     value={plusOnes}
                     onChange={(e) => setPlusOnes(Number(e.target.value) || 0)}
-                    className="mt-1 w-24 rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    className="mt-1 w-24 rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
                 </label>
                 <label className="block text-sm">
@@ -260,7 +260,7 @@ function PublicRsvpInner() {
                   <select
                     value={meal}
                     onChange={(e) => setMeal(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   >
                     <option value="">No preference yet</option>
                     <option>Chicken</option>
@@ -276,25 +276,25 @@ function PublicRsvpInner() {
                     value={dietary}
                     onChange={(e) => setDietary(e.target.value)}
                     placeholder="Vegetarian, nut allergy…"
-                    className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
                 </label>
               </>
             )}
 
             {(collectAddress || requireAddress) && (
-              <div className="space-y-3 border-t border-stone-200 pt-4">
+              <div className="space-y-3 border-t border-line pt-4">
                 <p className="text-sm font-medium">
                   Mailing address
                   {requireAddress ? "" : " (optional)"}
                 </p>
-                <p className="text-xs text-stone-500">For invites or thank-yous.</p>
+                <p className="text-xs text-muted">For invites or thank-yous.</p>
                 <input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   required={requireAddress}
                   placeholder="Street"
-                  className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -302,13 +302,13 @@ function PublicRsvpInner() {
                     onChange={(e) => setCity(e.target.value)}
                     required={requireAddress}
                     placeholder="City"
-                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
                   <input
                     value={region}
                     onChange={(e) => setRegion(e.target.value)}
                     placeholder="State"
-                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -316,13 +316,13 @@ function PublicRsvpInner() {
                     value={postal}
                     onChange={(e) => setPostal(e.target.value)}
                     placeholder="ZIP"
-                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Phone"
-                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
                 </div>
               </div>
@@ -331,7 +331,7 @@ function PublicRsvpInner() {
             {events.map((ev) => {
               const ans = eventAnswers[ev.id] || { status: "YES", meal: "" };
               return (
-                <fieldset key={ev.id} className="space-y-2 border-t border-stone-200 pt-4">
+                <fieldset key={ev.id} className="space-y-2 border-t border-line pt-4">
                   <legend className="text-sm font-medium">
                     {ev.name}
                     {ev.date ? ` · ${ev.date}` : ""}
@@ -367,7 +367,7 @@ function PublicRsvpInner() {
                             [ev.id]: { ...ans, meal: e.target.value },
                           }))
                         }
-                        className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                        className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                       >
                         <option value="">No preference yet</option>
                         <option>Chicken</option>
@@ -383,14 +383,14 @@ function PublicRsvpInner() {
             })}
 
             {questions.length > 0 && (
-              <div className="space-y-3 border-t border-stone-200 pt-4">
+              <div className="space-y-3 border-t border-line pt-4">
                 {questions.map((q) => (
                   <label key={q.id} className="block text-sm">
                     {q.prompt}
                     <input
                       value={answers[q.id] || ""}
                       onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
-                      className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                      className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                     />
                   </label>
                 ))}
@@ -403,14 +403,14 @@ function PublicRsvpInner() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
               />
             </label>
             {error && <p className="text-xs text-rose-700">{error}</p>}
             <button
               type="submit"
               disabled={busy}
-              className="rounded-full bg-stone-900 px-5 py-2 text-sm font-medium text-white"
+              className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-moss-fg"
             >
               {busy ? "Saving…" : "Send RSVP"}
             </button>
