@@ -33,3 +33,9 @@
 - People: email invite links via Resend
 - Budget: categories, cap, actuals, delete
 - Legal: add items, due dates, push open items to Timeline
+
+## Wave 5 (done)
+- Master 12-month planning checklist (venues/photo first → thank-yous after)
+- Travel: hotel blocks (courtesy vs guaranteed), airport/shuttle/honeymoon
+- Registry links + gift log
+- Thank-you tracker with import from gifts

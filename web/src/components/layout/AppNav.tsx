@@ -18,6 +18,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
     label: "Core",
     items: [
       { href: "/dashboard", label: "Home" },
+      { href: "/checklist", label: "Checklist" },
       { href: "/demo", label: "Demo" },
       { href: "/search", label: "Search" },
       { href: "/tasks", label: "Tasks" },
@@ -31,6 +32,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/dietary", label: "Dietary" },
       { href: "/seating", label: "Seating" },
       { href: "/floorplan", label: "Floor plan" },
+      { href: "/travel", label: "Travel" },
     ],
   },
   {
@@ -59,6 +61,8 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/polls", label: "Polls" },
       { href: "/traditions", label: "Traditions" },
       { href: "/legal", label: "Legal" },
+      { href: "/registry", label: "Registry" },
+      { href: "/thanks", label: "Thank-yous" },
       { href: "/media", label: "Media" },
       { href: "/budget", label: "Budget" },
       { href: "/moodboard", label: "Moodboard" },
