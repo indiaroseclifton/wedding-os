@@ -470,6 +470,34 @@ export async function assignGuestToTable(guestId: string, tableName: string | nu
   return updateGuest(guestId, { tableLabel: tableName || undefined });
 }
 
+export async function assignGuestsToTable(guestIds: string[], tableName: string | null) {
+  const rows = await readJson<StoredGuest>(guestsFile);
+  const now = new Date().toISOString();
+  const ids = new Set(guestIds);
+  for (const row of rows) {
+    if (!ids.has(row.id)) continue;
+    row.tableLabel = tableName || undefined;
+    row.updatedAt = now;
+  }
+  await writeJson(guestsFile, rows);
+  return rows.filter((r) => ids.has(r.id));
+}
+
+export async function remapGuestTableLabel(
+  workspaceId: string,
+  fromName: string,
+  toName: string | null
+) {
+  const rows = await readJson<StoredGuest>(guestsFile);
+  const now = new Date().toISOString();
+  for (const row of rows) {
+    if (row.workspaceId !== workspaceId || row.tableLabel !== fromName) continue;
+    row.tableLabel = toName || undefined;
+    row.updatedAt = now;
+  }
+  await writeJson(guestsFile, rows);
+}
+
 export async function getWorkspaceMeta(workspaceId: string, fallbackName: string) {
   await ensureFile(workspaceMetaFile, "{}");
   const raw = await readText(workspaceMetaFile);

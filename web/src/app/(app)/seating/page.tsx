@@ -15,8 +15,6 @@ export default async function SeatingPage() {
   ]);
 
   const activeGuests = guests.filter((g) => g.rsvp !== "NO");
-  const seated = activeGuests.filter((g) => g.tableLabel);
-  const unseated = activeGuests.filter((g) => !g.tableLabel);
 
   return (
     <div className="space-y-6">
@@ -24,29 +22,22 @@ export default async function SeatingPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Seating</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Create tables and assign guests. Dietary notes stay on each person.
+            Drag or tap people onto tables. Households stay together. Plus-ones count as seats.
           </p>
         </div>
-        <Link
-          href="/guests"
-          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-        >
-          Guest list
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{tables.length}</p>
-          <p className="text-xs text-slate-500">Tables</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{seated.length}</p>
-          <p className="text-xs text-slate-500">Seated</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{unseated.length}</p>
-          <p className="text-xs text-slate-500">Need a table</p>
+        <div className="flex gap-2">
+          <Link
+            href="/floorplan"
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+          >
+            Floor plan
+          </Link>
+          <Link
+            href="/guests"
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+          >
+            Guest list
+          </Link>
         </div>
       </div>
 
@@ -71,6 +62,9 @@ export default async function SeatingPage() {
             tableLabel: g.tableLabel || null,
             dietary: g.dietary || null,
             rsvp: g.rsvp,
+            side: g.side || null,
+            partyName: g.partyName || null,
+            plusOnes: g.plusOnes || 0,
           }))}
         />
       )}

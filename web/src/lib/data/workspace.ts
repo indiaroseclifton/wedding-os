@@ -31,6 +31,8 @@ import {
   updateTable,
   deleteTable,
   assignGuestToTable,
+  assignGuestsToTable,
+  remapGuestTableLabel,
   addOrActivateMember,
 } from "@/lib/data/store";
 
@@ -180,6 +182,18 @@ export async function removeTable(id: string) {
 
 export async function seatGuest(guestId: string, tableName: string | null) {
   return assignGuestToTable(guestId, tableName);
+}
+
+export async function seatGuests(guestIds: string[], tableName: string | null) {
+  return assignGuestsToTable(guestIds, tableName);
+}
+
+export async function remapSeats(
+  workspaceId: string,
+  fromName: string,
+  toName: string | null
+) {
+  return remapGuestTableLabel(workspaceId, fromName, toName);
 }
 
 export async function getWorkspaceInvites(workspaceId: string) {

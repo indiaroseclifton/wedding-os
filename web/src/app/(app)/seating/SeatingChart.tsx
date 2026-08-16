@@ -1,7 +1,7 @@
 "use client";
 
 type Table = { id: string; name: string; capacity: number; shape: string };
-type Guest = { id: string; name: string; tableLabel: string | null; dietary: string | null };
+type Guest = { id: string; name: string; tableLabel?: string | null; dietary?: string | null };
 
 function TableShape({
   shape,

@@ -62,7 +62,6 @@
 - DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
 - Run of show by audience (couple / party / vendor / guests)
 
-## Wave 10 (done)
-- Run of show editor: duration, place, lead, notes, guest title, multi-audience
-- Preview / print / share links (full, party, vendor)
-- Same timeline on board, party, vendor portal, guest site
+## Wave 11 (done)
+- Seating assigner: drag/tap onto tables, household groups, plus-ones as seats
+- Auto-seat leftovers, rename/remove tables (people follow), escort + table-card print
