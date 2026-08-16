@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { diyPhoto } from "@/lib/brand";
+import { motion, fadeUp, stagger } from "@/components/motion";
 
 type Project = {
   id: string;
@@ -41,7 +42,12 @@ export default function DiyHubPage() {
 
   return (
     <div className="space-y-6">
-      <div className="overflow-hidden rounded-xl">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+        className="overflow-hidden rounded-xl"
+      >
         <div className="relative h-40 sm:h-52">
           <img src="/brand/flowers.jpg" alt="" className="h-full w-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
@@ -52,7 +58,7 @@ export default function DiyHubPage() {
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {projects.length > 0 && (
         <div>
@@ -78,23 +84,34 @@ export default function DiyHubPage() {
         </div>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <motion.div
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+        className="grid gap-3 sm:grid-cols-2"
+      >
         {books.map((b) => (
-          <Link
+          <motion.div
             key={b.slug}
-            href={`/diy/${b.slug}`}
-            className="overflow-hidden rounded-xl border border-line bg-surface"
+            variants={fadeUp}
+            whileHover={{ y: -4 }}
+            transition={{ type: "spring", stiffness: 380, damping: 28 }}
           >
-            <div className="aspect-[16/9] overflow-hidden">
-              <img src={diyPhoto(b.slug)} alt="" className="h-full w-full object-cover" />
-            </div>
-            <div className="p-4">
-              <p className="font-serif text-lg">{b.title}</p>
-              <p className="mt-1 text-xs text-ink-soft">{b.summary}</p>
-            </div>
-          </Link>
+            <Link
+              href={`/diy/${b.slug}`}
+              className="block overflow-hidden rounded-xl border border-line bg-surface"
+            >
+              <div className="aspect-[16/9] overflow-hidden">
+                <img src={diyPhoto(b.slug)} alt="" className="h-full w-full object-cover" />
+              </div>
+              <div className="p-4">
+                <p className="font-serif text-lg">{b.title}</p>
+                <p className="mt-1 text-xs text-ink-soft">{b.summary}</p>
+              </div>
+            </Link>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

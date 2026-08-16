@@ -14,12 +14,13 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.8.0",
+    "@prisma/client": "^6.5.0",
+    "motion": "^13.1.0",
     "next": "16.3.1",
+    "next-auth": "^5.0.0-beta.25",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "@prisma/client": "^6.5.0",
-    "next-auth": "^5.0.0-beta.25",
-    "@auth/prisma-adapter": "^2.8.0",
     "resend": "^4.1.2"
   },
   "devDependencies": {
@@ -29,8 +30,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
+    "prisma": "^6.5.0",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "prisma": "^6.5.0"
+    "typescript": "^5"
   }
 }

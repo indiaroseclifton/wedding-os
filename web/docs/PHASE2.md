@@ -105,3 +105,6 @@
 ## Wave 24 (done)
 - Gathered-garden visual system: landing, login photo, guest hero, DIY photos, empty states
 
+## Wave 25 (done)
+- Motion on landing, This week, DIY, and guest site (reduced-motion respected)
+
