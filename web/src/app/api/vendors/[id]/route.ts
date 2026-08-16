@@ -9,6 +9,7 @@ import {
   upsertVendorMilestone,
 } from "@/lib/data/payments-store";
 import { ensureDemoWorkspace, loadWorkspaceMeta } from "@/lib/data/workspace";
+import { seedChecklist } from "@/lib/vendor-checklists";
 import { sendInquiryEmails } from "@/lib/email/resend";
 
 export async function GET(
@@ -20,8 +21,12 @@ export async function GET(
   const { id } = await context.params;
   const vendor = await getVendor(id);
   if (!vendor) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  let nextVendor = vendor;
+  if (!vendor.checklist?.length) {
+    nextVendor = (await updateVendor(id, { checklist: seedChecklist(vendor.category) })) || vendor;
+  }
   const payments = paymentsForVendor(await listPayments(vendor.workspaceId), vendor);
-  return NextResponse.json({ vendor, payments });
+  return NextResponse.json({ vendor: nextVendor, payments });
 }
 
 export async function PATCH(
@@ -156,6 +161,20 @@ export async function POST(
       emailedVendor: mailed.emailedVendor,
       emailError: mailed.error || undefined,
     });
+  }
+
+  if (body.action === "checklist") {
+    let list = vendor.checklist?.length ? [...vendor.checklist] : seedChecklist(vendor.category);
+    if (body.apply) {
+      list = seedChecklist(String(body.category || vendor.category));
+    } else if (body.toggleId) {
+      list = list.map((i) => (i.id === body.toggleId ? { ...i, done: !i.done } : i));
+    } else if (body.add) {
+      list = [...list, { id: `c${Date.now()}`, title: String(body.add).slice(0, 200), done: false }];
+    }
+    const next = await updateVendor(id, { checklist: list });
+    const payments = paymentsForVendor(await listPayments(workspace.id), vendor);
+    return NextResponse.json({ vendor: next, payments });
   }
 
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });

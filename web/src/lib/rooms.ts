@@ -15,6 +15,7 @@ export const ROOM_SUBNAV = {
   vendors: [
     { href: "/vendors", label: "My team" },
     { href: "/vendors/browse", label: "Find vendors" },
+    { href: "/vendors/checklists", label: "Checklists" },
     { href: "/vendors/shortlist", label: "Compare" },
     { href: "/payments", label: "Payments" },
     { href: "/handoffs", label: "Handoffs" },

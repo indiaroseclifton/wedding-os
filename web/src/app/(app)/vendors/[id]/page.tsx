@@ -23,6 +23,7 @@ type Vendor = {
   contractUrl?: string;
   contractReview?: ContractReview;
   inquiries?: { id: string; at: string; direction: "out" | "in"; body: string; emailedAt?: string }[];
+  checklist?: { id: string; title: string; done: boolean }[];
 };
 
 type Payment = {
@@ -207,6 +208,35 @@ export default function VendorDetailPage() {
           <p className="text-slate-500">No contact details yet.</p>
         )}
       </div>
+
+      <VendorChecklist
+        items={vendor.checklist || []}
+        category={vendor.category}
+        onToggle={async (toggleId) => {
+          const res = await fetch(`/api/vendors/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "checklist", toggleId }),
+          });
+          if (res.ok) apply(await res.json());
+        }}
+        onApply={async () => {
+          const res = await fetch(`/api/vendors/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "checklist", apply: true }),
+          });
+          if (res.ok) apply(await res.json());
+        }}
+        onAdd={async (add) => {
+          const res = await fetch(`/api/vendors/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "checklist", add }),
+          });
+          if (res.ok) apply(await res.json());
+        }}
+      />
 
       <form onSubmit={saveMoney} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
         <p className="text-sm font-semibold">Contract & money</p>
@@ -575,5 +605,65 @@ export default function VendorDetailPage() {
         </ul>
       </div>
     </div>
+  );
+}
+
+function VendorChecklist({
+  items,
+  category,
+  onToggle,
+  onApply,
+  onAdd,
+}: {
+  items: { id: string; title: string; done: boolean }[];
+  category: string;
+  onToggle: (id: string) => void;
+  onApply: () => void;
+  onAdd: (title: string) => void;
+}) {
+  const done = items.filter((i) => i.done).length;
+  return (
+    <section className="rounded-2xl border border-line bg-surface p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="text-sm font-medium">Checklist · {category}</p>
+          <p className="text-xs text-muted">
+            {done}/{items.length} — what to lock before you stop thinking about them.
+          </p>
+        </div>
+        <button type="button" onClick={onApply} className="text-xs underline">
+          Reset to template
+        </button>
+      </div>
+      <ul className="mt-3 space-y-1.5">
+        {items.map((i) => (
+          <li key={i.id}>
+            <label className="flex items-start gap-2 text-sm">
+              <input type="checkbox" checked={i.done} onChange={() => onToggle(i.id)} className="mt-1" />
+              <span className={i.done ? "text-muted line-through" : ""}>{i.title}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const fd = new FormData(e.currentTarget);
+          const title = String(fd.get("title") || "").trim();
+          if (title) onAdd(title);
+          e.currentTarget.reset();
+        }}
+        className="mt-3 flex gap-2"
+      >
+        <input
+          name="title"
+          placeholder="Add a line"
+          className="flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+        />
+        <button type="submit" className="text-xs underline">
+          Add
+        </button>
+      </form>
+    </section>
   );
 }

@@ -2,6 +2,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import { dataDir, readJson, writeJson } from "./store-io";
 import type { ContractReview } from "./contract-review";
+import { seedChecklist, type VendorCheckItem } from "@/lib/vendor-checklists";
 
 const vendorsFile = path.join(dataDir, "vendors.json");
 
@@ -28,6 +29,7 @@ export type StoredVendor = {
   contractReview?: ContractReview;
   inquiries?: VendorInquiry[];
   directorySlug?: string;
+  checklist?: VendorCheckItem[];
   createdAt: string;
   updatedAt: string;
 };
@@ -47,7 +49,13 @@ export async function createVendor(
 ) {
   const rows = await readJson<StoredVendor>(vendorsFile);
   const now = new Date().toISOString();
-  const row: StoredVendor = { ...input, id: randomUUID(), createdAt: now, updatedAt: now };
+  const row: StoredVendor = {
+    ...input,
+    checklist: input.checklist?.length ? input.checklist : seedChecklist(input.category),
+    id: randomUUID(),
+    createdAt: now,
+    updatedAt: now,
+  };
   rows.push(row);
   await writeJson(vendorsFile, rows);
   return row;
