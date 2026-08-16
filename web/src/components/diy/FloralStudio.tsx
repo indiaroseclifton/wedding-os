@@ -32,7 +32,7 @@ export function FloralStudio() {
   const [savedId, setSavedId] = useState<string | null>(null);
   const [saved, setSaved] = useState<Saved[]>([]);
   const [msg, setMsg] = useState<string | null>(null);
-  const [tab, setTab] = useState<"compose" | "inspire">("compose");
+  const [tab, setTab] = useState<"compose" | "inspire" | "palette">("compose");
   const drag = useRef<{ id: string; dx: number; dy: number } | null>(null);
   const board = useRef<HTMLDivElement>(null);
 
@@ -173,10 +173,57 @@ export function FloralStudio() {
           >
             Inspiration
           </button>
+          <button
+            type="button"
+            onClick={() => setTab("palette")}
+            className={`rounded-full px-3 py-1.5 text-xs ${tab === "palette" ? "bg-moss text-ivory" : "border border-line"}`}
+          >
+            Palettes
+          </button>
         </div>
       </div>
 
-      {tab === "inspire" ? (
+      {tab === "palette" ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {COLOR_STORIES.map((s) => {
+            const fits = STEMS.filter((st) => st.stories.includes(s.id));
+            const on = story === s.id;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => {
+                  setStory(s.id);
+                  setTab("compose");
+                }}
+                className={`rounded-2xl border p-5 text-left ${
+                  on ? "border-moss bg-moss-soft" : "border-line bg-surface"
+                }`}
+              >
+                <div className="flex overflow-hidden rounded-xl">
+                  {s.chips.map((c) => (
+                    <span key={c.hex} className="h-16 flex-1" style={{ background: c.hex }} title={c.name} />
+                  ))}
+                </div>
+                <p className="mt-4 font-serif text-2xl">{s.name}</p>
+                <p className="mt-1 text-sm text-muted">{s.line}</p>
+                <p className="mt-2 text-xs text-ink-soft">{s.when}</p>
+                <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted">
+                  {s.chips.map((c) => (
+                    <li key={c.name}>
+                      {c.name}
+                      <span className="text-ink-soft"> · {c.role}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-[11px] uppercase tracking-wide text-moss">
+                  {fits.length} stems · lock this palette
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      ) : tab === "inspire" ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {LOOKS.map((look) => (
             <button
@@ -203,10 +250,15 @@ export function FloralStudio() {
                   key={s.id}
                   type="button"
                   onClick={() => setStory(s.id)}
-                  className={`rounded-full px-2.5 py-1 text-[11px] ${
+                  className={`flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] ${
                     story === s.id ? "bg-moss text-ivory" : "border border-line"
                   }`}
                 >
+                  <span className="flex overflow-hidden rounded-full">
+                    {s.chips.slice(0, 3).map((c) => (
+                      <i key={c.hex} className="block h-3 w-3" style={{ background: c.hex }} />
+                    ))}
+                  </span>
                   {s.name}
                 </button>
               ))}

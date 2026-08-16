@@ -73,7 +73,7 @@ export default function DiyHubPage() {
           <div className="p-4">
             <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Tool</p>
             <p className="mt-1 font-serif text-2xl">Floral studio</p>
-            <p className="mt-1 text-sm text-muted">Mock the bouquet or bowl. Stem counts become a list.</p>
+            <p className="mt-1 text-sm text-muted">Mock the bouquet or bowl. Palettes, looks, then a shopping list.</p>
           </div>
         </Link>
         <Link

@@ -26,7 +26,8 @@ export type ColorStory = {
   id: string;
   name: string;
   line: string;
-  chips: string[];
+  when: string;
+  chips: { name: string; hex: string; role: "face" | "accent" | "green" | "ground" }[];
 };
 
 export type PlacedStem = {
@@ -50,10 +51,78 @@ export type FloralLook = {
 };
 
 export const COLOR_STORIES: ColorStory[] = [
-  { id: "linen", name: "Linen", line: "Cream, blush, silver green.", chips: ["#f4efe6", "#e8c9b8", "#8a9a86"] },
-  { id: "garden", name: "Garden", line: "White, butter, olive.", chips: ["#f7f4ec", "#e8d9a8", "#5c6b4a"] },
-  { id: "midnight", name: "Midnight", line: "Burgundy, ink, dried wheat.", chips: ["#4a1520", "#1c1917", "#c4b08a"] },
-  { id: "citrus", name: "Citrus", line: "Apricot, yellow, rust.", chips: ["#f3c27a", "#e07a3d", "#7a3b1e"] },
+  {
+    id: "linen",
+    name: "Linen",
+    line: "Cream, blush, silver green.",
+    when: "Daylight, paper suites, a room that is already warm.",
+    chips: [
+      { name: "Ivory", hex: "#f4efe6", role: "ground" },
+      { name: "Blush", hex: "#e8c9b8", role: "face" },
+      { name: "Dusty rose", hex: "#c98986", role: "accent" },
+      { name: "Silver euc", hex: "#8a9a86", role: "green" },
+    ],
+  },
+  {
+    id: "garden",
+    name: "Garden",
+    line: "White, butter, olive.",
+    when: "Outdoors, late afternoon, you want it to look picked, not designed.",
+    chips: [
+      { name: "Paper white", hex: "#f7f4ec", role: "ground" },
+      { name: "Butter", hex: "#e8d9a8", role: "face" },
+      { name: "Soft apricot", hex: "#e2b07a", role: "accent" },
+      { name: "Olive", hex: "#5c6b4a", role: "green" },
+    ],
+  },
+  {
+    id: "midnight",
+    name: "Midnight",
+    line: "Burgundy, ink, dried wheat.",
+    when: "Evening, candles, a fall or winter date.",
+    chips: [
+      { name: "Ink", hex: "#1c1917", role: "ground" },
+      { name: "Burgundy", hex: "#4a1520", role: "face" },
+      { name: "Oxblood", hex: "#6b2430", role: "accent" },
+      { name: "Wheat", hex: "#c4b08a", role: "green" },
+    ],
+  },
+  {
+    id: "citrus",
+    name: "Citrus",
+    line: "Apricot, yellow, rust.",
+    when: "Late summer, terracotta, a table that can take color.",
+    chips: [
+      { name: "Cream clay", hex: "#f3e6d4", role: "ground" },
+      { name: "Apricot", hex: "#f3c27a", role: "face" },
+      { name: "Rust", hex: "#e07a3d", role: "accent" },
+      { name: "Dried leaf", hex: "#7a3b1e", role: "green" },
+    ],
+  },
+  {
+    id: "coast",
+    name: "Coast",
+    line: "White, fog, sea glass.",
+    when: "A pale room, blue stone, or anything near water.",
+    chips: [
+      { name: "Fog", hex: "#e8ece8", role: "ground" },
+      { name: "White", hex: "#f8f6f1", role: "face" },
+      { name: "Sea glass", hex: "#8aa39a", role: "accent" },
+      { name: "Sage", hex: "#6d7f6e", role: "green" },
+    ],
+  },
+  {
+    id: "ink-blush",
+    name: "Ink & blush",
+    line: "Black-green, pale pink, one dark face.",
+    when: "You want contrast without going full midnight.",
+    chips: [
+      { name: "Stone", hex: "#ece6dc", role: "ground" },
+      { name: "Blush", hex: "#e4b7b0", role: "face" },
+      { name: "Deep rose", hex: "#8c3d4a", role: "accent" },
+      { name: "Near-black green", hex: "#2c332c", role: "green" },
+    ],
+  },
 ];
 
 export const STEMS: Stem[] = [
@@ -62,7 +131,7 @@ export const STEMS: Stem[] = [
     name: "Garden rose",
     latin: "Rosa",
     kind: "face",
-    stories: ["linen", "garden"],
+    stories: ["linen", "garden", "coast", "ink-blush"],
     hardy: "careful",
     season: "Year-round (best spring–fall)",
     estEach: 3.5,
@@ -75,7 +144,7 @@ export const STEMS: Stem[] = [
     name: "Ranunculus",
     latin: "Ranunculus asiaticus",
     kind: "face",
-    stories: ["linen", "garden", "citrus"],
+    stories: ["linen", "garden", "citrus", "coast"],
     hardy: "careful",
     season: "Winter–spring",
     estEach: 2.25,
@@ -88,7 +157,7 @@ export const STEMS: Stem[] = [
     name: "Lisianthus",
     latin: "Eustoma",
     kind: "face",
-    stories: ["linen", "garden"],
+    stories: ["linen", "garden", "coast"],
     hardy: "yes",
     season: "Summer–fall",
     estEach: 2,
@@ -101,7 +170,7 @@ export const STEMS: Stem[] = [
     name: "Dahlia",
     latin: "Dahlia",
     kind: "face",
-    stories: ["midnight", "citrus"],
+    stories: ["midnight", "citrus", "ink-blush"],
     hardy: "no",
     season: "Late summer–fall",
     estEach: 4,
@@ -140,7 +209,7 @@ export const STEMS: Stem[] = [
     name: "Silver dollar eucalyptus",
     latin: "E. cinerea",
     kind: "green",
-    stories: ["linen", "garden", "midnight"],
+    stories: ["linen", "garden", "midnight", "coast", "ink-blush"],
     hardy: "yes",
     season: "Year-round",
     estEach: 1.25,
@@ -153,7 +222,7 @@ export const STEMS: Stem[] = [
     name: "Olive branch",
     latin: "Olea",
     kind: "green",
-    stories: ["garden", "linen"],
+    stories: ["garden", "linen", "coast"],
     hardy: "yes",
     season: "Year-round",
     estEach: 2,
@@ -205,7 +274,7 @@ export const STEMS: Stem[] = [
     name: "Baby’s breath",
     latin: "Gypsophila",
     kind: "filler",
-    stories: ["linen", "midnight"],
+    stories: ["linen", "midnight", "coast"],
     hardy: "yes",
     season: "Year-round",
     estEach: 0.9,
