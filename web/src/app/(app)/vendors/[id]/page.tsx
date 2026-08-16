@@ -105,6 +105,38 @@ export default function VendorDetailPage() {
           )}
         </ul>
       </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <p className="font-medium">Coordination next</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+          <li>
+            <Link href="/handoffs" className="underline">
+              Build a handoff
+            </Link>{" "}
+            so they get one package, not a thread.
+          </li>
+          <li>
+            <Link href="/payments" className="underline">
+              Log deposit and final
+            </Link>
+            .
+          </li>
+          <li>
+            <Link href="/day-of" className="underline">
+              Put call time on Day-of
+            </Link>
+            .
+          </li>
+          {(vendor.category === "Florist" || vendor.category.includes("Florist")) && (
+            <li>
+              <Link href="/diy/flowers" className="underline">
+                Or mix with the DIY flowers playbook
+              </Link>
+              .
+            </li>
+          )}
+        </ul>
+      </div>
     </div>
   );
 }

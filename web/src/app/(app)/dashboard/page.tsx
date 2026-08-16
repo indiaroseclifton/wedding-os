@@ -152,6 +152,11 @@ export default async function DashboardPage() {
           <p className="font-medium text-slate-900">Keep planning</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
             <li>
+              <Link href="/vendors/browse" className="underline">
+                Browse vendors
+              </Link>
+            </li>
+            <li>
               <Link href="/diy" className="underline">
                 DIY studio (flowers, tables, signs)
               </Link>

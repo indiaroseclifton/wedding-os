@@ -44,3 +44,8 @@
 - DIY studio: flowers, table decor, signage, lighting playbooks
 - Source comparison (grocery / wholesale / farm / florist / faux)
 - Recipes, timeline, pitfalls, shopping list from table/guest counts
+
+## Wave 7 (done)
+- Vendor directory: browse / filter / profile / shortlist / compare / inquire / book
+- Hire lands on My vendors and feeds payments + handoffs
+- Demo Atlanta listings (fictional) — coordination remains the wedge

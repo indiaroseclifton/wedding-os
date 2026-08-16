@@ -39,7 +39,8 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
   {
     label: "Vendors",
     items: [
-      { href: "/vendors", label: "Vendors" },
+      { href: "/vendors", label: "My vendors" },
+      { href: "/vendors/browse", label: "Browse" },
       { href: "/payments", label: "Payments" },
       { href: "/handoffs", label: "Handoffs" },
       { href: "/music", label: "Music" },

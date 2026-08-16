@@ -13,19 +13,27 @@ export default async function VendorsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Vendors</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">My vendors</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Contacts, status, notes, and linked payments.
+            The people on this wedding. Browse to find them, then run status, payments, and handoffs here.
           </p>
         </div>
-        <Link
-          href="/vendors/new"
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-        >
-          Add vendor
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/vendors/browse"
+            className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          >
+            Browse directory
+          </Link>
+          <Link
+            href="/vendors/new"
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium"
+          >
+            Add your own
+          </Link>
+        </div>
       </div>
 
       {vendors.length > 0 && (
@@ -36,10 +44,10 @@ export default async function VendorsPage() {
 
       {vendors.length === 0 ? (
         <EmptyState
-          title="No vendors yet"
-          body="Add photographers, venues, florists, and anyone else you are coordinating with."
-          primaryHref="/vendors/new"
-          primaryLabel="Add vendor"
+          title="No vendors on this wedding yet"
+          body="Browse the directory (florist, photo, venue, DJ…) or add someone you already hired."
+          primaryHref="/vendors/browse"
+          primaryLabel="Browse vendors"
         />
       ) : (
         <VendorsClient
