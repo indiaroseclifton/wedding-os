@@ -16,17 +16,9 @@ export function EmptyState({
   secondaryLabel?: string;
 }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-dashed border-line bg-surface">
-      <div className="h-28 overflow-hidden sm:h-36">
-        <img
-          src="/brand/setting.jpg"
-          alt=""
-          className="h-full w-full object-cover object-center opacity-90"
-        />
-      </div>
-      <div className="px-4 py-6 text-center">
-        <h2 className="font-serif text-xl text-ink">{title}</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-ink-soft">{body}</p>
+    <div className="rounded-xl border border-dashed border-line bg-surface px-4 py-8 text-center">
+      <h2 className="text-base font-medium tracking-tight text-ink">{title}</h2>
+      <p className="mx-auto mt-2 max-w-md text-sm text-ink-soft">{body}</p>
         {(primaryHref || secondaryHref) && (
           <div className="mt-4 flex flex-col items-center justify-center gap-2 sm:flex-row">
             {primaryHref && primaryLabel ? (
@@ -47,7 +39,6 @@ export function EmptyState({
             ) : null}
           </div>
         )}
-      </div>
     </div>
   );
 }

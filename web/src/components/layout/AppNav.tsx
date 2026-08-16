@@ -214,7 +214,7 @@ export function AppNav({
           <Link href="/dashboard" className="flex min-w-0 items-center gap-2">
             <BrandMark size={22} />
             <span className="min-w-0">
-            <p className="truncate font-serif text-base tracking-tight text-ink">
+            <p className="truncate text-[15px] font-medium tracking-tight text-ink">
               {weddingName || "Wedding OS"}
             </p>
             {weddingDate && (

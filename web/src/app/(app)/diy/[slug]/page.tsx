@@ -98,18 +98,15 @@ export default function DiyPlaybookPage() {
 
   return (
     <div className="space-y-6">
-      <div className="overflow-hidden rounded-xl">
-        <div className="relative h-36 sm:h-48">
-          <img src={diyPhoto(book.slug)} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/65 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-4">
-            <Link href="/diy" className="text-[11px] font-medium text-moss-fg/80 underline">
-              All DIY
-            </Link>
-            <h1 className="mt-1 font-serif text-3xl tracking-tight text-moss-fg">{book.title}</h1>
-          </div>
+      <div>
+        <Link href="/diy" className="text-xs font-medium underline">
+          All DIY
+        </Link>
+        <div className="mt-3 overflow-hidden rounded-xl">
+          <img src={diyPhoto(book.slug)} alt="" className="aspect-[21/9] w-full object-cover" />
         </div>
-        <p className="mt-3 text-sm text-ink-soft">{book.summary}</p>
+        <h1 className="mt-4 text-2xl font-medium tracking-tight">{book.title}</h1>
+        <p className="mt-1 text-sm text-ink-soft">{book.summary}</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

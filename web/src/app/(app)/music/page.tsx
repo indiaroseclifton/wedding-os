@@ -225,7 +225,7 @@ function MusicInner() {
     <div className="mx-auto max-w-lg space-y-6">
       <div>
         <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">DJ packet</p>
-        <h1 className="mt-1 font-serif text-3xl tracking-tight">Music</h1>
+        <h1 className="mt-1 text-2xl font-medium tracking-tight">Music</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Search Spotify or Apple Music, lock must-play / do-not-play, then export a playlist the DJ can open.
         </p>

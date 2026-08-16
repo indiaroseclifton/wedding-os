@@ -38,8 +38,8 @@ export default async function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">This week</p>
-          <h1 className="mt-1 font-serif text-3xl tracking-tight text-ink">{workspace.name}</h1>
+          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-moss">This week</p>
+          <h1 className="mt-1 text-2xl font-medium tracking-tight text-ink">{workspace.name}</h1>
           <p className="mt-2 text-sm text-ink-soft">
             Welcome{session ? `, ${session.name}` : ""}.
             {meta.coupleNames ? ` ${meta.coupleNames}.` : ""}
@@ -49,19 +49,13 @@ export default async function DashboardPage() {
         <SeedButton />
       </div>
 
-      <div className="relative overflow-hidden rounded-xl bg-moss px-5 py-6 text-moss-fg">
-        <img
-          src="/brand/candles.jpg"
-          alt=""
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-30"
-        />
-        <div className="relative">
+      <div className="rounded-xl border border-line bg-surface px-5 py-6">
         {days != null ? (
           <>
-            <p className="font-serif text-4xl tracking-tight">
+            <p className="text-4xl font-medium tracking-tight">
               {days === 0 ? "Today" : days > 0 ? `${days} days` : `${Math.abs(days)} days ago`}
             </p>
-            <p className="mt-2 text-sm text-moss-fg/75">
+            <p className="mt-2 text-sm text-ink-soft">
               {days >= 0 ? "until the wedding" : "since the wedding"} · {meta.weddingDate}
               {week.now + week.week > 0
                 ? ` · ${week.now + week.week} thing${week.now + week.week === 1 ? "" : "s"} this week`
@@ -70,8 +64,8 @@ export default async function DashboardPage() {
           </>
         ) : (
           <>
-            <p className="font-serif text-2xl">Set your date</p>
-            <p className="mt-2 text-sm text-moss-fg/75">
+            <p className="text-2xl font-medium tracking-tight">Set your date</p>
+            <p className="mt-2 text-sm text-ink-soft">
               Add names, date, and city in Settings so this list is yours.
             </p>
           </>
@@ -79,23 +73,22 @@ export default async function DashboardPage() {
         <div className="mt-5 flex flex-wrap gap-2">
           <Link
             href="/settings"
-            className="rounded-lg bg-surface px-3 py-2 text-xs font-medium text-ink"
+            className="rounded-lg bg-moss px-3 py-2 text-xs font-medium text-moss-fg"
           >
             Wedding details
           </Link>
           <Link
             href="/people"
-            className="rounded-lg border border-moss-fg/25 px-3 py-2 text-xs font-medium text-moss-fg"
+            className="rounded-lg border border-line px-3 py-2 text-xs font-medium"
           >
             Invite someone
           </Link>
-        </div>
         </div>
       </div>
 
       <section className="space-y-3">
         <div>
-          <h2 className="font-serif text-xl text-ink">What to do</h2>
+          <h2 className="text-lg font-medium tracking-tight text-ink">What to do</h2>
           <p className="mt-1 text-sm text-muted">
             Payments, people, contracts, DIY beats, and holes in the day — one door each.
           </p>

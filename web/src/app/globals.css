@@ -1,49 +1,49 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f3eee4;
-  --color-surface: #faf6ef;
-  --color-ink: #1c1915;
-  --color-ink-soft: #534c41;
-  --color-muted: #6f6759;
-  --color-line: #ddd4c4;
-  --color-moss: #2f4a3a;
-  --color-moss-fg: #f3eee4;
-  --color-moss-soft: #e4ebe4;
-  --color-clay: #8b4336;
+  --color-paper: #f6f5f2;
+  --color-surface: #ffffff;
+  --color-ink: #12110f;
+  --color-ink-soft: #5a564f;
+  --color-muted: #7a756c;
+  --color-line: #e4e0d8;
+  --color-moss: #1c3d32;
+  --color-moss-fg: #f6f5f2;
+  --color-moss-soft: #e6eeea;
+  --color-clay: #9a4034;
 
-  --color-slate-50: #f3eee4;
-  --color-slate-100: #ebe4d6;
-  --color-slate-200: #ddd4c4;
-  --color-slate-300: #c9beab;
-  --color-slate-400: #9a907f;
-  --color-slate-500: #6f6759;
-  --color-slate-600: #534c41;
-  --color-slate-700: #3a342c;
-  --color-slate-800: #2a251f;
-  --color-slate-900: #1c1915;
-  --color-white: #faf6ef;
+  --color-slate-50: #f6f5f2;
+  --color-slate-100: #eceae4;
+  --color-slate-200: #e4e0d8;
+  --color-slate-300: #cfc9bd;
+  --color-slate-400: #9a9488;
+  --color-slate-500: #7a756c;
+  --color-slate-600: #5a564f;
+  --color-slate-700: #3a3732;
+  --color-slate-800: #24221e;
+  --color-slate-900: #12110f;
+  --color-white: #ffffff;
 
-  --color-emerald-50: #e4ebe4;
-  --color-emerald-800: #2f4a3a;
-  --color-rose-50: #f3e4df;
-  --color-rose-600: #8b4336;
-  --color-rose-700: #7a382d;
-  --color-rose-800: #6a3028;
-  --color-rose-900: #5a2822;
+  --color-emerald-50: #e6eeea;
+  --color-emerald-800: #1c3d32;
+  --color-rose-50: #f6e6e3;
+  --color-rose-600: #9a4034;
+  --color-rose-700: #85362c;
+  --color-rose-800: #702e26;
+  --color-rose-900: #5c261f;
   --color-amber-50: #f3ead4;
   --color-amber-800: #6b4e1e;
   --color-amber-900: #4e3a16;
 
-  --font-sans: var(--font-source), "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-fraunces), "Fraunces", ui-serif, Georgia, serif;
-  --radius-lg: 0.7rem;
-  --radius-xl: 0.95rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
 }
 
 :root {
-  --background: #f3eee4;
-  --foreground: #1c1915;
+  --background: #f6f5f2;
+  --foreground: #12110f;
 }
 
 html {
@@ -66,9 +66,8 @@ body {
   h1,
   h2,
   .font-display {
-    font-family: var(--font-serif);
-    font-weight: 520;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.035em;
+    font-weight: 560;
   }
 }
 

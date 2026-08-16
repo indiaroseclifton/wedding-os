@@ -60,7 +60,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
       <div className="relative hidden min-h-[40vh] lg:block">
         <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-ink/10" />
-        <p className="absolute bottom-10 left-10 right-10 font-serif text-3xl leading-tight text-moss-fg">
+        <p className="absolute bottom-10 left-10 right-10 text-2xl font-medium leading-tight tracking-tight text-moss-fg">
           The coordination hub for the wedding you’re actually throwing.
         </p>
       </div>
@@ -70,10 +70,10 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
         className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,_#d7e0d6_0%,_transparent_70%)]"
       />
       <div className="relative w-full max-w-sm">
-        <p className="text-center text-[11px] font-medium uppercase tracking-[0.28em] text-moss">
+        <p className="text-center text-[11px] font-medium uppercase tracking-[0.22em] text-moss">
           Wedding OS
         </p>
-        <h1 className="mt-3 text-center font-serif text-4xl tracking-tight text-ink">
+        <h1 className="mt-3 text-center text-3xl font-medium tracking-tight text-ink">
           Plan it in one place
         </h1>
         <p className="mx-auto mt-3 max-w-xs text-center text-sm leading-6 text-ink-soft">
@@ -82,7 +82,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
 
         <div className="mt-8 space-y-6 rounded-xl border border-line bg-surface p-6 shadow-[0_1px_0_rgba(28,25,21,0.04)]">
           <div>
-            <h2 className="font-serif text-xl text-ink">Sign in</h2>
+            <h2 className="text-lg font-medium tracking-tight text-ink">Sign in</h2>
             <p className="mt-2 text-sm text-ink-soft">
               {verify
                 ? "Check your email for a sign-in link. It may take a minute."

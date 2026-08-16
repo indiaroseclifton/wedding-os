@@ -77,7 +77,7 @@ export function StatTiles({
             href={c.href}
             className="block rounded-xl border border-line bg-surface p-4 hover:border-moss/30"
           >
-            <p className="font-serif text-3xl tracking-tight text-ink">{c.value}</p>
+            <p className="text-3xl font-medium tracking-tight text-ink">{c.value}</p>
             <p className="mt-1 text-xs text-muted">{c.label}</p>
           </Link>
         </motion.div>

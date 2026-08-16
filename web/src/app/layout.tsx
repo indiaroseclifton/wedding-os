@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Source_Sans_3 } from "next/font/google";
+import { Fraunces, Geist } from "next/font/google";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -8,9 +8,9 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-const sourceSans = Source_Sans_3({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-source",
+  variable: "--font-geist",
   display: "swap",
 });
 
@@ -23,7 +23,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#f3eee4",
+  themeColor: "#f6f5f2",
 };
 
 export default function RootLayout({
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${sourceSans.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${geist.variable}`}>
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">{children}</body>
     </html>
   );

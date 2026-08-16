@@ -46,18 +46,11 @@ export default function DiyHubPage() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
-        className="overflow-hidden rounded-xl"
       >
-        <div className="relative h-40 sm:h-52">
-          <img src="/brand/flowers.jpg" alt="" className="h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-5">
-            <h1 className="font-serif text-3xl tracking-tight text-moss-fg">DIY studio</h1>
-            <p className="mt-1 text-sm text-moss-fg/80">
-              Playbooks for couples who make it themselves — skip the 40-tab YouTube spiral.
-            </p>
-          </div>
-        </div>
+        <h1 className="text-2xl font-medium tracking-tight">DIY studio</h1>
+        <p className="mt-1 text-sm text-ink-soft">
+          Playbooks for couples who make it themselves — skip the 40-tab YouTube spiral.
+        </p>
       </motion.div>
 
       {projects.length > 0 && (
@@ -105,7 +98,7 @@ export default function DiyHubPage() {
                 <img src={diyPhoto(b.slug)} alt="" className="h-full w-full object-cover" />
               </div>
               <div className="p-4">
-                <p className="font-serif text-lg">{b.title}</p>
+                <p className="text-base font-medium tracking-tight">{b.title}</p>
                 <p className="mt-1 text-xs text-ink-soft">{b.summary}</p>
               </div>
             </Link>

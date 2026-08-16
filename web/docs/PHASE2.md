@@ -108,3 +108,6 @@
 ## Wave 25 (done)
 - Motion on landing, This week, DIY, and guest site (reduced-motion respected)
 
+## Wave 26 (done)
+- Modern product skin: Geist, cool paper, photos as crops, serif only on the guest site
+
