@@ -3,15 +3,15 @@ import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
 import type { Suggestion } from "@/lib/smart-home";
 import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
-import { Icon } from "@/components/icons";
+import { RoomTile } from "@/components/layout/RoomTile";
 
 const QUICK = [
-  { href: "/guests/new", label: "Add guest", line: "One name, or a plus-one", photo: "/brand/setting.jpg" },
-  { href: "/guests", label: "Nudge RSVPs", line: "Who hasn’t replied", photo: "/brand/garden.jpg" },
-  { href: "/vendors/new", label: "Add vendor", line: "Someone you already hired", photo: "/brand/flowers.jpg" },
-  { href: "/payments", label: "Log a payment", line: "Deposit or balance", photo: "/brand/candles.jpg" },
-  { href: "/diy", label: "DIY studio", line: "Flowers, tables, lists", photo: "/brand/flowers.jpg" },
-  { href: "/music", label: "DJ cues", line: "Processional to last dance", photo: "/brand/candles.jpg" },
+  { href: "/guests/new", label: "Add a guest" },
+  { href: "/guests", label: "Nudge RSVPs" },
+  { href: "/vendors/new", label: "Add a vendor" },
+  { href: "/payments", label: "Log a payment" },
+  { href: "/diy", label: "DIY studio" },
+  { href: "/music", label: "DJ cues" },
 ] as const;
 
 export function HomeDashboard({
@@ -40,138 +40,123 @@ export function HomeDashboard({
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
   const headline =
     days == null ? "Set the date" : days === 0 ? "Today" : days > 0 ? String(days) : String(Math.abs(days));
-  const sub = days == null ? "Add your date in Settings" : days === 0 ? "It’s the day" : days > 0 ? "DAYS TO GO" : "DAYS AGO";
+  const sub = days == null ? "Add your date in Settings" : days === 0 ? "It’s the day" : days > 0 ? "days to go" : "days ago";
+  const lead = VISUAL_ROOMS.filter((r) => r.rank === "lead");
+  const support = VISUAL_ROOMS.filter((r) => r.rank !== "lead");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       {!onboarded && (
-        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-moss/25 bg-moss-soft px-4 py-3 text-sm">
-          <p className="flex items-center gap-2">
-            <Icon name="spark" />
-            Four questions and the desk builds around your wedding.
-          </p>
-          <Link href="/onboard" className="rounded-full bg-moss px-3 py-1 text-xs font-medium text-ivory">
+        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-moss px-4 py-3 text-sm text-ivory">
+          <p>Four questions and the desk builds around your wedding.</p>
+          <Link href="/onboard" className="min-h-11 rounded-full bg-ivory px-4 py-2 text-xs font-medium text-moss">
             Start setup
           </Link>
         </aside>
       )}
       {onboarded && !firstWalkDone && (
-        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3 text-sm">
+        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface/70 px-4 py-3 text-sm">
           <p>Names, one vendor, publish the site. Ten minutes.</p>
-          <Link href="/start" className="rounded-full bg-moss px-3 py-1 text-xs font-medium text-ivory">
+          <Link href="/start" className="min-h-11 rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory">
             First wedding
           </Link>
         </aside>
       )}
-      <section className="relative overflow-hidden rounded-[1.6rem]">
-        <img src={coverUrl} alt="" className="h-56 w-full object-cover object-center sm:h-72" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
-        <div className="absolute inset-y-0 left-6 flex flex-col justify-center text-ivory sm:left-10">
-          <p className="font-serif text-[clamp(3.5rem,10vw,5.5rem)] leading-none tracking-tight">{headline}</p>
-          <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.28em] text-ivory/85">{sub}</p>
+
+      <section className="relative overflow-hidden rounded-[1.8rem]">
+        <img src={coverUrl} alt="" className="h-[22rem] w-full object-cover object-center sm:h-[26rem]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/55 to-paper/10" />
+        <div className="absolute inset-x-0 bottom-0 space-y-4 p-6 sm:p-10">
+          <p className="font-serif text-[clamp(4.5rem,14vw,8rem)] leading-none tracking-tight text-ink">{headline}</p>
+          <p className="text-sm uppercase tracking-[0.22em] text-ink-soft">{sub}</p>
+          <p className="max-w-xl text-base leading-7 text-ink">{brief}</p>
+          {next && (
+            <Link
+              href={next.href}
+              className="inline-flex min-h-11 items-center rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory"
+            >
+              {next.cta}
+            </Link>
+          )}
         </div>
       </section>
 
-      <section className="glass-panel rounded-2xl p-5">
-        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-moss">This morning</p>
-        <p className="mt-2 max-w-2xl text-base leading-7 text-ink">{brief}</p>
-        {next && (
-          <Link
-            href={next.href}
-            className="mt-4 inline-flex rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory"
-          >
-            {next.cta}
-          </Link>
-        )}
+      <section className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <ThisWeekWidget items={weekItems} />
+        </div>
+        <article className="glass-panel rounded-2xl p-5">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Spent</p>
+          <p className="mt-2 font-serif text-4xl tracking-tight tabular-nums">{money(spent)}</p>
+          <p className="mt-1 text-sm text-muted">of {cap ? money(cap) : "no cap yet"}</p>
+          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-line">
+            <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
+          </div>
+        </article>
+      </section>
+
+      <section className="grid gap-4 sm:grid-cols-2">
+        <RsvpWidget />
+        <PayWidget />
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold">Quick actions</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <p className="mb-3 text-[11px] uppercase tracking-[0.18em] text-muted">Do next</p>
+        <div className="flex flex-wrap gap-2">
           {QUICK.map((q) => (
             <Link
               key={q.href}
               href={q.href}
-              className="group overflow-hidden rounded-2xl border border-white/50 bg-surface/50 backdrop-blur-xl"
+              className="min-h-11 rounded-full border border-line bg-surface/50 px-4 py-2 text-sm backdrop-blur"
             >
-              <div className="aspect-[5/3] overflow-hidden">
-                <img
-                  src={q.photo}
-                  alt=""
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div className="p-3">
-                <p className="text-sm font-medium">{q.label}</p>
-                <p className="mt-0.5 text-[11px] leading-4 text-muted">{q.line}</p>
-              </div>
+              {q.label}
             </Link>
           ))}
         </div>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <ThisWeekWidget items={weekItems} />
-
-        <article className="glass-panel rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold">Budget Overview</h2>
-          </div>
-          <p className="mt-4 font-serif text-4xl tracking-tight">{money(spent)}</p>
-          <p className="mt-1 text-sm text-muted">of {cap ? money(cap) : "no cap yet"}</p>
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-line">
-            <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
-          </div>
-          <p className="mt-2 text-right text-[11px] text-muted">{pct}%</p>
-        </article>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <RsvpWidget />
-        <PayWidget />
-      </div>
-
       {suggestions.length > 0 && (
         <section>
-          <h2 className="mb-3 text-sm font-semibold">For you</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {suggestions.map((s) => (
-              <Link
-                key={s.id}
-                href={s.href}
-                className="glass-panel rounded-2xl p-4 hover:border-moss/30"
-              >
-                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-moss">{s.kind}</p>
-                <p className="mt-1 text-sm font-medium">{s.title}</p>
-                <p className="mt-1 text-xs leading-5 text-muted">{s.detail}</p>
-              </Link>
+          <p className="mb-3 text-[11px] uppercase tracking-[0.18em] text-muted">For you</p>
+          <ul className="divide-y divide-line/80">
+            {suggestions.slice(0, 3).map((s) => (
+              <li key={s.id}>
+                <Link href={s.href} className="flex items-baseline justify-between gap-4 py-3">
+                  <span>
+                    <span className="block text-sm font-medium">{s.title}</span>
+                    <span className="text-xs text-muted">{s.detail}</span>
+                  </span>
+                  <span className="shrink-0 text-[10px] uppercase tracking-wide text-moss">{s.kind}</span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
 
       <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Your Rooms</h2>
-          <Link href="/rooms" className="text-[11px] font-medium uppercase tracking-wide text-muted">
-            View all
+        <div className="mb-4 flex items-end justify-between">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Rooms</p>
+            <h2 className="font-serif text-3xl">Where you work</h2>
+          </div>
+          <Link href="/rooms" className="text-xs text-muted underline">
+            All rooms
           </Link>
         </div>
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-          {VISUAL_ROOMS.map((room) => (
-            <Link key={room.href} href={room.href} className="group text-center">
-              <div className="relative overflow-hidden rounded-2xl">
-                <img
-                  src={room.photo}
-                  alt=""
-                  className="aspect-square w-full object-cover opacity-70 saturate-[.7] transition duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-paper/25 backdrop-blur-[1px]" />
-                <span className="absolute bottom-1.5 left-1.5 rounded-full bg-paper/80 p-1 text-ink backdrop-blur">
-                  <Icon name={room.icon} className="h-3.5 w-3.5" />
-                </span>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {lead.map((room) => (
+            <RoomTile key={room.href} {...room} />
+          ))}
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          {support.map((room) => (
+            <Link key={room.href} href={room.href} className="group">
+              <div className="relative overflow-hidden rounded-xl">
+                <img src={room.photo} alt="" className="aspect-[4/3] w-full object-cover opacity-45 saturate-50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-paper/90 to-paper/10" />
+                <p className="absolute inset-x-0 bottom-2 px-2 font-serif text-lg text-ink">{room.label}</p>
               </div>
-              <p className="mt-1.5 text-[11px] font-medium">{room.label}</p>
             </Link>
           ))}
         </div>

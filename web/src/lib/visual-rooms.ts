@@ -9,12 +9,12 @@ export const NAV_ITEMS = [
 ] as const;
 
 export const VISUAL_ROOMS = [
-  { href: "/guests", label: "Guests", photo: "/brand/rooms/guests.jpg", line: "The list, RSVPs, plus-ones, chairs", icon: "users" },
-  { href: "/vendors", label: "Vendors", photo: "/brand/rooms/vendors.jpg", line: "Find, hire, contracts, and pay", icon: "bag" },
-  { href: "/planning", label: "Planning", photo: "/brand/rooms/planning.jpg", line: "Vision, checklist, timeline", icon: "calendar" },
-  { href: "/day-of", label: "The Day", photo: "/brand/rooms/day.jpg", line: "Run of show, music, the hour", icon: "sun" },
-  { href: "/budget", label: "Budget", photo: "/brand/rooms/budget.jpg", line: "Envelopes, dues, who pays", icon: "wallet" },
-  { href: "/registry", label: "Registry", photo: "/brand/rooms/registry.jpg", line: "The list, claimed, thank-yous", icon: "gift" },
+  { href: "/planning", label: "Planning", photo: "/brand/rooms/planning.jpg", line: "Vision, checklist, timeline", icon: "calendar", rank: "lead" },
+  { href: "/guests", label: "Guests", photo: "/brand/rooms/guests.jpg", line: "The list, RSVPs, chairs", icon: "users", rank: "lead" },
+  { href: "/day-of", label: "The Day", photo: "/brand/rooms/day.jpg", line: "Run of show, music, the hour", icon: "sun", rank: "lead" },
+  { href: "/vendors", label: "Vendors", photo: "/brand/rooms/vendors.jpg", line: "Find, hire, contracts", icon: "bag", rank: "support" },
+  { href: "/budget", label: "Budget", photo: "/brand/rooms/budget.jpg", line: "Envelopes, dues, who pays", icon: "wallet", rank: "support" },
+  { href: "/registry", label: "Registry", photo: "/brand/rooms/registry.jpg", line: "The list, claimed, thanks", icon: "gift", rank: "support" },
 ] as const;
 
 export const MORE_ROOMS: { href: string; label: string }[] = [
