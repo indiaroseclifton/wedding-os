@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { FileUpload } from "@/components/ui/FileUpload";
 
 type Item = {
   id: string;
@@ -110,16 +111,26 @@ export default function MoodboardPage() {
       <RoomSubnav room="planning" />
       <div>
         <h1 className="font-serif text-4xl">Moodboard</h1>
-        <p className="mt-1 text-sm text-muted">Pictures first. Paste a photo URL or pin a still.</p>
+        <p className="mt-1 text-sm text-muted">Pictures first. Upload a photo or paste a URL.</p>
       </div>
 
       <form onSubmit={add} className="space-y-3 rounded-2xl border border-line bg-surface p-4">
-        <input
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Image URL (jpg, png, webp) or any link"
-          className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm"
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="Image URL (jpg, png, webp) or any link"
+            className="min-w-[12rem] flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+          />
+          <FileUpload
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            label="Upload photo"
+            onUploaded={(href, name) => {
+              setUrl(href);
+              if (!title) setTitle(name.replace(/\.[a-z0-9]+$/i, ""));
+            }}
+          />
+        </div>
         <div className="grid gap-2 sm:grid-cols-3">
           <input
             value={title}

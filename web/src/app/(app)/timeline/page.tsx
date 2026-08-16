@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { SubscribeCal } from "@/components/calendar/SubscribeCal";
 import {
   TIMELINE_OFFSETS,
   applyOffsetId,
@@ -105,6 +106,8 @@ export default function TimelinePage() {
           </button>
         )}
       </div>
+
+      <SubscribeCal />
 
       <form onSubmit={add} className="flex flex-wrap items-end gap-2 rounded-2xl border border-line bg-surface p-4">
         <label className="text-sm">

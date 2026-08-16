@@ -13,6 +13,7 @@ import {
   stemById,
   type PlacedStem,
 } from "@/lib/floral-studio";
+import { fitLabel, stemFit, weddingMonth, zoneForCity } from "@/lib/floral-season";
 
 type Saved = {
   id: string;
@@ -37,6 +38,9 @@ export function FloralStudio() {
   const [saved, setSaved] = useState<Saved[]>([]);
   const [msg, setMsg] = useState<string | null>(null);
   const [tab, setTab] = useState<"compose" | "inspire" | "palette">("compose");
+  const [place, setPlace] = useState("Atlanta, GA");
+  const [month, setMonth] = useState(10);
+  const [inSeasonOnly, setInSeasonOnly] = useState(false);
   const drag = useRef<{ id: string; dx: number; dy: number } | null>(null);
   const board = useRef<HTMLDivElement>(null);
 
@@ -44,6 +48,13 @@ export function FloralStudio() {
     fetch("/api/diy")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setSaved(d?.diy?.mockups || []))
+      .catch(() => {});
+    fetch("/api/workspace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.meta?.location) setPlace(d.meta.location);
+        if (d?.meta?.weddingDate) setMonth(weddingMonth(d.meta.weddingDate));
+      })
       .catch(() => {});
   }, []);
 
@@ -77,11 +88,16 @@ export function FloralStudio() {
     return () => window.removeEventListener("keydown", onKey);
   }, [sel, pieces]);
 
+  const zone = zoneForCity(place);
   const library = STEMS.filter((s) => {
     if (kind !== "all" && s.kind !== kind) return false;
     if (story !== "all" && !s.stories.includes(story)) return false;
     if (material === "fresh" && s.material !== "fresh") return false;
     if (material === "silk" && s.material !== "silk") return false;
+    if (inSeasonOnly) {
+      const fit = stemFit(s, month);
+      if (fit === "out") return false;
+    }
     return true;
   });
 
@@ -219,6 +235,10 @@ export function FloralStudio() {
         </div>
       </div>
 
+      <p className="text-sm text-ink-soft">
+        {place} · zone {zone.zone} · month {month} — frost {zone.frost}. Fresh stems follow the season; silk does not.
+      </p>
+
       {tab === "palette" ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {COLOR_STORIES.map((s) => {
@@ -331,14 +351,27 @@ export function FloralStudio() {
                   {k}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => setInSeasonOnly((v) => !v)}
+                className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide ${
+                  inSeasonOnly ? "bg-moss text-ivory" : "border border-line text-muted"
+                }`}
+              >
+                In season
+              </button>
             </div>
             <ul className="grid grid-cols-2 gap-2 lg:grid-cols-1">
-              {library.map((s) => (
+              {library.map((s) => {
+                const fit = stemFit(s, month);
+                return (
                 <li key={s.id}>
                   <button
                     type="button"
                     onClick={() => addStem(s.id)}
-                    className="flex w-full items-center gap-2 rounded-xl border border-line bg-surface p-2 text-left"
+                    className={`flex w-full items-center gap-2 rounded-xl border border-line bg-surface p-2 text-left ${
+                      fit === "out" ? "opacity-50" : ""
+                    }`}
                   >
                     <img
                       src={s.photo}
@@ -351,12 +384,13 @@ export function FloralStudio() {
                         <span className="font-normal text-muted">{s.material === "silk" ? "silk" : "real"}</span>
                       </span>
                       <span className="block text-[10px] text-muted">
-                        ${s.estEach.toFixed(2)} · {s.material === "silk" ? "reusable" : s.hardy === "yes" ? "hardy" : s.hardy}
+                        ${s.estEach.toFixed(2)} · {fitLabel(fit)}
                       </span>
                     </span>
                   </button>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </aside>
 

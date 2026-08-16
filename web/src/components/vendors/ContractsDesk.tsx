@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { CONTRACT_CLAUSES } from "@/lib/data/contract-review";
+import { FileUpload } from "@/components/ui/FileUpload";
 
 export type ContractRow = {
   id: string;
@@ -122,6 +123,18 @@ export function ContractsDesk({ rows }: { rows: ContractRow[] }) {
                 >
                   Save link
                 </button>
+                <FileUpload
+                  label="Upload PDF"
+                  accept="application/pdf,image/jpeg,image/png"
+                  onUploaded={(href) => {
+                    setUrls((u) => ({ ...u, [r.id]: href }));
+                    fetch(`/api/vendors/${r.id}`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ contractUrl: href }),
+                    }).then((res) => setMsg(res.ok ? "File attached" : "Could not save"));
+                  }}
+                />
                 {urls[r.id] && (
                   <a
                     href={urls[r.id]}
