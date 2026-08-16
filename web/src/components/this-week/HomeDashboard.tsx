@@ -3,6 +3,15 @@ import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
 import type { Suggestion } from "@/lib/smart-home";
 
+const QUICK = [
+  { href: "/guests/new", label: "Add guest", line: "One name, or a plus-one", photo: "/brand/setting.jpg" },
+  { href: "/guests", label: "Nudge RSVPs", line: "Who hasn’t replied", photo: "/brand/garden.jpg" },
+  { href: "/vendors/new", label: "Add vendor", line: "Someone you already hired", photo: "/brand/flowers.jpg" },
+  { href: "/payments", label: "Log a payment", line: "Deposit or balance", photo: "/brand/candles.jpg" },
+  { href: "/diy", label: "DIY studio", line: "Flowers, tables, lists", photo: "/brand/flowers.jpg" },
+  { href: "/music", label: "Must-play", line: "Preview and lock a song", photo: "/brand/candles.jpg" },
+] as const;
+
 export function HomeDashboard({
   days,
   coverUrl,
@@ -49,6 +58,31 @@ export function HomeDashboard({
             {next.cta}
           </Link>
         )}
+      </section>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold">Quick actions</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {QUICK.map((q) => (
+            <Link
+              key={q.href}
+              href={q.href}
+              className="group overflow-hidden rounded-2xl border border-line bg-surface"
+            >
+              <div className="aspect-[5/3] overflow-hidden">
+                <img
+                  src={q.photo}
+                  alt=""
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-3">
+                <p className="text-sm font-medium">{q.label}</p>
+                <p className="mt-0.5 text-[11px] leading-4 text-muted">{q.line}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
