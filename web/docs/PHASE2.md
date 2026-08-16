@@ -62,8 +62,7 @@
 - DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
 - Run of show by audience (couple / party / vendor / guests)
 
-## Wave 13 (done)
-- Address on guest + RSVP (optional or required)
-- Personal RSVP links include guest token
-- Nudge email for people who have not replied (5-day cooldown)
-- Guest list filter + CSV for mailing addresses
+## Wave 14 (done)
+- Floor plan seats people: unseated rail, tap or drag onto a table
+- Table chips show names + fill; inspect to unseat
+- Print room + roster
