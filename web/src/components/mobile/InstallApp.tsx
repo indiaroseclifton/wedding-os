@@ -12,7 +12,8 @@ export function InstallApp({ compact = false }: { compact?: boolean }) {
   useEffect(() => {
     const media = window.matchMedia("(display-mode: standalone)");
     const nav = window.navigator as Navigator & { standalone?: boolean };
-    setStandalone(media.matches || nav.standalone === true);
+    const cap = Boolean((window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor);
+    setStandalone(media.matches || nav.standalone === true || cap);
     setIos(/iphone|ipad|ipod/i.test(navigator.userAgent));
 
     const onPrompt = (e: Event) => {

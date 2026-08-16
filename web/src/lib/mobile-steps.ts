@@ -34,9 +34,9 @@ export const MOBILE_STEPS: { phase: string; items: MobileStep[] }[] = [
     items: [
       {
         id: "capacitor",
-        title: "Wrap with Capacitor (or Expo WebView)",
-        body: "Point the shell at this site. Splash, status bar moss, safe-area already in the viewport. No rewrite.",
-        done: false,
+        title: "Capacitor shell is in the repo",
+        body: "mobile/ opens the live desk. The remaining work is Xcode on your Mac — listed under Capacitor below.",
+        done: true,
       },
       {
         id: "camera",

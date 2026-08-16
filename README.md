@@ -37,7 +37,7 @@ DATA_BACKEND=file
 | Attire | `/attire` |
 | Day-of board | `/day-of` |
 | Timeline | `/timeline` |
-| Budget, music, moodboard, notes | matching routes |
+| Phone / Capacitor | `/mobile` · native shell in `mobile/` |
 
 ## Stack
 
