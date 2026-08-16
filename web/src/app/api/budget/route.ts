@@ -6,11 +6,14 @@ import {
   deleteBudgetLine,
   getBudget,
   saveBudget,
+  seedBudgetEnvelopes,
   updateBudgetLine,
 } from "@/lib/data/budget-store";
 import { listPayments } from "@/lib/data/payments-store";
 import { diyEstimate, getDiy } from "@/lib/data/diy-store";
+import { getPath } from "@/lib/data/path-store";
 import { requiredString, ValidationError } from "@/lib/validation";
+import { BUDGET_ENVELOPES, envelopeForVendor } from "@/lib/budget-envelopes";
 
 function rollup(
   budget: Awaited<ReturnType<typeof getBudget>>,
@@ -22,7 +25,8 @@ function rollup(
   const linesPlanned = budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
   const linesActual = budget.lines.reduce((s, l) => s + (l.actual || 0), 0);
   const diyEst = Math.round(diyEstimate(diy));
-  const inPlay = vendorPaid + vendorOpen + diyEst + linesPlanned;
+  const spent = vendorPaid + linesActual;
+  const committed = vendorPaid + vendorOpen + diyEst + Math.max(0, linesPlanned - linesActual);
   return {
     vendorPaid,
     vendorOpen,
@@ -30,22 +34,59 @@ function rollup(
     diyEst,
     linesPlanned,
     linesActual,
-    inPlay,
+    spent,
+    inPlay: committed,
     cap: budget.overallLimit || 0,
-    remaining: budget.overallLimit ? budget.overallLimit - inPlay : null,
+    remaining: budget.overallLimit ? budget.overallLimit - committed : null,
   };
+}
+
+function envelopes(
+  budget: Awaited<ReturnType<typeof getBudget>>,
+  payments: Awaited<ReturnType<typeof listPayments>>
+) {
+  return BUDGET_ENVELOPES.map((env) => {
+    const lines = budget.lines.filter((l) => l.category === env.id);
+    const planned = lines.reduce((s, l) => s + (l.planned || 0), 0);
+    const lineActual = lines.reduce((s, l) => s + (l.actual || 0), 0);
+    const pay = payments.filter((p) => envelopeForVendor(p.vendorName) === env.id);
+    const paid = pay.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
+    const open = pay.filter((p) => p.status !== "PAID").reduce((s, p) => s + p.amount, 0);
+    const spent = lineActual + paid;
+    return {
+      id: env.id,
+      hint: env.hint,
+      typicalPct: env.pct,
+      planned,
+      spent,
+      open,
+      remaining: planned - spent - open,
+    };
+  });
 }
 
 export async function GET() {
   const access = await requireCoupleApi();
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
-  const [budget, payments, diy] = await Promise.all([
+  const [budget, payments, diy, path] = await Promise.all([
     getBudget(workspace.id),
     listPayments(workspace.id),
     getDiy(workspace.id),
+    getPath(workspace.id),
   ]);
-  return NextResponse.json({ budget, payments, rollup: rollup(budget, payments, diy) });
+  const upcoming = payments
+    .filter((p) => p.status !== "PAID")
+    .sort((a, b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999"))
+    .slice(0, 5);
+  return NextResponse.json({
+    budget,
+    payments,
+    path: path.choices,
+    upcoming,
+    envelopes: envelopes(budget, payments),
+    rollup: rollup(budget, payments, diy),
+  });
 }
 
 export async function POST(request: Request) {
@@ -57,13 +98,14 @@ export async function POST(request: Request) {
     if (body.action === "add_line") {
       const label = requiredString(body.label, "Label", 120);
       const budget = await addBudgetLine(workspace.id, {
-        category: body.category || "General",
+        category: body.category || "Other",
         label,
         planned: body.planned,
         actual: body.actual,
         hireEstimate: body.hireEstimate,
         diyEstimate: body.diyEstimate,
         path: body.path,
+        who: body.who,
       });
       return NextResponse.json({ budget });
     }
@@ -76,6 +118,7 @@ export async function POST(request: Request) {
         hireEstimate: body.hireEstimate == null ? undefined : Number(body.hireEstimate) || 0,
         diyEstimate: body.diyEstimate == null ? undefined : Number(body.diyEstimate) || 0,
         path: body.path,
+        who: body.who,
       });
       return NextResponse.json({ budget });
     }
@@ -89,6 +132,14 @@ export async function POST(request: Request) {
           ? undefined
           : Number(body.overallLimit) || 0,
       });
+      return NextResponse.json({ budget });
+    }
+    if (body.action === "seed") {
+      const path = await getPath(workspace.id);
+      const current = await getBudget(workspace.id);
+      const cap = Number(body.overallLimit || current.overallLimit) || 0;
+      if (!cap) return NextResponse.json({ error: "Set a cap first" }, { status: 400 });
+      const budget = await seedBudgetEnvelopes(workspace.id, cap, path.choices);
       return NextResponse.json({ budget });
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
