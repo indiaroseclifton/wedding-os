@@ -3,6 +3,8 @@ import { PrintButton } from "@/components/ui/PrintButton";
 import { SECTION_LABELS } from "@/lib/data/handoffs-store";
 import { ScheduleView } from "@/components/run-of-show/ScheduleView";
 import { loadVendorPortal } from "@/lib/data/vendor-portal";
+import { PortalActions } from "./PortalActions";
+import { slotVisible } from "@/lib/data/run-of-show";
 
 function prettyDate(iso?: string) {
   if (!iso) return null;
@@ -26,6 +28,14 @@ export default async function VendorPortalPage({
   if (!data) notFound();
   const { pkg, meta, schedule, emergencyContact, sections, liveKeys } = data;
   const names = meta.coupleNames || meta.name;
+  const mine = schedule.filter((s) => {
+    if (!slotVisible(s, "vendor")) return false;
+    if (!pkg.recipientName) return true;
+    const hay = `${s.lead || ""} ${s.title}`.toLowerCase();
+    const needle = pkg.recipientName.toLowerCase().split(" ")[0];
+    return hay.includes(needle) || hay.includes((pkg.template || "").toLowerCase());
+  });
+  const slice = mine.length ? mine : schedule.filter((s) => slotVisible(s, "vendor"));
 
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-4 py-10">
@@ -48,12 +58,19 @@ export default async function VendorPortalPage({
           <PrintButton />
         </div>
 
-        {schedule.length > 0 && (
+        {slice.length > 0 && (
           <section className="rounded-xl border border-slate-200 bg-white p-4 print:break-inside-avoid">
-            <h2 className="mb-3 text-sm font-semibold">Run of show</h2>
-            <ScheduleView slots={schedule} view="vendor" />
+            <h2 className="mb-3 text-sm font-semibold">Your call sheet</h2>
+            <ScheduleView slots={slice} view="vendor" />
           </section>
         )}
+
+        <PortalActions
+          token={token}
+          recipientName={pkg.recipientName}
+          receivedAt={pkg.receivedAt}
+          slots={slice.map((s) => ({ id: s.id, title: s.title, time: s.time }))}
+        />
 
         <div className="space-y-4">
           {Object.entries(sections || {}).map(([key, value]) => (

@@ -18,6 +18,7 @@ type Site = {
   rsvpNote?: string;
   collectAddress?: boolean;
   requireAddress?: boolean;
+  rsvpQuestions?: { id: string; prompt: string }[];
 };
 
 type Guest = { id: string; name: string; rsvp: string; rsvpToken?: string };
@@ -168,6 +169,49 @@ export default function SiteEditorPage() {
           />
           Require address to RSVP
         </label>
+        <div className="space-y-2">
+          <p className="text-sm font-medium">Extra RSVP questions</p>
+          {(site.rsvpQuestions || []).map((q, i) => (
+            <div key={q.id} className="flex gap-2">
+              <input
+                value={q.prompt}
+                onChange={(e) => {
+                  const next = [...(site.rsvpQuestions || [])];
+                  next[i] = { ...q, prompt: e.target.value };
+                  setSite({ ...site, rsvpQuestions: next });
+                }}
+                className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setSite({
+                    ...site,
+                    rsvpQuestions: (site.rsvpQuestions || []).filter((x) => x.id !== q.id),
+                  })
+                }
+                className="text-xs underline"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setSite({
+                ...site,
+                rsvpQuestions: [
+                  ...(site.rsvpQuestions || []),
+                  { id: `q${Date.now()}`, prompt: "Song request?" },
+                ],
+              })
+            }
+            className="text-xs underline"
+          >
+            Add question
+          </button>
+        </div>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"

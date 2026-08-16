@@ -20,6 +20,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/dashboard", label: "Home" },
       { href: "/checklist", label: "Checklist" },
       { href: "/diy", label: "DIY" },
+      { href: "/diy/calendar", label: "DIY week" },
       { href: "/demo", label: "Demo" },
       { href: "/search", label: "Search" },
       { href: "/tasks", label: "Tasks" },
@@ -42,6 +43,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
     items: [
       { href: "/vendors", label: "My vendors" },
       { href: "/vendors/browse", label: "Browse" },
+      { href: "/vendors/shortlist", label: "Compare" },
       { href: "/payments", label: "Payments" },
       { href: "/handoffs", label: "Handoffs" },
       { href: "/music", label: "Music" },
@@ -52,6 +54,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
     items: [
       { href: "/day-of", label: "Board" },
       { href: "/run-of-show", label: "Run of show" },
+      { href: "/packet", label: "Packet" },
       { href: "/people", label: "People" },
       { href: "/party", label: "Party view" },
       { href: "/attire", label: "Attire" },

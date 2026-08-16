@@ -15,7 +15,16 @@ const CATEGORIES = [
   "Other",
 ];
 
-type Line = { id: string; category: string; label: string; planned: number; actual: number };
+type Line = {
+  id: string;
+  category: string;
+  label: string;
+  planned: number;
+  actual: number;
+  hireEstimate?: number;
+  diyEstimate?: number;
+  path?: string;
+};
 type Budget = { overallLimit?: number; lines: Line[]; currency: string };
 type Rollup = {
   vendorPaid: number;
@@ -36,6 +45,9 @@ export default function BudgetPage() {
   const [planned, setPlanned] = useState(0);
   const [actual, setActual] = useState(0);
   const [category, setCategory] = useState("Other");
+  const [hireEst, setHireEst] = useState("");
+  const [diyEst, setDiyEst] = useState("");
+  const [path, setPath] = useState("undecided");
   const [limit, setLimit] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -71,10 +83,21 @@ export default function BudgetPage() {
 
   async function addLine(e: React.FormEvent) {
     e.preventDefault();
-    await post({ action: "add_line", label, planned, actual, category });
+    await post({
+      action: "add_line",
+      label,
+      planned,
+      actual,
+      category,
+      hireEstimate: hireEst === "" ? undefined : Number(hireEst),
+      diyEstimate: diyEst === "" ? undefined : Number(diyEst),
+      path,
+    });
     setLabel("");
     setPlanned(0);
     setActual(0);
+    setHireEst("");
+    setDiyEst("");
   }
 
   const plannedTotal = budget?.lines.reduce((s, l) => s + (l.planned || 0), 0) || 0;
@@ -201,6 +224,38 @@ export default function BudgetPage() {
             className="mt-1 block w-28 rounded-lg border border-slate-300 px-3 py-2 text-sm"
           />
         </label>
+        <label className="text-sm">
+          <span className="font-medium">Hire $</span>
+          <input
+            type="number"
+            min={0}
+            value={hireEst}
+            onChange={(e) => setHireEst(e.target.value)}
+            className="mt-1 block w-28 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
+        <label className="text-sm">
+          <span className="font-medium">DIY $</span>
+          <input
+            type="number"
+            min={0}
+            value={diyEst}
+            onChange={(e) => setDiyEst(e.target.value)}
+            className="mt-1 block w-28 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </label>
+        <label className="text-sm">
+          <span className="font-medium">Pick</span>
+          <select
+            value={path}
+            onChange={(e) => setPath(e.target.value)}
+            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="undecided">Undecided</option>
+            <option value="hire">Hire</option>
+            <option value="diy">DIY</option>
+          </select>
+        </label>
         <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
           Add
         </button>
@@ -213,7 +268,12 @@ export default function BudgetPage() {
           <li key={l.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
             <div>
               <p className="font-medium">{l.label}</p>
-              <p className="text-xs text-slate-500">{l.category}</p>
+              <p className="text-xs text-slate-500">
+                {l.category}
+                {l.hireEstimate ? ` · hire $${l.hireEstimate.toLocaleString()}` : ""}
+                {l.diyEstimate ? ` · DIY $${l.diyEstimate.toLocaleString()}` : ""}
+                {l.path && l.path !== "undecided" ? ` · chose ${l.path}` : ""}
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <label className="text-xs text-slate-500">

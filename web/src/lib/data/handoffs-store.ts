@@ -28,6 +28,8 @@ export type StoredPackage = {
   sections: Record<string, string>;
   shareVersion: number;
   sharedAt?: string;
+  receivedAt?: string;
+  receivedName?: string;
   lastRefreshedAt?: string;
   lastRefreshedFrom?: "music" | "guests";
   createdAt: string;
@@ -219,4 +221,15 @@ export async function sharePackage(id: string) {
     sharedAt: new Date().toISOString(),
     shareVersion: (row.shareVersion || 0) + 1,
   });
+}
+
+export async function markReceived(token: string, name?: string) {
+  const rows = await readJson<StoredPackage>(packagesFile);
+  const row = rows.find((p) => p.shareToken === token);
+  if (!row) return null;
+  row.receivedAt = new Date().toISOString();
+  row.receivedName = name?.slice(0, 80) || row.recipientName || "Vendor";
+  row.updatedAt = new Date().toISOString();
+  await writeJson(packagesFile, rows);
+  return row;
 }

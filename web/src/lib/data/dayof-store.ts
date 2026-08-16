@@ -31,6 +31,8 @@ export type StoredDayOf = {
   weatherNote?: string;
   emergencyContact?: string;
   shareToken?: string;
+  activePlan?: "main" | "rain";
+  rainSchedule?: ScheduleSlot[];
   checkIns: CheckIn[];
   updates: DayOfUpdate[];
   schedule: ScheduleSlot[];
@@ -163,6 +165,8 @@ export async function getDayOf(workspaceId: string): Promise<StoredDayOf> {
       ],
       updates: [],
       schedule: DEFAULT_SCHEDULE.map((s) => ({ ...s, id: randomUUID() })),
+      rainSchedule: [],
+      activePlan: "main",
       updatedAt: new Date().toISOString(),
     };
     await writeAll(all);
@@ -253,6 +257,91 @@ export function resetDefaultSchedule(workspaceId: string) {
   return saveDayOf(workspaceId, {
     schedule: DEFAULT_SCHEDULE.map((s) => ({ ...s, id: randomUUID() })),
   });
+}
+
+export function slotsForPlan(dayOf: StoredDayOf, plan: "main" | "rain" = "main") {
+  const rows = plan === "rain" ? dayOf.rainSchedule || [] : dayOf.schedule || [];
+  return sortSlots(rows.map(normalizeSlot));
+}
+
+export async function addSlotComment(
+  workspaceId: string,
+  slotId: string,
+  author: string,
+  body: string,
+  plan: "main" | "rain" = "main"
+) {
+  const current = await getDayOf(workspaceId);
+  const comment = {
+    id: randomUUID(),
+    author: author.slice(0, 80),
+    body: body.slice(0, 500),
+    createdAt: new Date().toISOString(),
+  };
+  const list = plan === "rain" ? current.rainSchedule || [] : current.schedule;
+  const next = list.map((s) =>
+    s.id === slotId ? { ...s, comments: [...(s.comments || []), comment] } : s
+  );
+  return saveDayOf(
+    workspaceId,
+    plan === "rain" ? { rainSchedule: next } : { schedule: sortSlots(next.map(normalizeSlot)) }
+  );
+}
+
+export async function confirmSlot(
+  workspaceId: string,
+  slotId: string,
+  who: string,
+  plan: "main" | "rain" = "main"
+) {
+  const current = await getDayOf(workspaceId);
+  const list = plan === "rain" ? current.rainSchedule || [] : current.schedule;
+  const next = list.map((s) => {
+    if (s.id !== slotId) return s;
+    const have = new Set(s.confirmedBy || []);
+    have.add(who.slice(0, 80));
+    return { ...s, confirmedBy: [...have] };
+  });
+  return saveDayOf(
+    workspaceId,
+    plan === "rain" ? { rainSchedule: next } : { schedule: sortSlots(next.map(normalizeSlot)) }
+  );
+}
+
+export async function copyMainToRain(workspaceId: string) {
+  const current = await getDayOf(workspaceId);
+  return saveDayOf(workspaceId, {
+    rainSchedule: current.schedule.map((s) => ({
+      ...s,
+      id: randomUUID(),
+      plan: "rain" as const,
+      comments: [],
+      confirmedBy: [],
+    })),
+  });
+}
+
+export async function pushDiyBeats(
+  workspaceId: string,
+  beats: { time: string; title: string; notes?: string; diySlug?: string }[]
+) {
+  const current = await getDayOf(workspaceId);
+  const have = new Set(current.schedule.map((s) => s.title));
+  const added = beats
+    .filter((b) => !have.has(b.title))
+    .map((b) =>
+      normalizeSlot({
+        id: randomUUID(),
+        time: b.time,
+        title: b.title,
+        notes: b.notes,
+        diySlug: b.diySlug,
+        lead: "Couple / party",
+        audiences: ["couple", "party"],
+      })
+    );
+  if (!added.length) return current;
+  return saveDayOf(workspaceId, { schedule: sortSlots([...current.schedule, ...added]) });
 }
 
 export type { Audience };

@@ -1,6 +1,13 @@
 export const AUDIENCES = ["couple", "party", "vendor", "guests"] as const;
 export type Audience = (typeof AUDIENCES)[number];
 
+export type SlotComment = {
+  id: string;
+  author: string;
+  body: string;
+  createdAt: string;
+};
+
 export type RunSlot = {
   id: string;
   time: string;
@@ -9,9 +16,14 @@ export type RunSlot = {
   guestTitle?: string;
   location?: string;
   lead?: string;
+  assignee?: string;
   notes?: string;
   owner?: string;
   audiences?: Audience[];
+  diySlug?: string;
+  plan?: "main" | "rain";
+  comments?: SlotComment[];
+  confirmedBy?: string[];
 };
 
 const OWNER_MAP: Record<string, Audience[]> = {

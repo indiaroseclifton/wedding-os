@@ -108,5 +108,23 @@ export async function POST(
     return NextResponse.json({ vendor: next, payments });
   }
 
+  if (body.action === "note") {
+    const vendor = await getVendor(id);
+    if (!vendor) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const inquiries: NonNullable<(typeof vendor)["inquiries"]> = [
+      ...(vendor.inquiries || []),
+      {
+        id: crypto.randomUUID(),
+        at: new Date().toISOString(),
+        direction: (body.direction === "in" ? "in" : "out") as "in" | "out",
+        body: String(body.body || "").slice(0, 2000),
+      },
+    ];
+    const next = await updateVendor(id, { inquiries });
+    const payments = paymentsForVendor(await listPayments(workspace.id), vendor);
+    return NextResponse.json({ vendor: next, payments });
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }
+

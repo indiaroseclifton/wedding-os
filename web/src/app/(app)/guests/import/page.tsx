@@ -36,6 +36,12 @@ function mapHeader(h: string): string | null {
   if (x.includes("diet") || x.includes("allerg")) return "dietary";
   if (x.includes("plus") || x.includes("guestcount")) return "plusOnes";
   if (x.includes("note")) return "notes";
+  if (x.includes("address") || x.includes("street")) return "address";
+  if (x === "city") return "city";
+  if (x.includes("state") || x.includes("region")) return "region";
+  if (x.includes("zip") || x.includes("postal")) return "postal";
+  if (x.includes("phone")) return "phone";
+  if (x.includes("household") || x === "party" || x.includes("partyname")) return "partyName";
   return null;
 }
 

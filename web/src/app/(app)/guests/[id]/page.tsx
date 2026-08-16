@@ -18,6 +18,7 @@ type Guest = {
   region?: string;
   postal?: string;
   phone?: string;
+  partyName?: string;
 };
 
 export default function EditGuestPage() {
@@ -62,6 +63,7 @@ export default function EditGuestPage() {
           region: form.get("region") || undefined,
           postal: form.get("postal") || undefined,
           phone: form.get("phone") || undefined,
+          partyName: form.get("partyName") || undefined,
           notes: form.get("notes") || undefined,
         }),
       });
@@ -159,6 +161,10 @@ export default function EditGuestPage() {
             <input name="phone" defaultValue={guest.phone || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           </label>
         </div>
+        <label className="block text-sm">
+          <span className="font-medium">Household</span>
+          <input name="partyName" defaultValue={guest.partyName || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </label>
         <label className="block text-sm">
           <span className="font-medium">Dietary</span>
           <input name="dietary" defaultValue={guest.dietary || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />

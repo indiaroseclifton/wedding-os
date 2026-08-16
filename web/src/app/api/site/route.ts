@@ -47,6 +47,14 @@ export async function POST(request: Request) {
     rsvpOpen: body.rsvpOpen !== false,
     collectAddress: body.collectAddress !== false,
     requireAddress: Boolean(body.requireAddress),
+    rsvpQuestions: Array.isArray(body.rsvpQuestions)
+      ? body.rsvpQuestions
+          .map((q: { id?: string; prompt?: string }) => ({
+            id: String(q.id || "").slice(0, 40),
+            prompt: String(q.prompt || "").slice(0, 160),
+          }))
+          .filter((q: { id: string; prompt: string }) => q.id && q.prompt)
+      : undefined,
   });
   return NextResponse.json({ site });
 }

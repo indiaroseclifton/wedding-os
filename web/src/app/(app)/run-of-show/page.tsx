@@ -14,7 +14,12 @@ import {
   formatRange,
 } from "@/lib/data/run-of-show";
 
-type DayOf = { schedule: RunSlot[]; shareToken?: string };
+type DayOf = {
+  schedule: RunSlot[];
+  rainSchedule?: RunSlot[];
+  shareToken?: string;
+  activePlan?: "main" | "rain";
+};
 
 const VIEWS: { id: Audience | "all"; label: string }[] = [
   { id: "all", label: "Full" },
@@ -31,6 +36,7 @@ const emptyDraft = {
   guestTitle: "",
   location: "",
   lead: "",
+  assignee: "",
   notes: "",
   audiences: ["couple", "party", "vendor"] as Audience[],
 };
@@ -80,6 +86,7 @@ export default function RunOfShowPage() {
       guestTitle: slot.guestTitle || "",
       location: slot.location || "",
       lead: slot.lead || "",
+      assignee: slot.assignee || "",
       notes: slot.notes || "",
       audiences: audiencesOf(slot),
     });
@@ -127,6 +134,9 @@ export default function RunOfShowPage() {
           >
             Share link
           </button>
+          <Link href="/packet" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            Packet
+          </Link>
           <Link href="/day-of" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
             Live board
           </Link>
@@ -141,6 +151,34 @@ export default function RunOfShowPage() {
           <CopyButton value={`${shareUrl}?for=vendor`} label="Vendor link" />
         </div>
       )}
+
+      <div className="flex flex-wrap items-center gap-2 print:hidden">
+        <button
+          type="button"
+          onClick={() => post({ action: "plan", plan: "main" })}
+          className={`rounded-full px-3 py-1 text-xs ${
+            (dayOf.activePlan || "main") === "main" ? "bg-slate-900 text-white" : "border border-slate-300"
+          }`}
+        >
+          Fair weather
+        </button>
+        <button
+          type="button"
+          onClick={() => post({ action: "plan", plan: "rain" })}
+          className={`rounded-full px-3 py-1 text-xs ${
+            dayOf.activePlan === "rain" ? "bg-slate-900 text-white" : "border border-slate-300"
+          }`}
+        >
+          Rain plan
+        </button>
+        <button
+          type="button"
+          onClick={() => post({ action: "rain_copy" })}
+          className="text-xs underline"
+        >
+          Copy main → rain
+        </button>
+      </div>
 
       <div className="flex flex-wrap gap-1 print:hidden">
         {VIEWS.map((v) => (
@@ -162,7 +200,13 @@ export default function RunOfShowPage() {
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
             Preview · {view}
           </p>
-          <ScheduleView slots={dayOf.schedule} view={view} showNotes={view !== "guests"} />
+          <ScheduleView
+            slots={
+              dayOf.activePlan === "rain" ? dayOf.rainSchedule || [] : dayOf.schedule
+            }
+            view={view}
+            showNotes={view !== "guests"}
+          />
         </div>
       ) : (
         <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
@@ -309,6 +353,15 @@ function SlotForm({
           value={draft.lead}
           onChange={(e) => setDraft((d) => ({ ...d, lead: e.target.value }))}
           placeholder="DJ, MOH, catering…"
+          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+        />
+      </label>
+      <label className="text-xs">
+        Assigned to (party)
+        <input
+          value={draft.assignee}
+          onChange={(e) => setDraft((d) => ({ ...d, assignee: e.target.value }))}
+          placeholder="Maya · guestbook"
           className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
         />
       </label>

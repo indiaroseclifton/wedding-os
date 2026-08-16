@@ -2,7 +2,9 @@ import { getPackageByToken } from "./handoffs-store";
 import { getWorkspaceMeta } from "./store";
 import { getDayOf } from "./dayof-store";
 import { listGuests } from "./store";
-import { dietarySections } from "./dietary";
+import { dietarySections, eventDietarySections } from "./dietary";
+import { listEvents } from "./events-store";
+import { listEventRsvps } from "./event-rsvp-store";
 import { getMusic } from "./music-store";
 import { listVendors } from "./vendors-store";
 import { DEMO_WORKSPACE } from "./workspace";
@@ -16,6 +18,17 @@ export async function loadVendorPortal(token: string) {
   if (pkg.template === "CATERING" || pkg.template === "CAKE") {
     const guests = await listGuests(pkg.workspaceId);
     Object.assign(live, dietarySections(guests));
+    const events = (await listEvents(pkg.workspaceId)).filter((e) => e.rsvpEnabled);
+    if (events.length) {
+      const rsvps = await listEventRsvps(pkg.workspaceId);
+      live.headcount = [
+        `Wedding day: ${live.headcount}`,
+        ...events.map((e) => {
+          const ev = eventDietarySections(guests, rsvps, e.id);
+          return `${e.name}: ${ev.headcount}`;
+        }),
+      ].join("\n");
+    }
   }
   if (pkg.template === "DJ") {
     const music = await getMusic(pkg.workspaceId);

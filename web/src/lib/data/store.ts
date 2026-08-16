@@ -80,6 +80,11 @@ export type StoredGuest = {
   postal?: string;
   phone?: string;
   lastNudgedAt?: string;
+  lastAddressNudgedAt?: string;
+  nudgeCount?: number;
+  inviteEmailedAt?: string;
+  saveTheDateAt?: string;
+  answers?: Record<string, string>;
   rsvp: string;
   plusOnes: number;
   dietary?: string;

@@ -19,6 +19,7 @@ export type StoredSite = {
   rsvpNote?: string;
   collectAddress: boolean;
   requireAddress: boolean;
+  rsvpQuestions: { id: string; prompt: string }[];
   updatedAt: string;
 };
 
@@ -45,6 +46,7 @@ function fresh(workspaceId: string): StoredSite {
     rsvpOpen: true,
     collectAddress: true,
     requireAddress: false,
+    rsvpQuestions: [],
     updatedAt: new Date().toISOString(),
   };
 }
@@ -60,6 +62,7 @@ export async function getSite(workspaceId: string): Promise<StoredSite> {
     ...site,
     collectAddress: site.collectAddress !== false,
     requireAddress: Boolean(site.requireAddress),
+    rsvpQuestions: Array.isArray(site.rsvpQuestions) ? site.rsvpQuestions : [],
   };
 }
 
@@ -80,6 +83,7 @@ export async function getSiteByToken(token: string) {
     ...site,
     collectAddress: site.collectAddress !== false,
     requireAddress: Boolean(site.requireAddress),
+    rsvpQuestions: Array.isArray(site.rsvpQuestions) ? site.rsvpQuestions : [],
   };
 }
 

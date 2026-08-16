@@ -62,7 +62,11 @@
 - DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
 - Run of show by audience (couple / party / vendor / guests)
 
-## Wave 15 (done)
-- Vendor contract URL + deposit/final on the vendor card
-- Payments keyed by vendor id (rename-safe)
-- List shows “deposit due / paid”
+## Wave 16 (done)
+- Guest mail: save-the-date, invite, RSVP nudge (10-day second), address nudge
+- Household RSVP + custom questions + extra events on the guest site
+- Address CSV import
+- Floor-plan place cards; catering handoff lists extra events
+- ROS rain plan, party assignee, vendor comments + confirm, “got it”
+- Day-of packet print, DIY week-of beats + calendar + bar/cake-table
+- Hire vs DIY on budget; vendor inquiry thread; shortlist compare

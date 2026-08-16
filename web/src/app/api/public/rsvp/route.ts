@@ -3,6 +3,7 @@ import { getSiteByToken } from "@/lib/data/site-store";
 import {
   ensureGuestRsvpTokens,
   getGuestByRsvpToken,
+  listGuests,
   updateGuest,
 } from "@/lib/data/store";
 import { getEvent } from "@/lib/data/events-store";
@@ -34,6 +35,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Guest not found" }, { status: 404 });
   }
   const events = await publicEventsForGuest(site.workspaceId, guest.id);
+  const household =
+    guest.partyName?.trim()
+      ? (await listGuests(site.workspaceId)).filter(
+          (g) => g.partyName?.trim() === guest.partyName?.trim()
+        )
+      : [guest];
   return NextResponse.json({
     guest: {
       name: guest.name,
@@ -47,7 +54,16 @@ export async function GET(request: Request) {
       region: guest.region,
       postal: guest.postal,
       phone: guest.phone,
+      partyName: guest.partyName,
+      answers: guest.answers || {},
     },
+    household: household.map((g) => ({
+      id: g.id,
+      name: g.name,
+      rsvp: g.rsvp,
+      rsvpToken: g.rsvpToken,
+    })),
+    questions: site.rsvpQuestions || [],
     events,
     collectAddress: site.collectAddress,
     requireAddress: site.requireAddress,
@@ -95,6 +111,12 @@ export async function POST(request: Request) {
     if (site.requireAddress && !String(body.address || "").trim()) {
       return NextResponse.json({ error: "Please add a mailing address" }, { status: 400 });
     }
+    const answers: Record<string, string> = {};
+    if (body.answers && typeof body.answers === "object") {
+      for (const q of site.rsvpQuestions || []) {
+        answers[q.id] = String((body.answers as Record<string, string>)[q.id] || "").slice(0, 300);
+      }
+    }
     const updated = await updateGuest(guest.id, {
       rsvp,
       plusOnes,
@@ -106,7 +128,17 @@ export async function POST(request: Request) {
       region: String(body.region || "").slice(0, 80) || undefined,
       postal: String(body.postal || "").slice(0, 20) || undefined,
       phone: String(body.phone || "").slice(0, 40) || undefined,
+      answers,
     });
+
+    if (body.forHousehold && guest.partyName) {
+      const house = (await listGuests(site.workspaceId)).filter(
+        (g) => g.id !== guest.id && g.partyName?.trim() === guest.partyName?.trim()
+      );
+      for (const other of house) {
+        await updateGuest(other.id, { rsvp });
+      }
+    }
 
     const incoming = Array.isArray(body.eventRsvps) ? body.eventRsvps : [];
     const existing = await rsvpsForGuest(site.workspaceId, guest.id);

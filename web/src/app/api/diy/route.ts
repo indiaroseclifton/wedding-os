@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
-import { PLAYBOOKS } from "@/lib/data/diy-playbooks";
+import { PLAYBOOKS, getPlaybook } from "@/lib/data/diy-playbooks";
+import { pushDiyBeats } from "@/lib/data/dayof-store";
 import {
   deleteProject,
   getDiy,
@@ -41,6 +42,21 @@ export async function POST(request: Request) {
         chosenSourceId: body.chosenSourceId,
         notes: body.notes,
       });
+      if (status === "committed") {
+        const project = diy.projects.find((p) => p.id === body.id);
+        const book = project ? getPlaybook(project.playbookSlug) : null;
+        if (book) {
+          const beats = (book.timeline || [])
+            .filter((t) => /day of|day before|morning|week of|sat/i.test(t.when + t.what))
+            .map((t, i) => ({
+              time: i === 0 ? "08:00" : "09:00",
+              title: `${book.title}: ${t.what.slice(0, 60)}`,
+              notes: t.when,
+              diySlug: book.slug,
+            }));
+          if (beats.length) await pushDiyBeats(workspace.id, beats);
+        }
+      }
       return NextResponse.json({ diy });
     }
     if (body.action === "recalc") {

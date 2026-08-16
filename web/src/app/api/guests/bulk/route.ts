@@ -25,6 +25,12 @@ export async function POST(request: Request) {
           plusOnes?: number;
           dietary?: string;
           notes?: string;
+          address?: string;
+          city?: string;
+          region?: string;
+          postal?: string;
+          phone?: string;
+          partyName?: string;
         }) => ({
           workspaceId: workspace.id,
           name: String(g.name).trim(),
@@ -36,6 +42,12 @@ export async function POST(request: Request) {
           plusOnes: Math.max(0, Number(g.plusOnes) || 0),
           dietary: g.dietary,
           notes: g.notes,
+          address: g.address,
+          city: g.city,
+          region: g.region,
+          postal: g.postal,
+          phone: g.phone,
+          partyName: g.partyName,
         }))
     );
     return NextResponse.json({ count: created.length, guests: created });

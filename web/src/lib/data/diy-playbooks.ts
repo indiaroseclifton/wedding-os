@@ -37,6 +37,8 @@ export type Playbook = {
   sources: SourceOption[];
   shopping: ShoppingRule[];
   pitfalls: string[];
+  steps?: { title: string; detail: string }[];
+  weekTasks?: { day: string; what: string }[];
 };
 
 export const PLAYBOOKS: Playbook[] = [
@@ -148,6 +150,17 @@ export const PLAYBOOKS: Playbook[] = [
       "Wholesale roses ship tight. They need 24 hours in water to open.",
       "Don’t build everything the morning of. Bouquets and tables the day before; pins the morning of.",
       "Venue may ban real flame. Confirm before you buy 80 tapers.",
+    ],
+    steps: [
+      { title: "Recut", detail: "Angle-cut every stem. Strip leaves that would sit in water." },
+      { title: "Hydrate", detail: "Buckets, flower food, cool room. Overnight before you build." },
+      { title: "Build low", detail: "Tables stay under 14 inches. Bouquets the day before; pins the morning of." },
+    ],
+    weekTasks: [
+      { day: "Tue", what: "Confirm delivery window and fridge space" },
+      { day: "Thu", what: "Wholesale arrives — recut and hydrate" },
+      { day: "Fri", what: "Build bouquets and centerpieces" },
+      { day: "Sat", what: "Pins in the morning; transport in water" },
     ],
   },
   {
@@ -481,6 +494,110 @@ export const PLAYBOOKS: Playbook[] = [
       { id: "card", label: "Weekend cards", unit: "rooms", flat: 20, estEach: 0.4 },
     ],
     pitfalls: ["Pack for rooms, not heads. Two people in a room get one bag."],
+  },
+  {
+    slug: "bar",
+    title: "Bar",
+    summary: "Beer, wine, one signature drink, water — not a full cocktail program you invent at 5pm.",
+    whenDiy: "Venue allows self-serve or a friend with a TAM card. Under 80 guests.",
+    whenHire: "You want a real bartender, liquor liability, or 100+ people drinking at once.",
+    timeline: [
+      { when: "8 weeks out", what: "Decide beer/wine only vs one signature. Check venue rules and ice." },
+      { when: "3 weeks out", what: "Count drinkers (not heads). Order. Borrow tubs and a tablecloth." },
+      { when: "2 days out", what: "Buy ice last. Chill overnight. Print one drink sign." },
+      { when: "Day of", what: "Set bar 90 minutes before guests. Water first, then wine, then beer." },
+    ],
+    recipes: [
+      {
+        id: "simple-bar",
+        name: "Simple bar",
+        forWhat: "Most backyard / hall hybrids",
+        pieces: ["2 beers + 2 wines", "One signature batched in a dispenser", "Water + NA option", "Ice = 1 lb per guest"],
+      },
+    ],
+    sources: [
+      {
+        id: "warehouse",
+        name: "Costco / Total Wine",
+        cost: "low",
+        effort: "mid",
+        lead: "1 week + returns",
+        bestFor: "Case wine and beer you can take back unopened.",
+        watch: "Warm white wine is worse than no wine. Ice is not optional.",
+      },
+      {
+        id: "bartender",
+        name: "Hired bartender + your liquor",
+        cost: "mid",
+        effort: "low",
+        lead: "2–3 months",
+        bestFor: "You want someone else to pour and card.",
+        watch: "They still need your ice, tubs, and a table.",
+      },
+    ],
+    shopping: [
+      { id: "wine", label: "Wine bottles", unit: "bottles", perGuest: 0.4, estEach: 12 },
+      { id: "beer", label: "Beer", unit: "cans", perGuest: 2, estEach: 1.5 },
+      { id: "ice", label: "Ice", unit: "lbs", perGuest: 1, estEach: 0.5 },
+      { id: "na", label: "Water / NA", unit: "bottles", perGuest: 1, estEach: 0.6 },
+    ],
+    pitfalls: ["One signature drink is charming. Four is a second job and a sticky table."],
+    steps: [
+      { title: "Batch", detail: "Mix the signature the morning of. Taste. Label the dispenser." },
+      { title: "Ice first", detail: "Tubs down, ice in, bottles nest. Wine in one, beer in one, water visible." },
+      { title: "Sign", detail: "One card: what’s pouring and where the restrooms are." },
+    ],
+    weekTasks: [
+      { day: "Tue", what: "Finalize drinker count from RSVPs" },
+      { day: "Thu", what: "Warehouse run — keep receipts for returns" },
+      { day: "Sat", what: "Ice + set bar 90 min before guests" },
+    ],
+  },
+  {
+    slug: "cake-table",
+    title: "Cake table",
+    summary: "The display — stand, knife, plates, flowers — separate from who baked it.",
+    whenDiy: "You already have a stand and can style a small table in 20 minutes.",
+    whenHire: "Sculpted cake that needs a florist and a chilled room.",
+    timeline: [
+      { when: "6 weeks out", what: "Pick a table that isn’t in a sun beam. Confirm who cuts." },
+      { when: "2 weeks out", what: "Stand, knife, plates, a small floral or fruit." },
+      { when: "Day of", what: "Set after lunch, before guests. Cake last so it doesn’t melt." },
+    ],
+    recipes: [
+      {
+        id: "small-display",
+        name: "Small display",
+        forWhat: "Photo cake + sheets in the kitchen",
+        pieces: ["One stand", "Knife + server", "Small greens or fruit", "Allergen card"],
+      },
+    ],
+    sources: [
+      {
+        id: "home-stand",
+        name: "Your stand + grocery greens",
+        cost: "low",
+        effort: "low",
+        lead: "1 week",
+        bestFor: "Almost everyone.",
+        watch: "Buttercream in a window = soup. Shade.",
+      },
+    ],
+    shopping: [
+      { id: "stand", label: "Cake stand", unit: "stands", flat: 1, estEach: 25 },
+      { id: "serve", label: "Knife / plates / cards", unit: "kits", flat: 1, estEach: 18 },
+    ],
+    pitfalls: ["Put a name on the cut. Otherwise it sits uncut until 9pm."],
+    steps: [
+      { title: "Shade", detail: "Table out of sun and AC blast." },
+      { title: "Stand + card", detail: "Stand centered, allergen card in front, knife behind." },
+      { title: "Cake last", detail: "Carry it out 20 minutes before photos." },
+    ],
+    weekTasks: [
+      { day: "Wed", what: "Confirm who cuts and when" },
+      { day: "Fri", what: "Pack stand, knife, card, greens" },
+      { day: "Sat", what: "Set table after lunch; cake last" },
+    ],
   },
 ];
 

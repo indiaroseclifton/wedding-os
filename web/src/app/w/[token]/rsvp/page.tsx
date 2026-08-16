@@ -41,6 +41,10 @@ function PublicRsvpInner() {
   const [phone, setPhone] = useState("");
   const [collectAddress, setCollectAddress] = useState(true);
   const [requireAddress, setRequireAddress] = useState(false);
+  const [forHousehold, setForHousehold] = useState(true);
+  const [household, setHousehold] = useState<{ name: string }[]>([]);
+  const [questions, setQuestions] = useState<{ id: string; prompt: string }[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [events, setEvents] = useState<ExtraEvent[]>([]);
   const [eventAnswers, setEventAnswers] = useState<Record<string, { status: string; meal: string }>>(
     {}
@@ -68,6 +72,9 @@ function PublicRsvpInner() {
         setPhone(data.guest.phone || "");
         setCollectAddress(data.collectAddress !== false);
         setRequireAddress(Boolean(data.requireAddress));
+        setHousehold(data.household || []);
+        setQuestions(data.questions || []);
+        setAnswers(data.guest.answers || {});
         const extras: ExtraEvent[] = data.events || [];
         setEvents(extras);
         const next: Record<string, { status: string; meal: string }> = {};
@@ -121,6 +128,8 @@ function PublicRsvpInner() {
         region,
         postal,
         phone,
+        forHousehold: household.length > 1 && forHousehold,
+        answers,
         eventRsvps: events.map((ev) => ({
           eventId: ev.id,
           status: eventAnswers[ev.id]?.status || "YES",
@@ -205,6 +214,16 @@ function PublicRsvpInner() {
         ) : (
           <form onSubmit={submit} className="mt-6 space-y-6">
             <p className="text-sm font-medium">{name}</p>
+            {household.length > 1 && (
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={forHousehold}
+                  onChange={(e) => setForHousehold(e.target.checked)}
+                />
+                Same answer for {household.map((h) => h.name).join(", ")}
+              </label>
+            )}
             <fieldset className="space-y-2">
               <legend className="text-sm font-medium">Wedding day</legend>
               {[
@@ -362,6 +381,21 @@ function PublicRsvpInner() {
                 </fieldset>
               );
             })}
+
+            {questions.length > 0 && (
+              <div className="space-y-3 border-t border-stone-200 pt-4">
+                {questions.map((q) => (
+                  <label key={q.id} className="block text-sm">
+                    {q.prompt}
+                    <input
+                      value={answers[q.id] || ""}
+                      onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
+                      className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
 
             <label className="block text-sm">
               Note for the couple

@@ -5,6 +5,7 @@ import { getWorkspaceMeta } from "@/lib/data/store";
 import { getTravel } from "@/lib/data/travel-store";
 import { getRegistry } from "@/lib/data/registry-store";
 import { getDayOf } from "@/lib/data/dayof-store";
+import { listEvents } from "@/lib/data/events-store";
 import { slotTitle, slotVisible } from "@/lib/data/run-of-show";
 import { formatRange } from "@/lib/data/run-of-show";
 import { DEMO_WORKSPACE } from "@/lib/data/workspace";
@@ -33,6 +34,9 @@ export default async function WeddingSitePage({
   const travel = site.showTravel ? await getTravel(site.workspaceId) : null;
   const registry = site.showRegistry ? await getRegistry(site.workspaceId) : null;
   const dayOf = await getDayOf(site.workspaceId);
+  const extraEvents = (await listEvents(site.workspaceId)).filter(
+    (e) => e.type !== "Wedding day" && (e.date || e.location)
+  );
   const guestSlots = (dayOf.schedule || []).filter((s) => slotVisible(s, "guests"));
   const names = meta.coupleNames || meta.name;
   const date = prettyDate(meta.weddingDate);
@@ -102,6 +106,24 @@ export default async function WeddingSitePage({
                 </li>
               ))}
             </ol>
+          </section>
+        )}
+
+        {extraEvents.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xs font-medium uppercase tracking-wide text-stone-500">
+              Also this weekend
+            </h2>
+            <ul className="mt-3 space-y-2">
+              {extraEvents.map((ev) => (
+                <li key={ev.id} className="rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm">
+                  <p className="font-medium">{ev.name}</p>
+                  <p className="text-xs text-stone-500">
+                    {[ev.date, ev.location].filter(Boolean).join(" · ")}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 

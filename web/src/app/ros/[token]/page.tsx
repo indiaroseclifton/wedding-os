@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { ScheduleView } from "@/components/run-of-show/ScheduleView";
-import { getDayOfByShareToken } from "@/lib/data/dayof-store";
+import { getDayOfByShareToken, slotsForPlan } from "@/lib/data/dayof-store";
 import { getWorkspaceMeta } from "@/lib/data/store";
 import { DEMO_WORKSPACE } from "@/lib/data/workspace";
 import { AUDIENCES, type Audience } from "@/lib/data/run-of-show";
@@ -16,13 +16,14 @@ export default async function PublicRunOfShowPage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ for?: string }>;
+  searchParams: Promise<{ for?: string; plan?: string }>;
 }) {
   const { token } = await params;
   const query = await searchParams;
   const dayOf = await getDayOfByShareToken(token);
   if (!dayOf) notFound();
   const meta = await getWorkspaceMeta(dayOf.workspaceId, DEMO_WORKSPACE.name);
+  const plan = query.plan === "rain" ? "rain" : "main";
   const view = asView(query.for);
   const label =
     view === "all" ? "Full run of show" : view === "guests" ? "Day-of" : `${view} call sheet`;
@@ -42,7 +43,7 @@ export default async function PublicRunOfShowPage({
         <PrintButton />
       </div>
       <ScheduleView
-        slots={dayOf.schedule || []}
+        slots={slotsForPlan(dayOf, plan)}
         view={view}
         showNotes={view !== "guests"}
       />

@@ -14,6 +14,7 @@ type Vendor = {
   website?: string;
   notes?: string;
   contractUrl?: string;
+  inquiries?: { id: string; at: string; direction: "out" | "in"; body: string }[];
 };
 
 type Payment = {
@@ -41,6 +42,7 @@ export default function VendorDetailPage() {
   const [finalAmt, setFinalAmt] = useState("");
   const [finalDue, setFinalDue] = useState("");
   const [finalPaid, setFinalPaid] = useState(false);
+  const [threadBody, setThreadBody] = useState("");
   const [busy, setBusy] = useState(false);
 
   function apply(data: { vendor?: Vendor; payments?: Payment[] }) {
@@ -271,6 +273,47 @@ export default function VendorDetailPage() {
           )}
         </ul>
       </div>
+
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (!threadBody.trim()) return;
+          const res = await fetch(`/api/vendors/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "note", body: threadBody, direction: "out" }),
+          });
+          if (res.ok) {
+            apply(await res.json());
+            setThreadBody("");
+          }
+        }}
+        className="space-y-2 rounded-xl border border-slate-200 bg-white p-4"
+      >
+        <p className="text-sm font-semibold">Inquiry thread</p>
+        <ul className="space-y-2 text-sm">
+          {(vendor.inquiries || []).map((m) => (
+            <li key={m.id} className="rounded-lg bg-slate-50 px-3 py-2">
+              <p className="text-[11px] text-slate-500">
+                {m.direction === "in" ? "Them" : "You"} · {m.at.slice(0, 10)}
+              </p>
+              <p>{m.body}</p>
+            </li>
+          ))}
+          {!(vendor.inquiries || []).length && (
+            <li className="text-xs text-slate-500">Paste emails you sent or they replied.</li>
+          )}
+        </ul>
+        <textarea
+          value={threadBody}
+          onChange={(e) => setThreadBody(e.target.value)}
+          rows={2}
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+        />
+        <button type="submit" className="text-xs underline">
+          Add note
+        </button>
+      </form>
 
       <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
         <p className="font-medium">Coordination next</p>

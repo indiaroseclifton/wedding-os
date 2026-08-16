@@ -10,6 +10,9 @@ export type BudgetLine = {
   label: string;
   planned: number;
   actual: number;
+  hireEstimate?: number;
+  diyEstimate?: number;
+  path?: "hire" | "diy" | "undecided";
 };
 
 export type StoredBudget = {
@@ -66,15 +69,35 @@ export async function saveBudget(
 
 export async function addBudgetLine(
   workspaceId: string,
-  input: { category: string; label: string; planned?: number; actual?: number }
+  input: {
+    category: string;
+    label: string;
+    planned?: number;
+    actual?: number;
+    hireEstimate?: number;
+    diyEstimate?: number;
+    path?: BudgetLine["path"];
+  }
 ) {
   const budget = await getBudget(workspaceId);
+  const path = input.path || "undecided";
+  const hire = Number(input.hireEstimate) || 0;
+  const diy = Number(input.diyEstimate) || 0;
+  const planned =
+    path === "hire" && hire
+      ? hire
+      : path === "diy" && diy
+        ? diy
+        : Number(input.planned) || 0;
   const line: BudgetLine = {
     id: randomUUID(),
     category: input.category,
     label: input.label,
-    planned: Number(input.planned) || 0,
+    planned,
     actual: Number(input.actual) || 0,
+    hireEstimate: hire || undefined,
+    diyEstimate: diy || undefined,
+    path,
   };
   return saveBudget(workspaceId, { lines: [...budget.lines, line] });
 }
@@ -82,7 +105,7 @@ export async function addBudgetLine(
 export async function updateBudgetLine(
   workspaceId: string,
   id: string,
-  patch: Partial<Pick<BudgetLine, "category" | "label" | "planned" | "actual">>
+  patch: Partial<Pick<BudgetLine, "category" | "label" | "planned" | "actual" | "hireEstimate" | "diyEstimate" | "path">>
 ) {
   const budget = await getBudget(workspaceId);
   return saveBudget(workspaceId, {

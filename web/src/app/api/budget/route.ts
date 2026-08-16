@@ -61,6 +61,9 @@ export async function POST(request: Request) {
         label,
         planned: body.planned,
         actual: body.actual,
+        hireEstimate: body.hireEstimate,
+        diyEstimate: body.diyEstimate,
+        path: body.path,
       });
       return NextResponse.json({ budget });
     }
@@ -70,6 +73,9 @@ export async function POST(request: Request) {
         label: body.label,
         planned: body.planned == null ? undefined : Number(body.planned) || 0,
         actual: body.actual == null ? undefined : Number(body.actual) || 0,
+        hireEstimate: body.hireEstimate == null ? undefined : Number(body.hireEstimate) || 0,
+        diyEstimate: body.diyEstimate == null ? undefined : Number(body.diyEstimate) || 0,
+        path: body.path,
       });
       return NextResponse.json({ budget });
     }

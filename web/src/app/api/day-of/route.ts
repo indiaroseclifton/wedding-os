@@ -3,7 +3,9 @@ import { requireCoupleApi, requireSession } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import {
   addScheduleSlot,
+  addSlotComment,
   addUpdate,
+  copyMainToRain,
   getDayOf,
   patchCheckIn,
   patchScheduleSlot,
@@ -63,6 +65,7 @@ export async function POST(request: Request) {
       guestTitle: body.guestTitle ? String(body.guestTitle) : undefined,
       location: body.location ? String(body.location) : undefined,
       lead: body.lead ? String(body.lead) : undefined,
+      assignee: body.assignee ? String(body.assignee) : undefined,
       notes: body.notes ? String(body.notes) : undefined,
       audiences: parseAudiences(body.audiences) || ["couple", "party", "vendor", "guests"],
     });
@@ -78,6 +81,7 @@ export async function POST(request: Request) {
       guestTitle: body.guestTitle,
       location: body.location,
       lead: body.lead,
+      assignee: body.assignee,
       notes: body.notes,
       audiences: parseAudiences(body.audiences),
     });
@@ -102,6 +106,29 @@ export async function POST(request: Request) {
     const couple = await requireCoupleApi();
     if (!couple.ok) return couple.response;
     const dayOf = await resetDefaultSchedule(workspace.id);
+    return NextResponse.json({ dayOf });
+  }
+  if (body.action === "rain_copy") {
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+    const dayOf = await copyMainToRain(workspace.id);
+    return NextResponse.json({ dayOf });
+  }
+  if (body.action === "plan") {
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+    const dayOf = await saveDayOf(workspace.id, {
+      activePlan: body.plan === "rain" ? "rain" : "main",
+    });
+    return NextResponse.json({ dayOf });
+  }
+  if (body.action === "comment") {
+    const dayOf = await addSlotComment(
+      workspace.id,
+      String(body.slotId),
+      String(body.author || "Couple"),
+      String(body.body || "")
+    );
     return NextResponse.json({ dayOf });
   }
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });

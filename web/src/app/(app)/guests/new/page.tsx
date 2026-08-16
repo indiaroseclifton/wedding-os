@@ -29,6 +29,7 @@ export default function NewGuestPage() {
           region: form.get("region") || undefined,
           postal: form.get("postal") || undefined,
           phone: form.get("phone") || undefined,
+          partyName: form.get("partyName") || undefined,
           notes: form.get("notes") || undefined,
         }),
       });
@@ -108,6 +109,10 @@ export default function NewGuestPage() {
             <input name="phone" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
           </label>
         </div>
+        <label className="block text-sm">
+          <span className="font-medium text-slate-800">Household / party name</span>
+          <input name="partyName" placeholder="The Garcias" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </label>
         <label className="block text-sm">
           <span className="font-medium text-slate-800">Dietary</span>
           <input name="dietary" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />

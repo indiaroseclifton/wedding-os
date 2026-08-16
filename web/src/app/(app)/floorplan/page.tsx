@@ -24,6 +24,7 @@ export default function FloorPlanPage() {
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
+  const [printCards, setPrintCards] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const railDrag = useRef<{ x: number; y: number; ids: string[] } | null>(null);
 
@@ -176,6 +177,13 @@ export default function FloorPlanPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setPrintCards((v) => !v)}
+            className="rounded-lg border border-slate-300 px-3 py-2 text-sm print:hidden"
+          >
+            {printCards ? "Show room" : "Place cards"}
+          </button>
           <PrintButton label="Print room" />
         </div>
       </div>
@@ -356,20 +364,40 @@ export default function FloorPlanPage() {
       )}
 
       <div className="hidden print:block">
-        <h2 className="mb-2 text-lg font-semibold">Who sits where</h2>
-        <ul className="columns-2 gap-6 text-sm">
-          {tables.map((t) => (
-            <li key={t.id} className="mb-3 break-inside-avoid">
-              <p className="font-semibold">{t.name}</p>
-              <p className="text-slate-600">
-                {guests
-                  .filter((g) => g.tableLabel === t.name)
-                  .map((g) => g.name)
-                  .join(", ") || "—"}
-              </p>
-            </li>
-          ))}
-        </ul>
+        {printCards ? (
+          <div className="grid grid-cols-2 gap-4">
+            {guests
+              .filter((g) => g.tableLabel)
+              .flatMap((g) =>
+                Array.from({ length: seatWeight(g) }, (_, i) => (
+                  <div
+                    key={`${g.id}-${i}`}
+                    className="flex h-28 flex-col items-center justify-center rounded-xl border border-slate-300"
+                  >
+                    <p className="font-serif text-lg">{i === 0 ? g.name : `${g.name} +${i}`}</p>
+                    <p className="text-xs text-slate-500">{g.tableLabel}</p>
+                  </div>
+                ))
+              )}
+          </div>
+        ) : (
+          <>
+            <h2 className="mb-2 text-lg font-semibold">Who sits where</h2>
+            <ul className="columns-2 gap-6 text-sm">
+              {tables.map((t) => (
+                <li key={t.id} className="mb-3 break-inside-avoid">
+                  <p className="font-semibold">{t.name}</p>
+                  <p className="text-slate-600">
+                    {guests
+                      .filter((g) => g.tableLabel === t.name)
+                      .map((g) => g.name)
+                      .join(", ") || "—"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
     </div>
   );

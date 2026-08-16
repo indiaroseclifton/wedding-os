@@ -24,6 +24,8 @@ type Playbook = {
   recipes: Recipe[];
   sources: Source[];
   pitfalls: string[];
+  steps?: { title: string; detail: string }[];
+  weekTasks?: { day: string; what: string }[];
 };
 type Shop = { id: string; label: string; qty: number; unit: string; bought: boolean; estEach?: number; note?: string };
 type Project = {
@@ -113,6 +115,37 @@ export default function DiyPlaybookPage() {
           <p className="mt-1 text-slate-600">{book.whenHire}</p>
         </div>
       </div>
+
+      {book.steps && book.steps.length > 0 && (
+        <div>
+          <h2 className="text-sm font-semibold">How it looks</h2>
+          <ol className="mt-3 grid gap-3 sm:grid-cols-3">
+            {book.steps.map((s, i) => (
+              <li key={s.title} className="rounded-xl border border-slate-200 bg-white p-4">
+                <div className="mb-2 flex h-16 items-center justify-center rounded-lg bg-slate-100">
+                  <span className="text-2xl text-slate-400">{i + 1}</span>
+                </div>
+                <p className="text-sm font-medium">{s.title}</p>
+                <p className="mt-1 text-xs text-slate-600">{s.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {book.weekTasks && book.weekTasks.length > 0 && (
+        <div>
+          <h2 className="text-sm font-semibold">Week-of</h2>
+          <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+            {book.weekTasks.map((t) => (
+              <li key={t.day + t.what} className="flex gap-3 px-4 py-2 text-sm">
+                <span className="w-10 font-medium text-slate-500">{t.day}</span>
+                <span>{t.what}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <form
         onSubmit={async (e) => {
