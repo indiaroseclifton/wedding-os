@@ -7,7 +7,7 @@ const TILES = [
   { href: "/timeline", title: "Timeline", line: "The long arc from now to the day.", photo: "/brand/garden.jpg" },
   { href: "/decisions/path", title: "Hire or make", line: "Flowers, tables, cake — pick a lane.", photo: "/brand/flowers.jpg" },
   { href: "/diy", title: "DIY studio", line: "Playbooks so you don’t vanish into YouTube.", photo: "/brand/flowers.jpg" },
-  { href: "/planning/party", title: "Wedding party", line: "Bridesmaids, groomsmen, attire, jobs.", photo: "/brand/setting.jpg" },
+  { href: "/traditions", title: "Traditions", line: "Faith and culture — these change the checklist.", photo: "/brand/candles.jpg" },
 ];
 
 export default function PlanningPage() {

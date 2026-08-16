@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { actionFor } from "@/lib/data/checklist-actions";
 
-type Item = { id: string; phase: string; title: string; done: boolean; custom?: boolean };
+type Item = { id: string; phase: string; title: string; done: boolean; custom?: boolean; source?: string };
 type Phase = { id: string; label: string };
 
 export default function ChecklistPage() {
@@ -16,7 +16,8 @@ export default function ChecklistPage() {
   const [title, setTitle] = useState("");
   const [phase, setPhase] = useState("1");
   const [filter, setFilter] = useState("all");
-  const [lane, setLane] = useState<"all" | "couple" | "party">("all");
+  const [lane, setLane] = useState<"all" | "couple" | "party" | "faith">("all");
+  const [faithLabel, setFaithLabel] = useState("None");
   const [note, setNote] = useState<string | null>(null);
 
   async function load() {
@@ -25,6 +26,7 @@ export default function ChecklistPage() {
       const data = await res.json();
       setItems(data.checklist?.items || []);
       setPhases(data.phases || []);
+      if (data.faithLabel) setFaithLabel(data.faithLabel);
     }
   }
 
@@ -52,7 +54,9 @@ export default function ChecklistPage() {
   const visible = items.filter((i) => {
     if (filter !== "all" && i.phase !== filter) return false;
     if (lane === "all") return true;
+    if (lane === "faith") return i.source === "faith";
     const a = actionFor(i.title);
+    if (i.source === "faith") return false;
     return (a?.lane || "couple") === lane;
   });
 
@@ -84,7 +88,7 @@ export default function ChecklistPage() {
       {note && <p className="text-xs text-moss">{note}</p>}
 
       <div className="flex flex-wrap gap-2">
-        {(["all", "couple", "party"] as const).map((l) => (
+        {(["all", "couple", "party", "faith"] as const).map((l) => (
           <button
             key={l}
             type="button"
@@ -93,10 +97,19 @@ export default function ChecklistPage() {
               lane === l ? "bg-moss text-ivory" : "border border-line bg-surface"
             }`}
           >
-            {l === "all" ? "All" : l === "party" ? "Wedding party" : "Couple"}
+            {l === "all" ? "All" : l === "party" ? "Wedding party" : l === "faith" ? `Faith · ${faithLabel}` : "Couple"}
           </button>
         ))}
       </div>
+      {lane === "faith" && (
+        <p className="text-sm text-muted">
+          These items come from <strong>{faithLabel}</strong> in{" "}
+          <Link href="/settings" className="underline">
+            Settings → Ceremony & faith
+          </Link>
+          . Change the tradition there and they update here.
+        </p>
+      )}
 
       <div className="flex flex-wrap gap-2">
         <button

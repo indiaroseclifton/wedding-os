@@ -33,6 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${fraunces.variable} ${geist.variable}`}>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `try{var m=document.cookie.match(/wedding_os_theme=([^;]+)/);if(m)document.documentElement.dataset.theme=m[1]}catch(e){}`,
+        }}
+      />
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">{children}</body>
     </html>
   );

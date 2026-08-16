@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CommandPalette } from "@/components/search/CommandPalette";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import {
   MORE_ROOMS,
   NAV_ITEMS,
@@ -140,6 +141,7 @@ export function AppShell({
 
   return (
     <div className="relative min-h-screen bg-paper lg:flex">
+      <ThemeProvider />
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <img src="/brand/tablescape.jpg" alt="" className="h-full w-full object-cover opacity-[0.14]" />
         <div className="absolute inset-0 bg-paper/70" />

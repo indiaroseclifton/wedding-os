@@ -1,5 +1,6 @@
 import path from "path";
 import { randomUUID } from "crypto";
+import type { WorkspacePrefs } from "@/lib/preferences";
 import {
   dataDir,
   ensureFile,
@@ -509,13 +510,18 @@ export async function remapGuestTableLabel(
   await writeJson(guestsFile, rows);
 }
 
+export type WorkspaceMetaRow = {
+  name?: string;
+  weddingDate?: string;
+  location?: string;
+  coupleNames?: string;
+  coverUrl?: string;
+} & WorkspacePrefs;
+
 export async function getWorkspaceMeta(workspaceId: string, fallbackName: string) {
   await ensureFile(workspaceMetaFile, "{}");
   const raw = await readText(workspaceMetaFile);
-  const all = JSON.parse(raw || "{}") as Record<
-    string,
-    { name?: string; weddingDate?: string; location?: string; coupleNames?: string; coverUrl?: string }
-  >;
+  const all = JSON.parse(raw || "{}") as Record<string, WorkspaceMetaRow>;
   if (!all[workspaceId]) {
     all[workspaceId] = {
       name: fallbackName,
@@ -523,6 +529,8 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
       weddingDate: "2026-10-17",
       location: "Atlanta, GA",
       coverUrl: "/brand/tablescape.jpg",
+      theme: "linen",
+      faith: "none",
     };
     await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
   }
@@ -544,6 +552,14 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
     row.coverUrl = "/brand/tablescape.jpg";
     dirty = true;
   }
+  if (!row.theme) {
+    row.theme = "linen";
+    dirty = true;
+  }
+  if (!row.faith) {
+    row.faith = "none";
+    dirty = true;
+  }
   if (dirty) {
     all[workspaceId] = row;
     await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
@@ -555,19 +571,26 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
     location: row.location,
     coupleNames: row.coupleNames,
     coverUrl: row.coverUrl,
+    theme: row.theme || "linen",
+    faith: row.faith || "none",
+    faithPacks: row.faithPacks || [],
+    ceremonyStyle: row.ceremonyStyle,
+    formality: row.formality,
+    weekend: row.weekend,
+    partnerA: row.partnerA,
+    partnerB: row.partnerB,
+    kidsWelcome: row.kidsWelcome,
+    unplugged: row.unplugged,
+    defaultPlusOnes: row.defaultPlusOnes,
+    timezone: row.timezone,
+    guestSitePublic: row.guestSitePublic,
   };
 }
 
-export async function saveWorkspaceMeta(
-  workspaceId: string,
-  patch: { name?: string; weddingDate?: string; location?: string; coupleNames?: string; coverUrl?: string }
-) {
+export async function saveWorkspaceMeta(workspaceId: string, patch: Partial<WorkspaceMetaRow>) {
   await ensureFile(workspaceMetaFile, "{}");
   const raw = await readText(workspaceMetaFile);
-  const all = JSON.parse(raw || "{}") as Record<
-    string,
-    { name?: string; weddingDate?: string; location?: string; coupleNames?: string; coverUrl?: string }
-  >;
+  const all = JSON.parse(raw || "{}") as Record<string, WorkspaceMetaRow>;
   all[workspaceId] = { ...all[workspaceId], ...patch };
   await writeText(workspaceMetaFile, JSON.stringify(all, null, 2));
   return all[workspaceId];

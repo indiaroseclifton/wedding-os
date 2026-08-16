@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
-import { ensureDemoWorkspace } from "@/lib/data/workspace";
+import { ensureDemoWorkspace, loadWorkspaceMeta } from "@/lib/data/workspace";
 import {
   PHASES,
   addChecklistItem,
@@ -10,13 +10,23 @@ import {
 } from "@/lib/data/checklist-store";
 import { addTimelineItem, listTimeline } from "@/lib/data/timeline-store";
 import { requiredString, ValidationError } from "@/lib/validation";
+import { syncFaithToPlanning } from "@/lib/data/sync-faith";
+import { FAITHS } from "@/lib/preferences";
 
 export async function GET() {
   const access = await requireCoupleApi();
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
+  const meta = await loadWorkspaceMeta(workspace.id, workspace.name);
+  await syncFaithToPlanning(workspace.id, meta.faith, meta.faithPacks);
   const checklist = await getChecklist(workspace.id);
-  return NextResponse.json({ checklist, phases: PHASES });
+  const faith = FAITHS.find((f) => f.id === meta.faith);
+  return NextResponse.json({
+    checklist,
+    phases: PHASES,
+    faith: meta.faith,
+    faithLabel: faith?.label || "None",
+  });
 }
 
 export async function POST(request: Request) {

@@ -96,6 +96,43 @@ export const PACKS: TraditionPack[] = [
       { title: "Recessional and photo timing", timing: "After ceremony" },
     ],
   },
+  {
+    id: "catholic",
+    name: "Catholic",
+    description: "Nuptial Mass and parish requirements",
+    items: [
+      { title: "Meet with the priest / deacon", timing: "Planning" },
+      { title: "Pre-Cana or marriage prep", timing: "6–8 months" },
+      { title: "Baptismal certificates", timing: "Planning" },
+      { title: "Confirm Mass vs. ceremony-only", timing: "Planning" },
+      { title: "Readers, gifts, and music with the parish", timing: "2–3 months" },
+      { title: "Unity rituals the church allows", timing: "Ceremony" },
+    ],
+  },
+  {
+    id: "muslim",
+    name: "Muslim",
+    description: "Nikah and common reception notes",
+    items: [
+      { title: "Book an imam / officiant for the Nikah", timing: "Planning" },
+      { title: "Mahr conversation and paperwork", timing: "Planning" },
+      { title: "Nikah contract / witnesses", timing: "Ceremony" },
+      { title: "Walima timing and guest list", timing: "Reception" },
+      { title: "Prayer space and gender seating if needed", timing: "Venue" },
+      { title: "Halal catering notes", timing: "Planning" },
+    ],
+  },
+  {
+    id: "secular",
+    name: "Secular / civil",
+    description: "License and a ceremony with no faith requirements",
+    items: [
+      { title: "Decide who officiates (friend vs. registrar)", timing: "Planning" },
+      { title: "Marriage license window for your county", timing: "2–3 months" },
+      { title: "Write a ceremony script", timing: "1 month" },
+      { title: "Readings or music without liturgy", timing: "Ceremony" },
+    ],
+  },
 ];
 
 export type StoredTraditions = {

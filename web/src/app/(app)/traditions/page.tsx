@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import Link from "next/link";
 
 type Pack = { id: string; name: string; description: string };
 type Item = { id: string; title: string; timing?: string; done: boolean };
@@ -86,11 +88,16 @@ export default function TraditionsPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Traditions</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Cultural checklists that can push open items onto the master timeline.
+          <h1 className="font-serif text-4xl">Traditions</h1>
+          <p className="mt-1 text-sm text-muted">
+            Pick a faith in{" "}
+            <Link href="/settings" className="underline">
+              Settings
+            </Link>{" "}
+            and these land on the master checklist. Or add a pack here.
           </p>
         </div>
         {items.length > 0 && (

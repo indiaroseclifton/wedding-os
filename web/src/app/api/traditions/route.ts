@@ -9,6 +9,9 @@ import {
   toggleTraditionItem,
 } from "@/lib/data/traditions-store";
 import { addTimelineItem, listTimeline } from "@/lib/data/timeline-store";
+import { syncFaithToPlanning } from "@/lib/data/sync-faith";
+import { getWorkspaceMeta } from "@/lib/data/store";
+import { DEMO_WORKSPACE } from "@/lib/data/workspace";
 
 export async function GET() {
   const access = await requireCoupleApi();
@@ -26,6 +29,11 @@ export async function POST(request: Request) {
 
   if (body.action === "apply_pack") {
     const traditions = await applyPack(workspace.id, body.packId);
+    const meta = await getWorkspaceMeta(workspace.id, DEMO_WORKSPACE.name);
+    await syncFaithToPlanning(workspace.id, meta.faith, [
+      ...(meta.faithPacks || []),
+      String(body.packId),
+    ]);
     return NextResponse.json({ traditions });
   }
   if (body.action === "toggle") {

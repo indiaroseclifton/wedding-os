@@ -12,6 +12,7 @@ import { GuestFilters } from "./GuestFilters";
 import { NudgePanel } from "./NudgePanel";
 import { hasMailingAddress } from "@/lib/data/guest-mail";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { ImportContacts } from "@/components/guests/ImportContacts";
 
 export default async function GuestsPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -80,6 +81,7 @@ export default async function GuestsPage() {
           </Link>
         </div>
       </div>
+      <ImportContacts />
 
       {guests.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

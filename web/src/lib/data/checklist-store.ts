@@ -11,6 +11,8 @@ export type ChecklistItem = {
   title: string;
   done: boolean;
   custom?: boolean;
+  source?: "starter" | "faith" | "custom";
+  packId?: string;
 };
 
 export type StoredChecklist = {
@@ -140,7 +142,7 @@ export async function patchChecklistItem(
 
 export async function addChecklistItem(
   workspaceId: string,
-  input: { title: string; phase?: string }
+  input: { title: string; phase?: string; source?: ChecklistItem["source"]; packId?: string }
 ) {
   const current = await getChecklist(workspaceId);
   const item: ChecklistItem = {
@@ -148,9 +150,31 @@ export async function addChecklistItem(
     phase: input.phase || "1",
     title: input.title,
     done: false,
-    custom: true,
+    custom: input.source === "custom" || !input.source,
+    source: input.source || "custom",
+    packId: input.packId,
   };
   return saveChecklist(workspaceId, { items: [...current.items, item] });
+}
+
+export async function ensureFaithItems(
+  workspaceId: string,
+  items: { title: string; phase: string; packId: string }[]
+) {
+  const current = await getChecklist(workspaceId);
+  const have = new Set(current.items.map((i) => i.title));
+  const extra: ChecklistItem[] = items
+    .filter((i) => !have.has(i.title))
+    .map((i) => ({
+      id: randomUUID(),
+      phase: i.phase,
+      title: i.title,
+      done: false,
+      source: "faith" as const,
+      packId: i.packId,
+    }));
+  if (!extra.length) return current;
+  return saveChecklist(workspaceId, { items: [...current.items, ...extra] });
 }
 
 export async function deleteChecklistItem(workspaceId: string, id: string) {
