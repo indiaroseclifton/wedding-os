@@ -675,6 +675,7 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
     enterHow: row.enterHow,
     gatheringDate: row.gatheringDate,
     siteMode: row.siteMode,
+    motion: row.motion,
   };
 }
 

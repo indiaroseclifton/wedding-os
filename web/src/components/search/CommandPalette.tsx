@@ -20,7 +20,7 @@ const ROOMS: Hit[] = [
   { title: "Integrations", href: "/integrations", type: "Room" },
 ];
 
-export function CommandPalette() {
+export function CommandPalette({ tone = "paper" }: { tone?: "paper" | "onPhoto" }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -87,7 +87,11 @@ export function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden items-center gap-2 rounded-lg border border-line px-2.5 py-1.5 text-xs text-muted sm:inline-flex"
+        className={`hidden items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs sm:inline-flex ${
+          tone === "onPhoto"
+            ? "border border-ink/15 bg-surface/70 text-ink-soft backdrop-blur-md"
+            : "border border-line text-muted"
+        }`}
       >
         Search
         <kbd className="rounded border border-line bg-paper px-1.5 py-0.5 text-[10px] font-medium text-ink-soft">

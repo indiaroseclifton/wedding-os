@@ -70,6 +70,12 @@ export const TYPE_SCALES = [
   { id: "large", label: "Large" },
 ] as const;
 
+export const MOTION = [
+  { id: "off", label: "Still" },
+  { id: "calm", label: "Calm" },
+  { id: "lively", label: "Lively" },
+] as const;
+
 export type WorkspacePrefs = {
   theme?: ThemeId;
   faith?: FaithId;
@@ -94,6 +100,7 @@ export type WorkspacePrefs = {
   glass?: "low" | "mid" | "high";
   density?: "roomy" | "regular" | "compact";
   typeScale?: "small" | "regular" | "large";
+  motion?: "off" | "calm" | "lively";
 };
 
 export function packsForFaith(faith?: string, extra?: string[]) {

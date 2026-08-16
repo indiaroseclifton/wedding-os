@@ -257,9 +257,9 @@ body {
 }
 
 .glass-panel {
-  background: color-mix(in srgb, var(--color-surface) 58%, transparent);
-  border: 1px solid color-mix(in srgb, #ffffff 65%, var(--color-line));
-  box-shadow: 0 18px 48px -28px rgba(18, 17, 15, 0.35);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 18px 48px -28px rgba(18, 17, 15, 0.22);
 }
 
 @supports ((-webkit-backdrop-filter: blur(20px)) or (backdrop-filter: blur(20px))) {
@@ -308,6 +308,45 @@ body {
 
 .skip-link:focus {
   top: 0.75rem;
+}
+
+.rail-wash {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-moss) 68%, transparent) 0%,
+    color-mix(in srgb, var(--color-moss) 86%, #0c0d0b) 100%
+  );
+}
+
+.home-hero-img {
+  transform: scale(1.06);
+  animation: home-ken 16s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes home-ken {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+[data-motion="lively"] .home-hero-img {
+  animation-duration: 10s;
+}
+
+[data-motion="off"] .home-hero-img {
+  animation: none;
+  transform: none;
+}
+
+[data-motion="off"] *,
+[data-motion="off"] *::before,
+[data-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }
 
 :focus-visible {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { COVER_PRESETS, DENSITY, FAITHS, GLASS_LEVELS, PACK_OPTIONS, THEMES, TYPE_SCALES } from "@/lib/preferences";
+import { COVER_PRESETS, DENSITY, FAITHS, GLASS_LEVELS, MOTION, PACK_OPTIONS, THEMES, TYPE_SCALES } from "@/lib/preferences";
 import { applyLook, applyTheme } from "@/components/theme/ThemeProvider";
 import { ENTER_CARDS, SHAPE_CARDS, type EnterHow, type WeddingShape } from "@/lib/shape";
 
@@ -23,6 +23,7 @@ export default function SettingsPage() {
     glass: "mid" as "low" | "mid" | "high",
     density: "regular" as "roomy" | "regular" | "compact",
     typeScale: "regular" as "small" | "regular" | "large",
+    motion: "calm" as "off" | "calm" | "lively",
     faith: "none",
     faithPacks: [] as string[],
     ceremonyStyle: "both",
@@ -61,6 +62,7 @@ export default function SettingsPage() {
           glass: data.meta.glass || "mid",
           density: data.meta.density || "regular",
           typeScale: data.meta.typeScale || "regular",
+          motion: data.meta.motion || "calm",
           faith: data.meta.faith || "none",
           faithPacks: data.meta.faithPacks || [],
           ceremonyStyle: data.meta.ceremonyStyle || "both",
@@ -84,6 +86,7 @@ export default function SettingsPage() {
             glass: data.meta.glass,
             density: data.meta.density,
             typeScale: data.meta.typeScale,
+            motion: data.meta.motion,
           });
         }
       })
@@ -261,7 +264,7 @@ export default function SettingsPage() {
               type="button"
               onClick={() => {
                 set("theme", t.id);
-                applyLook({ theme: t.id, glass: form.glass, density: form.density, typeScale: form.typeScale });
+                applyLook({ theme: t.id, glass: form.glass, density: form.density, typeScale: form.typeScale, motion: form.motion });
               }}
               className={`rounded-xl border p-3 text-left ${
                 form.theme === t.id ? "border-moss ring-2 ring-moss/30" : "border-line"
@@ -340,6 +343,27 @@ export default function SettingsPage() {
               </button>
             ))}
           </div>
+        </div>
+        <div>
+          <p className="mb-1 text-xs text-muted">Motion</p>
+          <div className="flex flex-wrap gap-2">
+            {MOTION.map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => {
+                  set("motion", d.id);
+                  applyLook({ motion: d.id });
+                }}
+                className={`min-h-11 rounded-full px-3 py-1.5 text-xs ${
+                  form.motion === d.id ? "bg-moss text-ivory" : "border border-line"
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted">Still stops the home photo and all motion. Calm is the desk. Lively is a little more.</p>
         </div>
         <p className="text-xs text-muted">Cover photo</p>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">

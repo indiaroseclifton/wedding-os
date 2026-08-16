@@ -7,7 +7,6 @@ import { CommandPalette } from "@/components/search/CommandPalette";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { MORE_ROOMS, NAV_ITEMS, VISUAL_ROOMS, firstNames, shortWeddingDate } from "@/lib/visual-rooms";
 import { roomVisible } from "@/lib/shape";
-
 import { Icon } from "@/components/icons";
 import { RoomTile } from "@/components/layout/RoomTile";
 import { DeskNav, currentRoomLabel } from "@/components/layout/DeskNav";
@@ -23,6 +22,8 @@ export function AppShell({
   location,
   coverUrl,
   shape,
+  guestCount,
+  vendorCount,
   children,
 }: {
   userName: string;
@@ -31,6 +32,8 @@ export function AppShell({
   location?: string;
   coverUrl?: string;
   shape?: string;
+  guestCount?: number;
+  vendorCount?: number;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -39,6 +42,9 @@ export function AppShell({
   const [rooms, setRooms] = useState(false);
   const names = firstNames(coupleNames, "Alex & Jordan");
   const date = shortWeddingDate(weddingDate);
+  const home = pathname === "/dashboard" || pathname === "/";
+  const roomLabel = currentRoomLabel(pathname);
+  const photo = coverUrl || "/brand/tablescape.jpg";
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -74,79 +80,80 @@ export function AppShell({
     window.location.href = "/login";
   }
 
-  const roomLabel = currentRoomLabel(pathname);
-
   return (
     <div className="relative h-dvh overflow-hidden bg-paper lg:flex">
       <a href="#main" className="skip-link">
         Skip to the desk
       </a>
       <ThemeProvider />
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <img src={coverUrl || "/brand/tablescape.jpg"} alt="" className="h-full w-full object-cover opacity-[0.22]" />
-        <div className="absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
-      </div>
-      <aside className="hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-r border-white/40 bg-surface/40 px-3 py-5 backdrop-blur-xl lg:flex">
-        <Link href="/dashboard" scroll={false} className="mb-6 flex items-center gap-2 px-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-moss text-[11px] font-medium text-ivory">
-            {names
-              .split(" & ")
-              .map((n) => n[0])
-              .join("")
-              .slice(0, 2)}
-          </span>
-        </Link>
-        <DeskNav shape={shape} />
-        <button
-          type="button"
-          onClick={() => setRooms(true)}
-          className="mt-2 flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-ink-soft hover:bg-white/60"
-        >
-          <span className="inline-flex h-[18px] w-[18px] items-center justify-center text-lg leading-none">···</span>
-          More
-        </button>
-        <Link
-          href="/settings"
-          scroll={false}
-          className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft hover:bg-white/40"
-        >
-          <Icon name="settings" />
-          Settings
-        </Link>
-        <button type="button" onClick={signOut} className="px-3 py-2 text-left text-xs text-muted underline">
-          Sign out
-        </button>
-      </aside>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/40 bg-paper/55 px-4 py-3 backdrop-blur-xl print:hidden sm:px-6">
-          <div className="min-w-0">
-            <p className="truncate text-[15px] font-semibold uppercase tracking-[0.14em]">{names}</p>
-            <p className="truncate text-[11px] text-muted">
-              {roomLabel ? `${roomLabel}  ·  ` : ""}
+      <aside className="rail relative hidden h-dvh w-[15.75rem] shrink-0 flex-col overflow-hidden lg:flex">
+        <img src={photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="rail-wash absolute inset-0" />
+        <div className="relative z-10 flex h-full flex-col px-4 pb-5 pt-7">
+          <Link href="/dashboard" scroll={false} className="px-2">
+            <p className="font-serif text-[1.65rem] leading-tight tracking-tight text-moss-fg">{names}</p>
+            <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.16em] text-moss-fg/55">
               {date}
-              {location ? `  ·  ${location}` : ""}
+              {location ? ` · ${location}` : ""}
             </p>
+          </Link>
+          <div className="mt-8 min-h-0 flex-1 overflow-y-auto pr-1">
+            <DeskNav shape={shape} guestCount={guestCount} vendorCount={vendorCount} />
           </div>
-          <div className="flex items-center gap-2">
-            <CommandPalette />
-            <Link
-              href="/settings"
-              scroll={false}
-              aria-label="Settings"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/50 bg-surface/50 text-ink backdrop-blur-md"
-            >
-              <Icon name="settings" />
-            </Link>
-            <span className="hidden h-9 w-9 overflow-hidden rounded-full sm:block">
-              <img src={coverUrl || "/brand/setting.jpg"} alt="" className="h-full w-full object-cover" />
-            </span>
+          <div className="mt-4 space-y-1 border-t border-white/10 pt-3">
             <button
               type="button"
               onClick={() => setRooms(true)}
-              className="min-h-11 rounded-full border border-line px-3 py-2 text-xs font-medium lg:hidden"
+              className="flex min-h-10 w-full items-center rounded-lg px-3 text-sm text-moss-fg/70 hover:bg-white/10 hover:text-moss-fg"
             >
-              More
+              More rooms
+            </button>
+            <Link
+              href="/settings"
+              scroll={false}
+              className="flex min-h-10 items-center rounded-lg px-3 text-sm text-moss-fg/70 hover:bg-white/10 hover:text-moss-fg"
+            >
+              Settings
+            </Link>
+            <button type="button" onClick={signOut} className="px-3 py-1 text-left text-[11px] text-moss-fg/40 underline">
+              Sign out
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-paper">
+        <header
+          className={`flex shrink-0 items-center justify-between gap-3 print:hidden ${
+            home
+              ? "absolute inset-x-0 top-0 z-20 px-5 py-5 sm:px-8 lg:left-[15.75rem]"
+              : "border-b border-line/70 px-4 py-3 sm:px-8"
+          }`}
+        >
+          <div className="min-w-0">
+            <p
+              className={`text-[11px] font-medium uppercase tracking-[0.22em] ${
+                home ? "text-ink/70" : "text-muted"
+              }`}
+            >
+              {roomLabel || "Home"}
+            </p>
+            {!home && (
+              <p className="truncate text-sm text-ink-soft lg:hidden">
+                {names}
+                {date ? ` · ${date}` : ""}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <CommandPalette tone={home ? "onPhoto" : "paper"} />
+            <button
+              type="button"
+              onClick={() => setRooms(true)}
+              className="min-h-11 rounded-full border border-line/80 bg-surface/70 px-3 py-2 text-xs font-medium backdrop-blur lg:hidden"
+            >
+              Menu
             </button>
           </div>
         </header>
@@ -155,7 +162,11 @@ export function AppShell({
           id="main"
           ref={pane}
           tabIndex={-1}
-          className="min-h-0 flex-1 overflow-y-auto px-4 py-5 pb-24 sm:px-6 lg:px-8 lg:py-7 lg:pb-10"
+          className={
+            home
+              ? "min-h-0 flex-1 overflow-y-auto pb-20 lg:pb-8"
+              : "min-h-0 flex-1 overflow-y-auto px-4 py-6 pb-24 sm:px-8 lg:py-8 lg:pb-10"
+          }
         >
           {children}
         </main>
@@ -164,7 +175,7 @@ export function AppShell({
       {rooms && (
         <div className="fixed inset-0 z-50 print:hidden">
           <button type="button" className="absolute inset-0 bg-ink/40" aria-label="Close" onClick={() => setRooms(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-3xl bg-paper/80 px-5 pb-10 pt-5 backdrop-blur-2xl sm:inset-6 sm:rounded-3xl sm:pb-6">
+          <div className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-3xl bg-paper px-5 pb-10 pt-5 sm:inset-6 sm:rounded-3xl sm:pb-6">
             <div className="mb-5 flex items-start justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.18em] text-muted">
@@ -201,7 +212,7 @@ export function AppShell({
       )}
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-white/40 bg-paper/60 backdrop-blur-xl lg:hidden print:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-line/70 bg-paper/90 backdrop-blur-xl lg:hidden print:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5">

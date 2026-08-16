@@ -46,6 +46,7 @@ export async function POST(request: Request) {
         body.typeScale === "small" || body.typeScale === "regular" || body.typeScale === "large"
           ? body.typeScale
           : undefined,
+      motion: body.motion === "off" || body.motion === "calm" || body.motion === "lively" ? body.motion : undefined,
       faith: optionalString(body.faith, 40) as never,
       faithPacks,
       ceremonyStyle: optionalString(body.ceremonyStyle, 20) as never,

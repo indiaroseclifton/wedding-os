@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
-import { ensureDemoWorkspace, ensureEmailMember } from "@/lib/data/workspace";
+import { ensureDemoWorkspace, ensureEmailMember, getWorkspaceGuests } from "@/lib/data/workspace";
+import { listVendors } from "@/lib/data/vendors-store";
 import { AppShell } from "@/components/layout/AppShell";
 
 export default async function AppLayout({
@@ -14,6 +15,10 @@ export default async function AppLayout({
     await ensureEmailMember(session);
   }
   const { workspace, meta } = await ensureDemoWorkspace();
+  const [guests, vendors] = await Promise.all([
+    getWorkspaceGuests(workspace.id),
+    listVendors(workspace.id),
+  ]);
 
   return (
     <AppShell
@@ -23,6 +28,8 @@ export default async function AppLayout({
       location={meta.location}
       coverUrl={meta.coverUrl}
       shape={meta.shape}
+      guestCount={guests.length}
+      vendorCount={vendors.length}
     >
       {children}
     </AppShell>

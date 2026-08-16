@@ -1,59 +1,57 @@
-import Link from "next/link";
-import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
-import { roomVisible, shapeCard } from "@/lib/shape";
-import type { WeekItem } from "@/lib/this-week";
-import type { Suggestion } from "@/lib/smart-home";
-import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
-import { RoomTile } from "@/components/layout/RoomTile";
-import { ToolTable } from "@/components/layout/ToolTable";
-import { SundayCard } from "@/components/this-week/SundayCard";
+"use client";
 
-const QUICK = [
-  { href: "/guests/new", label: "Add a guest" },
-  { href: "/guests", label: "Nudge RSVPs" },
-  { href: "/vendors/new", label: "Add a vendor" },
-  { href: "/payments", label: "Log a payment" },
-  { href: "/diy", label: "DIY studio" },
-  { href: "/music", label: "DJ cues" },
-] as const;
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { money } from "@/lib/visual-rooms";
+import type { SpotlightCard, AlsoItem } from "@/lib/home-spotlight";
 
 export function HomeDashboard({
   days,
   coverUrl,
-  weekItems,
+  dateLabel,
+  shapeTitle,
+  cards,
+  alsoOpen,
   spent,
   cap,
-  brief,
-  next,
-  suggestions,
+  replies,
   onboarded,
   firstWalkDone,
-  shape,
 }: {
   days: number | null;
   coverUrl: string;
-  weekItems: WeekItem[];
+  dateLabel: string;
+  shapeTitle: string;
+  cards: SpotlightCard[];
+  alsoOpen: AlsoItem[];
   spent: number;
   cap: number;
-  brief: string;
-  next: WeekItem | null;
-  suggestions: Suggestion[];
+  replies: number;
   onboarded?: boolean;
   firstWalkDone?: boolean;
-  shape?: string;
 }) {
-  const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
+  const router = useRouter();
+  const [open, setOpen] = useState(alsoOpen);
   const headline =
-    days == null ? "Set the date" : days === 0 ? "Today" : days > 0 ? String(days) : String(Math.abs(days));
-  const sub = days == null ? "Add your date in Settings" : days === 0 ? "It’s the day" : days > 0 ? "days to go" : "days ago";
-  const lead = VISUAL_ROOMS.filter((r) => r.rank === "lead" && roomVisible(r.href, shape));
-  const support = VISUAL_ROOMS.filter((r) => r.rank !== "lead" && roomVisible(r.href, shape));
-  const card = shapeCard(shape);
+    days == null ? "—" : days === 0 ? "0" : days > 0 ? String(days) : String(Math.abs(days));
+  const sub = days == null ? "Set the date" : days === 0 ? "It’s the day" : days > 0 ? "Days to go" : "Days ago";
+  const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
+
+  async function dismiss(id: string) {
+    setOpen((rows) => rows.filter((r) => r.id !== id));
+    await fetch("/api/this-week", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    router.refresh();
+  }
 
   return (
-    <div className="space-y-10">
+    <div className="home-desk">
       {!onboarded && (
-        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-moss px-4 py-3 text-sm text-ivory">
+        <aside className="mx-5 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-moss px-4 py-3 text-sm text-moss-fg sm:mx-8">
           <p>What kind of day — then the desk builds around it.</p>
           <Link href="/onboard" className="min-h-11 rounded-full bg-ivory px-4 py-2 text-xs font-medium text-moss">
             Start setup
@@ -61,106 +59,118 @@ export function HomeDashboard({
         </aside>
       )}
       {onboarded && !firstWalkDone && (
-        <aside className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface/70 px-4 py-3 text-sm">
+        <aside className="mx-5 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface/80 px-4 py-3 text-sm sm:mx-8">
           <p>Names, one vendor, publish the site. Ten minutes.</p>
-          <Link href="/start" className="min-h-11 rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory">
+          <Link href="/start" className="min-h-11 rounded-full bg-moss px-4 py-2 text-xs font-medium text-moss-fg">
             First wedding
           </Link>
         </aside>
       )}
 
-      <section className="relative overflow-hidden rounded-[1.8rem]">
-        <img src={coverUrl} alt="" className="h-[22rem] w-full object-cover object-center sm:h-[26rem]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/55 to-paper/10" />
-        <div className="absolute inset-x-0 bottom-0 space-y-4 p-6 sm:p-10">
-          <p className="font-serif text-[clamp(4.5rem,14vw,8rem)] leading-none tracking-tight text-ink">{headline}</p>
-          <p className="text-sm uppercase tracking-[0.22em] text-ink-soft">{sub}</p>
-          <p className="text-sm text-ink-soft">{card.title} · {card.line}</p>
-          <SundayCard next={next} brief={brief} />
-        </div>
-      </section>
-
-      <section className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ThisWeekWidget items={weekItems} />
-        </div>
-        <article className="glass-panel rounded-2xl p-5">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Spent</p>
-          <p className="mt-2 font-serif text-4xl tracking-tight tabular-nums">{money(spent)}</p>
-          <p className="mt-1 text-sm text-muted">of {cap ? money(cap) : "no cap yet"}</p>
-          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-line">
-            <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
+      <section className="relative min-h-[28rem] overflow-hidden sm:min-h-[32rem]">
+        <img src={coverUrl} alt="" className="home-hero-img absolute inset-0 h-full w-full object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/25 to-transparent" />
+        <div className="relative z-10 flex min-h-[28rem] flex-col justify-end px-5 pb-36 pt-16 sm:min-h-[32rem] sm:px-10 sm:pb-40">
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-ink/70">{shapeTitle}</p>
+          <div className="mt-2 flex flex-wrap items-end gap-4">
+            <p className="font-serif text-[clamp(5.5rem,16vw,9rem)] leading-[0.8] tracking-[-0.05em] text-ink">
+              {headline}
+            </p>
+            <div className="mb-3">
+              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-ink-soft">{sub}</p>
+              {dateLabel ? <p className="mt-1 font-serif text-2xl text-ink sm:text-3xl">{dateLabel}</p> : null}
+            </div>
           </div>
-        </article>
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2">
-        <RsvpWidget />
-        <PayWidget />
-      </section>
-
-      <section>
-        <p className="mb-3 text-[11px] uppercase tracking-[0.18em] text-muted">Do next</p>
-        <div className="flex flex-wrap gap-2">
-          {QUICK.map((q) => (
-            <Link
-              key={q.href}
-              href={q.href}
-              className="min-h-11 rounded-full border border-line bg-surface/50 px-4 py-2 text-sm backdrop-blur"
-            >
-              {q.label}
-            </Link>
-          ))}
         </div>
-      </section>
 
-      {suggestions.length > 0 && (
-        <section>
-          <p className="mb-3 text-[11px] uppercase tracking-[0.18em] text-muted">For you</p>
-          <ul className="divide-y divide-line/80">
-            {suggestions.slice(0, 3).map((s) => (
-              <li key={s.id}>
-                <Link href={s.href} className="flex items-baseline justify-between gap-4 py-3">
-                  <span>
-                    <span className="block text-sm font-medium">{s.title}</span>
-                    <span className="text-xs text-muted">{s.detail}</span>
-                  </span>
-                  <span className="shrink-0 text-[10px] uppercase tracking-wide text-moss">{s.kind}</span>
-                </Link>
-              </li>
+        <div className="absolute inset-x-4 bottom-0 z-20 translate-y-1/3 sm:inset-x-8">
+          <div className="grid overflow-hidden rounded-[1.25rem] border border-line/80 bg-surface shadow-[0_24px_60px_-28px_rgba(20,16,10,0.35)] sm:grid-cols-3">
+            {cards.map((card, i) => (
+              <article
+                key={card.id}
+                className={`flex flex-col justify-between gap-5 p-5 sm:p-6 ${
+                  i > 0 ? "border-t border-line sm:border-l sm:border-t-0" : ""
+                }`}
+              >
+                <div>
+                  <p
+                    className={`text-[10px] font-medium uppercase tracking-[0.2em] ${
+                      card.alert ? "text-clay" : "text-muted"
+                    }`}
+                  >
+                    {card.alert ? "● " : ""}
+                    {card.kicker}
+                  </p>
+                  <h2 className="mt-2 font-serif text-[1.65rem] leading-tight tracking-tight">{card.title}</h2>
+                  <p className="mt-1.5 text-sm text-muted">{card.detail}</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link
+                    href={card.href}
+                    className="inline-flex min-h-10 items-center rounded-lg bg-moss px-3.5 text-sm font-medium text-moss-fg"
+                  >
+                    {card.cta}
+                  </Link>
+                  {card.secondary && card.snoozeId ? (
+                    <button
+                      type="button"
+                      onClick={() => dismiss(card.snoozeId!)}
+                      className="text-sm text-ink-soft underline-offset-4 hover:underline"
+                    >
+                      {card.secondary}
+                    </button>
+                  ) : card.secondary ? (
+                    <Link href={card.href} className="text-sm text-ink-soft underline-offset-4 hover:underline">
+                      {card.secondary}
+                    </Link>
+                  ) : null}
+                </div>
+              </article>
             ))}
-          </ul>
-        </section>
-      )}
-
-      <ToolTable />
-
-      <section>
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-muted">Rooms</p>
-            <h2 className="font-serif text-3xl">Where you work</h2>
           </div>
-          <Link href="/rooms" className="text-xs text-muted underline">
-            All rooms
-          </Link>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {lead.map((room) => (
-            <RoomTile key={room.href} {...room} />
-          ))}
+      </section>
+
+      <section className="mt-28 grid gap-10 px-5 pb-16 sm:px-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-12">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Also open</p>
+          {open.length === 0 ? (
+            <p className="mt-6 text-sm text-muted">You’re clear. When something is due, it lands here.</p>
+          ) : (
+            <ul className="mt-2 divide-y divide-line">
+              {open.map((row) => (
+                <li key={row.id} className="flex items-center gap-3 py-3.5">
+                  <button
+                    type="button"
+                    onClick={() => dismiss(row.id)}
+                    aria-label={`Done: ${row.title}`}
+                    className="h-4 w-4 shrink-0 rounded-sm border border-ink/30 hover:border-moss hover:bg-moss-soft"
+                  />
+                  <Link href={row.href} className="min-w-0 flex-1 text-[15px] text-ink">
+                    {row.title}
+                  </Link>
+                  <span className="shrink-0 text-xs text-muted">{row.when}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-3">
-          {support.map((room) => (
-            <Link key={room.href} href={room.href} className="group">
-              <div className="relative overflow-hidden rounded-xl">
-                <img src={room.photo} alt="" className="aspect-[4/3] w-full object-cover opacity-45 saturate-50" />
-                <div className="absolute inset-0 bg-gradient-to-t from-paper/90 to-paper/10" />
-                <p className="absolute inset-x-0 bottom-2 px-2 font-serif text-lg text-ink">{room.label}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+
+        <aside className="space-y-10 border-t border-line pt-8 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Ledger</p>
+            <p className="mt-2 font-serif text-5xl tracking-tight">{money(spent)}</p>
+            <p className="mt-1 text-sm text-muted">committed of {cap ? money(cap) : "—"}</p>
+            <div className="mt-4 h-px bg-line">
+              <div className="h-0.5 bg-moss" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Replies</p>
+            <p className="mt-2 font-serif text-5xl tracking-tight">{replies}</p>
+            <p className="mt-1 text-sm text-muted">yes so far</p>
+          </div>
+        </aside>
       </section>
     </div>
   );
