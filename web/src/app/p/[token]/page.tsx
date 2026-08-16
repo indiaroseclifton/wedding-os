@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { SECTION_LABELS } from "@/lib/data/handoffs-store";
+import { ScheduleView } from "@/components/run-of-show/ScheduleView";
 import { loadVendorPortal } from "@/lib/data/vendor-portal";
 
 function prettyDate(iso?: string) {
@@ -49,17 +50,8 @@ export default async function VendorPortalPage({
 
         {schedule.length > 0 && (
           <section className="rounded-xl border border-slate-200 bg-white p-4 print:break-inside-avoid">
-            <h2 className="text-sm font-semibold">Run of show</h2>
-            <ul className="mt-3 divide-y divide-slate-100">
-              {schedule.map((s) => (
-                <li key={s.id} className="flex justify-between gap-3 py-2 text-sm">
-                  <span>
-                    <span className="font-medium tabular-nums">{s.time}</span> {s.title}
-                  </span>
-                  {s.owner && <span className="text-xs text-slate-500">{s.owner}</span>}
-                </li>
-              ))}
-            </ul>
+            <h2 className="mb-3 text-sm font-semibold">Run of show</h2>
+            <ScheduleView slots={schedule} view="vendor" />
           </section>
         )}
 

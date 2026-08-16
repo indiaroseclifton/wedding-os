@@ -51,6 +51,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
     label: "Day-of",
     items: [
       { href: "/day-of", label: "Board" },
+      { href: "/run-of-show", label: "Run of show" },
       { href: "/people", label: "People" },
       { href: "/party", label: "Party view" },
       { href: "/attire", label: "Attire" },

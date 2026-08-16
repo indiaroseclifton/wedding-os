@@ -5,6 +5,8 @@ import { getWorkspaceMeta } from "@/lib/data/store";
 import { getTravel } from "@/lib/data/travel-store";
 import { getRegistry } from "@/lib/data/registry-store";
 import { getDayOf } from "@/lib/data/dayof-store";
+import { slotTitle, slotVisible } from "@/lib/data/run-of-show";
+import { formatRange } from "@/lib/data/run-of-show";
 import { DEMO_WORKSPACE } from "@/lib/data/workspace";
 
 function prettyDate(iso?: string) {
@@ -31,9 +33,7 @@ export default async function WeddingSitePage({
   const travel = site.showTravel ? await getTravel(site.workspaceId) : null;
   const registry = site.showRegistry ? await getRegistry(site.workspaceId) : null;
   const dayOf = await getDayOf(site.workspaceId);
-  const guestSlots = (dayOf.schedule || []).filter(
-    (s) => !s.owner || s.owner === "All" || s.owner === "Guests"
-  );
+  const guestSlots = (dayOf.schedule || []).filter((s) => slotVisible(s, "guests"));
   const names = meta.coupleNames || meta.name;
   const date = prettyDate(meta.weddingDate);
 
@@ -80,8 +80,11 @@ export default async function WeddingSitePage({
               <ol className="mt-4 space-y-2">
                 {guestSlots.map((s) => (
                   <li key={s.id} className="flex gap-3 text-sm">
-                    <span className="w-14 font-medium tabular-nums">{s.time}</span>
-                    <span>{s.title}</span>
+                    <span className="w-20 font-medium tabular-nums">{formatRange(s.time, s.endTime)}</span>
+                    <span>
+                      {slotTitle(s, "guests")}
+                      {s.location ? <span className="text-stone-500"> · {s.location}</span> : null}
+                    </span>
                   </li>
                 ))}
               </ol>

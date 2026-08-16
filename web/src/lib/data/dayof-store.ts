@@ -1,6 +1,12 @@
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
+import { dataDir, ensureDir, readText, writeText } from "./store-io";
+import {
+  type Audience,
+  type RunSlot,
+  audiencesOf,
+  sortSlots,
+} from "./run-of-show";
 
 const dayOfFile = path.join(dataDir, "day-of.json");
 
@@ -18,17 +24,13 @@ export type DayOfUpdate = {
   createdAt: string;
 };
 
-export type ScheduleSlot = {
-  id: string;
-  time: string;
-  title: string;
-  owner?: string;
-};
+export type ScheduleSlot = RunSlot;
 
 export type StoredDayOf = {
   workspaceId: string;
   weatherNote?: string;
   emergencyContact?: string;
+  shareToken?: string;
   checkIns: CheckIn[];
   updates: DayOfUpdate[];
   schedule: ScheduleSlot[];
@@ -49,16 +51,105 @@ async function writeAll(all: Record<string, StoredDayOf>) {
 }
 
 const DEFAULT_SCHEDULE: Omit<ScheduleSlot, "id">[] = [
-  { time: "10:00", title: "Hair & makeup start", owner: "Party" },
-  { time: "13:00", title: "Photographer arrives", owner: "Vendor" },
-  { time: "14:30", title: "First look / portraits", owner: "Couple" },
-  { time: "16:00", title: "Ceremony", owner: "All" },
-  { time: "17:00", title: "Cocktail hour", owner: "Guests" },
-  { time: "18:00", title: "Reception entrance", owner: "All" },
-  { time: "18:30", title: "Dinner service", owner: "Catering" },
-  { time: "20:00", title: "First dance", owner: "Couple" },
-  { time: "22:00", title: "Last dance / send-off", owner: "All" },
+  {
+    time: "10:00",
+    endTime: "13:00",
+    title: "Hair & makeup",
+    location: "Getting-ready suite",
+    lead: "Party",
+    audiences: ["couple", "party"],
+    notes: "Artists arrive at 10. Need outlets and a window.",
+  },
+  {
+    time: "13:00",
+    endTime: "13:20",
+    title: "Photographer arrives",
+    location: "Suite",
+    lead: "Photo",
+    audiences: ["couple", "party", "vendor"],
+  },
+  {
+    time: "14:30",
+    endTime: "15:30",
+    title: "First look / portraits",
+    location: "Garden / oaks",
+    lead: "Photo",
+    audiences: ["couple", "vendor"],
+    notes: "Keep the party out of frame until after first look.",
+  },
+  {
+    time: "15:40",
+    endTime: "15:55",
+    title: "Family groupings",
+    location: "Lawn",
+    lead: "Photo",
+    audiences: ["couple", "party", "vendor"],
+    notes: "List is on the photo handoff. Do not shout names from the lawn.",
+  },
+  {
+    time: "16:00",
+    endTime: "16:25",
+    title: "Ceremony",
+    guestTitle: "Ceremony",
+    location: "Lawn (rain: loft)",
+    lead: "Officiant",
+    audiences: ["couple", "party", "vendor", "guests"],
+  },
+  {
+    time: "16:30",
+    endTime: "17:45",
+    title: "Cocktail hour",
+    guestTitle: "Cocktails & bites",
+    location: "Terrace",
+    lead: "Catering",
+    audiences: ["couple", "party", "vendor", "guests"],
+    notes: "Couple portraits until 17:00. Guests do not wait on you.",
+  },
+  {
+    time: "18:00",
+    endTime: "18:15",
+    title: "Reception entrance",
+    guestTitle: "Dinner",
+    location: "Dining room",
+    lead: "DJ",
+    audiences: ["couple", "party", "vendor", "guests"],
+  },
+  {
+    time: "18:15",
+    endTime: "19:30",
+    title: "Dinner service",
+    guestTitle: "Dinner",
+    location: "Dining room",
+    lead: "Catering",
+    audiences: ["couple", "vendor", "guests"],
+  },
+  {
+    time: "20:00",
+    endTime: "20:10",
+    title: "First dance",
+    guestTitle: "First dance",
+    location: "Floor",
+    lead: "DJ",
+    audiences: ["couple", "party", "vendor", "guests"],
+  },
+  {
+    time: "22:00",
+    endTime: "22:15",
+    title: "Last dance / send-off",
+    guestTitle: "Send-off",
+    location: "Front steps",
+    lead: "Coordinator",
+    audiences: ["couple", "party", "vendor", "guests"],
+    notes: "Sparklers only if the venue said yes.",
+  },
 ];
+
+function normalizeSlot(slot: ScheduleSlot): ScheduleSlot {
+  return {
+    ...slot,
+    audiences: audiencesOf(slot),
+  };
+}
 
 export async function getDayOf(workspaceId: string): Promise<StoredDayOf> {
   const all = await readAll();
@@ -78,8 +169,18 @@ export async function getDayOf(workspaceId: string): Promise<StoredDayOf> {
   } else if (!all[workspaceId].schedule) {
     all[workspaceId].schedule = DEFAULT_SCHEDULE.map((s) => ({ ...s, id: randomUUID() }));
     await writeAll(all);
+  } else {
+    all[workspaceId].schedule = sortSlots(all[workspaceId].schedule.map(normalizeSlot));
   }
   return all[workspaceId];
+}
+
+export async function getDayOfByShareToken(token: string) {
+  if (!token) return null;
+  const all = await readAll();
+  const row = Object.values(all).find((item) => item.shareToken === token);
+  if (!row) return null;
+  return { ...row, schedule: sortSlots((row.schedule || []).map(normalizeSlot)) };
 }
 
 export async function saveDayOf(workspaceId: string, patch: Partial<StoredDayOf>) {
@@ -113,13 +214,25 @@ export async function addUpdate(workspaceId: string, body: string) {
 
 export async function addScheduleSlot(
   workspaceId: string,
-  slot: { time: string; title: string; owner?: string }
+  slot: Omit<ScheduleSlot, "id">
 ) {
   const current = await getDayOf(workspaceId);
-  const schedule = [
+  const schedule = sortSlots([
     ...current.schedule,
-    { id: randomUUID(), ...slot },
-  ].sort((a, b) => a.time.localeCompare(b.time));
+    { id: randomUUID(), ...slot, audiences: slot.audiences || audiencesOf(slot) },
+  ]);
+  return saveDayOf(workspaceId, { schedule });
+}
+
+export async function patchScheduleSlot(
+  workspaceId: string,
+  id: string,
+  patch: Partial<Omit<ScheduleSlot, "id">>
+) {
+  const current = await getDayOf(workspaceId);
+  const schedule = sortSlots(
+    current.schedule.map((s) => (s.id === id ? normalizeSlot({ ...s, ...patch }) : s))
+  );
   return saveDayOf(workspaceId, { schedule });
 }
 
@@ -129,3 +242,17 @@ export async function removeScheduleSlot(workspaceId: string, slotId: string) {
     schedule: current.schedule.filter((s) => s.id !== slotId),
   });
 }
+
+export async function shareRunOfShow(workspaceId: string) {
+  const current = await getDayOf(workspaceId);
+  const shareToken = current.shareToken || randomUUID().replace(/-/g, "").slice(0, 16);
+  return saveDayOf(workspaceId, { shareToken });
+}
+
+export function resetDefaultSchedule(workspaceId: string) {
+  return saveDayOf(workspaceId, {
+    schedule: DEFAULT_SCHEDULE.map((s) => ({ ...s, id: randomUUID() })),
+  });
+}
+
+export type { Audience };

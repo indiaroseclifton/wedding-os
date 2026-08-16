@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { ScheduleView } from "@/components/run-of-show/ScheduleView";
+import type { RunSlot } from "@/lib/data/run-of-show";
 
 const STATUSES = ["NOT_STARTED", "ON_THE_WAY", "ARRIVED", "READY", "BLOCKED"] as const;
 
@@ -16,7 +18,7 @@ type DayOf = {
   emergencyContact?: string;
   checkIns: CheckIn[];
   updates: { id: string; body: string; createdAt: string }[];
-  schedule?: { id: string; time: string; title: string; owner?: string }[];
+  schedule?: RunSlot[];
 };
 
 export function DayOfPartyClient({ initial }: { initial: DayOf }) {
@@ -36,23 +38,12 @@ export function DayOfPartyClient({ initial }: { initial: DayOf }) {
 
   return (
     <div className="space-y-6">
-      {(dayOf.schedule || []).filter((s) => !s.owner || s.owner === "All" || s.owner === "Party")
-        .length > 0 && (
+      {(dayOf.schedule || []).length > 0 && (
         <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="text-sm font-semibold">Your hours</p>
-          <ol className="mt-3 space-y-2">
-            {(dayOf.schedule || [])
-              .filter((s) => !s.owner || s.owner === "All" || s.owner === "Party")
-              .map((s) => (
-                <li key={s.id} className="flex gap-3 text-sm">
-                  <span className="w-14 font-medium tabular-nums">{s.time}</span>
-                  <span>{s.title}</span>
-                </li>
-              ))}
-          </ol>
+          <p className="mb-3 text-sm font-semibold">Your hours</p>
+          <ScheduleView slots={dayOf.schedule || []} view="party" />
         </div>
-      )}
-      {(dayOf.weatherNote || dayOf.emergencyContact) && (
+      )}      {(dayOf.weatherNote || dayOf.emergencyContact) && (
         <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 text-sm">
           {dayOf.weatherNote && (
             <p>

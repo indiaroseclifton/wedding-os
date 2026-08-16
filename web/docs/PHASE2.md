@@ -61,3 +61,8 @@
 - Budget one-number: payments + DIY estimates + other lines
 - DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
 - Run of show by audience (couple / party / vendor / guests)
+
+## Wave 10 (done)
+- Run of show editor: duration, place, lead, notes, guest title, multi-audience
+- Preview / print / share links (full, party, vendor)
+- Same timeline on board, party, vendor portal, guest site

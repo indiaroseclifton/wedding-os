@@ -6,9 +6,18 @@ import {
   addUpdate,
   getDayOf,
   patchCheckIn,
+  patchScheduleSlot,
   removeScheduleSlot,
+  resetDefaultSchedule,
   saveDayOf,
+  shareRunOfShow,
 } from "@/lib/data/dayof-store";
+import { AUDIENCES, type Audience } from "@/lib/data/run-of-show";
+
+function parseAudiences(raw: unknown): Audience[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  return raw.filter((a): a is Audience => AUDIENCES.includes(a as Audience));
+}
 
 export async function GET() {
   const access = await requireSession();
@@ -49,8 +58,28 @@ export async function POST(request: Request) {
     if (!couple.ok) return couple.response;
     const dayOf = await addScheduleSlot(workspace.id, {
       time: String(body.time || "12:00"),
+      endTime: body.endTime ? String(body.endTime) : undefined,
       title: String(body.title || "Moment"),
-      owner: body.owner ? String(body.owner) : undefined,
+      guestTitle: body.guestTitle ? String(body.guestTitle) : undefined,
+      location: body.location ? String(body.location) : undefined,
+      lead: body.lead ? String(body.lead) : undefined,
+      notes: body.notes ? String(body.notes) : undefined,
+      audiences: parseAudiences(body.audiences) || ["couple", "party", "vendor", "guests"],
+    });
+    return NextResponse.json({ dayOf });
+  }
+  if (body.action === "schedule_patch") {
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+    const dayOf = await patchScheduleSlot(workspace.id, String(body.id), {
+      time: body.time,
+      endTime: body.endTime,
+      title: body.title,
+      guestTitle: body.guestTitle,
+      location: body.location,
+      lead: body.lead,
+      notes: body.notes,
+      audiences: parseAudiences(body.audiences),
     });
     return NextResponse.json({ dayOf });
   }
@@ -58,6 +87,21 @@ export async function POST(request: Request) {
     const couple = await requireCoupleApi();
     if (!couple.ok) return couple.response;
     const dayOf = await removeScheduleSlot(workspace.id, String(body.id));
+    return NextResponse.json({ dayOf });
+  }
+  if (body.action === "schedule_share") {
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+    const dayOf = await shareRunOfShow(workspace.id);
+    return NextResponse.json({
+      dayOf,
+      sharePath: dayOf.shareToken ? `/ros/${dayOf.shareToken}` : null,
+    });
+  }
+  if (body.action === "schedule_reset") {
+    const couple = await requireCoupleApi();
+    if (!couple.ok) return couple.response;
+    const dayOf = await resetDefaultSchedule(workspace.id);
     return NextResponse.json({ dayOf });
   }
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
