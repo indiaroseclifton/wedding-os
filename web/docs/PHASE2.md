@@ -62,7 +62,8 @@
 - DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
 - Run of show by audience (couple / party / vendor / guests)
 
-## Wave 12 (done)
-- Multi-event RSVP: rehearsal / brunch / welcome on the same guest link
-- Events can be edited, deleted, and have an invite list
-- Guest list shows a column per extra event
+## Wave 13 (done)
+- Address on guest + RSVP (optional or required)
+- Personal RSVP links include guest token
+- Nudge email for people who have not replied (5-day cooldown)
+- Guest list filter + CSV for mailing addresses

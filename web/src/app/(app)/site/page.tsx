@@ -16,6 +16,8 @@ type Site = {
   showRegistry: boolean;
   rsvpOpen: boolean;
   rsvpNote?: string;
+  collectAddress?: boolean;
+  requireAddress?: boolean;
 };
 
 type Guest = { id: string; name: string; rsvp: string; rsvpToken?: string };
@@ -153,6 +155,22 @@ export default function SiteEditorPage() {
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
+            checked={site.collectAddress !== false}
+            onChange={(e) => setSite({ ...site, collectAddress: e.target.checked })}
+          />
+          Ask for mailing address
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={Boolean(site.requireAddress)}
+            onChange={(e) => setSite({ ...site, requireAddress: e.target.checked })}
+          />
+          Require address to RSVP
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
             checked={site.showTravel}
             onChange={(e) => setSite({ ...site, showTravel: e.target.checked })}
           />
@@ -187,7 +205,8 @@ export default function SiteEditorPage() {
         </p>
         <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
           {guests.map((g) => {
-            const link = site.published && g.rsvpToken ? `${url}/rsvp` : "";
+            const link =
+              site.published && g.rsvpToken ? `${url}/rsvp?guest=${g.rsvpToken}` : "";
             return (
               <li key={g.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 text-sm">
                 <span>
@@ -200,7 +219,7 @@ export default function SiteEditorPage() {
           })}
         </ul>
         <p className="mt-2 text-xs text-slate-500">
-          Guests type their name on the site. Same list as Guests — their reply updates headcount and catering.
+          Guests can open their own link (no name lookup). Their reply updates headcount and catering.
         </p>
       </div>
     </div>

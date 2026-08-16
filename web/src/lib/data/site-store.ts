@@ -17,6 +17,8 @@ export type StoredSite = {
   showRegistry: boolean;
   rsvpOpen: boolean;
   rsvpNote?: string;
+  collectAddress: boolean;
+  requireAddress: boolean;
   updatedAt: string;
 };
 
@@ -41,6 +43,8 @@ function fresh(workspaceId: string): StoredSite {
     showTravel: true,
     showRegistry: true,
     rsvpOpen: true,
+    collectAddress: true,
+    requireAddress: false,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -51,7 +55,12 @@ export async function getSite(workspaceId: string): Promise<StoredSite> {
     all[workspaceId] = fresh(workspaceId);
     await writeAll(all);
   }
-  return all[workspaceId];
+  const site = all[workspaceId];
+  return {
+    ...site,
+    collectAddress: site.collectAddress !== false,
+    requireAddress: Boolean(site.requireAddress),
+  };
 }
 
 export async function saveSite(workspaceId: string, patch: Partial<StoredSite>) {
@@ -65,7 +74,13 @@ export async function saveSite(workspaceId: string, patch: Partial<StoredSite>) 
 export async function getSiteByToken(token: string) {
   if (!token) return null;
   const all = await readAll();
-  return Object.values(all).find((s) => s.siteToken === token) || null;
+  const site = Object.values(all).find((s) => s.siteToken === token);
+  if (!site) return null;
+  return {
+    ...site,
+    collectAddress: site.collectAddress !== false,
+    requireAddress: Boolean(site.requireAddress),
+  };
 }
 
 export async function publishSite(workspaceId: string) {

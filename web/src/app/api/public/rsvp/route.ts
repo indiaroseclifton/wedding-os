@@ -42,8 +42,15 @@ export async function GET(request: Request) {
       dietary: guest.dietary,
       meal: guest.meal,
       notes: guest.notes,
+      address: guest.address,
+      city: guest.city,
+      region: guest.region,
+      postal: guest.postal,
+      phone: guest.phone,
     },
     events,
+    collectAddress: site.collectAddress,
+    requireAddress: site.requireAddress,
   });
 }
 
@@ -85,12 +92,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Pick yes, no, or maybe" }, { status: 400 });
     }
     const plusOnes = Math.max(0, Math.min(8, Number(body.plusOnes) || 0));
+    if (site.requireAddress && !String(body.address || "").trim()) {
+      return NextResponse.json({ error: "Please add a mailing address" }, { status: 400 });
+    }
     const updated = await updateGuest(guest.id, {
       rsvp,
       plusOnes,
       dietary: String(body.dietary || "").slice(0, 500) || undefined,
       meal: String(body.meal || "").slice(0, 80) || undefined,
       notes: String(body.notes || "").slice(0, 1000) || guest.notes,
+      address: String(body.address || "").slice(0, 200) || undefined,
+      city: String(body.city || "").slice(0, 80) || undefined,
+      region: String(body.region || "").slice(0, 80) || undefined,
+      postal: String(body.postal || "").slice(0, 20) || undefined,
+      phone: String(body.phone || "").slice(0, 40) || undefined,
     });
 
     const incoming = Array.isArray(body.eventRsvps) ? body.eventRsvps : [];

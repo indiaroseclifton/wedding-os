@@ -11,10 +11,11 @@ type Guest = {
   dietary?: string;
   tableLabel?: string;
   side?: string;
+  missingAddress?: boolean;
   eventStatus?: Record<string, string>;
 };
 
-const FILTERS = ["ALL", "YES", "NO", "MAYBE", "INVITED", "UNKNOWN"] as const;
+const FILTERS = ["ALL", "YES", "NO", "MAYBE", "INVITED", "UNKNOWN", "NO_ADDRESS"] as const;
 const RSVPS = ["UNKNOWN", "INVITED", "YES", "NO", "MAYBE"] as const;
 
 export function GuestFilters({
@@ -38,6 +39,7 @@ export function GuestFilters({
 
   const visible = useMemo(() => {
     if (filter === "ALL") return rows;
+    if (filter === "NO_ADDRESS") return rows.filter((g) => g.missingAddress);
     return rows.filter((g) => g.rsvp === filter);
   }, [rows, filter]);
 
@@ -146,7 +148,7 @@ export function GuestFilters({
                 : "border border-slate-300 bg-white text-slate-700"
             }`}
           >
-            {f === "ALL" ? "All" : f}
+            {f === "ALL" ? "All" : f === "NO_ADDRESS" ? "No address" : f}
           </button>
         ))}
       </div>

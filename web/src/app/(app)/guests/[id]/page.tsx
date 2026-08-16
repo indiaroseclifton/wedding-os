@@ -13,6 +13,11 @@ type Guest = {
   dietary?: string;
   tableLabel?: string;
   notes?: string;
+  address?: string;
+  city?: string;
+  region?: string;
+  postal?: string;
+  phone?: string;
 };
 
 export default function EditGuestPage() {
@@ -52,6 +57,11 @@ export default function EditGuestPage() {
           plusOnes: Number(form.get("plusOnes") || 0),
           dietary: form.get("dietary") || undefined,
           tableLabel: form.get("tableLabel") || undefined,
+          address: form.get("address") || undefined,
+          city: form.get("city") || undefined,
+          region: form.get("region") || undefined,
+          postal: form.get("postal") || undefined,
+          phone: form.get("phone") || undefined,
           notes: form.get("notes") || undefined,
         }),
       });
@@ -125,6 +135,30 @@ export default function EditGuestPage() {
           <span className="font-medium">Table label</span>
           <input name="tableLabel" defaultValue={guest.tableLabel || ""} placeholder="e.g. Table 1" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
+        <label className="block text-sm">
+          <span className="font-medium">Street</span>
+          <input name="address" defaultValue={guest.address || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block text-sm">
+            <span className="font-medium">City</span>
+            <input name="city" defaultValue={guest.city || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+          <label className="block text-sm">
+            <span className="font-medium">State</span>
+            <input name="region" defaultValue={guest.region || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block text-sm">
+            <span className="font-medium">ZIP</span>
+            <input name="postal" defaultValue={guest.postal || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+          <label className="block text-sm">
+            <span className="font-medium">Phone</span>
+            <input name="phone" defaultValue={guest.phone || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+        </div>
         <label className="block text-sm">
           <span className="font-medium">Dietary</span>
           <input name="dietary" defaultValue={guest.dietary || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />

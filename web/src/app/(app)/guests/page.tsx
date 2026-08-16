@@ -9,6 +9,8 @@ import { listEvents } from "@/lib/data/events-store";
 import { eventRsvpMap } from "@/lib/data/event-rsvp-store";
 import { ExportCsvButton } from "./ExportCsvButton";
 import { GuestFilters } from "./GuestFilters";
+import { NudgePanel } from "./NudgePanel";
+import { hasMailingAddress } from "@/lib/data/guest-mail";
 
 export default async function GuestsPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -60,6 +62,10 @@ export default async function GuestsPage() {
               dietary: g.dietary,
               tableLabel: g.tableLabel,
               notes: g.notes,
+              address: g.address,
+              city: g.city,
+              region: g.region,
+              postal: g.postal,
             }))}
           />
           <Link
@@ -96,6 +102,8 @@ export default async function GuestsPage() {
         </div>
       )}
 
+      {guests.length > 0 && <NudgePanel />}
+
       {guests.length === 0 ? (
         <EmptyState
           title="No guests yet"
@@ -119,6 +127,7 @@ export default async function GuestsPage() {
             dietary: g.dietary,
             tableLabel: g.tableLabel,
             side: g.side,
+            missingAddress: !hasMailingAddress(g),
             eventStatus: Object.fromEntries(
               rsvpEvents.map((e) => [e.id, rsvpMap[e.id]?.[g.id] || ""])
             ),

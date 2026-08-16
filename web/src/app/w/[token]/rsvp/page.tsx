@@ -34,6 +34,13 @@ function PublicRsvpInner() {
   const [dietary, setDietary] = useState("");
   const [meal, setMeal] = useState("");
   const [notes, setNotes] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [region, setRegion] = useState("");
+  const [postal, setPostal] = useState("");
+  const [phone, setPhone] = useState("");
+  const [collectAddress, setCollectAddress] = useState(true);
+  const [requireAddress, setRequireAddress] = useState(false);
   const [events, setEvents] = useState<ExtraEvent[]>([]);
   const [eventAnswers, setEventAnswers] = useState<Record<string, { status: string; meal: string }>>(
     {}
@@ -54,6 +61,13 @@ function PublicRsvpInner() {
         setDietary(data.guest.dietary || "");
         setMeal(data.guest.meal || "");
         setNotes(data.guest.notes || "");
+        setAddress(data.guest.address || "");
+        setCity(data.guest.city || "");
+        setRegion(data.guest.region || "");
+        setPostal(data.guest.postal || "");
+        setPhone(data.guest.phone || "");
+        setCollectAddress(data.collectAddress !== false);
+        setRequireAddress(Boolean(data.requireAddress));
         const extras: ExtraEvent[] = data.events || [];
         setEvents(extras);
         const next: Record<string, { status: string; meal: string }> = {};
@@ -102,6 +116,11 @@ function PublicRsvpInner() {
         dietary,
         meal,
         notes,
+        address,
+        city,
+        region,
+        postal,
+        phone,
         eventRsvps: events.map((ev) => ({
           eventId: ev.id,
           status: eventAnswers[ev.id]?.status || "YES",
@@ -242,6 +261,52 @@ function PublicRsvpInner() {
                   />
                 </label>
               </>
+            )}
+
+            {(collectAddress || requireAddress) && (
+              <div className="space-y-3 border-t border-stone-200 pt-4">
+                <p className="text-sm font-medium">
+                  Mailing address
+                  {requireAddress ? "" : " (optional)"}
+                </p>
+                <p className="text-xs text-stone-500">For invites or thank-yous.</p>
+                <input
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required={requireAddress}
+                  placeholder="Street"
+                  className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required={requireAddress}
+                    placeholder="City"
+                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                  />
+                  <input
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    placeholder="State"
+                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    value={postal}
+                    onChange={(e) => setPostal(e.target.value)}
+                    placeholder="ZIP"
+                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                  />
+                  <input
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Phone"
+                    className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
             )}
 
             {events.map((ev) => {

@@ -45,6 +45,8 @@ export async function POST(request: Request) {
     showTravel: Boolean(body.showTravel),
     showRegistry: Boolean(body.showRegistry),
     rsvpOpen: body.rsvpOpen !== false,
+    collectAddress: body.collectAddress !== false,
+    requireAddress: Boolean(body.requireAddress),
   });
   return NextResponse.json({ site });
 }

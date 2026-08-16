@@ -74,6 +74,12 @@ export type StoredGuest = {
   side?: string;
   partyName?: string;
   email?: string;
+  address?: string;
+  city?: string;
+  region?: string;
+  postal?: string;
+  phone?: string;
+  lastNudgedAt?: string;
   rsvp: string;
   plusOnes: number;
   dietary?: string;

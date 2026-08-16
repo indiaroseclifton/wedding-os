@@ -24,6 +24,11 @@ export default function NewGuestPage() {
           rsvp: form.get("rsvp") || "UNKNOWN",
           plusOnes: Number(form.get("plusOnes") || 0),
           dietary: form.get("dietary") || undefined,
+          address: form.get("address") || undefined,
+          city: form.get("city") || undefined,
+          region: form.get("region") || undefined,
+          postal: form.get("postal") || undefined,
+          phone: form.get("phone") || undefined,
           notes: form.get("notes") || undefined,
         }),
       });
@@ -79,6 +84,30 @@ export default function NewGuestPage() {
           <span className="font-medium text-slate-800">Plus-ones</span>
           <input name="plusOnes" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
+        <label className="block text-sm">
+          <span className="font-medium text-slate-800">Street</span>
+          <input name="address" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block text-sm">
+            <span className="font-medium text-slate-800">City</span>
+            <input name="city" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+          <label className="block text-sm">
+            <span className="font-medium text-slate-800">State</span>
+            <input name="region" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block text-sm">
+            <span className="font-medium text-slate-800">ZIP</span>
+            <input name="postal" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+          <label className="block text-sm">
+            <span className="font-medium text-slate-800">Phone</span>
+            <input name="phone" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          </label>
+        </div>
         <label className="block text-sm">
           <span className="font-medium text-slate-800">Dietary</span>
           <input name="dietary" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
