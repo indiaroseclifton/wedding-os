@@ -80,3 +80,7 @@
 - Contract review on the vendor: signed date, refundable, named lead, hours, overtime, delivery, COI
 - Nine clauses marked Looks good / Flag / Skip
 - Flag count on My vendors
+
+## Wave 19 (done)
+- Home is This week: overdue money, RSVPs, addresses, contract flags, ROS holes, DIY day-beats, checklist
+- Nav label: This week

@@ -17,7 +17,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
   {
     label: "Core",
     items: [
-      { href: "/dashboard", label: "Home" },
+      { href: "/dashboard", label: "This week" },
       { href: "/checklist", label: "Checklist" },
       { href: "/diy", label: "DIY" },
       { href: "/diy/calendar", label: "DIY week" },
