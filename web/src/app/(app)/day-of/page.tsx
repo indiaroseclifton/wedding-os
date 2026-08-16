@@ -21,6 +21,7 @@ export default function DayOfPage() {
   const [update, setUpdate] = useState("");
   const [weather, setWeather] = useState("");
   const [emergency, setEmergency] = useState("");
+  const [weatherMsg, setWeatherMsg] = useState<string | null>(null);
 
   async function load() {
     const res = await fetch("/api/day-of");
@@ -98,9 +99,29 @@ export default function DayOfPage() {
           <textarea
             value={weather}
             onChange={(e) => setWeather(e.target.value)}
-            rows={2}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            rows={3}
+            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
           />
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={async () => {
+                setWeatherMsg(null);
+                const res = await fetch("/api/integrations/weather", { method: "POST" });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                  setWeatherMsg(data.error || "Could not pull forecast");
+                  return;
+                }
+                setWeather(data.note || "");
+                setWeatherMsg("Pulled from NWS");
+              }}
+              className="text-xs font-medium underline"
+            >
+              Pull forecast for our city
+            </button>
+            {weatherMsg && <span className="text-xs text-slate-500">{weatherMsg}</span>}
+          </div>
         </label>
         <label className="block rounded-xl border border-slate-200 bg-white p-4 text-sm">
           <span className="font-medium">Emergency contact</span>

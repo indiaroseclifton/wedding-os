@@ -12,13 +12,30 @@ export type SongRequest = {
   createdAt: string;
 };
 
+export type TrackRef = {
+  title: string;
+  artist?: string;
+  uri?: string;
+  url?: string;
+};
+
+export type SpotifyLink = {
+  refreshToken: string;
+  displayName?: string;
+  playlistId?: string;
+  playlistUrl?: string;
+  connectedAt?: string;
+};
+
 export type StoredMusic = {
   workspaceId: string;
   mustPlay: string[];
   doNotPlay: string[];
+  mustPlayTracks?: TrackRef[];
   moments: { label: string; song?: string }[];
   notes?: string;
   requests: SongRequest[];
+  spotify?: SpotifyLink;
   updatedAt: string;
 };
 
@@ -98,4 +115,25 @@ export async function setSongRequestStatus(
     if (song && !mustPlay.includes(song)) mustPlay = [...mustPlay, song];
   }
   return saveMusic(workspaceId, { requests, mustPlay });
+}
+
+export function lineForTrack(t: TrackRef) {
+  return t.artist ? `${t.title} — ${t.artist}` : t.title;
+}
+
+export async function addMustPlayTrack(workspaceId: string, track: TrackRef) {
+  const music = await getMusic(workspaceId);
+  const line = lineForTrack(track);
+  if (music.mustPlay.includes(line)) return music;
+  return saveMusic(workspaceId, {
+    mustPlay: [...music.mustPlay, line],
+    mustPlayTracks: [...(music.mustPlayTracks || []), track],
+  });
+}
+
+export async function addDoNotPlayLine(workspaceId: string, line: string) {
+  const music = await getMusic(workspaceId);
+  const text = line.trim();
+  if (!text || music.doNotPlay.includes(text)) return music;
+  return saveMusic(workspaceId, { doNotPlay: [...music.doNotPlay, text] });
 }

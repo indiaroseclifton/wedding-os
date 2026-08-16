@@ -77,6 +77,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
       { href: "/notes", label: "Notes" },
       { href: "/workload", label: "Workload" },
       { href: "/settings", label: "Settings" },
+      { href: "/integrations", label: "Integrations" },
     ],
   },
 ];

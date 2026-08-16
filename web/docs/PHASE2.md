@@ -93,3 +93,8 @@
 - Paper + ink + moss brand: Fraunces + Source Sans 3
 - Warm paper canvas; moss primary on login, This week, guest RSVP
 - Slate remapped so the rest of the rooms follow
+
+## Wave 22 (done)
+- Spotify: search, add to must-play, OAuth, export/update playlist, DJ handoff gets the link
+- NWS forecast pull on day-of (US cities)
+- Integrations page lists Apple Music, Calendar, Places, Drive, Stripe, registry (next / link-only)

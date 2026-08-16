@@ -47,6 +47,7 @@ export async function POST(
       ...sections,
       must_play: (music.mustPlay || []).join("\n"),
       do_not_play: (music.doNotPlay || []).join("\n"),
+      spotify_playlist: music.spotify?.playlistUrl || sections.spotify_playlist || "",
       tone_notes: music.notes || sections.tone_notes || "",
       music_moments: (music.moments || [])
         .map((m) => (m.song ? `${m.label}: ${m.song}` : m.label))

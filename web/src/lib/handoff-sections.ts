@@ -8,6 +8,7 @@ export const HANDOFF_SECTION_LABELS: Record<string, string> = {
   dietary_by_table: "Dietary by table",
   must_play: "Must-play list",
   do_not_play: "Do-not-play list",
+  spotify_playlist: "Spotify playlist",
   music_moments: "Music moments",
   tone_notes: "Tone / energy notes",
   day_of_contact: "Day-of contact",
@@ -37,6 +38,7 @@ export const HANDOFF_TEMPLATES = {
     sections: [
       "must_play",
       "do_not_play",
+      "spotify_playlist",
       "music_moments",
       "tone_notes",
       "day_of_contact",

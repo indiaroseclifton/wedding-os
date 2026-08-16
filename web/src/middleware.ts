@@ -13,6 +13,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/w/") ||
     pathname.startsWith("/ros/") ||
     pathname.startsWith("/api/public/") ||
+    pathname.startsWith("/api/integrations/spotify/callback") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico"
   ) {
