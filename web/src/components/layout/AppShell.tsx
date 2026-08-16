@@ -119,7 +119,7 @@ export function AppShell({
             key={item.href}
             href={item.href}
             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${
-              on ? "bg-white font-medium text-ink shadow-sm" : "text-ink-soft hover:bg-white/60"
+              on ? "bg-white/70 font-medium text-ink shadow-sm backdrop-blur" : "text-ink-soft hover:bg-white/40"
             }`}
           >
             <NavIcon name={item.icon} />
@@ -139,8 +139,12 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen bg-paper lg:flex">
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-line/80 px-3 py-5 lg:flex">
+    <div className="relative min-h-screen bg-paper lg:flex">
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <img src="/brand/tablescape.jpg" alt="" className="h-full w-full object-cover opacity-[0.14]" />
+        <div className="absolute inset-0 bg-paper/70" />
+      </div>
+      <aside className="hidden w-56 shrink-0 flex-col border-r border-white/40 bg-surface/40 px-3 py-5 backdrop-blur-xl lg:flex">
         <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-moss text-[11px] font-medium text-ivory">
             {names
@@ -157,7 +161,7 @@ export function AppShell({
       </aside>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-line/80 bg-paper/90 px-4 py-3 backdrop-blur-md print:hidden sm:px-6">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-white/40 bg-paper/55 px-4 py-3 backdrop-blur-xl print:hidden sm:px-6">
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold uppercase tracking-[0.14em]">{names}</p>
             <p className="truncate text-[11px] text-muted">
@@ -186,7 +190,7 @@ export function AppShell({
       {rooms && (
         <div className="fixed inset-0 z-50 print:hidden">
           <button type="button" className="absolute inset-0 bg-ink/40" aria-label="Close" onClick={() => setRooms(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-3xl bg-paper px-5 pb-10 pt-5 sm:inset-6 sm:rounded-3xl sm:pb-6">
+          <div className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-3xl bg-paper/80 px-5 pb-10 pt-5 backdrop-blur-2xl sm:inset-6 sm:rounded-3xl sm:pb-6">
             <div className="mb-5 flex items-start justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.18em] text-muted">
@@ -234,7 +238,7 @@ export function AppShell({
       )}
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper/95 backdrop-blur lg:hidden print:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-white/40 bg-paper/60 backdrop-blur-xl lg:hidden print:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5">

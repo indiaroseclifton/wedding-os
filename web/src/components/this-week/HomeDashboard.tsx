@@ -48,7 +48,7 @@ export function HomeDashboard({
         </div>
       </section>
 
-      <section className="rounded-2xl border border-line bg-surface p-5">
+      <section className="glass-panel rounded-2xl p-5">
         <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-moss">This morning</p>
         <p className="mt-2 max-w-2xl text-base leading-7 text-ink">{brief}</p>
         {next && (
@@ -68,7 +68,7 @@ export function HomeDashboard({
             <Link
               key={q.href}
               href={q.href}
-              className="group overflow-hidden rounded-2xl border border-line bg-surface"
+              className="group overflow-hidden rounded-2xl border border-white/50 bg-surface/50 backdrop-blur-xl"
             >
               <div className="aspect-[5/3] overflow-hidden">
                 <img
@@ -89,7 +89,7 @@ export function HomeDashboard({
       <div className="grid gap-4 lg:grid-cols-2">
         <ThisWeekWidget items={weekItems} />
 
-        <article className="rounded-2xl border border-line bg-surface p-5">
+        <article className="glass-panel rounded-2xl p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Budget Overview</h2>
           </div>
@@ -115,7 +115,7 @@ export function HomeDashboard({
               <Link
                 key={s.id}
                 href={s.href}
-                className="rounded-2xl border border-line bg-surface p-4 hover:border-moss/30"
+                className="glass-panel rounded-2xl p-4 hover:border-moss/30"
               >
                 <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-moss">{s.kind}</p>
                 <p className="mt-1 text-sm font-medium">{s.title}</p>

@@ -26,7 +26,7 @@ export function ThisWeekWidget({ items }: { items: WeekItem[] }) {
   }
 
   return (
-    <article className="rounded-2xl border border-line bg-surface p-5">
+    <article className="glass-panel rounded-2xl p-5">
       <h2 className="text-sm font-semibold">This Week</h2>
       <ul className="mt-4 space-y-3">
         {rows.slice(0, 5).map((item) => (
@@ -88,7 +88,7 @@ export function RsvpWidget() {
   }
 
   return (
-    <article className="rounded-2xl border border-line bg-surface p-5">
+    <article className="glass-panel rounded-2xl p-5">
       <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-moss">RSVP</p>
       <p className="mt-2 font-serif text-3xl">{count == null ? "—" : count}</p>
       <p className="text-sm text-muted">waiting on a reply</p>
@@ -147,7 +147,7 @@ export function PayWidget() {
   }
 
   return (
-    <article className="rounded-2xl border border-line bg-surface p-5">
+    <article className="glass-panel rounded-2xl p-5">
       <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-moss">Money</p>
       <h2 className="mt-1 text-sm font-semibold">Log a payment</h2>
       <form onSubmit={submit} className="mt-3 space-y-2">
