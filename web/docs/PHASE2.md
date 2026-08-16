@@ -117,3 +117,6 @@
 ## Wave 28 (done)
 - Cinematic landing, login, and This week — atmosphere + huge type, lists still work
 
+## Wave 29 (done)
+- One `.glass` token: landing week, login, This week caption, ⌘K. Reduced transparency respected
+

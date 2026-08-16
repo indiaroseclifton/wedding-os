@@ -52,8 +52,13 @@ export function CinematicDash({
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/20" />
-        <div className="relative flex min-h-[72vh] flex-col justify-end px-6 pb-8 pt-16 sm:px-10 sm:pb-10">
-          <motion.div variants={stagger} initial="hidden" animate="show">
+        <div className="relative flex min-h-[72vh] flex-col justify-end px-5 pb-6 pt-16 sm:px-8 sm:pb-8">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            animate="show"
+            className="glass max-w-xl rounded-[1.4rem] p-6 sm:p-8"
+          >
             <motion.p
               variants={fadeUp}
               className="text-[11px] font-medium uppercase tracking-[0.32em] text-[#eadec8]/80"
@@ -62,7 +67,7 @@ export function CinematicDash({
             </motion.p>
             <motion.p
               variants={fadeUp}
-              className="mt-4 font-serif text-[clamp(5rem,18vw,9.5rem)] leading-[0.85] tracking-[-0.05em] text-[#f6f1e8]"
+              className="mt-3 font-serif text-[clamp(4rem,14vw,7rem)] leading-[0.85] tracking-[-0.05em] text-[#f6f1e8]"
             >
               {headline}
             </motion.p>

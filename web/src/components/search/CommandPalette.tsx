@@ -114,7 +114,7 @@ export function CommandPalette() {
             aria-label="Close search"
             onClick={() => setOpen(false)}
           />
-          <div className="relative mx-auto mt-[12vh] w-[min(92%,32rem)] overflow-hidden rounded-xl border border-line bg-surface shadow-xl">
+          <div className="glass relative mx-auto mt-[12vh] w-[min(92%,32rem)] overflow-hidden rounded-[1.2rem]">
             <input
               ref={inputRef}
               value={q}
@@ -131,7 +131,7 @@ export function CommandPalette() {
                 if (e.key === "Enter" && items[active]) go(items[active].href);
               }}
               placeholder="Jump to a room, guest, vendor…"
-              className="w-full border-b border-line px-4 py-3 text-sm outline-none"
+              className="w-full border-b border-white/10 bg-transparent px-4 py-3 text-sm text-[#f6f1e8] outline-none placeholder:text-white/40"
             />
             <ul className="max-h-80 overflow-y-auto py-1">
               {items.map((item, i) => (
@@ -141,16 +141,16 @@ export function CommandPalette() {
                     onMouseEnter={() => setActive(i)}
                     onClick={() => go(item.href)}
                     className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm ${
-                      i === active ? "bg-paper" : ""
+                      i === active ? "bg-white/10" : ""
                     }`}
                   >
                     <span className="font-medium">{item.title}</span>
-                    <span className="text-[11px] text-muted">{item.meta || item.type}</span>
+                    <span className="text-[11px] text-white/50">{item.meta || item.type}</span>
                   </button>
                 </li>
               ))}
               {!items.length && (
-                <li className="px-4 py-8 text-center text-sm text-muted">Nothing matches</li>
+                <li className="px-4 py-8 text-center text-sm text-white/50">Nothing matches</li>
               )}
             </ul>
           </div>

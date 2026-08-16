@@ -64,7 +64,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
         <h1 className="mt-4 max-w-lg text-center font-serif text-4xl leading-[1.05] tracking-tight sm:text-5xl">
           The wedding you’re actually throwing
         </h1>
-        <div className="mt-8 w-full max-w-sm space-y-5 rounded-[1.4rem] border border-white/15 bg-black/40 p-6 backdrop-blur-md">
+        <div className="glass mt-8 w-full max-w-sm space-y-5 rounded-[1.4rem] p-6">
           <div>
             <h2 className="font-serif text-2xl">Sign in</h2>
             <p className="mt-2 text-sm text-white/65">

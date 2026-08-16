@@ -71,6 +71,28 @@ body {
   }
 }
 
+.glass {
+  background: rgba(12, 14, 11, 0.5);
+  border: 1px solid rgba(234, 222, 200, 0.22);
+  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.55);
+  color: #f6f1e8;
+}
+
+@supports ((-webkit-backdrop-filter: blur(16px)) or (backdrop-filter: blur(16px))) {
+  .glass {
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: #1a1c18;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 @media print {
   header,
   nav,
