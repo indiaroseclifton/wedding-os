@@ -39,6 +39,14 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
   ],
   vendors: [
     { href: "/vendors", label: "My team" },
+    {
+      href: "/vendors/contracts",
+      label: "Contracts",
+      children: [
+        { href: "/vendors/contracts", label: "All" },
+        { href: "/vendors/browse", label: "Still shopping" },
+      ],
+    },
     { href: "/vendors/browse", label: "Find vendors" },
     { href: "/vendors/checklists", label: "Checklists" },
     { href: "/vendors/shortlist", label: "Compare" },

@@ -33,6 +33,12 @@ export default async function VendorsPage() {
             Browse directory
           </Link>
           <Link
+            href="/vendors/contracts"
+            className="rounded-full border border-line px-4 py-2 text-sm"
+          >
+            Contracts
+          </Link>
+          <Link
             href="/vendors/new"
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium"
           >
