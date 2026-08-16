@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ScheduleView } from "@/components/run-of-show/ScheduleView";
 import type { RunSlot } from "@/lib/data/run-of-show";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 type CheckIn = { id: string; name: string; role: string; status: string };
 type DayOf = {
@@ -74,6 +75,7 @@ export default function DayOfPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="day" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Day-of board</h1>

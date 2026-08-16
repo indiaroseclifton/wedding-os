@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 const CATEGORIES = [
   "Venue",
@@ -107,6 +108,7 @@ export default function BudgetPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="budget" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Budget</h1>

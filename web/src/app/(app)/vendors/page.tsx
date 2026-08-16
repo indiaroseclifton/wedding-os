@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { reviewHint } from "@/lib/data/contract-review";
@@ -16,6 +17,7 @@ export default async function VendorsPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="vendors" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Vendors</h1>

@@ -2,7 +2,7 @@ export const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: "home", match: ["/dashboard"] },
   { href: "/guests", label: "Guests", icon: "guests", match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site"] },
   { href: "/vendors", label: "Vendors", icon: "vendors", match: ["/vendors", "/payments", "/handoffs"] },
-  { href: "/checklist", label: "Planning", icon: "planning", match: ["/checklist", "/timeline", "/tasks", "/diy"] },
+  { href: "/planning", label: "Planning", icon: "planning", match: ["/planning", "/checklist", "/timeline", "/tasks", "/diy", "/moodboard", "/decisions"] },
   { href: "/day-of", label: "The Day", icon: "day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire", "/music"] },
   { href: "/budget", label: "Budget", icon: "budget", match: ["/budget"] },
   { href: "/registry", label: "Registry", icon: "registry", match: ["/registry"] },
@@ -11,7 +11,7 @@ export const NAV_ITEMS = [
 export const VISUAL_ROOMS = [
   { href: "/guests", label: "Guests", photo: "/brand/setting.jpg", line: "Manage your guest list, RSVPs, plus-ones and seating" },
   { href: "/vendors", label: "Vendors", photo: "/brand/garden.jpg", line: "Find, book, and manage your vendors" },
-  { href: "/checklist", label: "Planning", photo: "/brand/flowers.jpg", line: "Checklists, timeline, and to-dos" },
+  { href: "/planning", label: "Planning", photo: "/brand/flowers.jpg", line: "Vision, checklists, timeline, and to-dos" },
   { href: "/day-of", label: "The Day", photo: "/brand/candles.jpg", line: "Run of show and day-of details" },
   { href: "/budget", label: "Budget", photo: "/brand/setting.jpg", line: "Track budget, payments, and expenses" },
   { href: "/registry", label: "Registry", photo: "/brand/garden.jpg", line: "Manage your registry and gifts" },

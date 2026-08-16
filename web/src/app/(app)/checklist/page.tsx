@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 type Item = { id: string; phase: string; title: string; done: boolean; custom?: boolean };
 type Phase = { id: string; label: string };
@@ -45,6 +46,7 @@ export default function ChecklistPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Planning checklist</h1>

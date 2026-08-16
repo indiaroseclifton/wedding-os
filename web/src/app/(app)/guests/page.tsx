@@ -11,6 +11,7 @@ import { ExportCsvButton } from "./ExportCsvButton";
 import { GuestFilters } from "./GuestFilters";
 import { NudgePanel } from "./NudgePanel";
 import { hasMailingAddress } from "@/lib/data/guest-mail";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 export default async function GuestsPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -40,6 +41,7 @@ export default async function GuestsPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="guests" />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Guests</h1>

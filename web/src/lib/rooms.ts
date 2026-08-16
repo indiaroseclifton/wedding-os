@@ -1,0 +1,56 @@
+export const ROOM_SUBNAV = {
+  planning: [
+    { href: "/planning", label: "Overview" },
+    { href: "/planning/vision", label: "My vision" },
+    { href: "/checklist", label: "Checklist" },
+    { href: "/timeline", label: "Timeline" },
+    { href: "/decisions/path", label: "Hire or make" },
+    { href: "/diy", label: "DIY studio" },
+    { href: "/moodboard", label: "Moodboard" },
+  ],
+  vendors: [
+    { href: "/vendors", label: "My team" },
+    { href: "/vendors/browse", label: "Find vendors" },
+    { href: "/vendors/shortlist", label: "Compare" },
+    { href: "/payments", label: "Payments" },
+    { href: "/handoffs", label: "Handoffs" },
+  ],
+  guests: [
+    { href: "/guests", label: "List" },
+    { href: "/seating", label: "Seating" },
+    { href: "/floorplan", label: "Floor plan" },
+    { href: "/travel", label: "Travel" },
+    { href: "/dietary", label: "Dietary" },
+    { href: "/site", label: "Guest site" },
+  ],
+  day: [
+    { href: "/day-of", label: "Board" },
+    { href: "/run-of-show", label: "Run of show" },
+    { href: "/music", label: "Music" },
+    { href: "/packet", label: "Packet" },
+    { href: "/people", label: "People" },
+    { href: "/attire", label: "Attire" },
+  ],
+  budget: [
+    { href: "/budget", label: "Overview" },
+    { href: "/payments", label: "Payments" },
+    { href: "/registry", label: "Registry" },
+  ],
+} as const;
+
+export const TEAM_ROLES = [
+  { id: "venue", label: "Venue", category: "Venue", when: "12–18 mo" },
+  { id: "photo", label: "Photographer", category: "Photographer", when: "12–18 mo" },
+  { id: "video", label: "Videographer", category: "Videographer", when: "9–14 mo" },
+  { id: "planner", label: "Planner", category: "Planner", when: "12–18 mo" },
+  { id: "florist", label: "Florist", category: "Florist", when: "8–12 mo", diy: "/diy/flowers" },
+  { id: "catering", label: "Caterer", category: "Catering", when: "8–12 mo" },
+  { id: "music", label: "DJ or band", category: "DJ / Band", when: "8–12 mo" },
+  { id: "beauty", label: "Hair & makeup", category: "Hair / Makeup", when: "6–9 mo" },
+  { id: "cake", label: "Cake", category: "Cake", when: "4–8 mo", diy: "/diy/cake" },
+  { id: "officiant", label: "Officiant", category: "Officiant", when: "6–9 mo" },
+  { id: "rentals", label: "Rentals", category: "Rentals", when: "4–8 mo", diy: "/diy/table-decor" },
+  { id: "transport", label: "Transportation", category: "Transportation", when: "3–6 mo" },
+  { id: "paper", label: "Stationery", category: "Stationery", when: "6–9 mo", diy: "/diy/signage" },
+  { id: "lighting", label: "Lighting", category: "Lighting", when: "3–6 mo", diy: "/diy/lighting" },
+] as const;
