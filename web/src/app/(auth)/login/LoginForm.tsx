@@ -56,47 +56,30 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden min-h-[40vh] lg:block">
-        <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-ink/10" />
-        <p className="absolute bottom-10 left-10 right-10 text-2xl font-medium leading-tight tracking-tight text-moss-fg">
-          The coordination hub for the wedding you’re actually throwing.
-        </p>
-      </div>
-      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-paper px-4 py-12">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,_#d7e0d6_0%,_transparent_70%)]"
-      />
-      <div className="relative w-full max-w-sm">
-        <p className="text-center text-[11px] font-medium uppercase tracking-[0.22em] text-moss">
-          Wedding OS
-        </p>
-        <h1 className="mt-3 text-center text-3xl font-medium tracking-tight text-ink">
-          Plan it in one place
+    <div className="relative min-h-screen overflow-hidden bg-[#0c0e0b] text-[#f6f1e8]">
+      <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-black/55" />
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
+        <p className="font-serif text-2xl tracking-tight">Wedding OS</p>
+        <h1 className="mt-4 max-w-lg text-center font-serif text-4xl leading-[1.05] tracking-tight sm:text-5xl">
+          The wedding you’re actually throwing
         </h1>
-        <p className="mx-auto mt-3 max-w-xs text-center text-sm leading-6 text-ink-soft">
-          The coordination hub — vendors, DIY, guests, and the day itself.
-        </p>
-
-        <div className="mt-8 space-y-6 rounded-xl border border-line bg-surface p-6 shadow-[0_1px_0_rgba(28,25,21,0.04)]">
+        <div className="mt-8 w-full max-w-sm space-y-5 rounded-[1.4rem] border border-white/15 bg-black/40 p-6 backdrop-blur-md">
           <div>
-            <h2 className="text-lg font-medium tracking-tight text-ink">Sign in</h2>
-            <p className="mt-2 text-sm text-ink-soft">
+            <h2 className="font-serif text-2xl">Sign in</h2>
+            <p className="mt-2 text-sm text-white/65">
               {verify
                 ? "Check your email for a sign-in link. It may take a minute."
-                : "Email a link to yourself, or use a demo person while we finish setup."}
+                : "Email a link, or use a demo person."}
             </p>
           </div>
-
           {verify ? (
-            <p className="rounded-lg bg-moss-soft px-3 py-2 text-sm text-moss">
+            <p className="rounded-lg bg-white/10 px-3 py-2 text-sm text-[#eadec8]">
               Link sent. Open it on this device.
             </p>
           ) : (
             <form action={onEmail} className="space-y-3">
-              <label className="block text-xs font-medium text-ink-soft">
+              <label className="block text-xs font-medium text-white/70">
                 Email
                 <input
                   type="email"
@@ -104,35 +87,18 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
                   required
                   disabled={!emailReady || sending}
                   placeholder="you@email.com"
-                  className="mt-1 w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-moss focus:ring-2 focus:ring-moss/20 disabled:bg-paper"
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2.5 text-sm text-[#f6f1e8] outline-none placeholder:text-white/35 focus:border-[#eadec8] disabled:opacity-50"
                 />
               </label>
               <button
                 type="submit"
                 disabled={!emailReady || sending}
-                className="flex w-full items-center justify-center rounded-lg bg-moss px-4 py-2.5 text-sm font-medium text-moss-fg hover:bg-moss/90 disabled:opacity-50"
+                className="flex w-full items-center justify-center rounded-lg bg-[#eadec8] px-4 py-2.5 text-sm font-medium text-[#1a1814] disabled:opacity-50"
               >
                 {sending ? "Sending…" : "Email me a sign-in link"}
               </button>
-              {!emailReady && (
-                <p className="text-xs text-muted">
-                  Email login connects after the Resend key is added. Demo buttons still work.
-                </p>
-              )}
             </form>
           )}
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-line" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-surface px-2 text-[10px] font-semibold uppercase tracking-wide text-muted">
-                Demo
-              </span>
-            </div>
-          </div>
-
           <div className="space-y-2">
             {DEMO_USERS.map((user) => (
               <button
@@ -140,15 +106,14 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
                 type="button"
                 disabled={!!loadingId}
                 onClick={() => signInDemo(user)}
-                className="flex w-full items-center justify-center rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink hover:bg-paper disabled:opacity-50"
+                className="flex w-full items-center justify-center rounded-lg border border-white/20 px-4 py-2.5 text-sm font-medium text-[#f6f1e8] disabled:opacity-50"
               >
                 {loadingId === user.userId ? "Signing in…" : user.label}
               </button>
             ))}
           </div>
-          {error && <p className="text-xs text-clay">{error}</p>}
+          {error && <p className="text-xs text-[#f3c4bb]">{error}</p>}
         </div>
-      </div>
       </div>
     </div>
   );

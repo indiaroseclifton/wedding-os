@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getSessionUser } from "@/lib/auth/session";
 import {
   ensureDemoWorkspace,
@@ -10,7 +9,7 @@ import { listVendors } from "@/lib/data/vendors-store";
 import { listPackages } from "@/lib/data/handoffs-store";
 import { SeedButton } from "./SeedButton";
 import { loadThisWeek } from "@/lib/this-week";
-import { StatTiles, WeekList } from "@/components/this-week/WeekList";
+import { CinematicDash } from "@/components/this-week/CinematicDash";
 
 export default async function DashboardPage() {
   const session = await getSessionUser();
@@ -32,82 +31,29 @@ export default async function DashboardPage() {
   const booked = vendors.filter((v) =>
     ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status)
   ).length;
-  const days = week.days;
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-moss">This week</p>
-          <h1 className="mt-1 text-2xl font-medium tracking-tight text-ink">{workspace.name}</h1>
-          <p className="mt-2 text-sm text-ink-soft">
-            Welcome{session ? `, ${session.name}` : ""}.
-            {meta.coupleNames ? ` ${meta.coupleNames}.` : ""}
-            {meta.location ? ` ${meta.location}.` : ""}
-          </p>
-        </div>
+    <div className="space-y-6">
+      <div className="flex justify-end">
         <SeedButton />
       </div>
-
-      <div className="rounded-xl border border-line bg-surface px-5 py-6">
-        {days != null ? (
-          <>
-            <p className="text-4xl font-medium tracking-tight">
-              {days === 0 ? "Today" : days > 0 ? `${days} days` : `${Math.abs(days)} days ago`}
-            </p>
-            <p className="mt-2 text-sm text-ink-soft">
-              {days >= 0 ? "until the wedding" : "since the wedding"} · {meta.weddingDate}
-              {week.now + week.week > 0
-                ? ` · ${week.now + week.week} thing${week.now + week.week === 1 ? "" : "s"} this week`
-                : " · you’re clear this week"}
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="text-2xl font-medium tracking-tight">Set your date</p>
-            <p className="mt-2 text-sm text-ink-soft">
-              Add names, date, and city in Settings so this list is yours.
-            </p>
-          </>
-        )}
-        <div className="mt-5 flex flex-wrap gap-2">
-          <Link
-            href="/settings"
-            className="rounded-lg bg-moss px-3 py-2 text-xs font-medium text-moss-fg"
-          >
-            Wedding details
-          </Link>
-          <Link
-            href="/people"
-            className="rounded-lg border border-line px-3 py-2 text-xs font-medium"
-          >
-            Invite someone
-          </Link>
-        </div>
-      </div>
-
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-lg font-medium tracking-tight text-ink">What to do</h2>
-          <p className="mt-1 text-sm text-muted">
-            Payments, people, contracts, DIY beats, and holes in the day — one door each.
-          </p>
-        </div>
-        <WeekList items={week.items} />
-      </section>
-
-      <StatTiles
+      <CinematicDash
+        name={workspace.name}
+        couple={meta.coupleNames}
+        location={meta.location}
+        days={week.days}
+        date={meta.weddingDate}
+        weekCount={week.now + week.week}
+        items={week.items}
         tiles={[
           { href: "/tasks", label: "Open tasks", value: String(openTasks) },
           { href: "/guests", label: "Headcount", value: String(headcount) },
-          { href: "/vendors", label: "Vendors booked", value: String(booked) },
+          { href: "/vendors", label: "Booked", value: String(booked) },
           { href: "/handoffs", label: "Handoffs", value: String(packages.length) },
         ]}
       />
-
       <p className="text-xs text-muted">
-        {decisions.length} decisions logged. Everything else lives in the rooms — this page is the
-        hallway.
+        {decisions.length} decisions logged. The rooms are still the work — this is the stage.
       </p>
     </div>
   );

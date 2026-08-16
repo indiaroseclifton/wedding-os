@@ -114,3 +114,6 @@
 ## Wave 27 (done)
 - Landing shows a live This week preview. ⌘K jumps rooms / guests / vendors
 
+## Wave 28 (done)
+- Cinematic landing, login, and This week — atmosphere + huge type, lists still work
+

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ProductPreview } from "@/components/landing/ProductPreview";
 import { BrandMark } from "@/components/brand/BrandMark";
+import { ProductPreview } from "@/components/landing/ProductPreview";
 import { motion, fadeUp, stagger, MotionRoot } from "@/components/motion";
 
 const CARDS = [
@@ -29,87 +29,104 @@ const CARDS = [
 export function LandingView() {
   return (
     <MotionRoot>
-      <div className="min-h-screen bg-paper text-ink">
-        <header className="flex items-center justify-between px-5 py-4 sm:px-8">
-          <p className="flex items-center gap-2 text-sm font-medium tracking-tight">
-            <BrandMark size={22} />
-            Wedding OS
-          </p>
-          <Link
-            href="/login"
-            className="rounded-full bg-ink px-4 py-2 text-xs font-medium text-paper"
-          >
-            Sign in
-          </Link>
-        </header>
+      <div className="min-h-screen bg-[#0c0e0b] text-[#f6f1e8]">
+        <section className="relative min-h-screen overflow-hidden">
+          <motion.img
+            src="/brand/tablescape.jpg"
+            alt=""
+            initial={{ scale: 1.16 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 10, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 h-full w-full object-cover object-[center_28%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
 
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 pb-16 pt-6 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:pt-10">
-          <motion.div variants={stagger} initial="hidden" animate="show">
-            <motion.p
-              variants={fadeUp}
-              className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss"
+          <header className="absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 py-5 sm:px-10">
+            <p className="flex items-center gap-2 font-serif text-lg tracking-tight">
+              <BrandMark className="text-[#eadec8]" />
+              Wedding OS
+            </p>
+            <Link
+              href="/login"
+              className="rounded-full bg-[#eadec8] px-4 py-2 text-xs font-medium text-[#1a1814]"
             >
-              Hire or make it yourself
-            </motion.p>
-            <motion.h1
-              variants={fadeUp}
-              className="mt-4 text-4xl leading-[1.05] tracking-tight text-ink sm:text-5xl"
-            >
-              Plan the wedding you’re actually throwing
-            </motion.h1>
-            <motion.p
-              variants={fadeUp}
-              className="mt-4 max-w-md text-base leading-7 text-ink-soft"
-            >
-              One coordination hub — vendors, guests, the day itself — plus DIY playbooks so you
-              don’t disappear into YouTube.
-            </motion.p>
-            <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/login"
-                className="rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-moss-fg"
+              Sign in
+            </Link>
+          </header>
+
+          <div className="relative mx-auto grid min-h-screen max-w-6xl items-end gap-10 px-5 pb-12 pt-28 sm:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-16">
+            <motion.div variants={stagger} initial="hidden" animate="show">
+              <motion.p
+                variants={fadeUp}
+                className="text-[11px] font-medium uppercase tracking-[0.34em] text-[#eadec8]"
               >
-                Open your wedding
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-full border border-line px-5 py-2.5 text-sm font-medium"
+                Hire or make it yourself
+              </motion.p>
+              <motion.h1
+                variants={fadeUp}
+                className="mt-5 font-serif text-[clamp(3.2rem,8vw,6.4rem)] leading-[0.92] tracking-[-0.04em]"
               >
-                Try the demo
-              </Link>
+                The wedding
+                <br />
+                you’re actually
+                <br />
+                throwing.
+              </motion.h1>
+              <motion.p variants={fadeUp} className="mt-6 max-w-md text-base leading-7 text-white/70">
+                Coordination that looks like the day. Vendors, DIY, guests, and the hour-by-hour —
+                one stage.
+              </motion.p>
+              <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href="/login"
+                  className="rounded-full bg-[#eadec8] px-6 py-2.5 text-sm font-medium text-[#1a1814]"
+                >
+                  Open your wedding
+                </Link>
+                <Link
+                  href="/login"
+                  className="rounded-full border border-white/30 px-6 py-2.5 text-sm font-medium text-white"
+                >
+                  Try the demo
+                </Link>
+              </motion.div>
             </motion.div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <ProductPreview />
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:mt-16"
+            >
+              <ProductPreview />
+            </motion.div>
+          </div>
         </section>
 
         <motion.section
           variants={stagger}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, amount: 0.25 }}
-          className="mx-auto grid max-w-6xl gap-4 px-5 pb-20 sm:grid-cols-3 sm:px-8"
+          viewport={{ once: true, amount: 0.2 }}
+          className="mx-auto grid max-w-6xl gap-4 px-5 py-16 sm:grid-cols-3 sm:px-10"
         >
           {CARDS.map((c) => (
             <motion.article
               key={c.k}
               variants={fadeUp}
-              whileHover={{ y: -4 }}
-              transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className="overflow-hidden rounded-xl border border-line bg-surface"
+              whileHover={{ y: -6 }}
+              className="group relative aspect-[4/5] overflow-hidden rounded-[1.5rem]"
             >
-              <div className="aspect-[16/10] overflow-hidden">
-                <img src={c.src} alt="" className="h-full w-full object-cover" />
-              </div>
-              <div className="p-4">
-                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-moss">{c.k}</p>
-                <h2 className="mt-1 text-base font-medium tracking-tight">{c.t}</h2>
-                <p className="mt-2 text-sm leading-6 text-ink-soft">{c.d}</p>
+              <img
+                src={c.src}
+                alt=""
+                className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5">
+                <p className="text-[11px] uppercase tracking-[0.22em] text-[#eadec8]">{c.k}</p>
+                <h2 className="mt-1 font-serif text-2xl leading-tight">{c.t}</h2>
+                <p className="mt-2 text-sm leading-6 text-white/70">{c.d}</p>
               </div>
             </motion.article>
           ))}
