@@ -11,6 +11,14 @@ export type DecorTrend = {
   tools: { href: string; label: string }[];
   photo: string;
   tags: string[];
+  price: {
+    unit: "wedding" | "table" | "each";
+    diyLow: number;
+    diyHigh: number;
+    hireLow: number;
+    hireHigh: number;
+    note: string;
+  };
 };
 
 export const DECOR_TRENDS: DecorTrend[] = [
@@ -30,6 +38,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/garden.jpg",
     tags: ["flowers", "ceremony", "diy-friendly"],
+    price: {
+      unit: "wedding",
+      diyLow: 180,
+      diyHigh: 420,
+      hireLow: 2200,
+      hireHigh: 7500,
+      note: "Bud vases + grocery/wholesale stems for one aisle. Hire is a meadow install.",
+    },
   },
   {
     id: "fruit",
@@ -47,6 +63,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/tablescape.jpg",
     tags: ["table", "diy-friendly", "budget"],
+    price: {
+      unit: "table",
+      diyLow: 12,
+      diyHigh: 28,
+      hireLow: 45,
+      hireHigh: 90,
+      note: "Stone fruit + a few stems the morning of. Hire is a styled produce tablescape.",
+    },
   },
   {
     id: "linen-first",
@@ -64,6 +88,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/tablescape.jpg",
     tags: ["table", "diy-friendly"],
+    price: {
+      unit: "table",
+      diyLow: 18,
+      diyHigh: 40,
+      hireLow: 55,
+      hireHigh: 120,
+      note: "Runner or gauze you keep + tapers. Hire includes linen rental and place.",
+    },
   },
   {
     id: "lamps",
@@ -81,6 +113,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/candles.jpg",
     tags: ["lighting", "table", "diy-friendly"],
+    price: {
+      unit: "table",
+      diyLow: 22,
+      diyHigh: 48,
+      hireLow: 70,
+      hireHigh: 160,
+      note: "Two rechargeable lamps + votives, bought. Hire is a lighting plot per table.",
+    },
   },
   {
     id: "cloud",
@@ -98,6 +138,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/setting.jpg",
     tags: ["flowers", "palette"],
+    price: {
+      unit: "wedding",
+      diyLow: 450,
+      diyHigh: 1100,
+      hireLow: 3500,
+      hireHigh: 12000,
+      note: "Silk + real greens for tables and a bouquet. Hire is an all-white florist room.",
+    },
   },
   {
     id: "color-back",
@@ -115,6 +163,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/candles.jpg",
     tags: ["palette", "vision"],
+    price: {
+      unit: "wedding",
+      diyLow: 80,
+      diyHigh: 250,
+      hireLow: 400,
+      hireHigh: 1800,
+      note: "Dye, napkins, one repeated accent. Not the flowers — those sit in Floral.",
+    },
   },
   {
     id: "house",
@@ -132,6 +188,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/setting.jpg",
     tags: ["table", "diy-friendly", "budget"],
+    price: {
+      unit: "table",
+      diyLow: 15,
+      diyHigh: 35,
+      hireLow: 60,
+      hireHigh: 140,
+      note: "Thrifted plates + a lamp from home. Hire is vintage rental per setting.",
+    },
   },
   {
     id: "keep",
@@ -149,6 +213,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/flowers.jpg",
     tags: ["flowers", "diy-friendly", "budget"],
+    price: {
+      unit: "wedding",
+      diyLow: 320,
+      diyHigh: 850,
+      hireLow: 0,
+      hireHigh: 0,
+      note: "Real-touch silk you keep. Hire doesn’t apply — that’s the point.",
+    },
   },
   {
     id: "bar",
@@ -166,6 +238,14 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/flowers.jpg",
     tags: ["flowers", "guest", "diy-friendly"],
+    price: {
+      unit: "wedding",
+      diyLow: 160,
+      diyHigh: 380,
+      hireLow: 800,
+      hireHigh: 2200,
+      note: "Hardy buckets + ribbon for ~80 guests. Hire is a styled bar with an attendant.",
+    },
   },
   {
     id: "drape",
@@ -183,7 +263,30 @@ export const DECOR_TRENDS: DecorTrend[] = [
     ],
     photo: "/brand/garden.jpg",
     tags: ["install", "hire-leaning"],
+    price: {
+      unit: "wedding",
+      diyLow: 90,
+      diyHigh: 240,
+      hireLow: 1600,
+      hireHigh: 6500,
+      note: "A gauze sweetheart backdrop you hang. Hire is a tent or ceiling drape.",
+    },
   },
 ];
+
+export function scaleTrend(t: DecorTrend, tables: number) {
+  const n = t.price.unit === "table" ? Math.max(1, tables) : 1;
+  return {
+    diyLow: t.price.diyLow * n,
+    diyHigh: t.price.diyHigh * n,
+    hireLow: t.price.hireLow * n,
+    hireHigh: t.price.hireHigh * n,
+    saveLow: Math.max(0, t.price.hireLow * n - t.price.diyHigh * n),
+  };
+}
+
+export function money(n: number) {
+  return n >= 1000 ? `$${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `$${Math.round(n)}`;
+}
 
 export const TREND_TAGS = ["diy-friendly", "table", "flowers", "lighting", "budget", "palette"] as const;

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { DECOR_TRENDS, TREND_TAGS } from "@/lib/decor-trends";
+import { DECOR_TRENDS, TREND_TAGS, money, scaleTrend } from "@/lib/decor-trends";
 
 export default function DecorTrendsPage() {
   const [tag, setTag] = useState<string>("all");
   const [open, setOpen] = useState<string | null>(DECOR_TRENDS[0]?.id ?? null);
+  const [tables, setTables] = useState(10);
 
   const list = useMemo(
     () => (tag === "all" ? DECOR_TRENDS : DECOR_TRENDS.filter((t) => t.tags.includes(tag))),
@@ -49,9 +50,24 @@ export default function DecorTrendsPage() {
         ))}
       </div>
 
+      <label className="flex max-w-sm flex-wrap items-center gap-3 text-xs">
+        <span className="text-muted">Tables (for per-table looks)</span>
+        <input
+          type="range"
+          min={4}
+          max={24}
+          value={tables}
+          onChange={(e) => setTables(Number(e.target.value))}
+          className="flex-1"
+        />
+        <span className="font-medium">{tables}</span>
+      </label>
+      <p className="text-[11px] text-muted">US 2026 grocery / wholesale vs florist. Your city moves this.</p>
+
       <ul className="space-y-3">
         {list.map((t) => {
           const on = open === t.id;
+          const $ = scaleTrend(t, tables);
           return (
             <li key={t.id} className="overflow-hidden rounded-2xl border border-line bg-surface">
               <button
@@ -64,11 +80,31 @@ export default function DecorTrendsPage() {
                   <span className="text-[11px] uppercase tracking-wide text-moss">{t.year}</span>
                   <span className="mt-1 block font-serif text-2xl">{t.name}</span>
                   <span className="mt-1 block text-sm text-muted">{t.line}</span>
+                  <span className="mt-2 block text-xs">
+                    DIY {money($.diyLow)}–{money($.diyHigh)}
+                    {t.price.hireHigh > 0 ? (
+                      <span className="text-muted">
+                        {" "}
+                        · hire {money($.hireLow)}–{money($.hireHigh)}
+                      </span>
+                    ) : (
+                      <span className="text-muted"> · you keep it</span>
+                    )}
+                    {t.price.unit === "table" ? <span className="text-muted"> · {tables} tables</span> : null}
+                  </span>
                 </span>
               </button>
               {on && (
                 <div className="space-y-3 border-t border-line px-4 py-4 text-sm">
                   <p>{t.why}</p>
+                  <p className="rounded-xl bg-paper px-3 py-2 text-xs">
+                    {t.price.note}
+                    {$.saveLow > 200 ? (
+                      <span className="mt-1 block text-moss">
+                        Doing it yourself is usually at least {money($.saveLow)} less than hiring the low end.
+                      </span>
+                    ) : null}
+                  </p>
                   <div className="grid gap-3 sm:grid-cols-3">
                     <p>
                       <span className="block text-[11px] uppercase tracking-wide text-moss">DIY it</span>
