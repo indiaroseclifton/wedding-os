@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { getSendByToken, markSendReceived, patchSendByToken } from "@/lib/data/sends-store";
 import { addSlotComment, confirmSlot } from "@/lib/data/dayof-store";
-import { getVendor } from "@/lib/data/vendors-store";
+import { appendVendorInquiry, getVendor } from "@/lib/data/vendors-store";
 import { defaultNeeds } from "@/lib/send/needs";
+import { isAttachmentId, type AttachmentId } from "@/lib/send/attachments";
+
+async function log(vendorId: string, body: string) {
+  await appendVendorInquiry(vendorId, { direction: "in", body });
+}
 
 export async function GET(
   _request: Request,
@@ -28,37 +33,50 @@ export async function POST(
   }
   const body = await request.json().catch(() => ({}));
   const action = String(body.action || "ack");
-  const name = typeof body.name === "string" ? body.name : existing.receivedName || "";
+  const name = (typeof body.name === "string" ? body.name : existing.receivedName || "Vendor").slice(0, 80);
 
   if (action === "ack") {
     const row = await markSendReceived(token, name);
+    await log(existing.vendorId, `${name} has this packet`);
     return NextResponse.json({ ok: true, send: row });
   }
 
   if (action === "confirm") {
     const slotId = String(body.slotId || "");
+    const title = String(body.title || "cue").slice(0, 120);
     if (!slotId) return NextResponse.json({ error: "Need a cue" }, { status: 400 });
-    await confirmSlot(existing.workspaceId, slotId, name || "Vendor");
-    const row = await markSendReceived(token, name);
+    await confirmSlot(existing.workspaceId, slotId, name);
+    const row = await patchSendByToken(token, (s) => {
+      s.receivedAt = s.receivedAt || new Date().toISOString();
+      s.receivedName = s.receivedName || name;
+      s.lastConfirmed = { slotId, title, at: new Date().toISOString(), who: name };
+    });
+    await log(existing.vendorId, `${name} confirmed ${title}`);
     return NextResponse.json({ ok: true, send: row });
   }
 
   if (action === "comment") {
     const slotId = String(body.slotId || "");
     if (!slotId) return NextResponse.json({ error: "Need a cue" }, { status: 400 });
-    await addSlotComment(existing.workspaceId, slotId, name || "Vendor", String(body.body || "").slice(0, 500));
+    const text = String(body.body || "").slice(0, 500);
+    await addSlotComment(existing.workspaceId, slotId, name, text);
+    await log(existing.vendorId, `${name} on a cue: ${text}`);
     return NextResponse.json({ ok: true });
   }
 
   if (action === "question") {
     const text = String(body.body || "").trim().slice(0, 500);
     if (!text) return NextResponse.json({ error: "Write a question" }, { status: 400 });
+    const section = isAttachmentId(String(body.section || ""))
+      ? (String(body.section) as AttachmentId)
+      : undefined;
     const row = await patchSendByToken(token, (s) => {
       s.questions = [
         ...(s.questions || []),
-        { id: randomUUID(), from: (name || "Vendor").slice(0, 80), body: text, at: new Date().toISOString() },
+        { id: randomUUID(), from: name, body: text, at: new Date().toISOString(), section },
       ];
     });
+    await log(existing.vendorId, `Asked${section ? ` (${section})` : ""}: ${text}`);
     return NextResponse.json({ ok: true, send: row });
   }
 
@@ -78,6 +96,15 @@ export async function POST(
           : n
       );
     });
+    const need = row?.needs?.find((n) => n.id === needId);
+    if (need) {
+      await log(
+        existing.vendorId,
+        need.fileName
+          ? `${name} attached ${need.fileName} for ${need.label}`
+          : `${name} ${need.done ? "did" : "reopened"}: ${need.label}`
+      );
+    }
     return NextResponse.json({ ok: true, send: row });
   }
 

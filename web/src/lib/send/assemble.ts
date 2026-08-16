@@ -23,6 +23,7 @@ import {
   categoryKey,
 } from "./attachments";
 import { getSendForVendor, type VendorSend } from "@/lib/data/sends-store";
+import { findHandoffNote } from "./handoff-notes";
 import type { StoredVendor } from "@/lib/data/vendors-store";
 
 const ALLERGY = [
@@ -40,6 +41,7 @@ export type PacketSlot = {
   location?: string;
   lead?: string;
   notes?: string;
+  confirmedBy?: string[];
 };
 
 export type AssembledPacket = {
@@ -86,6 +88,7 @@ export type AssembledPacket = {
   clauseMeta: { namedLead?: string; hours?: string; overtimeRate?: string; coiReceived?: boolean };
   contacts: { role: string; name: string; phone?: string; email?: string }[];
   floral: { notes?: string; fixtures: string[] };
+  handoffNote?: string;
   readiness: { id: AttachmentId; label: string; ready: boolean; hint: string }[];
   gaps: string[];
 };
@@ -158,6 +161,7 @@ export async function assemblePacket(
       location: s.location,
       lead: s.lead,
       notes: s.notes,
+      confirmedBy: s.confirmedBy,
     })
   );
 
@@ -278,6 +282,7 @@ export async function assemblePacket(
       notes: vendor.notes,
       fixtures: floralFixtures.length ? floralFixtures : fixtures,
     },
+    handoffNote: (await findHandoffNote(workspaceId, vendor)) || undefined,
     readiness: [],
     gaps: [],
   };

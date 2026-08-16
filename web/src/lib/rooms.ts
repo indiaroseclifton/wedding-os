@@ -64,7 +64,7 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
       label: "Send",
       children: [
         { href: "/send", label: "Packets" },
-        { href: "/handoffs", label: "Text packages" },
+        { href: "/handoffs", label: "Extra notes" },
       ],
     },
   ],

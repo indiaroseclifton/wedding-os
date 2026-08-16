@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { PacketSlot } from "@/lib/send/assemble";
+import type { AttachmentId } from "@/lib/send/attachments";
+import { ATTACHMENTS } from "@/lib/send/attachments";
 import type { VendorNeed, VendorQuestion } from "@/lib/send/needs";
 
 export function VendorDesk({
@@ -11,6 +13,7 @@ export function VendorDesk({
   slots,
   needs,
   questions,
+  sections,
 }: {
   token: string;
   receivedAt?: string;
@@ -18,14 +21,21 @@ export function VendorDesk({
   slots: PacketSlot[];
   needs: VendorNeed[];
   questions: VendorQuestion[];
+  sections: AttachmentId[];
 }) {
   const [name, setName] = useState(receivedName || "");
   const [done, setDone] = useState(Boolean(receivedAt));
   const [needRows, setNeedRows] = useState(needs);
   const [qs, setQs] = useState(questions);
   const [ask, setAsk] = useState("");
+  const [askOn, setAskOn] = useState<AttachmentId | "">(sections[0] || "");
   const [slotNote, setSlotNote] = useState("");
   const [slotId, setSlotId] = useState(slots[0]?.id || "");
+  const [confirmed, setConfirmed] = useState<Record<string, boolean>>(() => {
+    const m: Record<string, boolean> = {};
+    for (const s of slots) if (s.confirmedBy?.length) m[s.id] = true;
+    return m;
+  });
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -146,6 +156,7 @@ export function VendorDesk({
               <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span>
                   <span className="tabular-nums text-moss">{s.time}</span> {s.title}
+                  {confirmed[s.id] ? <span className="ml-2 text-xs text-moss">confirmed</span> : null}
                 </span>
                 <button
                   type="button"
@@ -153,7 +164,8 @@ export function VendorDesk({
                   onClick={async () => {
                     setBusy(true);
                     try {
-                      await post({ action: "confirm", slotId: s.id });
+                      await post({ action: "confirm", slotId: s.id, title: s.title });
+                      setConfirmed((c) => ({ ...c, [s.id]: true }));
                       setMsg(`Confirmed ${s.title}`);
                     } finally {
                       setBusy(false);
@@ -205,16 +217,30 @@ export function VendorDesk({
       )}
 
       <section className="rounded-2xl border border-line bg-surface p-5">
-        <h2 className="font-serif text-2xl">Ask them one thing</h2>
+        <h2 className="font-serif text-2xl">Ask about a section</h2>
         <ul className="mt-3 space-y-2 text-sm">
           {qs.map((q) => (
             <li key={q.id}>
-              <p>{q.body}</p>
+              <p>
+                {q.section ? <span className="text-moss">{ATTACHMENTS[q.section].label} · </span> : null}
+                {q.body}
+              </p>
               {q.answer ? <p className="text-xs text-moss">They said: {q.answer}</p> : <p className="text-xs text-muted">Waiting</p>}
             </li>
           ))}
         </ul>
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <select
+            value={askOn}
+            onChange={(e) => setAskOn(e.target.value as AttachmentId | "")}
+            className="min-h-11 rounded-full border border-line px-3 text-sm"
+          >
+            {sections.map((id) => (
+              <option key={id} value={id}>
+                {ATTACHMENTS[id].label}
+              </option>
+            ))}
+          </select>
           <input
             value={ask}
             onChange={(e) => setAsk(e.target.value)}
@@ -227,7 +253,7 @@ export function VendorDesk({
             onClick={async () => {
               setBusy(true);
               try {
-                await post({ action: "question", body: ask });
+                await post({ action: "question", body: ask, section: askOn || undefined });
                 setAsk("");
               } finally {
                 setBusy(false);

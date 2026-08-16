@@ -43,6 +43,13 @@ export function PacketView({
         </section>
       )}
 
+      {packet.handoffNote?.trim() && (
+        <section className="rounded-2xl border border-line bg-surface px-5 py-4">
+          <p className="text-[11px] uppercase tracking-[0.16em] text-moss">Extra notes</p>
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{packet.handoffNote.trim()}</p>
+        </section>
+      )}
+
       {on.has("when_where") && (
         <section>
           <h2 className="font-serif text-2xl">When & where</h2>

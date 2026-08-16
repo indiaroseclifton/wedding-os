@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { VendorNeed, VendorQuestion } from "@/lib/send/needs";
+import { ATTACHMENTS } from "@/lib/send/attachments";
 
 export function AnswerInbox({
   sendId,
@@ -46,7 +47,10 @@ export function AnswerInbox({
       <ul className="mt-3 space-y-3">
         {rows.map((q) => (
           <li key={q.id} className="text-sm">
-            <p className="font-medium">{q.body}</p>
+            <p className="font-medium">
+              {q.section ? `${ATTACHMENTS[q.section].label}: ` : ""}
+              {q.body}
+            </p>
             <p className="text-xs text-muted">{q.from}</p>
             {q.answer ? (
               <p className="mt-1 text-moss">{q.answer}</p>

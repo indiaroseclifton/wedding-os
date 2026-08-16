@@ -21,6 +21,8 @@ export type VendorSend = {
   receivedName?: string;
   needs?: VendorNeed[];
   questions?: VendorQuestion[];
+  lastConfirmed?: { slotId: string; title: string; at: string; who: string };
+  handoffNote?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -55,6 +57,7 @@ export async function upsertSend(input: {
   category?: string;
   attachments?: string[];
   note?: string;
+  handoffNote?: string;
 }) {
   const rows = await readJson<VendorSend>(sendsFile);
   const now = new Date().toISOString();
@@ -63,6 +66,7 @@ export async function upsertSend(input: {
   if (existing) {
     existing.attachments = attachments;
     if (input.note !== undefined) existing.note = input.note.slice(0, 800);
+    if (input.handoffNote !== undefined) existing.handoffNote = input.handoffNote.slice(0, 4000);
     if (!existing.needs?.length && input.category) existing.needs = defaultNeeds(input.category);
     existing.updatedAt = now;
     await writeJson(sendsFile, rows);
@@ -75,6 +79,7 @@ export async function upsertSend(input: {
     token: randomUUID().replace(/-/g, ""),
     attachments,
     note: input.note?.slice(0, 800),
+    handoffNote: input.handoffNote?.slice(0, 4000),
     status: "DRAFT",
     needs: defaultNeeds(input.category || ""),
     questions: [],
@@ -133,5 +138,13 @@ export async function answerQuestion(workspaceId: string, sendId: string, questi
   );
   row.updatedAt = new Date().toISOString();
   await writeJson(sendsFile, rows);
+  const asked = row.questions?.find((q) => q.id === questionId);
+  if (asked?.answer) {
+    const { appendVendorInquiry } = await import("./vendors-store");
+    await appendVendorInquiry(row.vendorId, {
+      direction: "out",
+      body: `Answered${asked.section ? ` (${asked.section})` : ""}: ${asked.answer}`,
+    });
+  }
   return row;
 }

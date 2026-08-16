@@ -35,6 +35,7 @@ export default async function VendorPacketPage({
           slots={packet.callSheet}
           needs={needs}
           questions={send.questions || []}
+          sections={send.attachments}
         />
         <p className="mt-10 text-xs text-muted print:hidden">
           This page stays current. If they change the room or the kitchen, refresh — same link.

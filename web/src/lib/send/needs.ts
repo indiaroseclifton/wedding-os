@@ -1,4 +1,5 @@
 import { categoryKey } from "./attachments";
+import type { AttachmentId } from "./attachments";
 
 export type VendorNeed = {
   id: string;
@@ -13,6 +14,7 @@ export type VendorQuestion = {
   from: string;
   body: string;
   at: string;
+  section?: AttachmentId;
   answer?: string;
   answeredAt?: string;
 };

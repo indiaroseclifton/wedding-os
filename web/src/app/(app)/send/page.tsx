@@ -5,13 +5,7 @@ import { listVendors } from "@/lib/data/vendors-store";
 import { listSends } from "@/lib/data/sends-store";
 import { defaultAttachments, ATTACHMENTS } from "@/lib/send/attachments";
 import { assemblePacket } from "@/lib/send/assemble";
-
-function stamp(iso?: string) {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
+import { sendStrip } from "@/lib/send/status";
 
 export default async function SendDeskPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -43,7 +37,7 @@ export default async function SendDeskPage() {
           <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Vendors</p>
           <h1 className="mt-1 font-serif text-4xl">Send</h1>
           <p className="mt-2 max-w-xl text-sm text-muted">
-            One packet each. The room, the cues, the kitchen, the money — live from the desk, not another form.
+            One live page each. They confirm, attach, and ask — you see it here.
           </p>
         </div>
         <p className="text-sm text-ink-soft">
@@ -80,28 +74,14 @@ export default async function SendDeskPage() {
                         {vendor.email ? ` · ${vendor.email}` : " · no email"}
                       </p>
                     </div>
-                    <p className="text-xs text-moss">
-                      {send?.receivedAt
-                        ? `They opened it ${stamp(send.receivedAt)}`
-                        : send?.status === "SENT"
-                          ? `Sent ${stamp(send.sentAt)}`
-                          : booked
-                            ? "Ready to send"
-                            : "Preview"}
+                    <p className={`text-xs ${sendStrip(send).attention ? "text-clay" : "text-moss"}`}>
+                      {sendStrip(send).sent
+                        ? sendStrip(send).line
+                        : booked
+                          ? "Ready to send"
+                          : "Preview"}
                     </p>
                   </div>
-                  {(() => {
-                    const openQ = (send?.questions || []).filter((q) => !q.answer).length;
-                    const openN = (send?.needs || []).filter((n) => !n.done).length;
-                    if (!openQ && !openN) return null;
-                    return (
-                      <p className="mt-1 text-xs text-clay">
-                        {openQ ? `${openQ} question${openQ === 1 ? "" : "s"}` : ""}
-                        {openQ && openN ? " · " : ""}
-                        {openN ? `${openN} still needed from them` : ""}
-                      </p>
-                    );
-                  })()}
                   <ul className="mt-3 flex flex-wrap gap-1.5">
                     {attachments.map((id) => {
                       const row = packet.readiness.find((r) => r.id === id);
@@ -128,11 +108,11 @@ export default async function SendDeskPage() {
       )}
 
       <p className="text-xs text-muted">
-        Need a custom text package?{" "}
+        Extra notes from old text packages land on the packet. Edit them under{" "}
         <Link href="/handoffs" className="underline">
-          Handoffs
-        </Link>{" "}
-        still exist for notes that aren’t on the desk.
+          handoff notes
+        </Link>
+        .
       </p>
     </div>
   );

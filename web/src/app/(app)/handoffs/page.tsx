@@ -12,9 +12,9 @@ export default async function HandoffsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Handoffs</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Extra notes</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Custom text packages. For the live desk — room, cues, kitchen, money — use{" "}
+            These land on the live packet. Vendors never get this link — they get{" "}
             <Link href="/send" className="underline">
               Send
             </Link>

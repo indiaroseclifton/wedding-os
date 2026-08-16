@@ -6,6 +6,7 @@ import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { loadSendPreview, sendHref } from "@/lib/send/assemble";
 import { SendComposer } from "@/components/send/SendComposer";
 import { AnswerInbox } from "@/components/send/AnswerInbox";
+import { sendStrip } from "@/lib/send/status";
 
 export default async function SendVendorPage({
   params,
@@ -32,6 +33,7 @@ export default async function SendVendorPage({
             {existing?.status === "SENT" && existing.sentAt
               ? ` · last sent ${new Date(existing.sentAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
               : " · not sent yet"}
+            {existing ? ` · ${sendStrip(existing).line}` : ""}
           </p>
         </div>
         <div className="flex gap-2">

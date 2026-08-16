@@ -256,10 +256,10 @@ export async function loadThisWeek(
       items.push({
         id: "handoffs",
         urgency: days <= 7 ? "now" : "week",
-        title: `${unreceived.length} handoff${unreceived.length === 1 ? "" : "s"} not marked received`,
+        title: `${unreceived.length} packet${unreceived.length === 1 ? "" : "s"} not marked received`,
         detail: unreceived.map((p) => p.title).join(" · "),
-        href: "/handoffs",
-        cta: "Check handoffs",
+        href: "/send",
+        cta: "Open Send",
       });
     }
   }
