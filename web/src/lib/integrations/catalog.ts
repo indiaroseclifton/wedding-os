@@ -75,6 +75,14 @@ export const INTEGRATIONS: Integration[] = [
     needs: "Nothing. Stripe later if you want to charge cards.",
   },
   {
+    id: "send",
+    name: "Vendor send",
+    status: "live",
+    href: "/send",
+    what: "One packet per vendor. Room, cues, kitchen, money, clauses. Same link if you send again.",
+    needs: "Optional Resend key so the email actually goes. The link works either way.",
+  },
+  {
     id: "gcal",
     name: "Google Calendar",
     status: "next",

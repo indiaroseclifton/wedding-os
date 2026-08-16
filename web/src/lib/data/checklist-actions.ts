@@ -37,7 +37,7 @@ export const CHECKLIST_ACTIONS: Record<string, ChecklistAction> = {
   "Apply for the marriage license": { href: "/legal", cta: "Legal", lane: "couple" },
   "Schedule final fittings": { href: "/attire", cta: "Attire", lane: "couple" },
   "Order thank-you cards": { href: "/thanks", cta: "Thank-yous", lane: "couple" },
-  "Give final guest count to vendors": { href: "/handoffs", cta: "Handoffs", lane: "couple" },
+  "Give final guest count to vendors": { href: "/send", cta: "Send packets", lane: "couple" },
   "Finalize seating and meals": { href: "/dietary", cta: "Dietary", lane: "couple" },
   "Confirm day-of timeline with every vendor": { href: "/run-of-show", cta: "Run of show", lane: "couple" },
   "Pick up attire": { href: "/attire", cta: "Attire", lane: "couple" },

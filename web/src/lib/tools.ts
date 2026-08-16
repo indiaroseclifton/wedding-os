@@ -41,4 +41,10 @@ export const DESK_TOOLS = [
     label: "Vendor ledger",
     line: "Deposit, progress, final. Receipts. Paid hits the budget.",
   },
+  {
+    href: "/send",
+    icon: "mail",
+    label: "Vendor send",
+    line: "One packet each. Room, cues, kitchen, money. One link.",
+  },
 ] as const;

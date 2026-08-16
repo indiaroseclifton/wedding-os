@@ -67,7 +67,7 @@ export const DIRECTORY: DirectoryVendor[] = [
     leadWeeks: "9–18 months",
     goodFor: ["Outdoor ceremony", "DIY florals allowed", "Under 180 guests"],
     notFor: ["Hotel-block-on-site", "In-house catering only couples"],
-    afterBook: "Add the venue contact to Handoffs and lock the rain-plan note on Day-of.",
+    afterBook: "Send them the packet from Send. Rain plan stays on Day-of.",
     email: "holds@oakandlantern.example",
   },
   {
@@ -113,7 +113,7 @@ export const DIRECTORY: DirectoryVendor[] = [
     leadWeeks: "10–16 months",
     goodFor: ["Couples who hate posing", "Outdoor / window light"],
     notFor: ["Heavy sparkler / party-only coverage"],
-    afterBook: "Family shot list lives in Handoffs → Photo. Don’t bury it in email.",
+    afterBook: "Family shot list lives on their Send packet. Don’t bury it in email.",
     email: "hello@northlight.example",
   },
   {
@@ -392,7 +392,7 @@ export const DIRECTORY: DirectoryVendor[] = [
     leadWeeks: "4–10 months",
     goodFor: ["DIY couples who still want a grown-up day"],
     notFor: ["Full planning from a blank page"],
-    afterBook: "Give them this app: Day-of board, Handoffs, and the vendor list. That is the brief.",
+    afterBook: "Give them this app: Day-of board, Send, and the vendor list. That is the brief.",
     email: "hello@dayofdesk.example",
   },
   {

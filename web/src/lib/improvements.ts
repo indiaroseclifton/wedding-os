@@ -23,6 +23,7 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
       { id: "vision", title: "Vision that actually steers", body: "Browse and DIY follow the locked vibe.", href: "/planning/vision", status: "shipped" },
       { id: "discover", title: "Public Discover with real places", body: "Search a city without signing in.", href: "/discover/vendors", status: "shipped" },
       { id: "packet", title: "Packet you can trim", body: "Pick sections. Email the coordinator.", href: "/packet", status: "shipped" },
+      { id: "send", title: "One packet per vendor", body: "Room, cues, kitchen, money. One link. They mark received.", href: "/send", status: "shipped" },
     ],
   },
   {

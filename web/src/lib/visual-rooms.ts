@@ -1,7 +1,7 @@
 export const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: "home", room: null, match: ["/dashboard"] },
   { href: "/guests", label: "Guests", icon: "guests", room: "guests", match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site"] },
-  { href: "/vendors", label: "Vendors", icon: "vendors", room: "vendors", match: ["/vendors", "/payments", "/handoffs"] },
+  { href: "/vendors", label: "Vendors", icon: "vendors", room: "vendors", match: ["/vendors", "/payments", "/handoffs", "/send"] },
   { href: "/planning", label: "Planning", icon: "planning", room: "planning", match: ["/planning", "/checklist", "/timeline", "/tasks", "/diy", "/moodboard", "/decisions"] },
   { href: "/day-of", label: "The Day", icon: "day", room: "day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire", "/music"] },
   { href: "/budget", label: "Budget", icon: "budget", room: "budget", match: ["/budget"] },
@@ -25,6 +25,7 @@ export const MORE_ROOMS: { href: string; label: string }[] = [
   { href: "/music", label: "Music" },
   { href: "/travel", label: "Travel" },
   { href: "/payments", label: "Payments" },
+  { href: "/send", label: "Send" },
   { href: "/run-of-show", label: "Run of show" },
   { href: "/site", label: "Guest site" },
   { href: "/moodboard", label: "Moodboard" },

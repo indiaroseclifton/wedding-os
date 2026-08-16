@@ -14,7 +14,11 @@ export default async function HandoffsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Handoffs</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Packages for the DJ, day-of coordinator, or photographer — one link instead of email threads.
+            Custom text packages. For the live desk — room, cues, kitchen, money — use{" "}
+            <Link href="/send" className="underline">
+              Send
+            </Link>
+            .
           </p>
         </div>
         <Link

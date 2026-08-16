@@ -186,6 +186,10 @@ export default function VendorDetailPage() {
         <Link href="/vendors" className="text-xs underline">
           All vendors
         </Link>
+        {" · "}
+        <Link href={`/send/${vendor.id}`} className="text-xs underline">
+          Send their packet
+        </Link>
         <h1 className="mt-2 text-2xl font-semibold tracking-tight">{vendor.name}</h1>
         <p className="mt-1 text-sm text-slate-600">
           {vendor.category} · {vendor.status.replaceAll("_", " ")}

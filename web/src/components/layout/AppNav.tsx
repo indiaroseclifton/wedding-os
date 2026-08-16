@@ -11,7 +11,7 @@ import { MORE_ROOMS, VISUAL_ROOMS, firstNames, prettyWeddingDate } from "@/lib/v
 const TABS: { href: string; label: string; match: string[]; icon: string }[] = [
   { href: "/dashboard", label: "Week", match: ["/dashboard"], icon: "week" },
   { href: "/guests", label: "Guests", match: ["/guests", "/site", "/seating", "/floorplan", "/dietary", "/travel"], icon: "guests" },
-  { href: "/vendors", label: "Vendors", match: ["/vendors", "/payments", "/handoffs", "/music"], icon: "vendors" },
+  { href: "/vendors", label: "Vendors", match: ["/vendors", "/payments", "/handoffs", "/music", "/send"], icon: "vendors" },
   { href: "/diy", label: "Make", match: ["/diy"], icon: "diy" },
   { href: "/day-of", label: "Day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire"], icon: "day" },
 ];

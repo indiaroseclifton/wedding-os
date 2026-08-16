@@ -112,13 +112,15 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
     workspaceId: ws,
     name: "Spin City DJ",
     category: "DJ",
-    status: "PROPOSAL",
+    status: "BOOKED",
+    email: "book@spincity.example",
   });
   const catering = await createVendor({
     workspaceId: ws,
     name: "Harvest Catering",
     category: "Catering",
     status: "BOOKED",
+    email: "kitchen@harvest.example",
   });
 
   const venueDep = await addPayment({

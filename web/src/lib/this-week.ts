@@ -1,6 +1,7 @@
 import { getWorkspaceGuests, getWorkspaceTasks } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { listPackages } from "@/lib/data/handoffs-store";
+import { listSends } from "@/lib/data/sends-store";
 import { listPayments } from "@/lib/data/payments-store";
 import { getDayOf } from "@/lib/data/dayof-store";
 import { getChecklist } from "@/lib/data/checklist-store";
@@ -66,7 +67,7 @@ export async function loadThisWeek(
   weddingDate?: string,
   today = new Date()
 ) {
-  const [tasks, guests, vendors, packages, payments, dayOf, checklist, budget] =
+  const [tasks, guests, vendors, packages, payments, dayOf, checklist, budget, sends] =
     await Promise.all([
       getWorkspaceTasks(workspaceId),
       getWorkspaceGuests(workspaceId),
@@ -76,6 +77,7 @@ export async function loadThisWeek(
       getDayOf(workspaceId),
       getChecklist(workspaceId),
       getBudget(workspaceId),
+      listSends(workspaceId),
     ]);
 
   const days = daysUntil(weddingDate, today);
@@ -127,6 +129,21 @@ export async function loadThisWeek(
       detail: flagged.map((v) => v.name).join(", "),
       href: `/vendors/${flagged[0].id}`,
       cta: "Review contract",
+    });
+  }
+
+  const sentIds = new Set(sends.filter((s) => s.status === "SENT").map((s) => s.vendorId));
+  const unsentBooked = vendors.filter(
+    (v) => ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status) && !sentIds.has(v.id)
+  );
+  if (unsentBooked.length) {
+    items.push({
+      id: "send-packets",
+      urgency: days != null && days <= 21 ? "now" : "week",
+      title: `${unsentBooked.length} booked vendor${unsentBooked.length === 1 ? "" : "s"} without a packet`,
+      detail: unsentBooked.map((v) => v.name).join(" · "),
+      href: "/send",
+      cta: "Send packets",
     });
   }
 
