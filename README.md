@@ -1,56 +1,41 @@
 # Wedding OS
 
-Collaboration-first wedding planning — vendors, guests, seating, handoffs, decisions, and a wedding-party portal.
+One desk for one wedding. Coordination after hire — and a day that is not forced down an aisle.
 
-Built as a Next.js app with a file-backed demo store (and Prisma/Neon ready for Milestone A).
+**Read [`PRODUCT.md`](./PRODUCT.md) for what this is. Agents: read [`CLAUDE.md`](./CLAUDE.md) next.** This README is only how to run it.
 
 ## Quick start
 
 ```bash
 cd web
-cp .env.example .env   # or use your existing .env
+cp .env.example .env
 npm install
-npm run dev
+DEMO_AUTH=1 DATA_BACKEND=file npm run dev
 ```
 
-Open http://localhost:3000 and sign in as **Alex** or **Jordan** (demo auth).
-
-```bash
-DEMO_AUTH=1
-DATA_BACKEND=file
-```
-
-## Modules
-
-| Area | Routes |
-|------|--------|
-| Dashboard | `/dashboard` |
-| Tasks + workload | `/tasks`, `/workload` |
-| Guests + CSV import | `/guests`, `/guests/import` |
-| Seating + chart | `/seating` |
-| Vendors | `/vendors` |
-| Handoffs (DJ / day-of / photo) | `/handoffs` |
-| Decisions | `/decisions` |
-| Polls | `/polls` |
-| People + invites | `/people`, `/invite/[token]` |
-| Party portal | `/party` |
-| Attire | `/attire` |
-| Day-of board | `/day-of` |
-| Timeline | `/timeline` |
-| Phone / Capacitor | `/mobile` · native shell in `mobile/` |
+Open http://localhost:3000 and sign in as **Alex** or **Jordan**.
 
 ## Stack
 
-- Next.js (App Router) + TypeScript
-- File JSON store under `web/.data/` for demo
-- Prisma schema + Neon for Postgres (optional)
+- Next.js App Router + TypeScript (`web/`)
+- File JSON store in `web/.data/` (`DATA_BACKEND=file`)
+- Prisma / Neon optional and not the source of truth
 - Cookie demo sessions (`DEMO_AUTH=1`)
 
 ## Docs
 
-- `web/docs/AUTH_EMAIL_SETUP.md` — optional magic-link email
-- `SETUP_ON_MAC.md` — git pull workflow on Mac
+| File | For |
+|---|---|
+| [`PRODUCT.md`](./PRODUCT.md) | Thesis, Shape, rooms, After, what we will not build |
+| [`CLAUDE.md`](./CLAUDE.md) | Agent map: kernels, rules, verify |
+| [`SETUP_ON_MAC.md`](./SETUP_ON_MAC.md) | Pull on a Mac |
+| [`web/docs/DEPLOY.md`](./web/docs/DEPLOY.md) | Vercel |
+| [`web/docs/AUTH_EMAIL_SETUP.md`](./web/docs/AUTH_EMAIL_SETUP.md) | Magic-link email |
 
-## Product thesis (short)
+## Point another model at this repo
 
-Most stress is coordination — and that’s the selling point. Competitors already let you browse vendors; they drop you after the hire. This app is the full path (browse → shortlist → book) plus the shared workspace competitors skip: decisions, DIY playbooks, and one handoff package per vendor.
+```
+Repo: https://github.com/indiaroseclifton/wedding-os
+Read PRODUCT.md then CLAUDE.md. Ignore the old module list if you find one in git history.
+Work in web/. Do not invent a chat concierge or a second app.
+```
