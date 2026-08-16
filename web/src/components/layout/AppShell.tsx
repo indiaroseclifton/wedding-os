@@ -93,8 +93,8 @@ export function AppShell({
     <div className="relative min-h-screen bg-paper lg:flex">
       <ThemeProvider />
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <img src="/brand/tablescape.jpg" alt="" className="h-full w-full object-cover opacity-[0.14]" />
-        <div className="absolute inset-0 bg-paper/70" />
+        <img src={coverUrl || "/brand/tablescape.jpg"} alt="" className="h-full w-full object-cover opacity-[0.22]" />
+        <div className="absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
       </div>
       <aside className="hidden w-56 shrink-0 flex-col border-r border-white/40 bg-surface/40 px-3 py-5 backdrop-blur-xl lg:flex">
         <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
@@ -107,7 +107,11 @@ export function AppShell({
           </span>
         </Link>
         {links}
-        <button type="button" onClick={signOut} className="mt-auto px-3 py-2 text-left text-xs text-muted underline">
+        <Link href="/settings" className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft hover:bg-white/40">
+          <Icon name="settings" />
+          Settings
+        </Link>
+        <button type="button" onClick={signOut} className="px-3 py-2 text-left text-xs text-muted underline">
           Sign out
         </button>
       </aside>
@@ -123,6 +127,13 @@ export function AppShell({
           </div>
           <div className="flex items-center gap-2">
             <CommandPalette />
+            <Link
+              href="/settings"
+              aria-label="Settings"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-surface/50 text-ink backdrop-blur-md"
+            >
+              <Icon name="settings" />
+            </Link>
             <span className="hidden h-9 w-9 overflow-hidden rounded-full sm:block">
               <img src={coverUrl || "/brand/setting.jpg"} alt="" className="h-full w-full object-cover" />
             </span>

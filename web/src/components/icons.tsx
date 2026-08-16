@@ -7,6 +7,14 @@ export function Icon({
 }) {
   const cn = className;
   switch (name) {
+    case "settings":
+    case "gear":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 13a7.7 7.7 0 0 0 .1-2l2-1.2-2-3.4-2.3.6a7.5 7.5 0 0 0-1.7-1L15 3h-6l-.5 2.9a7.5 7.5 0 0 0-1.7 1L4.5 6.4l-2 3.4 2 1.2a7.7 7.7 0 0 0 .1 2l-2 1.2 2 3.4 2.3-.6a7.5 7.5 0 0 0 1.7 1L9 21h6l.5-2.9a7.5 7.5 0 0 0 1.7-1l2.3.6 2-3.4-2-1.2Z" />
+        </svg>
+      );
     case "home":
       return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={cn}>

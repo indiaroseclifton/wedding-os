@@ -34,6 +34,16 @@ export async function POST(request: Request) {
       coupleNames: optionalString(body.coupleNames, 160),
       coverUrl: optionalString(body.coverUrl, 500),
       theme: optionalString(body.theme, 20) as never,
+      glass:
+        body.glass === "low" || body.glass === "mid" || body.glass === "high" ? body.glass : undefined,
+      density:
+        body.density === "roomy" || body.density === "regular" || body.density === "compact"
+          ? body.density
+          : undefined,
+      typeScale:
+        body.typeScale === "small" || body.typeScale === "regular" || body.typeScale === "large"
+          ? body.typeScale
+          : undefined,
       faith: optionalString(body.faith, 40) as never,
       faithPacks,
       ceremonyStyle: optionalString(body.ceremonyStyle, 20) as never,

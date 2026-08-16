@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { COVER_PRESETS, FAITHS, PACK_OPTIONS, THEMES } from "@/lib/preferences";
-import { applyTheme } from "@/components/theme/ThemeProvider";
+import { COVER_PRESETS, DENSITY, FAITHS, GLASS_LEVELS, PACK_OPTIONS, THEMES, TYPE_SCALES } from "@/lib/preferences";
+import { applyLook, applyTheme } from "@/components/theme/ThemeProvider";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -19,6 +19,9 @@ export default function SettingsPage() {
     location: "",
     coverUrl: "",
     theme: "linen",
+    glass: "mid" as "low" | "mid" | "high",
+    density: "regular" as "roomy" | "regular" | "compact",
+    typeScale: "regular" as "small" | "regular" | "large",
     faith: "none",
     faithPacks: [] as string[],
     ceremonyStyle: "both",
@@ -50,6 +53,9 @@ export default function SettingsPage() {
           location: data.meta.location || "",
           coverUrl: data.meta.coverUrl || "",
           theme: data.meta.theme || "linen",
+          glass: data.meta.glass || "mid",
+          density: data.meta.density || "regular",
+          typeScale: data.meta.typeScale || "regular",
           faith: data.meta.faith || "none",
           faithPacks: data.meta.faithPacks || [],
           ceremonyStyle: data.meta.ceremonyStyle || "both",
@@ -63,7 +69,14 @@ export default function SettingsPage() {
           guestSitePublic: data.meta.guestSitePublic !== false,
           defaultPlusOnes: data.meta.defaultPlusOnes || 0,
         }));
-        if (data.meta.theme) applyTheme(data.meta.theme);
+        if (data.meta.theme || data.meta.glass) {
+          applyLook({
+            theme: data.meta.theme,
+            glass: data.meta.glass,
+            density: data.meta.density,
+            typeScale: data.meta.typeScale,
+          });
+        }
       })
       .catch(() => {});
   }, []);
@@ -82,7 +95,7 @@ export default function SettingsPage() {
       setMsg("Could not save");
       return;
     }
-    applyTheme(form.theme);
+    applyLook({ theme: form.theme, glass: form.glass, density: form.density, typeScale: form.typeScale });
     setMsg(
       form.faith && form.faith !== "none"
         ? "Saved. Religious items are now on your Planning checklist."
@@ -172,30 +185,93 @@ export default function SettingsPage() {
         </label>
       </form>
 
-      <section className="space-y-3 glass-panel rounded-2xl p-5 text-sm">
+      <section className="space-y-4 glass-panel rounded-2xl p-5 text-sm">
         <p className="font-medium">Look & feel</p>
-        <p className="text-xs text-muted">The whole desk changes — paper, type contrast, buttons.</p>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <p className="text-xs text-muted">Twelve themes. Glass, spacing, and type — the whole desk changes.</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
           {THEMES.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => {
                 set("theme", t.id);
-                applyTheme(t.id);
+                applyLook({ theme: t.id, glass: form.glass, density: form.density, typeScale: form.typeScale });
               }}
               className={`rounded-xl border p-3 text-left ${
                 form.theme === t.id ? "border-moss ring-2 ring-moss/30" : "border-line"
               }`}
               style={{ background: t.paper, color: t.ink }}
             >
-              <span className="mb-2 block h-2 w-8 rounded-full" style={{ background: t.moss }} />
+              <span className="mb-2 flex gap-1">
+                <i className="block h-2 w-6 rounded-full" style={{ background: t.moss }} />
+                <i className="block h-2 w-3 rounded-full opacity-50" style={{ background: t.ink }} />
+              </span>
               <span className="text-xs font-medium">{t.label}</span>
             </button>
           ))}
         </div>
+        <div>
+          <p className="mb-1 text-xs text-muted">Glass</p>
+          <div className="flex flex-wrap gap-2">
+            {GLASS_LEVELS.map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => {
+                  set("glass", g.id);
+                  applyLook({ glass: g.id });
+                }}
+                className={`rounded-full px-3 py-1.5 text-xs ${
+                  form.glass === g.id ? "bg-moss text-ivory" : "border border-line"
+                }`}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="mb-1 text-xs text-muted">Spacing</p>
+          <div className="flex flex-wrap gap-2">
+            {DENSITY.map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => {
+                  set("density", d.id);
+                  applyLook({ density: d.id });
+                }}
+                className={`rounded-full px-3 py-1.5 text-xs ${
+                  form.density === d.id ? "bg-moss text-ivory" : "border border-line"
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="mb-1 text-xs text-muted">Type size</p>
+          <div className="flex flex-wrap gap-2">
+            {TYPE_SCALES.map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                onClick={() => {
+                  set("typeScale", d.id);
+                  applyLook({ typeScale: d.id });
+                }}
+                className={`rounded-full px-3 py-1.5 text-xs ${
+                  form.typeScale === d.id ? "bg-moss text-ivory" : "border border-line"
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <p className="text-xs text-muted">Cover photo</p>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {COVER_PRESETS.map((c) => (
             <button
               key={c.id}
@@ -213,6 +289,13 @@ export default function SettingsPage() {
           placeholder="Or paste your own photo URL"
           className="w-full rounded-lg border border-line bg-surface/70 px-3 py-2 text-xs"
         />
+        <button
+          type="button"
+          onClick={() => save()}
+          className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory"
+        >
+          {saving ? "Saving…" : "Save look"}
+        </button>
       </section>
 
       <section className="space-y-3 glass-panel rounded-2xl p-5 text-sm">

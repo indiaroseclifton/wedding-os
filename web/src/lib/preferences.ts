@@ -4,6 +4,13 @@ export const THEMES = [
   { id: "garden", label: "Garden", paper: "#e7efe4", moss: "#2d5a3d", ink: "#142018" },
   { id: "blush", label: "Blush", paper: "#f6ebe8", moss: "#7a3d3d", ink: "#2a1816" },
   { id: "ink", label: "Ink", paper: "#1a1916", moss: "#eadec8", ink: "#f6f1e8" },
+  { id: "champagne", label: "Champagne", paper: "#f4ead6", moss: "#8a6a3a", ink: "#2a2216" },
+  { id: "fog", label: "Fog", paper: "#e8ecea", moss: "#4a5c58", ink: "#1a1e1d" },
+  { id: "slate", label: "Slate", paper: "#e4e6ea", moss: "#2c3544", ink: "#12151a" },
+  { id: "terracotta", label: "Terracotta", paper: "#f3e4d8", moss: "#9a4030", ink: "#2a1610" },
+  { id: "olive", label: "Olive", paper: "#ece8d4", moss: "#4a4a28", ink: "#1c1c10" },
+  { id: "cocoa", label: "Cocoa", paper: "#1c1612", moss: "#d4b896", ink: "#f6efe6" },
+  { id: "midnight", label: "Midnight", paper: "#0e1420", moss: "#8aa4c8", ink: "#eef2f8" },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]["id"];
@@ -42,6 +49,25 @@ export const COVER_PRESETS = [
   { id: "setting", url: "/brand/setting.jpg", label: "Setting" },
   { id: "flowers", url: "/brand/flowers.jpg", label: "Flowers" },
   { id: "candles", url: "/brand/candles.jpg", label: "Candles" },
+  { id: "paper", url: "/brand/paper.jpg", label: "Paper" },
+] as const;
+
+export const GLASS_LEVELS = [
+  { id: "low", label: "Matte" },
+  { id: "mid", label: "Glass" },
+  { id: "high", label: "Frost" },
+] as const;
+
+export const DENSITY = [
+  { id: "roomy", label: "Roomy" },
+  { id: "regular", label: "Regular" },
+  { id: "compact", label: "Compact" },
+] as const;
+
+export const TYPE_SCALES = [
+  { id: "small", label: "Small" },
+  { id: "regular", label: "Regular" },
+  { id: "large", label: "Large" },
 ] as const;
 
 export type WorkspacePrefs = {
@@ -61,6 +87,9 @@ export type WorkspacePrefs = {
   onboarded?: boolean;
   firstWalkDone?: boolean;
   diyBias?: "hire" | "diy" | "mix";
+  glass?: "low" | "mid" | "high";
+  density?: "roomy" | "regular" | "compact";
+  typeScale?: "small" | "regular" | "large";
 };
 
 export function packsForFaith(faith?: string, extra?: string[]) {
