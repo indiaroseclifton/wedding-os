@@ -2,6 +2,7 @@ export const ROOM_SUBNAV = {
   planning: [
     { href: "/planning", label: "Overview" },
     { href: "/planning/vision", label: "My vision" },
+    { href: "/decisions", label: "Decisions" },
     { href: "/checklist", label: "Checklist" },
     { href: "/traditions", label: "Traditions" },
     { href: "/timeline", label: "Timeline" },

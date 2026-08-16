@@ -130,6 +130,15 @@ export async function createDecision(input: Omit<StoredDecision, "id" | "created
   return row;
 }
 
+export async function updateDecision(id: string, patch: Partial<StoredDecision>) {
+  const rows = await readJson<StoredDecision>(decisionsFile);
+  const row = rows.find((r) => r.id === id);
+  if (!row) return null;
+  Object.assign(row, patch, { updatedAt: new Date().toISOString() });
+  await writeJson(decisionsFile, rows);
+  return row;
+}
+
 export async function upsertPrioritiesDecision(
   input: Omit<StoredDecision, "id" | "createdAt" | "updatedAt" | "type" | "title">
 ) {

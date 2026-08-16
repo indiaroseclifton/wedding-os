@@ -33,6 +33,7 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
       { id: "households", title: "Households as people", body: "Named plus-ones on the RSVP, the list, and the chairs.", href: "/guests", status: "shipped" },
       { id: "site-share", title: "Guest site you can send", body: "Password, a text-this card, preview without publishing.", href: "/site", status: "shipped" },
       { id: "start", title: "First-wedding walkthrough", body: "Names, one vendor, publish. After the four questions.", href: "/start", status: "shipped" },
+      { id: "decisions", title: "Coordinator decisions → tasks", body: "First look, rain, kids, bar — plus your own. Call it, make a task.", href: "/decisions", status: "shipped" },
       { id: "camera", title: "Camera into the moodboard", body: "After the Capacitor wrapper runs on your phone.", href: "/mobile", status: "later" },
       { id: "push", title: "Push for dues and RSVPs", body: "Needs a worker and store listing. Page nudges stay until then.", href: "/mobile", status: "later" },
     ],

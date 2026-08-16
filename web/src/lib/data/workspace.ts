@@ -5,6 +5,8 @@ import {
   deleteTask,
   ensureOwnerMember,
   getDecision,
+  createDecision,
+  updateDecision,
   getInviteByToken,
   getTask,
   listDecisions,
@@ -91,6 +93,8 @@ export async function getCurrentMembership(userId: string) {
 export async function getWorkspaceDecisions(workspaceId: string) {
   return listDecisions(workspaceId);
 }
+
+export { createDecision, updateDecision };
 
 export async function getWorkspaceTasks(workspaceId: string) {
   return listTasks(workspaceId);

@@ -26,6 +26,7 @@ export default async function PlanningPage() {
   const formal = (vision?.payload?.formal as string) || meta.formality || "";
   const decided = PATH_CATEGORIES.filter((c) => path.choices[c.id] && path.choices[c.id] !== "undecided");
   const openLanes = PATH_CATEGORIES.length - decided.length;
+  const openCalls = decisions.filter((d) => d.status !== "DECIDED").length;
 
   return (
     <div>
@@ -73,6 +74,14 @@ export default async function PlanningPage() {
           </p>
         </Link>
       </div>
+
+      <Link href="/decisions" className="mt-3 block rounded-2xl border border-line bg-surface p-5">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Decisions</p>
+        <p className="mt-2 font-serif text-2xl">
+          {openCalls ? `${openCalls} still open` : decisions.length ? "All called" : "What a coordinator will ask"}
+        </p>
+        <p className="mt-1 text-sm text-muted">First look, rain plan, kids, bar — then turn a call into a task.</p>
+      </Link>
 
       <section className="mt-6 rounded-2xl border border-line bg-surface p-5">
         <div className="flex items-center justify-between">
