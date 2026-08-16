@@ -30,6 +30,7 @@ export async function PATCH(
     "rsvp",
     "plusOnes",
     "dietary",
+    "meal",
     "tableLabel",
     "notes",
   ] as const;

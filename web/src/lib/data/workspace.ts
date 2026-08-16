@@ -17,6 +17,8 @@ import {
   upsertVenueTypeDecision,
   listGuests,
   getGuest,
+  getGuestByRsvpToken,
+  ensureGuestRsvpTokens,
   createGuest,
   updateGuest,
   deleteGuest,
@@ -130,6 +132,14 @@ export async function getWorkspaceGuests(workspaceId: string) {
 
 export async function getGuestById(id: string) {
   return getGuest(id);
+}
+
+export async function findGuestByRsvpToken(token: string) {
+  return getGuestByRsvpToken(token);
+}
+
+export async function ensureRsvpTokens(workspaceId: string) {
+  return ensureGuestRsvpTokens(workspaceId);
 }
 
 export async function addGuest(input: Parameters<typeof createGuest>[0]) {

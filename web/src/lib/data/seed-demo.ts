@@ -12,6 +12,7 @@ import { createVendor } from "./vendors-store";
 import { saveMusic } from "./music-store";
 import { addPayment } from "./payments-store";
 import { createPackage } from "./handoffs-store";
+import { saveSite } from "./site-store";
 import { wipeDataDir, dataDir, pathExists, writeText } from "./store-io";
 
 const flagFile = path.join(dataDir, ".seeded");
@@ -170,6 +171,19 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
     template: "DJ",
     title: "DJ package (draft)",
     recipientName: "Spin City DJ",
+  });
+
+  await saveSite(ws, {
+    published: true,
+    headline: "Dinner, dancing, and no assigned speeches unless you want one.",
+    story:
+      "We're getting married in the Atlanta area and keeping the day ours: flowers we arranged, tables we set, people we love.",
+    scheduleNote: "Ceremony at 4. Dinner at 6. Dancing until they make us leave.",
+    dressCode: "Garden — wear something you can dance in.",
+    rsvpOpen: true,
+    rsvpNote: "Please reply so catering isn't guessing.",
+    showTravel: true,
+    showRegistry: true,
   });
 
   await writeText(flagFile, new Date().toISOString());

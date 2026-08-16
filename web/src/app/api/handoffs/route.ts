@@ -3,6 +3,7 @@ import { requireCoupleApi } from "@/lib/auth/access";
 import {
   ensureDemoWorkspace,
   getWorkspaceGuests,
+  loadWorkspaceMeta,
 } from "@/lib/data/workspace";
 import {
   createPackage,
@@ -12,30 +13,30 @@ import {
   type HandoffTemplate,
 } from "@/lib/data/handoffs-store";
 import { getMusic } from "@/lib/data/music-store";
+import { dietarySections } from "@/lib/data/dietary";
+import { listVendors } from "@/lib/data/vendors-store";
+import { getTravel } from "@/lib/data/travel-store";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
-const TEMPLATES = new Set(["DAY_OF", "DJ", "PHOTOGRAPHER", "CATERING"]);
+const TEMPLATES = new Set([
+  "DAY_OF",
+  "DJ",
+  "PHOTOGRAPHER",
+  "CATERING",
+  "FLORIST",
+  "PLANNER",
+  "HMU",
+  "CAKE",
+  "TRANSPORT",
+  "VENUE",
+]);
 
-function dietarySections(guests: Awaited<ReturnType<typeof getWorkspaceGuests>>) {
-  const attending = guests.filter((g) => g.rsvp !== "NO");
-  const headcount = attending.reduce((s, g) => s + 1 + (g.plusOnes || 0), 0);
-  const withDiet = attending.filter((g) => g.dietary?.trim());
-  const counts = new Map<string, number>();
-  for (const g of withDiet) {
-    const key = g.dietary!.trim().toLowerCase();
-    counts.set(key, (counts.get(key) || 0) + 1 + (g.plusOnes || 0));
-  }
-  const summary = Array.from(counts.entries())
-    .map(([label, count]) => `${count}× ${label}`)
+function vendorListText(
+  vendors: Awaited<ReturnType<typeof listVendors>>
+) {
+  return vendors
+    .map((v) => `${v.category}: ${v.name}${v.status ? ` (${v.status})` : ""}`)
     .join("\n");
-  const detail = withDiet
-    .map((g) => `${g.name}: ${g.dietary}${g.tableLabel ? ` (${g.tableLabel})` : ""}`)
-    .join("\n");
-  return {
-    headcount: String(headcount),
-    dietary_summary: summary || "No dietary notes recorded",
-    dietary_detail: detail || "—",
-  };
 }
 
 export async function GET() {
@@ -57,11 +58,30 @@ export async function POST(request: Request) {
     }
     const title = requiredString(body.title, "Title", 200);
     const { workspace } = await ensureDemoWorkspace();
+    const meta = await loadWorkspaceMeta(workspace.id, workspace.name);
+    const dateLine = [meta.weddingDate, meta.location].filter(Boolean).join(" · ");
 
-    let prefill: Record<string, string> | undefined;
+    let prefill: Record<string, string> = {};
+    if (dateLine) prefill.date_locations = dateLine;
+
     if (template === "CATERING" && body.prefillFromGuests !== false) {
       const guests = await getWorkspaceGuests(workspace.id);
-      prefill = dietarySections(guests);
+      Object.assign(prefill, dietarySections(guests));
+    }
+    if (template === "CAKE") {
+      const guests = await getWorkspaceGuests(workspace.id);
+      prefill.headcount = dietarySections(guests).headcount;
+    }
+    if (template === "PLANNER" || template === "DAY_OF" || template === "VENUE") {
+      const vendors = await listVendors(workspace.id);
+      prefill.vendor_list = vendorListText(vendors);
+    }
+    if (template === "TRANSPORT") {
+      const travel = await getTravel(workspace.id);
+      prefill.hotel_addresses = travel.hotels
+        .map((h) => `${h.name}${h.address ? ` — ${h.address}` : ""}`)
+        .join("\n");
+      prefill.pickup_plan = [travel.airport, travel.shuttle].filter(Boolean).join("\n");
     }
 
     const pkg = await createPackage({

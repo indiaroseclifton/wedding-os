@@ -25,6 +25,15 @@ const LABELS: Record<string, string> = {
   dietary_summary: "Dietary summary",
   dietary_detail: "Guest dietary detail",
   service_notes: "Service notes",
+  arrangement_list: "What you're making",
+  palette_notes: "Palette",
+  diy_mix: "DIY pieces on site",
+  party_count: "Party count",
+  call_times: "Call times",
+  flavor_notes: "Flavors",
+  display_notes: "Display / cutting",
+  pickup_plan: "Pickup plan",
+  hotel_addresses: "Hotels / addresses",
 };
 
 type Pkg = {

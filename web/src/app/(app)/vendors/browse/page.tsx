@@ -34,6 +34,8 @@ export default function VendorBrowsePage() {
   }
 
   useEffect(() => {
+    const cat = new URLSearchParams(window.location.search).get("category");
+    if (cat) setCategory(cat);
     load();
   }, []);
 

@@ -4,7 +4,17 @@ import { dataDir, readJson, writeJson } from "./store-io";
 
 const packagesFile = path.join(dataDir, "packages.json");
 
-export type HandoffTemplate = "DAY_OF" | "DJ" | "PHOTOGRAPHER" | "CATERING";
+export type HandoffTemplate =
+  | "DAY_OF"
+  | "DJ"
+  | "PHOTOGRAPHER"
+  | "CATERING"
+  | "FLORIST"
+  | "PLANNER"
+  | "HMU"
+  | "CAKE"
+  | "TRANSPORT"
+  | "VENUE";
 
 export type StoredPackage = {
   id: string;
@@ -47,6 +57,49 @@ export const TEMPLATE_SECTIONS: Record<HandoffTemplate, string[]> = {
     "service_notes",
     "day_of_contact",
   ],
+  FLORIST: [
+    "date_locations",
+    "arrangement_list",
+    "palette_notes",
+    "diy_mix",
+    "constraints",
+    "day_of_contact",
+  ],
+  PLANNER: [
+    "date_locations",
+    "vendor_list",
+    "timeline_notes",
+    "key_contacts",
+    "special_notes",
+  ],
+  HMU: [
+    "date_locations",
+    "party_count",
+    "call_times",
+    "style_notes",
+    "day_of_contact",
+  ],
+  CAKE: [
+    "date_locations",
+    "headcount",
+    "flavor_notes",
+    "display_notes",
+    "day_of_contact",
+  ],
+  TRANSPORT: [
+    "date_locations",
+    "pickup_plan",
+    "hotel_addresses",
+    "timeline_notes",
+    "day_of_contact",
+  ],
+  VENUE: [
+    "date_locations",
+    "timeline_notes",
+    "vendor_list",
+    "constraints",
+    "key_contacts",
+  ],
 };
 
 export const SECTION_LABELS: Record<string, string> = {
@@ -67,7 +120,17 @@ export const SECTION_LABELS: Record<string, string> = {
   headcount: "Headcount",
   dietary_summary: "Dietary summary",
   dietary_detail: "Guest dietary detail",
+  meal_counts: "Meal choices",
   service_notes: "Service notes",
+  arrangement_list: "What you're making",
+  palette_notes: "Palette",
+  diy_mix: "DIY pieces on site",
+  party_count: "Party count",
+  call_times: "Call times",
+  flavor_notes: "Flavors",
+  display_notes: "Display / cutting",
+  pickup_plan: "Pickup plan",
+  hotel_addresses: "Hotels / addresses",
 };
 
 export async function listPackages(workspaceId: string) {

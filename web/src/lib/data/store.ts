@@ -77,6 +77,8 @@ export type StoredGuest = {
   rsvp: string;
   plusOnes: number;
   dietary?: string;
+  meal?: string;
+  rsvpToken?: string;
   tableLabel?: string;
   notes?: string;
   createdAt: string;
@@ -338,10 +340,34 @@ export async function getGuest(id: string) {
   return (await readJson<StoredGuest>(guestsFile)).find((r) => r.id === id) ?? null;
 }
 
+export async function getGuestByRsvpToken(token: string) {
+  if (!token) return null;
+  return (await readJson<StoredGuest>(guestsFile)).find((r) => r.rsvpToken === token) ?? null;
+}
+
+export async function ensureGuestRsvpTokens(workspaceId: string) {
+  const rows = await readJson<StoredGuest>(guestsFile);
+  let changed = false;
+  for (const row of rows) {
+    if (row.workspaceId === workspaceId && !row.rsvpToken) {
+      row.rsvpToken = randomUUID().replace(/-/g, "").slice(0, 16);
+      changed = true;
+    }
+  }
+  if (changed) await writeJson(guestsFile, rows);
+  return rows.filter((r) => r.workspaceId === workspaceId);
+}
+
 export async function createGuest(input: Omit<StoredGuest, "id" | "createdAt" | "updatedAt">) {
   const rows = await readJson<StoredGuest>(guestsFile);
   const now = new Date().toISOString();
-  const row: StoredGuest = { ...input, id: randomUUID(), createdAt: now, updatedAt: now };
+  const row: StoredGuest = {
+    ...input,
+    id: randomUUID(),
+    rsvpToken: input.rsvpToken || randomUUID().replace(/-/g, "").slice(0, 16),
+    createdAt: now,
+    updatedAt: now,
+  };
   rows.push(row);
   await writeJson(guestsFile, rows);
   return row;
@@ -372,6 +398,7 @@ export async function createGuestsBulk(
   const created = inputs.map((input) => ({
     ...input,
     id: randomUUID(),
+    rsvpToken: input.rsvpToken || randomUUID().replace(/-/g, "").slice(0, 16),
     createdAt: now,
     updatedAt: now,
   }));

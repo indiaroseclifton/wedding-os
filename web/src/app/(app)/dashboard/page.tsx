@@ -152,8 +152,18 @@ export default async function DashboardPage() {
           <p className="font-medium text-slate-900">Keep planning</p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-slate-600">
             <li>
+              <Link href="/site" className="underline">
+                Guest site & RSVP
+              </Link>
+            </li>
+            <li>
               <Link href="/vendors/browse" className="underline">
                 Browse vendors
+              </Link>
+            </li>
+            <li>
+              <Link href="/decisions/path" className="underline">
+                Hire vs DIY
               </Link>
             </li>
             <li>

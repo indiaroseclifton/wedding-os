@@ -6,8 +6,14 @@ import { useState } from "react";
 const TEMPLATES = [
   { id: "DJ", label: "DJ / Band", title: "DJ package" },
   { id: "CATERING", label: "Catering", title: "Catering package" },
-  { id: "DAY_OF", label: "Day-of coordinator", title: "Day-of package" },
+  { id: "DAY_OF", label: "Day-of / planner", title: "Day-of package" },
   { id: "PHOTOGRAPHER", label: "Photographer", title: "Photo package" },
+  { id: "FLORIST", label: "Florist", title: "Florist package" },
+  { id: "PLANNER", label: "Planner", title: "Planner package" },
+  { id: "HMU", label: "Hair / makeup", title: "HMU package" },
+  { id: "CAKE", label: "Cake", title: "Cake package" },
+  { id: "TRANSPORT", label: "Transportation", title: "Transport package" },
+  { id: "VENUE", label: "Venue", title: "Venue package" },
 ];
 
 export default function NewHandoffPage() {

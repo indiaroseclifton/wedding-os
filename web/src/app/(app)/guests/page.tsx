@@ -37,7 +37,11 @@ export default async function GuestsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Guests</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Select multiple guests for bulk RSVP, seating, side, or delete.
+            Select multiple guests for bulk RSVP, seating, side, or delete. Or send the{" "}
+            <Link href="/site" className="underline">
+              guest site
+            </Link>{" "}
+            so they reply themselves.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

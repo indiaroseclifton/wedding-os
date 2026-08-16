@@ -21,9 +21,9 @@ const FLOWS = [
     body: "Choose the kind of place, not every listing yet.",
   },
   {
-    href: "/diy",
-    title: "DIY vs hire",
-    body: "Flowers, tables, signs — compare sources before you buy or book.",
+    href: "/decisions/path",
+    title: "Hire vs DIY",
+    body: "Per category: hire, make it, or mix. Then go to browse or the playbook.",
   },
 ];
 

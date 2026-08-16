@@ -49,3 +49,9 @@
 - Vendor directory: browse / filter / profile / shortlist / compare / inquire / book
 - Hire lands on My vendors and feeds payments + handoffs
 - Demo Atlanta listings (fictional) — coordination remains the wedge
+
+## Wave 8 (done)
+- Guest wedding site + self-serve RSVP (name lookup, meal, dietary)
+- Vendor portal: live headcount/dietary/music/vendor list + run of show
+- Handoff templates for florist, planner, HMU, cake, transport, venue
+- Hire vs DIY decision per category
