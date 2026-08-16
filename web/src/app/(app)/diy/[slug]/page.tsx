@@ -107,6 +107,22 @@ export default function DiyPlaybookPage() {
         </div>
         <h1 className="mt-4 text-2xl font-medium tracking-tight">{book.title}</h1>
         <p className="mt-1 text-sm text-ink-soft">{book.summary}</p>
+        {slug === "flowers" && (
+          <Link
+            href="/diy/studio/floral"
+            className="mt-3 inline-block rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
+          >
+            Open floral studio
+          </Link>
+        )}
+        {slug === "table-decor" && (
+          <Link
+            href="/diy/studio/table"
+            className="mt-3 inline-block rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
+          >
+            Open tablescape
+          </Link>
+        )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

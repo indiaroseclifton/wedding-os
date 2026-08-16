@@ -8,6 +8,9 @@ import {
   getDiy,
   patchProject,
   recalcShopping,
+  saveMockup,
+  deleteMockup,
+  pushFloralShop,
   startProject,
   toggleShopItem,
 } from "@/lib/data/diy-store";
@@ -74,6 +77,33 @@ export async function POST(request: Request) {
     }
     if (body.action === "delete") {
       const diy = await deleteProject(workspace.id, String(body.id));
+      return NextResponse.json({ diy });
+    }
+    if (body.action === "save_mockup") {
+      const diy = await saveMockup(workspace.id, {
+        id: body.id ? String(body.id) : undefined,
+        title: String(body.title || "Untitled look").slice(0, 80),
+        vessel: String(body.vessel || "bouquet"),
+        story: String(body.story || "linen"),
+        pieces: Array.isArray(body.pieces) ? body.pieces : [],
+      });
+      return NextResponse.json({ diy });
+    }
+    if (body.action === "delete_mockup") {
+      const diy = await deleteMockup(workspace.id, String(body.id));
+      return NextResponse.json({ diy });
+    }
+    if (body.action === "push_floral") {
+      const lines = Array.isArray(body.lines) ? body.lines : [];
+      const diy = await pushFloralShop(
+        workspace.id,
+        lines.map((l: { label?: string; qty?: number; estEach?: number }) => ({
+          label: String(l.label || "Stems").slice(0, 80),
+          qty: Number(l.qty) || 1,
+          estEach: Number(l.estEach) || 0,
+        })),
+        Number(body.tables) || 1
+      );
       return NextResponse.json({ diy });
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

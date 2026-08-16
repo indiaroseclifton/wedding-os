@@ -10,6 +10,7 @@ export const ROOM_SUBNAV = {
     { href: "/planning/party", label: "Wedding party" },
     { href: "/attire", label: "Attire" },
     { href: "/diy", label: "DIY studio" },
+    { href: "/diy/studio/floral", label: "Floral tool" },
     { href: "/moodboard", label: "Moodboard" },
   ],
   vendors: [

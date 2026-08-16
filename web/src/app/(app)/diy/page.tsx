@@ -62,6 +62,35 @@ export default function DiyHubPage() {
         </p>
       </motion.div>
 
+      <section className="grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/diy/studio/floral"
+          className="group overflow-hidden rounded-2xl border border-line bg-surface"
+        >
+          <div className="aspect-[16/8] overflow-hidden">
+            <img src="/brand/flowers.jpg" alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+          </div>
+          <div className="p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Tool</p>
+            <p className="mt-1 font-serif text-2xl">Floral studio</p>
+            <p className="mt-1 text-sm text-muted">Mock the bouquet or bowl. Stem counts become a list.</p>
+          </div>
+        </Link>
+        <Link
+          href="/diy/studio/table"
+          className="group overflow-hidden rounded-2xl border border-line bg-surface"
+        >
+          <div className="aspect-[16/8] overflow-hidden">
+            <img src="/brand/tablescape.jpg" alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+          </div>
+          <div className="p-4">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Tool</p>
+            <p className="mt-1 font-serif text-2xl">Tablescape</p>
+            <p className="mt-1 text-sm text-muted">Set one table. See the math for all of them.</p>
+          </div>
+        </Link>
+      </section>
+
       {projects.length > 0 && (
         <div>
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Your projects</p>

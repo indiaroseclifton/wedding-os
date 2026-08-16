@@ -27,9 +27,27 @@ export type DiyProject = {
   shopping: DiyShopItem[];
 };
 
+export type FloralMockup = {
+  id: string;
+  title: string;
+  vessel: string;
+  story: string;
+  pieces: {
+    id: string;
+    stemId: string;
+    x: number;
+    y: number;
+    rot: number;
+    scale: number;
+    z: number;
+  }[];
+  updatedAt: string;
+};
+
 export type StoredDiy = {
   workspaceId: string;
   projects: DiyProject[];
+  mockups?: FloralMockup[];
   updatedAt: string;
 };
 
@@ -147,4 +165,61 @@ export function diyEstimate(diy: StoredDiy) {
         p.shopping.reduce((s, item) => s + (item.qty || 0) * (item.estEach || 0), 0),
       0
     );
+}
+
+export async function saveMockup(
+  workspaceId: string,
+  mockup: Omit<FloralMockup, "id" | "updatedAt"> & { id?: string }
+) {
+  const current = await getDiy(workspaceId);
+  const list = current.mockups || [];
+  const now = new Date().toISOString();
+  if (mockup.id) {
+    const next = list.map((m) => (m.id === mockup.id ? { ...m, ...mockup, id: mockup.id, updatedAt: now } : m));
+    if (!next.some((m) => m.id === mockup.id)) {
+      next.unshift({ ...mockup, id: mockup.id, updatedAt: now });
+    }
+    return saveDiy(workspaceId, { mockups: next });
+  }
+  const row: FloralMockup = { ...mockup, id: randomUUID(), updatedAt: now };
+  return saveDiy(workspaceId, { mockups: [row, ...list].slice(0, 24) });
+}
+
+export async function deleteMockup(workspaceId: string, id: string) {
+  const current = await getDiy(workspaceId);
+  return saveDiy(workspaceId, { mockups: (current.mockups || []).filter((m) => m.id !== id) });
+}
+
+export async function pushFloralShop(
+  workspaceId: string,
+  lines: { label: string; qty: number; estEach: number }[],
+  tables: number
+) {
+  let current = await getDiy(workspaceId);
+  let project = current.projects.find((p) => p.playbookSlug === "flowers");
+  if (!project) {
+    current = await startProject(workspaceId, { playbookSlug: "flowers", tables });
+    project = current.projects.find((p) => p.playbookSlug === "flowers");
+  }
+  if (!project) return current;
+  const shopping = [...project.shopping];
+  for (const line of lines) {
+    const qty = Math.max(1, Math.round(line.qty * Math.max(1, tables)));
+    const existing = shopping.find((s) => s.label === line.label);
+    if (existing) {
+      existing.qty = qty;
+      existing.estEach = line.estEach;
+    } else {
+      shopping.push({
+        id: randomUUID(),
+        label: line.label,
+        qty,
+        unit: "stems",
+        bought: false,
+        estEach: line.estEach,
+        note: "From floral studio",
+      });
+    }
+  }
+  return patchProject(workspaceId, project.id, { shopping, tables });
 }
