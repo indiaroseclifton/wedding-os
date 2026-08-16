@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ProductPreview } from "@/components/landing/ProductPreview";
 import { BrandMark } from "@/components/brand/BrandMark";
 import { motion, fadeUp, stagger, MotionRoot } from "@/components/motion";
 
@@ -81,14 +82,9 @@ export function LandingView() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden rounded-2xl"
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           >
-            <img
-              src="/brand/tablescape.jpg"
-              alt=""
-              className="aspect-[4/5] w-full object-cover object-[center_28%] sm:aspect-[5/4] lg:aspect-[4/5]"
-            />
+            <ProductPreview />
           </motion.div>
         </section>
 

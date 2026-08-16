@@ -111,3 +111,6 @@
 ## Wave 26 (done)
 - Modern product skin: Geist, cool paper, photos as crops, serif only on the guest site
 
+## Wave 27 (done)
+- Landing shows a live This week preview. ⌘K jumps rooms / guests / vendors
+

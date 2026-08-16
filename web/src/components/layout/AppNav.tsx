@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/brand/BrandMark";
+import { CommandPalette } from "@/components/search/CommandPalette";
 
 function formatNavDate(value: string) {
   const date = new Date(`${value}T00:00:00`);
@@ -223,6 +224,7 @@ export function AppNav({
             </span>
           </Link>
           <div className="flex items-center gap-2">
+            <CommandPalette />
             <p className="hidden text-xs text-slate-500 sm:block">{userName}</p>
             <button
               type="button"
