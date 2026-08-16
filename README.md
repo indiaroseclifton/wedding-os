@@ -53,4 +53,4 @@ DATA_BACKEND=file
 
 ## Product thesis (short)
 
-Most stress is coordination: vendors, party, partner, and decisions. This app is a shared workspace with guided decisions and clean handoff packages — not only a vendor marketplace.
+Most stress is coordination *and* the DIY research spiral. This app is a shared workspace with guided decisions, handoff packages, and playbooks for couples who make flowers, tables, and signs themselves — not only a vendor marketplace.

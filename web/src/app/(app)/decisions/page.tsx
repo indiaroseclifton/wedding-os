@@ -20,6 +20,11 @@ const FLOWS = [
     title: "Venue type",
     body: "Choose the kind of place, not every listing yet.",
   },
+  {
+    href: "/diy",
+    title: "DIY vs hire",
+    body: "Flowers, tables, signs — compare sources before you buy or book.",
+  },
 ];
 
 export default async function DecisionsPage() {
@@ -36,7 +41,7 @@ export default async function DecisionsPage() {
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {FLOWS.map((f) => (
           <Link
             key={f.href}

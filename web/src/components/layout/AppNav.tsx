@@ -19,6 +19,7 @@ const GROUPS: { label: string; items: { href: string; label: string }[] }[] = [
     items: [
       { href: "/dashboard", label: "Home" },
       { href: "/checklist", label: "Checklist" },
+      { href: "/diy", label: "DIY" },
       { href: "/demo", label: "Demo" },
       { href: "/search", label: "Search" },
       { href: "/tasks", label: "Tasks" },

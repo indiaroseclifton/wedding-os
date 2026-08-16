@@ -39,3 +39,8 @@
 - Travel: hotel blocks (courtesy vs guaranteed), airport/shuttle/honeymoon
 - Registry links + gift log
 - Thank-you tracker with import from gifts
+
+## Wave 6 (done)
+- DIY studio: flowers, table decor, signage, lighting playbooks
+- Source comparison (grocery / wholesale / farm / florist / faux)
+- Recipes, timeline, pitfalls, shopping list from table/guest counts
