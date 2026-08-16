@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BrandMark } from "@/components/brand/BrandMark";
 
 function formatNavDate(value: string) {
   const date = new Date(`${value}T00:00:00`);
@@ -210,13 +211,16 @@ export function AppNav({
     <>
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <Link href="/dashboard" className="min-w-0">
+          <Link href="/dashboard" className="flex min-w-0 items-center gap-2">
+            <BrandMark size={22} />
+            <span className="min-w-0">
             <p className="truncate font-serif text-base tracking-tight text-ink">
               {weddingName || "Wedding OS"}
             </p>
             {weddingDate && (
               <p className="text-[11px] text-muted">{formatNavDate(weddingDate)}</p>
             )}
+            </span>
           </Link>
           <div className="flex items-center gap-2">
             <p className="hidden text-xs text-slate-500 sm:block">{userName}</p>

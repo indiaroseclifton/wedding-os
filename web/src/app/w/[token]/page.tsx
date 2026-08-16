@@ -43,15 +43,21 @@ export default async function WeddingSitePage({
 
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <main className="mx-auto max-w-xl px-5 py-10 sm:py-16">
-        <p className="text-center text-[11px] font-medium uppercase tracking-[0.28em] text-moss">
-          You're invited
-        </p>
-        <h1 className="mt-4 text-center font-serif text-5xl tracking-tight text-ink">{names}</h1>
-        {date && <p className="mt-3 text-center text-sm text-ink-soft">{date}</p>}
-        {meta.location && (
-          <p className="text-center text-sm text-ink-soft">{meta.location}</p>
-        )}
+      <div className="relative h-[52vh] min-h-[280px] overflow-hidden">
+        <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-center" />
+        <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/20 to-ink/25" />
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-8 text-center">
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-moss">
+            You're invited
+          </p>
+          <h1 className="mt-3 font-serif text-5xl tracking-tight text-ink">{names}</h1>
+          {date && <p className="mt-3 text-sm text-ink-soft">{date}</p>}
+          {meta.location && (
+            <p className="text-sm text-ink-soft">{meta.location}</p>
+          )}
+        </div>
+      </div>
+      <main className="mx-auto max-w-xl px-5 py-10 sm:py-12">
 
         {site.headline && (
           <p className="mt-8 text-center text-base text-ink-soft">{site.headline}</p>

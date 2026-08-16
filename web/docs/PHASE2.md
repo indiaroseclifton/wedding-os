@@ -102,3 +102,6 @@
 ## Wave 23 (done)
 - Apple Music: catalog search, MusicKit connect, export library playlist, DJ handoff link
 
+## Wave 24 (done)
+- Gathered-garden visual system: landing, login photo, guest hero, DIY photos, empty states
+

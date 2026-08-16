@@ -56,7 +56,15 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-paper px-4 py-12">
+    <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="relative hidden min-h-[40vh] lg:block">
+        <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-ink/10" />
+        <p className="absolute bottom-10 left-10 right-10 font-serif text-3xl leading-tight text-moss-fg">
+          The coordination hub for the wedding you’re actually throwing.
+        </p>
+      </div>
+      <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-paper px-4 py-12">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(ellipse_at_top,_#d7e0d6_0%,_transparent_70%)]"
@@ -140,6 +148,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
           </div>
           {error && <p className="text-xs text-clay">{error}</p>}
         </div>
+      </div>
       </div>
     </div>
   );

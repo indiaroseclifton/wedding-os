@@ -54,7 +54,13 @@ export default async function DashboardPage() {
         <SeedButton />
       </div>
 
-      <div className="rounded-xl bg-moss px-5 py-6 text-moss-fg">
+      <div className="relative overflow-hidden rounded-xl bg-moss px-5 py-6 text-moss-fg">
+        <img
+          src="/brand/candles.jpg"
+          alt=""
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-30"
+        />
+        <div className="relative">
         {days != null ? (
           <>
             <p className="font-serif text-4xl tracking-tight">
@@ -88,6 +94,7 @@ export default async function DashboardPage() {
           >
             Invite someone
           </Link>
+        </div>
         </div>
       </div>
 

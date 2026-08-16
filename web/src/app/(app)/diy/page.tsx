@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { diyPhoto } from "@/lib/brand";
 
 type Project = {
   id: string;
@@ -40,25 +41,30 @@ export default function DiyHubPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">DIY studio</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Playbooks for couples who make it themselves — flowers, tables, signs, light.
-          Compare sources, get a shopping list, skip the 40-tab YouTube spiral.
-        </p>
+      <div className="overflow-hidden rounded-xl">
+        <div className="relative h-40 sm:h-52">
+          <img src="/brand/flowers.jpg" alt="" className="h-full w-full object-cover object-center" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-5">
+            <h1 className="font-serif text-3xl tracking-tight text-moss-fg">DIY studio</h1>
+            <p className="mt-1 text-sm text-moss-fg/80">
+              Playbooks for couples who make it themselves — skip the 40-tab YouTube spiral.
+            </p>
+          </div>
+        </div>
       </div>
 
       {projects.length > 0 && (
         <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Your projects</p>
-          <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Your projects</p>
+          <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
             {projects.map((p) => {
               const bought = p.shopping.filter((s) => s.bought).length;
               return (
                 <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
                   <div>
                     <p className="font-medium">{p.title}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted">
                       {p.status} · {p.tables} tables · {p.guests} guests · {bought}/{p.shopping.length} bought
                     </p>
                   </div>
@@ -77,10 +83,15 @@ export default function DiyHubPage() {
           <Link
             key={b.slug}
             href={`/diy/${b.slug}`}
-            className="rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+            className="overflow-hidden rounded-xl border border-line bg-surface"
           >
-            <p className="text-sm font-semibold">{b.title}</p>
-            <p className="mt-1 text-xs text-slate-600">{b.summary}</p>
+            <div className="aspect-[16/9] overflow-hidden">
+              <img src={diyPhoto(b.slug)} alt="" className="h-full w-full object-cover" />
+            </div>
+            <div className="p-4">
+              <p className="font-serif text-lg">{b.title}</p>
+              <p className="mt-1 text-xs text-ink-soft">{b.summary}</p>
+            </div>
           </Link>
         ))}
       </div>
