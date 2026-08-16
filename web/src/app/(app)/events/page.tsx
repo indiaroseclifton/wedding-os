@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const TYPES = [
@@ -14,6 +15,7 @@ const TYPES = [
   "Other",
 ];
 
+type Counts = { invited: number; yes: number; no: number; maybe: number; pending: number };
 type EventRow = {
   id: string;
   name: string;
@@ -22,25 +24,28 @@ type EventRow = {
   location?: string;
   budgetCap?: number;
   expectedGuests?: number;
-  notes?: string;
+  rsvpEnabled: boolean;
+  inviteMode: string;
+  rsvpCounts?: Counts;
 };
 
 export default function EventsPage() {
   const [events, setEvents] = useState<EventRow[]>([]);
-  const [rollup, setRollup] = useState({ count: 0, budgetTotal: 0, guestsTotal: 0 });
+  const [rollup, setRollup] = useState({ count: 0, budgetTotal: 0, guestsTotal: 0, rsvpOpen: 0 });
   const [name, setName] = useState("");
-  const [type, setType] = useState(TYPES[0]);
+  const [type, setType] = useState("Rehearsal dinner");
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
   const [budgetCap, setBudgetCap] = useState("");
   const [expectedGuests, setExpectedGuests] = useState("");
+  const [rsvpEnabled, setRsvpEnabled] = useState(true);
 
   async function load() {
     const res = await fetch("/api/events");
     if (res.ok) {
       const data = await res.json();
       setEvents(data.events || []);
-      setRollup(data.rollup || { count: 0, budgetTotal: 0, guestsTotal: 0 });
+      setRollup(data.rollup || { count: 0, budgetTotal: 0, guestsTotal: 0, rsvpOpen: 0 });
     }
   }
 
@@ -60,6 +65,8 @@ export default function EventsPage() {
         location,
         budgetCap: budgetCap === "" ? undefined : Number(budgetCap),
         expectedGuests: expectedGuests === "" ? undefined : Number(expectedGuests),
+        rsvpEnabled: type !== "Wedding day" && rsvpEnabled,
+        inviteMode: "invited",
       }),
     });
     if (res.ok) {
@@ -72,19 +79,34 @@ export default function EventsPage() {
     }
   }
 
+  async function toggleRsvp(ev: EventRow) {
+    if (ev.type === "Wedding day") return;
+    await fetch(`/api/events/${ev.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rsvpEnabled: !ev.rsvpEnabled }),
+    });
+    load();
+  }
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Events</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Sub-events under the main wedding with budget and guest rollups.
+          Rehearsal, brunch, welcome drinks — each can have its own RSVP on the same guest link.
+          Wedding day stays the main yes/no.
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
           <p className="text-lg font-semibold">{rollup.count}</p>
           <p className="text-xs text-slate-500">Events</p>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+          <p className="text-lg font-semibold">{rollup.rsvpOpen || 0}</p>
+          <p className="text-xs text-slate-500">On the RSVP</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
           <p className="text-lg font-semibold">${rollup.budgetTotal.toLocaleString()}</p>
@@ -92,7 +114,7 @@ export default function EventsPage() {
         </div>
         <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
           <p className="text-lg font-semibold">{rollup.guestsTotal}</p>
-          <p className="text-xs text-slate-500">Expected guests</p>
+          <p className="text-xs text-slate-500">Expected</p>
         </div>
       </div>
 
@@ -134,15 +156,17 @@ export default function EventsPage() {
             placeholder="Budget cap $"
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
           />
-          <input
-            value={expectedGuests}
-            onChange={(e) => setExpectedGuests(e.target.value)}
-            type="number"
-            min={0}
-            placeholder="Expected guests"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm sm:col-span-2"
-          />
         </div>
+        {type !== "Wedding day" && (
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={rsvpEnabled}
+              onChange={(e) => setRsvpEnabled(e.target.checked)}
+            />
+            Ask on the guest RSVP
+          </label>
+        )}
         <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
           Add event
         </button>
@@ -151,16 +175,38 @@ export default function EventsPage() {
       <ul className="space-y-3">
         {events.map((ev) => (
           <li key={ev.id} className="rounded-xl border border-slate-200 bg-white p-4">
-            <p className="text-sm font-semibold">{ev.name}</p>
-            <p className="text-xs text-slate-500">
-              {ev.type}
-              {ev.date ? ` · ${ev.date}` : ""}
-              {ev.location ? ` · ${ev.location}` : ""}
-            </p>
-            <p className="mt-1 text-xs text-slate-600">
-              {ev.budgetCap != null ? `Budget $${ev.budgetCap.toLocaleString()}` : "No budget cap"}
-              {ev.expectedGuests != null ? ` · ${ev.expectedGuests} guests` : ""}
-            </p>
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold">{ev.name}</p>
+                <p className="text-xs text-slate-500">
+                  {ev.type}
+                  {ev.date ? ` · ${ev.date}` : ""}
+                  {ev.location ? ` · ${ev.location}` : ""}
+                </p>
+              </div>
+              {ev.type !== "Wedding day" && (
+                <button
+                  type="button"
+                  onClick={() => toggleRsvp(ev)}
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] ${
+                    ev.rsvpEnabled ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"
+                  }`}
+                >
+                  {ev.rsvpEnabled ? "On RSVP" : "Not on RSVP"}
+                </button>
+              )}
+            </div>
+            {ev.rsvpEnabled && ev.rsvpCounts && (
+              <p className="mt-2 text-xs text-slate-600">
+                {ev.rsvpCounts.yes} yes · {ev.rsvpCounts.no} no · {ev.rsvpCounts.pending} pending
+                {ev.inviteMode === "everyone" ? " · everyone can answer" : ""}
+              </p>
+            )}
+            <div className="mt-3 flex gap-3 text-xs">
+              <Link href={`/events/${ev.id}`} className="font-medium underline">
+                {ev.rsvpEnabled ? "Invite list" : "Open"}
+              </Link>
+            </div>
           </li>
         ))}
         {!events.length && (

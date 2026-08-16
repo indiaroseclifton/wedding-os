@@ -1,8 +1,10 @@
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
+import { dataDir, ensureDir, readText, writeText } from "./store-io";
 
 const eventsFile = path.join(dataDir, "events.json");
+
+export type InviteMode = "everyone" | "invited";
 
 export type SubEvent = {
   id: string;
@@ -14,6 +16,9 @@ export type SubEvent = {
   budgetCap?: number;
   expectedGuests?: number;
   notes?: string;
+  rsvpEnabled: boolean;
+  askMeal: boolean;
+  inviteMode: InviteMode;
   createdAt: string;
   updatedAt: string;
 };
@@ -32,10 +37,24 @@ const DEFAULT_TYPES = [
 
 export { DEFAULT_TYPES };
 
+export function isWeddingDayEvent(event: Pick<SubEvent, "type">) {
+  return event.type === "Wedding day";
+}
+
+function normalize(row: SubEvent): SubEvent {
+  return {
+    ...row,
+    rsvpEnabled: Boolean(row.rsvpEnabled) && !isWeddingDayEvent(row),
+    askMeal: Boolean(row.askMeal),
+    inviteMode: row.inviteMode === "everyone" ? "everyone" : "invited",
+  };
+}
+
 async function readJson(): Promise<SubEvent[]> {
   await ensureDir();
   try {
-    return JSON.parse(await readText(eventsFile));
+    const rows = JSON.parse(await readText(eventsFile));
+    return (rows || []).map(normalize);
   } catch {
     return [];
   }
@@ -52,7 +71,8 @@ export async function listEvents(workspaceId: string) {
 }
 
 export async function getEvent(id: string) {
-  return (await readJson()).find((e) => e.id === id) ?? null;
+  const row = (await readJson()).find((e) => e.id === id);
+  return row ? normalize(row) : null;
 }
 
 export async function createEvent(input: {
@@ -64,10 +84,13 @@ export async function createEvent(input: {
   budgetCap?: number;
   expectedGuests?: number;
   notes?: string;
+  rsvpEnabled?: boolean;
+  askMeal?: boolean;
+  inviteMode?: InviteMode;
 }) {
   const rows = await readJson();
   const now = new Date().toISOString();
-  const row: SubEvent = {
+  const row: SubEvent = normalize({
     id: randomUUID(),
     workspaceId: input.workspaceId,
     name: input.name,
@@ -77,9 +100,12 @@ export async function createEvent(input: {
     budgetCap: input.budgetCap,
     expectedGuests: input.expectedGuests,
     notes: input.notes,
+    rsvpEnabled: Boolean(input.rsvpEnabled),
+    askMeal: Boolean(input.askMeal),
+    inviteMode: input.inviteMode || "invited",
     createdAt: now,
     updatedAt: now,
-  };
+  });
   rows.push(row);
   await writeJson(rows);
   return row;
@@ -90,8 +116,10 @@ export async function updateEvent(id: string, patch: Partial<SubEvent>) {
   const row = rows.find((e) => e.id === id);
   if (!row) return null;
   Object.assign(row, patch, { updatedAt: new Date().toISOString() });
+  const next = normalize(row);
+  Object.assign(row, next);
   await writeJson(rows);
-  return row;
+  return next;
 }
 
 export async function deleteEvent(id: string) {
@@ -107,5 +135,6 @@ export function rollupEvents(events: SubEvent[]) {
     count: events.length,
     budgetTotal: events.reduce((s, e) => s + (e.budgetCap || 0), 0),
     guestsTotal: events.reduce((s, e) => s + (e.expectedGuests || 0), 0),
+    rsvpOpen: events.filter((e) => e.rsvpEnabled).length,
   };
 }

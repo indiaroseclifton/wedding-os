@@ -62,6 +62,7 @@
 - DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
 - Run of show by audience (couple / party / vendor / guests)
 
-## Wave 11 (done)
-- Seating assigner: drag/tap onto tables, household groups, plus-ones as seats
-- Auto-seat leftovers, rename/remove tables (people follow), escort + table-card print
+## Wave 12 (done)
+- Multi-event RSVP: rehearsal / brunch / welcome on the same guest link
+- Events can be edited, deleted, and have an invite list
+- Guest list shows a column per extra event

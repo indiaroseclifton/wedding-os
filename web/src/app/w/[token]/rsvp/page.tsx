@@ -1,22 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 type Match = { name: string; rsvpToken: string; rsvp: string };
+type ExtraEvent = {
+  id: string;
+  name: string;
+  date?: string;
+  askMeal: boolean;
+  status: string;
+  meal: string;
+};
 
 export default function PublicRsvpPage() {
+  return (
+    <Suspense fallback={<p className="p-8 text-sm text-stone-500">Loading…</p>}>
+      <PublicRsvpInner />
+    </Suspense>
+  );
+}
+
+function PublicRsvpInner() {
   const { token } = useParams<{ token: string }>();
+  const search = useSearchParams();
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState<Match[] | null>(null);
-  const [guestToken, setGuestToken] = useState("");
+  const [guestToken, setGuestToken] = useState(search.get("guest") || "");
   const [name, setName] = useState("");
   const [rsvp, setRsvp] = useState("YES");
   const [plusOnes, setPlusOnes] = useState(0);
   const [dietary, setDietary] = useState("");
   const [meal, setMeal] = useState("");
   const [notes, setNotes] = useState("");
+  const [events, setEvents] = useState<ExtraEvent[]>([]);
+  const [eventAnswers, setEventAnswers] = useState<Record<string, { status: string; meal: string }>>(
+    {}
+  );
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -33,6 +54,16 @@ export default function PublicRsvpPage() {
         setDietary(data.guest.dietary || "");
         setMeal(data.guest.meal || "");
         setNotes(data.guest.notes || "");
+        const extras: ExtraEvent[] = data.events || [];
+        setEvents(extras);
+        const next: Record<string, { status: string; meal: string }> = {};
+        for (const ev of extras) {
+          next[ev.id] = {
+            status: ["YES", "NO", "MAYBE"].includes(ev.status) ? ev.status : "YES",
+            meal: ev.meal || "",
+          };
+        }
+        setEventAnswers(next);
       })
       .catch(() => {});
   }, [guestToken, token]);
@@ -71,6 +102,11 @@ export default function PublicRsvpPage() {
         dietary,
         meal,
         notes,
+        eventRsvps: events.map((ev) => ({
+          eventId: ev.id,
+          status: eventAnswers[ev.id]?.status || "YES",
+          meal: eventAnswers[ev.id]?.meal || "",
+        })),
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -94,6 +130,14 @@ export default function PublicRsvpPage() {
           <p className="mt-6 text-sm text-stone-700">
             Thank you{name ? `, ${name}` : ""}. We have you as{" "}
             <span className="font-medium">{rsvp === "YES" ? "yes" : rsvp === "NO" ? "no" : "maybe"}</span>
+            {events.length
+              ? ` for the wedding${events
+                  .map((ev) => {
+                    const s = eventAnswers[ev.id]?.status;
+                    return `, ${s === "YES" ? "yes" : s === "NO" ? "no" : "maybe"} for ${ev.name}`;
+                  })
+                  .join("")}`
+              : ""}
             .
           </p>
         ) : !guestToken ? (
@@ -140,10 +184,10 @@ export default function PublicRsvpPage() {
             )}
           </form>
         ) : (
-          <form onSubmit={submit} className="mt-6 space-y-4">
+          <form onSubmit={submit} className="mt-6 space-y-6">
             <p className="text-sm font-medium">{name}</p>
             <fieldset className="space-y-2">
-              <legend className="text-sm font-medium">Will you be there?</legend>
+              <legend className="text-sm font-medium">Wedding day</legend>
               {[
                 ["YES", "Yes"],
                 ["NO", "No"],
@@ -199,6 +243,61 @@ export default function PublicRsvpPage() {
                 </label>
               </>
             )}
+
+            {events.map((ev) => {
+              const ans = eventAnswers[ev.id] || { status: "YES", meal: "" };
+              return (
+                <fieldset key={ev.id} className="space-y-2 border-t border-stone-200 pt-4">
+                  <legend className="text-sm font-medium">
+                    {ev.name}
+                    {ev.date ? ` · ${ev.date}` : ""}
+                  </legend>
+                  {[
+                    ["YES", "Yes"],
+                    ["NO", "No"],
+                    ["MAYBE", "Maybe"],
+                  ].map(([value, label]) => (
+                    <label key={value} className="flex items-center gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name={`ev-${ev.id}`}
+                        checked={ans.status === value}
+                        onChange={() =>
+                          setEventAnswers((prev) => ({
+                            ...prev,
+                            [ev.id]: { ...ans, status: value },
+                          }))
+                        }
+                      />
+                      {label}
+                    </label>
+                  ))}
+                  {ev.askMeal && ans.status !== "NO" && (
+                    <label className="block text-sm">
+                      Meal
+                      <select
+                        value={ans.meal}
+                        onChange={(e) =>
+                          setEventAnswers((prev) => ({
+                            ...prev,
+                            [ev.id]: { ...ans, meal: e.target.value },
+                          }))
+                        }
+                        className="mt-1 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
+                      >
+                        <option value="">No preference yet</option>
+                        <option>Chicken</option>
+                        <option>Beef</option>
+                        <option>Fish</option>
+                        <option>Vegetarian</option>
+                        <option>Kids</option>
+                      </select>
+                    </label>
+                  )}
+                </fieldset>
+              );
+            })}
+
             <label className="block text-sm">
               Note for the couple
               <textarea

@@ -6,6 +6,7 @@ import {
   listEvents,
   rollupEvents,
 } from "@/lib/data/events-store";
+import { countEventRsvps, listEventRsvps } from "@/lib/data/event-rsvp-store";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -13,7 +14,12 @@ export async function GET() {
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
   const events = await listEvents(workspace.id);
-  return NextResponse.json({ events, rollup: rollupEvents(events) });
+  const rsvps = await listEventRsvps(workspace.id);
+  const withCounts = events.map((e) => ({
+    ...e,
+    rsvpCounts: countEventRsvps(rsvps.filter((r) => r.eventId === e.id)),
+  }));
+  return NextResponse.json({ events: withCounts, rollup: rollupEvents(events) });
 }
 
 export async function POST(request: Request) {
@@ -38,6 +44,9 @@ export async function POST(request: Request) {
           ? undefined
           : Number(body.expectedGuests) || 0,
       notes: optionalString(body.notes, 2000),
+      rsvpEnabled: Boolean(body.rsvpEnabled),
+      askMeal: Boolean(body.askMeal),
+      inviteMode: body.inviteMode === "everyone" ? "everyone" : "invited",
     });
     return NextResponse.json({ event });
   } catch (error) {

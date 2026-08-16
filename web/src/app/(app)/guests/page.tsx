@@ -5,15 +5,20 @@ import {
   getWorkspaceGuests,
   getWorkspaceTables,
 } from "@/lib/data/workspace";
+import { listEvents } from "@/lib/data/events-store";
+import { eventRsvpMap } from "@/lib/data/event-rsvp-store";
 import { ExportCsvButton } from "./ExportCsvButton";
 import { GuestFilters } from "./GuestFilters";
 
 export default async function GuestsPage() {
   const { workspace } = await ensureDemoWorkspace();
-  const [guests, tables] = await Promise.all([
+  const [guests, tables, events, rsvpMap] = await Promise.all([
     getWorkspaceGuests(workspace.id),
     getWorkspaceTables(workspace.id),
+    listEvents(workspace.id),
+    eventRsvpMap(workspace.id),
   ]);
+  const rsvpEvents = events.filter((e) => e.rsvpEnabled);
 
   const headcount = guests.reduce((sum, g) => {
     if (g.rsvp === "NO") return sum;
@@ -103,6 +108,10 @@ export default async function GuestsPage() {
       ) : (
         <GuestFilters
           tableNames={tableNames}
+          eventCols={rsvpEvents.map((e) => ({
+            id: e.id,
+            short: e.name.split(" ").slice(0, 2).join(" "),
+          }))}
           guests={guests.map((g) => ({
             id: g.id,
             name: g.name,
@@ -110,6 +119,9 @@ export default async function GuestsPage() {
             dietary: g.dietary,
             tableLabel: g.tableLabel,
             side: g.side,
+            eventStatus: Object.fromEntries(
+              rsvpEvents.map((e) => [e.id, rsvpMap[e.id]?.[g.id] || ""])
+            ),
           }))}
         />
       )}

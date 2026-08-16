@@ -11,6 +11,7 @@ type Guest = {
   dietary?: string;
   tableLabel?: string;
   side?: string;
+  eventStatus?: Record<string, string>;
 };
 
 const FILTERS = ["ALL", "YES", "NO", "MAYBE", "INVITED", "UNKNOWN"] as const;
@@ -19,9 +20,11 @@ const RSVPS = ["UNKNOWN", "INVITED", "YES", "NO", "MAYBE"] as const;
 export function GuestFilters({
   guests,
   tableNames = [],
+  eventCols = [],
 }: {
   guests: Guest[];
   tableNames?: string[];
+  eventCols?: { id: string; short: string }[];
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("ALL");
@@ -290,6 +293,24 @@ export function GuestFilters({
                 {g.tableLabel ? ` · ${g.tableLabel}` : ""}
                 {g.side ? ` · side ${g.side}` : ""}
               </p>
+              {eventCols.length > 0 && (
+                <p className="mt-1 flex flex-wrap gap-1">
+                  {eventCols.map((col) => {
+                    const st = g.eventStatus?.[col.id];
+                    const mark =
+                      st === "YES" ? "Y" : st === "NO" ? "N" : st === "MAYBE" ? "?" : st === "INVITED" ? "·" : "—";
+                    return (
+                      <span
+                        key={col.id}
+                        title={`${col.short}: ${st || "not invited"}`}
+                        className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600"
+                      >
+                        {col.short} {mark}
+                      </span>
+                    );
+                  })}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <select

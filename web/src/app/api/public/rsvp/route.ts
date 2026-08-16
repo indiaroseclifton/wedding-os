@@ -5,8 +5,17 @@ import {
   getGuestByRsvpToken,
   updateGuest,
 } from "@/lib/data/store";
+import { getEvent } from "@/lib/data/events-store";
+import {
+  eventVisibleToGuest,
+  publicEventsForGuest,
+  rsvpsForGuest,
+  upsertEventRsvp,
+  type EventRsvpStatus,
+} from "@/lib/data/event-rsvp-store";
 
 const RSVP = new Set(["YES", "NO", "MAYBE"]);
+const EVENT_RSVP = new Set(["YES", "NO", "MAYBE", "INVITED"]);
 
 function norm(s: string) {
   return s.trim().toLowerCase().replace(/\s+/g, " ");
@@ -24,6 +33,7 @@ export async function GET(request: Request) {
   if (!guest || guest.workspaceId !== site.workspaceId) {
     return NextResponse.json({ error: "Guest not found" }, { status: 404 });
   }
+  const events = await publicEventsForGuest(site.workspaceId, guest.id);
   return NextResponse.json({
     guest: {
       name: guest.name,
@@ -33,6 +43,7 @@ export async function GET(request: Request) {
       meal: guest.meal,
       notes: guest.notes,
     },
+    events,
   });
 }
 
@@ -81,6 +92,27 @@ export async function POST(request: Request) {
       meal: String(body.meal || "").slice(0, 80) || undefined,
       notes: String(body.notes || "").slice(0, 1000) || guest.notes,
     });
+
+    const incoming = Array.isArray(body.eventRsvps) ? body.eventRsvps : [];
+    const existing = await rsvpsForGuest(site.workspaceId, guest.id);
+    const existingByEvent = new Map(existing.map((r) => [r.eventId, r]));
+    for (const row of incoming) {
+      const eventId = String(row.eventId || "");
+      const status = String(row.status || "") as EventRsvpStatus;
+      if (!eventId || !EVENT_RSVP.has(status) || status === "INVITED") continue;
+      const event = await getEvent(eventId);
+      if (!event || event.workspaceId !== site.workspaceId) continue;
+      if (!eventVisibleToGuest(event, existingByEvent.get(eventId))) continue;
+      await upsertEventRsvp({
+        workspaceId: site.workspaceId,
+        eventId,
+        guestId: guest.id,
+        status,
+        meal: event.askMeal ? String(row.meal || "").slice(0, 80) : undefined,
+      });
+    }
+
+    const events = await publicEventsForGuest(site.workspaceId, guest.id);
     return NextResponse.json({
       ok: true,
       guest: updated
@@ -92,6 +124,7 @@ export async function POST(request: Request) {
             meal: updated.meal,
           }
         : null,
+      events,
     });
   }
 
