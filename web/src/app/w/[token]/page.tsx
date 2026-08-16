@@ -4,6 +4,7 @@ import { getSiteByToken } from "@/lib/data/site-store";
 import { getWorkspaceMeta } from "@/lib/data/store";
 import { getTravel } from "@/lib/data/travel-store";
 import { getRegistry } from "@/lib/data/registry-store";
+import { getDayOf } from "@/lib/data/dayof-store";
 import { DEMO_WORKSPACE } from "@/lib/data/workspace";
 
 function prettyDate(iso?: string) {
@@ -29,6 +30,10 @@ export default async function WeddingSitePage({
   const meta = await getWorkspaceMeta(site.workspaceId, DEMO_WORKSPACE.name);
   const travel = site.showTravel ? await getTravel(site.workspaceId) : null;
   const registry = site.showRegistry ? await getRegistry(site.workspaceId) : null;
+  const dayOf = await getDayOf(site.workspaceId);
+  const guestSlots = (dayOf.schedule || []).filter(
+    (s) => !s.owner || s.owner === "All" || s.owner === "Guests"
+  );
   const names = meta.coupleNames || meta.name;
   const date = prettyDate(meta.weddingDate);
 
@@ -71,6 +76,29 @@ export default async function WeddingSitePage({
             <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-700">
               {site.scheduleNote}
             </p>
+            {guestSlots.length > 0 && (
+              <ol className="mt-4 space-y-2">
+                {guestSlots.map((s) => (
+                  <li key={s.id} className="flex gap-3 text-sm">
+                    <span className="w-14 font-medium tabular-nums">{s.time}</span>
+                    <span>{s.title}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+        )}
+        {!site.scheduleNote && guestSlots.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xs font-medium uppercase tracking-wide text-stone-500">Day of</h2>
+            <ol className="mt-4 space-y-2">
+              {guestSlots.map((s) => (
+                <li key={s.id} className="flex gap-3 text-sm">
+                  <span className="w-14 font-medium tabular-nums">{s.time}</span>
+                  <span>{s.title}</span>
+                </li>
+              ))}
+            </ol>
           </section>
         )}
 

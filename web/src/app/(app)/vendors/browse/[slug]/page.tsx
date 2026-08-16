@@ -33,7 +33,9 @@ export default function DirectoryProfilePage() {
   const [saved, setSaved] = useState(false);
   const [hired, setHired] = useState(false);
   const [message, setMessage] = useState("");
+  const [replyEmail, setReplyEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [mailNote, setMailNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [missing, setMissing] = useState(false);
 
@@ -50,6 +52,9 @@ export default function DirectoryProfilePage() {
     setSaved((data.shortlist || []).includes(slug));
     setHired((data.hiredSlugs || []).includes(slug));
     setSent((data.inquiries || []).some((i: { slug: string }) => i.slug === slug));
+    if (data.yourEmail && !data.yourEmail.endsWith("@example.com")) {
+      setReplyEmail((prev) => prev || data.yourEmail);
+    }
   }
 
   useEffect(() => {
@@ -67,7 +72,15 @@ export default function DirectoryProfilePage() {
       if (!res.ok) return;
       const data = await res.json();
       if (body.action === "shortlist") setSaved((data.shortlist || []).includes(slug));
-      if (body.action === "inquire") setSent(true);
+      if (body.action === "inquire") {
+        setSent(true);
+        const bits = [];
+        if (data.emailedYou) bits.push("copy emailed to you");
+        if (data.emailedVendor) bits.push("sent to the vendor");
+        if (data.demoVendor && !data.emailedVendor) bits.push("saved — this listing is demo, no vendor inbox");
+        if (data.emailError && bits.length === 0) bits.push("saved, email did not send (check Resend)");
+        setMailNote(bits.join(". ") || "Saved on your shortlist");
+      }
       if (body.action === "hire") {
         setHired(true);
         if (data.vendor?.id) router.push(`/vendors/${data.vendor.id}`);
@@ -184,14 +197,21 @@ export default function DirectoryProfilePage() {
         onSubmit={(e) => {
           e.preventDefault();
           if (!message.trim()) return;
-          post({ action: "inquire", slug, message });
+          post({ action: "inquire", slug, message, replyEmail });
         }}
         className="space-y-2 rounded-xl border border-slate-200 bg-white p-4"
       >
         <p className="text-sm font-medium">Ask a question</p>
         <p className="text-xs text-slate-500">
-          Demo: this saves on your shortlist. It does not email a real vendor.
+          Saves on your shortlist and emails a copy to you. Demo listings don't have a real inbox yet.
         </p>
+        <input
+          type="email"
+          value={replyEmail}
+          onChange={(e) => setReplyEmail(e.target.value)}
+          placeholder="Your email (so they can reply)"
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+        />
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
@@ -199,12 +219,13 @@ export default function DirectoryProfilePage() {
           placeholder={`Date, guest count, and what you need from ${listing.name}…`}
           className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
         />
+        {mailNote && <p className="text-xs text-slate-600">{mailNote}</p>}
         <button
           type="submit"
           disabled={busy || !message.trim()}
           className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
-          {sent ? "Saved — send another" : "Save inquiry"}
+          {sent ? "Send another" : "Send inquiry"}
         </button>
       </form>
     </div>

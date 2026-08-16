@@ -8,14 +8,44 @@ import {
   saveBudget,
   updateBudgetLine,
 } from "@/lib/data/budget-store";
+import { listPayments } from "@/lib/data/payments-store";
+import { diyEstimate, getDiy } from "@/lib/data/diy-store";
 import { requiredString, ValidationError } from "@/lib/validation";
+
+function rollup(
+  budget: Awaited<ReturnType<typeof getBudget>>,
+  payments: Awaited<ReturnType<typeof listPayments>>,
+  diy: Awaited<ReturnType<typeof getDiy>>
+) {
+  const vendorPaid = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + (p.amount || 0), 0);
+  const vendorOpen = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + (p.amount || 0), 0);
+  const linesPlanned = budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
+  const linesActual = budget.lines.reduce((s, l) => s + (l.actual || 0), 0);
+  const diyEst = Math.round(diyEstimate(diy));
+  const inPlay = vendorPaid + vendorOpen + diyEst + linesPlanned;
+  return {
+    vendorPaid,
+    vendorOpen,
+    vendorAll: vendorPaid + vendorOpen,
+    diyEst,
+    linesPlanned,
+    linesActual,
+    inPlay,
+    cap: budget.overallLimit || 0,
+    remaining: budget.overallLimit ? budget.overallLimit - inPlay : null,
+  };
+}
 
 export async function GET() {
   const access = await requireCoupleApi();
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
-  const budget = await getBudget(workspace.id);
-  return NextResponse.json({ budget });
+  const [budget, payments, diy] = await Promise.all([
+    getBudget(workspace.id),
+    listPayments(workspace.id),
+    getDiy(workspace.id),
+  ]);
+  return NextResponse.json({ budget, payments, rollup: rollup(budget, payments, diy) });
 }
 
 export async function POST(request: Request) {

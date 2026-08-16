@@ -55,3 +55,9 @@
 - Vendor portal: live headcount/dietary/music/vendor list + run of show
 - Handoff templates for florist, planner, HMU, cake, transport, venue
 - Hire vs DIY decision per category
+
+## Wave 9 (done)
+- Real inquiry email (copy to you; vendor if the address is real)
+- Budget one-number: payments + DIY estimates + other lines
+- DIY playbooks: cake, backdrop, favors, welcome bags; Atlanta flower sourcing
+- Run of show by audience (couple / party / vendor / guests)

@@ -8,7 +8,9 @@ export const PATH_CATEGORIES = [
   { id: "tables", label: "Table decor", hireHref: "/vendors/browse?category=Rentals", diyHref: "/diy/table-decor" },
   { id: "signs", label: "Signage", hireHref: "/vendors/browse?category=Stationery", diyHref: "/diy/signage" },
   { id: "lighting", label: "Lighting", hireHref: "/vendors/browse?category=Rentals", diyHref: "/diy/lighting" },
-  { id: "cake", label: "Cake / dessert", hireHref: "/vendors/browse?category=Cake", diyHref: "/diy" },
+  { id: "cake", label: "Cake / dessert", hireHref: "/vendors/browse?category=Cake", diyHref: "/diy/cake" },
+  { id: "backdrop", label: "Ceremony backdrop", hireHref: "/vendors/browse?category=Florist", diyHref: "/diy/backdrop" },
+  { id: "favors", label: "Favors", hireHref: "/vendors/browse", diyHref: "/diy/favors" },
   { id: "photo", label: "Photography", hireHref: "/vendors/browse?category=Photographer", diyHref: "" },
 ] as const;
 

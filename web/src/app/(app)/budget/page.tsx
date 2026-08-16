@@ -17,11 +17,21 @@ const CATEGORIES = [
 
 type Line = { id: string; category: string; label: string; planned: number; actual: number };
 type Budget = { overallLimit?: number; lines: Line[]; currency: string };
-type Payment = { amount: number; status: string };
+type Rollup = {
+  vendorPaid: number;
+  vendorOpen: number;
+  vendorAll: number;
+  diyEst: number;
+  linesPlanned: number;
+  linesActual: number;
+  inPlay: number;
+  cap: number;
+  remaining: number | null;
+};
 
 export default function BudgetPage() {
   const [budget, setBudget] = useState<Budget | null>(null);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [rollup, setRollup] = useState<Rollup | null>(null);
   const [label, setLabel] = useState("");
   const [planned, setPlanned] = useState(0);
   const [actual, setActual] = useState(0);
@@ -30,15 +40,12 @@ export default function BudgetPage() {
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
-    const [b, p] = await Promise.all([fetch("/api/budget"), fetch("/api/payments")]);
-    if (b.ok) {
-      const data = await b.json();
+    const res = await fetch("/api/budget");
+    if (res.ok) {
+      const data = await res.json();
       setBudget(data.budget);
+      setRollup(data.rollup || null);
       setLimit(data.budget?.overallLimit ? String(data.budget.overallLimit) : "");
-    }
-    if (p.ok) {
-      const data = await p.json();
-      setPayments(data.payments || []);
     }
   }
 
@@ -59,6 +66,7 @@ export default function BudgetPage() {
     const data = await res.json();
     setBudget(data.budget);
     setError(null);
+    load();
   }
 
   async function addLine(e: React.FormEvent) {
@@ -70,15 +78,9 @@ export default function BudgetPage() {
   }
 
   const plannedTotal = budget?.lines.reduce((s, l) => s + (l.planned || 0), 0) || 0;
-  const actualTotal = budget?.lines.reduce((s, l) => s + (l.actual || 0), 0) || 0;
-  const paymentsPaid = payments
-    .filter((p) => p.status === "PAID")
-    .reduce((s, p) => s + (p.amount || 0), 0);
-  const paymentsOpen = payments
-    .filter((p) => p.status !== "PAID")
-    .reduce((s, p) => s + (p.amount || 0), 0);
-  const overLimit =
-    budget?.overallLimit && plannedTotal > budget.overallLimit ? plannedTotal - budget.overallLimit : 0;
+  const inPlay = rollup?.inPlay ?? plannedTotal;
+  const over =
+    rollup?.remaining != null && rollup.remaining < 0 ? Math.abs(rollup.remaining) : 0;
 
   return (
     <div className="space-y-6">
@@ -86,36 +88,52 @@ export default function BudgetPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Budget</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Planned lines plus vendor payment totals.
+            One number: vendor payments + DIY lists + these lines. Don't enter the same florist twice.
           </p>
         </div>
-        <Link href="/payments" className="text-xs font-medium underline">
-          Vendor payments
-        </Link>
+        <div className="flex gap-3 text-xs font-medium">
+          <Link href="/payments" className="underline">
+            Payments
+          </Link>
+          <Link href="/diy" className="underline">
+            DIY lists
+          </Link>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <p className="text-3xl font-semibold tracking-tight">${inPlay.toLocaleString()}</p>
+        <p className="text-sm text-slate-500">
+          in play
+          {rollup?.cap ? ` of $${rollup.cap.toLocaleString()} cap` : ""}
+          {rollup?.remaining != null && rollup.remaining >= 0
+            ? ` · $${rollup.remaining.toLocaleString()} left`
+            : ""}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
-          <p className="text-lg font-semibold">${plannedTotal.toLocaleString()}</p>
-          <p className="text-xs text-slate-500">Planned</p>
+          <p className="text-lg font-semibold">${(rollup?.vendorAll || 0).toLocaleString()}</p>
+          <p className="text-xs text-slate-500">Vendors</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
-          <p className="text-lg font-semibold">${actualTotal.toLocaleString()}</p>
-          <p className="text-xs text-slate-500">Actual (lines)</p>
+          <p className="text-lg font-semibold">${(rollup?.diyEst || 0).toLocaleString()}</p>
+          <p className="text-xs text-slate-500">DIY estimate</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
-          <p className="text-lg font-semibold">${paymentsPaid.toLocaleString()}</p>
-          <p className="text-xs text-slate-500">Payments paid</p>
+          <p className="text-lg font-semibold">${(rollup?.linesPlanned || 0).toLocaleString()}</p>
+          <p className="text-xs text-slate-500">Other planned</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
-          <p className="text-lg font-semibold">${paymentsOpen.toLocaleString()}</p>
-          <p className="text-xs text-slate-500">Payments open</p>
+          <p className="text-lg font-semibold">${(rollup?.vendorPaid || 0).toLocaleString()}</p>
+          <p className="text-xs text-slate-500">Already paid</p>
         </div>
       </div>
 
-      {overLimit > 0 && (
+      {over > 0 && (
         <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Planned is ${overLimit.toLocaleString()} over the overall cap.
+          You're ${over.toLocaleString()} over the cap.
         </p>
       )}
 

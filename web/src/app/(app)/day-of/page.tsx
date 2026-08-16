@@ -21,6 +21,8 @@ export default function DayOfPage() {
   const [emergency, setEmergency] = useState("");
   const [slotTime, setSlotTime] = useState("12:00");
   const [slotTitle, setSlotTitle] = useState("");
+  const [slotOwner, setSlotOwner] = useState("All");
+  const [audience, setAudience] = useState("All");
 
   async function load() {
     const res = await fetch("/api/day-of");
@@ -74,7 +76,7 @@ export default function DayOfPage() {
     await fetch("/api/day-of", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "schedule_add", time: slotTime, title: slotTitle }),
+      body: JSON.stringify({ action: "schedule_add", time: slotTime, title: slotTitle, owner: slotOwner }),
     });
     setSlotTitle("");
     load();
@@ -96,18 +98,35 @@ export default function DayOfPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Day-of board</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Hour strip, check-ins, weather, and live notes for the team.
+          One run of show. Tag who sees each beat — couple, party, vendors, guests.
         </p>
+      </div>
+
+      <div className="flex flex-wrap gap-1">
+        {["All", "Couple", "Party", "Vendor", "Guests"].map((a) => (
+          <button
+            key={a}
+            type="button"
+            onClick={() => setAudience(a)}
+            className={`rounded-full px-3 py-1 text-xs ${
+              audience === a ? "bg-slate-900 text-white" : "border border-slate-300"
+            }`}
+          >
+            {a}
+          </button>
+        ))}
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-4">
         <p className="text-sm font-semibold">Schedule</p>
         <ol className="mt-3 space-y-0">
-          {(dayOf.schedule || []).map((s, i) => (
+          {(dayOf.schedule || [])
+            .filter((s) => audience === "All" || !s.owner || s.owner === "All" || s.owner === audience)
+            .map((s, i, arr) => (
             <li key={s.id} className="flex gap-3">
               <div className="flex w-14 flex-col items-center">
                 <span className="text-xs font-semibold text-slate-900">{s.time}</span>
-                {i < (dayOf.schedule?.length || 0) - 1 && (
+                {i < arr.length - 1 && (
                   <span className="mt-1 h-full min-h-[1rem] w-px flex-1 bg-slate-200" />
                 )}
               </div>
@@ -141,6 +160,15 @@ export default function DayOfPage() {
             placeholder="Moment"
             className="min-w-[10rem] flex-1 rounded-lg border border-slate-300 px-2 py-1.5 text-xs"
           />
+          <select
+            value={slotOwner}
+            onChange={(e) => setSlotOwner(e.target.value)}
+            className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs"
+          >
+            {["All", "Couple", "Party", "Vendor", "Guests"].map((o) => (
+              <option key={o}>{o}</option>
+            ))}
+          </select>
           <button type="submit" className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">
             Add
           </button>

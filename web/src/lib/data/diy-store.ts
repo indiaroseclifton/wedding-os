@@ -11,6 +11,7 @@ export type DiyShopItem = {
   qty: number;
   unit: string;
   bought: boolean;
+  estEach?: number;
   note?: string;
 };
 
@@ -86,6 +87,7 @@ export async function startProject(
       qty: estimateQty(rule, tables, guests),
       unit: rule.unit,
       bought: false,
+      estEach: rule.estEach,
       note: rule.note,
     })),
   };
@@ -116,6 +118,7 @@ export async function recalcShopping(workspaceId: string, id: string, tables: nu
     qty: estimateQty(rule, tables, guests),
     unit: rule.unit,
     bought: bought.get(rule.label) || false,
+    estEach: rule.estEach,
     note: rule.note,
   }));
   return patchProject(workspaceId, id, { tables, guests, shopping });
@@ -133,4 +136,15 @@ export async function toggleShopItem(workspaceId: string, projectId: string, ite
 export async function deleteProject(workspaceId: string, id: string) {
   const current = await getDiy(workspaceId);
   return saveDiy(workspaceId, { projects: current.projects.filter((p) => p.id !== id) });
+}
+
+export function diyEstimate(diy: StoredDiy) {
+  return diy.projects
+    .filter((p) => p.status !== "done")
+    .reduce(
+      (sum, p) =>
+        sum +
+        p.shopping.reduce((s, item) => s + (item.qty || 0) * (item.estEach || 0), 0),
+      0
+    );
 }

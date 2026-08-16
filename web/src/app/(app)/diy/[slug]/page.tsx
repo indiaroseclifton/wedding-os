@@ -25,7 +25,7 @@ type Playbook = {
   sources: Source[];
   pitfalls: string[];
 };
-type Shop = { id: string; label: string; qty: number; unit: string; bought: boolean; note?: string };
+type Shop = { id: string; label: string; qty: number; unit: string; bought: boolean; estEach?: number; note?: string };
 type Project = {
   id: string;
   playbookSlug: string;
@@ -180,6 +180,9 @@ export default function DiyPlaybookPage() {
                     <span className="text-xs text-slate-500">
                       {" "}
                       · {s.qty} {s.unit}
+                      {s.estEach
+                        ? ` · ~$${Math.round(s.qty * s.estEach).toLocaleString()}`
+                        : ""}
                     </span>
                   </span>
                 </label>

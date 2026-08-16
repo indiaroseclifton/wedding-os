@@ -22,6 +22,7 @@ export type ShoppingRule = {
   perTable?: number;
   perGuest?: number;
   flat?: number;
+  estEach?: number;
   note?: string;
 };
 
@@ -125,13 +126,22 @@ export const PLAYBOOKS: Playbook[] = [
         bestFor: "Outdoor heat (Atlanta summer), arches, keep-forever pieces.",
         watch: "Cheap plastic reads cheap on camera. Mix real greenery if you can.",
       },
+      {
+        id: "atlanta",
+        name: "Atlanta grocery + pickup",
+        cost: "low",
+        effort: "mid",
+        lead: "2–3 days before",
+        bestFor: "Trader Joe’s / Kroger hardy bunches; wholesale pickup if you have a list.",
+        watch: "May–Sept heat. Hydrangea outdoors will fail. Shop early the restock morning.",
+      },
     ],
     shopping: [
-      { id: "stems", label: "Mixed stems for tables", unit: "stems", perTable: 12, note: "Hardy mix; add 10% spare" },
-      { id: "green", label: "Greenery pieces", unit: "stems", perTable: 5 },
-      { id: "vases", label: "Bud vases or bowls", unit: "vases", perTable: 3 },
-      { id: "bouquet", label: "Bouquet stems (if DIY)", unit: "stems", flat: 35 },
-      { id: "buckets", label: "Clean buckets + flower food", unit: "kits", flat: 1 },
+      { id: "stems", label: "Mixed stems for tables", unit: "stems", perTable: 12, estEach: 1.5, note: "Hardy mix; add 10% spare" },
+      { id: "green", label: "Greenery pieces", unit: "stems", perTable: 5, estEach: 2 },
+      { id: "vases", label: "Bud vases or bowls", unit: "vases", perTable: 3, estEach: 4 },
+      { id: "bouquet", label: "Bouquet stems (if DIY)", unit: "stems", flat: 35, estEach: 2 },
+      { id: "buckets", label: "Clean buckets + flower food", unit: "kits", flat: 1, estEach: 25 },
     ],
     pitfalls: [
       "Hydrangea and garden roses collapse in heat and sun. Use them indoors or swap for hardy doubles.",
@@ -196,11 +206,11 @@ export const PLAYBOOKS: Playbook[] = [
       },
     ],
     shopping: [
-      { id: "cloth", label: "Cloths or runners", unit: "tables", perTable: 1 },
-      { id: "vessels", label: "Vases / bowls", unit: "vessels", perTable: 3 },
-      { id: "candles", label: "Tapers or votives", unit: "candles", perTable: 4 },
-      { id: "numbers", label: "Table numbers", unit: "cards", perTable: 1 },
-      { id: "places", label: "Place cards", unit: "cards", perGuest: 1 },
+      { id: "cloth", label: "Cloths or runners", unit: "tables", perTable: 1, estEach: 18 },
+      { id: "vessels", label: "Vases / bowls", unit: "vessels", perTable: 3, estEach: 4 },
+      { id: "candles", label: "Tapers or votives", unit: "candles", perTable: 4, estEach: 2 },
+      { id: "numbers", label: "Table numbers", unit: "cards", perTable: 1, estEach: 2 },
+      { id: "places", label: "Place cards", unit: "cards", perGuest: 1, estEach: 0.4 },
     ],
     pitfalls: [
       "Anything taller than ~14\" blocks conversation. Keep guest-table florals low.",
@@ -248,9 +258,9 @@ export const PLAYBOOKS: Playbook[] = [
       },
     ],
     shopping: [
-      { id: "welcome", label: "Welcome sign", unit: "signs", flat: 1 },
-      { id: "seating", label: "Seating / escort display", unit: "sets", flat: 1 },
-      { id: "small", label: "Small utility signs", unit: "signs", flat: 4 },
+      { id: "welcome", label: "Welcome sign", unit: "signs", flat: 1, estEach: 35 },
+      { id: "seating", label: "Seating / escort display", unit: "sets", flat: 1, estEach: 40 },
+      { id: "small", label: "Small utility signs", unit: "signs", flat: 4, estEach: 8 },
     ],
     pitfalls: ["Seating charts change until the last week. Design so names can be swapped."],
   },
@@ -285,10 +295,192 @@ export const PLAYBOOKS: Playbook[] = [
       },
     ],
     shopping: [
-      { id: "strands", label: "Cafe-light strands", unit: "strands", flat: 4 },
-      { id: "spare", label: "Spare bulbs + outdoor extension", unit: "kits", flat: 1 },
+      { id: "strands", label: "Cafe-light strands", unit: "strands", flat: 4, estEach: 22 },
+      { id: "spare", label: "Spare bulbs + outdoor extension", unit: "kits", flat: 1, estEach: 30 },
     ],
     pitfalls: ["Photographers need a little light on faces. Don’t make the room a cave."],
+  },
+  {
+    slug: "cake",
+    title: "Cake & dessert",
+    summary: "Display cake plus kitchen sheets — or a dessert table you can actually finish.",
+    whenDiy: "You like baking, have fridge space, and a friend who will cut.",
+    whenHire: "July heat, 150+ guests, or you want a sculpted thing that photographs.",
+    timeline: [
+      { when: "3 months out", what: "Decide display + sheet vs full stack vs dessert table." },
+      { when: "6 weeks out", what: "Do a flavor trial. Lock how it gets to the venue." },
+      { when: "Week of", what: "Bake sheets 2 days out. Assemble display the day before. Keep cold." },
+    ],
+    recipes: [
+      {
+        id: "smart-cake",
+        name: "Photo cake + kitchen sheets",
+        forWhat: "Most guest counts",
+        pieces: ["Two-tier show cake", "Sheet cakes in the kitchen", "Simple flowers or fruit, not fondant sculpture"],
+      },
+      {
+        id: "dessert-table",
+        name: "Dessert table",
+        forWhat: "Casual dinner",
+        pieces: ["2–3 cookie / bar recipes you already make well", "One show piece", "Labels for allergens"],
+      },
+    ],
+    sources: [
+      {
+        id: "home",
+        name: "You + a helper",
+        cost: "low",
+        effort: "high",
+        lead: "Practice now, bake week-of",
+        bestFor: "Small guest counts, flavors you already know.",
+        watch: "Buttercream in Atlanta heat. Keep it inside and cold.",
+      },
+      {
+        id: "bakery",
+        name: "Bakery (display + sheets)",
+        cost: "mid",
+        effort: "low",
+        lead: "3–6 months",
+        bestFor: "The look without 14 hours of baking.",
+        watch: "Final count two weeks out. Delivery window is not a suggestion.",
+      },
+    ],
+    shopping: [
+      { id: "show", label: "Display cake (or bake kit)", unit: "cakes", flat: 1, estEach: 80 },
+      { id: "sheets", label: "Kitchen sheet cakes", unit: "sheets", perGuest: 0.02, estEach: 25, note: "~1 half-sheet per 40 guests" },
+      { id: "boxes", label: "Boxes / cake stand / knife", unit: "kits", flat: 1, estEach: 30 },
+    ],
+    pitfalls: [
+      "Don't drive a buttercream cake across town in August with the AC off.",
+      "Someone has to cut. Put it on Day-of.",
+    ],
+  },
+  {
+    slug: "backdrop",
+    title: "Ceremony backdrop",
+    summary: "An arch, fireplace, or two trees — not a 12-foot install you invent the morning of.",
+    whenDiy: "You can hang or zip-tie safely, and the venue allows it.",
+    whenHire: "Hanging from a ceiling, a floral wall, or anything that needs a lift.",
+    timeline: [
+      { when: "2 months out", what: "Pick the structure: rented arch, existing fireplace, or trees." },
+      { when: "3 weeks out", what: "Buy fabric, faux greens, or reserve farm buckets for the frame only." },
+      { when: "Day before / morning", what: "Build on site. Don’t assemble florals at home and drive them upright." },
+    ],
+    recipes: [
+      {
+        id: "simple-arch",
+        name: "Simple arch",
+        forWhat: "Lawn or backyard",
+        pieces: ["Metal or wood arch rental", "Asymmetric greenery on one corner", "Optional 2–3 face flowers"],
+      },
+    ],
+    sources: [
+      {
+        id: "rental-arch",
+        name: "Rental arch + your greens",
+        cost: "low",
+        effort: "mid",
+        lead: "4–8 weeks",
+        bestFor: "DIY flowers couples who still want a frame.",
+        watch: "Wind. Stake it. Have a plan B wall or fireplace.",
+      },
+      {
+        id: "florist-install",
+        name: "Florist install",
+        cost: "high",
+        effort: "low",
+        lead: "6–12 months",
+        bestFor: "Anything hanging or that must match personal flowers.",
+        watch: "This is where DIY budgets go to die. Worth it if it’s the photo.",
+      },
+    ],
+    shopping: [
+      { id: "frame", label: "Arch or frame", unit: "frames", flat: 1, estEach: 80 },
+      { id: "green", label: "Greenery / fabric", unit: "bunches", flat: 6, estEach: 12 },
+      { id: "ties", label: "Zip ties, floral wire, stakes", unit: "kits", flat: 1, estEach: 15 },
+    ],
+    pitfalls: ["Outdoor May–Sept in Atlanta: real hydrangea on an arch will collapse. Use hardy greens or faux."],
+  },
+  {
+    slug: "favors",
+    title: "Favors",
+    summary: "Skip them unless they get eaten or used. Nobody needs a tiny bottle with your monogram.",
+    whenDiy: "You already make something (cookies, hot sauce, seed packets) and can pack in a weekend.",
+    whenHire: "You don’t. Most couples should spend this money on food or light.",
+    timeline: [
+      { when: "6 weeks out", what: "Decide favor or no favor. Default is no." },
+      { when: "2 weeks out", what: "If yes: make or order. Pack in one labeled bin." },
+    ],
+    recipes: [
+      {
+        id: "edible",
+        name: "Edible, one item",
+        forWhat: "If you insist",
+        pieces: ["One cookie or chocolate per guest", "Simple wrap", "No personalization that takes 4 hours"],
+      },
+    ],
+    sources: [
+      {
+        id: "skip",
+        name: "Skip favors",
+        cost: "low",
+        effort: "low",
+        lead: "Now",
+        bestFor: "Almost everyone.",
+        watch: "Guests leave them on the table. That’s your answer.",
+      },
+      {
+        id: "local-food",
+        name: "Local food item",
+        cost: "mid",
+        effort: "mid",
+        lead: "3–4 weeks",
+        bestFor: "Something people will actually take (donuts, coffee bags).",
+        watch: "Count extras. Heat-sensitive chocolate is a bad outdoor favor.",
+      },
+    ],
+    shopping: [
+      { id: "item", label: "Favor item", unit: "each", perGuest: 1, estEach: 2 },
+      { id: "wrap", label: "Wrap / bags", unit: "each", perGuest: 1, estEach: 0.3 },
+    ],
+    pitfalls: ["If it takes a craft night, it’s not a favor. It’s a second job."],
+  },
+  {
+    slug: "welcome-bags",
+    title: "Welcome bags",
+    summary: "Hotel bags for out-of-town people — water, a note, something local. Not a gift basket.",
+    whenDiy: "You have under 40 rooms and a night to pack.",
+    whenHire: "80+ rooms or you want them delivered to every door.",
+    timeline: [
+      { when: "4 weeks out", what: "List rooms from the hotel block. Write a one-page weekend card." },
+      { when: "1 week out", what: "Buy water, snacks, one local thing. Print the card." },
+      { when: "Day before guests arrive", what: "Pack. Drop at the front desk with a room list — don’t door-knock 30 rooms." },
+    ],
+    recipes: [
+      {
+        id: "hotel-bag",
+        name: "Hotel bag",
+        forWhat: "Each reserved room",
+        pieces: ["Water", "A snack", "Weekend card (times, parking, weather)", "One local item optional"],
+      },
+    ],
+    sources: [
+      {
+        id: "costco-run",
+        name: "Costco / Trader Joe’s run",
+        cost: "low",
+        effort: "mid",
+        lead: "1 week",
+        bestFor: "Most Atlanta hotel blocks.",
+        watch: "Hotel may charge to deliver. Ask before you assume the desk will help.",
+      },
+    ],
+    shopping: [
+      { id: "bags", label: "Bags", unit: "rooms", perTable: 0, flat: 20, estEach: 1, note: "Set rooms = your hotel block, not guest count" },
+      { id: "water", label: "Water + snack", unit: "rooms", flat: 20, estEach: 3 },
+      { id: "card", label: "Weekend cards", unit: "rooms", flat: 20, estEach: 0.4 },
+    ],
+    pitfalls: ["Pack for rooms, not heads. Two people in a room get one bag."],
   },
 ];
 
