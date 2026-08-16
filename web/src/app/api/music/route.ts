@@ -81,6 +81,11 @@ export async function POST(request: Request) {
     mustPlay: Array.isArray(body.mustPlay) ? body.mustPlay : undefined,
     doNotPlay: Array.isArray(body.doNotPlay) ? body.doNotPlay : undefined,
     moments: Array.isArray(body.moments) ? body.moments : undefined,
+    cues: Array.isArray(body.cues) ? body.cues : undefined,
+    genres: typeof body.genres === "string" ? body.genres : undefined,
+    energy: typeof body.energy === "string" ? body.energy : undefined,
+    noLineDances: typeof body.noLineDances === "boolean" ? body.noLineDances : undefined,
+    announceNames: typeof body.announceNames === "string" ? body.announceNames : undefined,
     notes: typeof body.notes === "string" ? body.notes : undefined,
   });
   return NextResponse.json({ music: publicMusic(music) });

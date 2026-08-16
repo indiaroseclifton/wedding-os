@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { TrackPreview } from "@/components/music/TrackPreview";
+import { CueSheet } from "@/components/music/CueSheet";
+import { mergeCues, type MusicCue } from "@/lib/dj-cues";
 
 type Request = { id: string; song: string; from?: string; status: string };
 type Track = {
@@ -47,6 +49,12 @@ function MusicInner() {
   const [mustPlay, setMustPlay] = useState("");
   const [doNotPlay, setDoNotPlay] = useState("");
   const [notes, setNotes] = useState("");
+  const [cues, setCues] = useState<MusicCue[]>(mergeCues([]));
+  const [genres, setGenres] = useState("");
+  const [energy, setEnergy] = useState("");
+  const [noLineDances, setNoLineDances] = useState(false);
+  const [announceNames, setAnnounceNames] = useState("");
+  const [tab, setTab] = useState<"cues" | "lists" | "search">("cues");
   const [requests, setRequests] = useState<Request[]>([]);
   const [reqSong, setReqSong] = useState("");
   const [reqFrom, setReqFrom] = useState("");
@@ -75,6 +83,11 @@ function MusicInner() {
       setMustPlay((d.music.mustPlay || []).join("\n"));
       setDoNotPlay((d.music.doNotPlay || []).join("\n"));
       setNotes(d.music.notes || "");
+      setCues(mergeCues(d.music.cues || d.music.moments));
+      setGenres(d.music.genres || "");
+      setEnergy(d.music.energy || "");
+      setNoLineDances(!!d.music.noLineDances);
+      setAnnounceNames(d.music.announceNames || "");
       setRequests(d.music.requests || []);
       setConnected(Boolean(d.music.spotify?.connected));
       setDisplayName(d.music.spotify?.displayName || "");
@@ -106,6 +119,11 @@ function MusicInner() {
         mustPlay: mustPlay.split("\n").map((s) => s.trim()).filter(Boolean),
         doNotPlay: doNotPlay.split("\n").map((s) => s.trim()).filter(Boolean),
         notes,
+        cues,
+        genres,
+        energy,
+        noLineDances,
+        announceNames,
       }),
     });
     setSaved(true);
@@ -231,10 +249,60 @@ function MusicInner() {
         <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">DJ packet</p>
         <h1 className="mt-1 text-2xl font-medium tracking-tight">Music</h1>
         <p className="mt-1 text-sm text-ink-soft">
-          Search Spotify or Apple Music, preview in this page, then lock must-play / do-not-play.
+          Processional, first dance, last song — then a short must-play. That’s the brief DJs actually use.
         </p>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            ["cues", "Cue sheet"],
+            ["lists", "Must / don’t"],
+            ["search", "Search"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+              tab === id ? "bg-moss text-ivory" : "border border-line"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "cues" && (
+        <>
+          <CueSheet
+            cues={cues}
+            onChange={setCues}
+            genres={genres}
+            energy={energy}
+            noLineDances={noLineDances}
+            announceNames={announceNames}
+            onMeta={(p) => {
+              if (p.genres !== undefined) setGenres(p.genres);
+              if (p.energy !== undefined) setEnergy(p.energy);
+              if (p.noLineDances !== undefined) setNoLineDances(p.noLineDances);
+              if (p.announceNames !== undefined) setAnnounceNames(p.announceNames);
+            }}
+          />
+          <button
+            type="button"
+            onClick={save}
+            className="rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory"
+          >
+            Save cue sheet
+          </button>
+          {saved && <p className="text-xs text-moss">Saved. DJ handoff pulls this automatically.</p>}
+        </>
+      )}
+
+      {tab === "search" && (
+        <>
       <div className="rounded-xl border border-line bg-surface p-4">
         <p className="text-sm font-semibold">Spotify</p>
         {!configured ? (
@@ -414,7 +482,11 @@ function MusicInner() {
           </ul>
         </form>
       )}
+        </>
+      )}
 
+      {tab === "lists" && (
+        <>
       <label className="block text-sm">
         <span className="font-medium">Must-play (one per line)</span>
         <textarea
@@ -507,6 +579,8 @@ function MusicInner() {
           )}
         </ul>
       </div>
+        </>
+      )}
     </div>
   );
 }

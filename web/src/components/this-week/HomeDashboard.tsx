@@ -10,7 +10,7 @@ const QUICK = [
   { href: "/vendors/new", label: "Add vendor", line: "Someone you already hired", photo: "/brand/flowers.jpg" },
   { href: "/payments", label: "Log a payment", line: "Deposit or balance", photo: "/brand/candles.jpg" },
   { href: "/diy", label: "DIY studio", line: "Flowers, tables, lists", photo: "/brand/flowers.jpg" },
-  { href: "/music", label: "Must-play", line: "Preview and lock a song", photo: "/brand/candles.jpg" },
+  { href: "/music", label: "DJ cues", line: "Processional to last dance", photo: "/brand/candles.jpg" },
 ] as const;
 
 export function HomeDashboard({

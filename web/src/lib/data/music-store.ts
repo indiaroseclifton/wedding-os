@@ -1,6 +1,8 @@
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
+import type { MusicCue } from "@/lib/dj-cues";
+import { mergeCues } from "@/lib/dj-cues";
+import { dataDir, ensureDir, readText, writeText } from "./store-io";
 
 const musicFile = path.join(dataDir, "music.json");
 
@@ -42,6 +44,11 @@ export type StoredMusic = {
   doNotPlay: string[];
   mustPlayTracks?: TrackRef[];
   moments: { label: string; song?: string }[];
+  cues?: MusicCue[];
+  genres?: string;
+  energy?: string;
+  noLineDances?: boolean;
+  announceNames?: string;
   notes?: string;
   requests: SongRequest[];
   spotify?: SpotifyLink;
@@ -59,7 +66,11 @@ async function readAll(): Promise<Record<string, StoredMusic>> {
 }
 
 function normalize(m: StoredMusic): StoredMusic {
-  return { ...m, requests: m.requests || [] };
+  return {
+    ...m,
+    requests: m.requests || [],
+    cues: mergeCues(m.cues || m.moments),
+  };
 }
 
 export async function getMusic(workspaceId: string): Promise<StoredMusic> {

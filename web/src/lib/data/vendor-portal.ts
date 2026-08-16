@@ -6,6 +6,7 @@ import { dietarySections, eventDietarySections } from "./dietary";
 import { listEvents } from "./events-store";
 import { listEventRsvps } from "./event-rsvp-store";
 import { getMusic } from "./music-store";
+import { cuesAsHandoff, mergeCues } from "@/lib/dj-cues";
 import { listVendors } from "./vendors-store";
 import { DEMO_WORKSPACE } from "./workspace";
 
@@ -34,6 +35,8 @@ export async function loadVendorPortal(token: string) {
     const music = await getMusic(pkg.workspaceId);
     live.must_play = (music.mustPlay || []).join("\n");
     live.do_not_play = (music.doNotPlay || []).join("\n");
+    live.music_moments = cuesAsHandoff(mergeCues(music.cues || music.moments));
+    if (music.genres) live.tone_notes = [music.genres, music.energy, music.announceNames].filter(Boolean).join("\n");
     if (music.spotify?.playlistUrl) live.spotify_playlist = music.spotify.playlistUrl;
     if (music.appleMusic?.playlistUrl) live.apple_music_playlist = music.appleMusic.playlistUrl;
   }
