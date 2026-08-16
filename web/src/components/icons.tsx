@@ -15,6 +15,7 @@ import {
   MapPin,
   Microphone,
   MusicNotes,
+  PencilSimple,
   PersonSimpleWalk,
   Sparkle,
   Sun,
@@ -54,6 +55,7 @@ const CHROME: Record<string, PhIcon> = {
   mic: Microphone,
   speech: Microphone,
   dance: PersonSimpleWalk,
+  edit: PencilSimple,
 };
 
 function CustomMark({

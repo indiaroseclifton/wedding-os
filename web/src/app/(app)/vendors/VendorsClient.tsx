@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { coverFor } from "@/lib/vendor-face";
 
 type Vendor = {
   id: string;
@@ -11,6 +12,8 @@ type Vendor = {
   status: string;
   email?: string;
   moneyHint?: string;
+  strip?: string;
+  faceHint?: string;
 };
 
 const STATUSES = [
@@ -46,31 +49,43 @@ export function VendorsClient({ vendors }: { vendors: Vendor[] }) {
   }
 
   return (
-    <ul className="space-y-3">
+    <ul className="grid gap-3">
       {rows.map((v) => (
-        <li key={v.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3">
-          <Link href={`/vendors/${v.id}`} className="flex min-w-0 flex-1 items-center gap-4">
-            <img src="/brand/flowers.jpg" alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
-            <div className="min-w-0">
-              <p className="font-medium">{v.name}</p>
-              <p className="text-xs text-muted">
-                {v.category}
-                {v.moneyHint ? ` · ${v.moneyHint}` : ""}
-              </p>
-            </div>
-          </Link>
-          <select
-            disabled={busy === v.id}
-            value={v.status}
-            onChange={(e) => setStatus(v.id, e.target.value)}
-            className="rounded-full border border-line bg-paper px-2 py-1 text-[11px]"
-          >
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s.replaceAll("_", " ")}
-              </option>
-            ))}
-          </select>
+        <li key={v.id}>
+          <article className="flex gap-3 overflow-hidden rounded-[1.4rem] border border-line bg-surface transition hover:border-moss/40">
+            <Link href={`/vendors/${v.id}`} className="flex min-w-0 flex-1 gap-4 p-3">
+              <img
+                src={coverFor(v.category)}
+                alt=""
+                className="h-20 w-20 shrink-0 rounded-2xl object-cover sm:h-24 sm:w-24"
+              />
+              <div className="min-w-0 py-0.5">
+                <p className="font-serif text-2xl leading-tight">{v.name}</p>
+                <p className="mt-0.5 text-xs text-muted">
+                  {v.category}
+                  {v.faceHint ? ` · ${v.faceHint}` : ""}
+                </p>
+                {(v.strip || v.moneyHint) && (
+                  <p className={`mt-2 text-xs ${v.strip && !v.strip.startsWith("Not") && !v.strip.startsWith("Draft") ? "text-moss" : "text-muted"}`}>
+                    {v.strip || v.moneyHint}
+                  </p>
+                )}
+              </div>
+            </Link>
+            <select
+              disabled={busy === v.id}
+              value={v.status}
+              aria-label={`Status for ${v.name}`}
+              onChange={(e) => setStatus(v.id, e.target.value)}
+              className="m-3 self-start rounded-full border border-line bg-paper px-3 py-2 text-[11px]"
+            >
+              {STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {s.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
+          </article>
         </li>
       ))}
     </ul>

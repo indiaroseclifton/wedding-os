@@ -11,6 +11,10 @@ import {
   type ContractReview,
 } from "@/lib/data/contract-review";
 import { VendorLog } from "@/components/send/VendorLog";
+import { VendorHero } from "@/components/vendors/VendorHero";
+import { VendorFace } from "@/components/vendors/VendorFace";
+import { sendStrip } from "@/lib/send/status";
+import type { VendorSend } from "@/lib/data/sends-store";
 
 type Vendor = {
   id: string;
@@ -25,6 +29,8 @@ type Vendor = {
   contractReview?: ContractReview;
   inquiries?: { id: string; at: string; direction: "out" | "in"; body: string; emailedAt?: string }[];
   checklist?: { id: string; title: string; done: boolean }[];
+  contactName?: string;
+  face?: Record<string, string>;
 };
 
 type Payment = {
@@ -62,6 +68,7 @@ export default function VendorDetailPage() {
     coiReceived: false,
   });
   const [reviewMsg, setReviewMsg] = useState<string | null>(null);
+  const [strip, setStrip] = useState("");
 
   function setClause(id: ClauseId, mark: ClauseMark) {
     setReview((r) => ({ ...r, clauses: { ...r.clauses, [id]: mark } }));
@@ -111,6 +118,13 @@ export default function VendorDetailPage() {
         apply(await vr.json());
       })
       .catch((e) => setError(e.message));
+    fetch("/api/send")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const send = (d?.sends || []).find((s: VendorSend) => s.vendorId === id);
+        setStrip(sendStrip(send).line);
+      })
+      .catch(() => {});
   }, [id]);
 
   async function saveMoney(e: React.FormEvent) {
@@ -180,45 +194,26 @@ export default function VendorDetailPage() {
   const flags = flagCount(vendor.contractReview);
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
-      <div>
-        <Link href="/vendors" className="text-xs underline">
-          All vendors
-        </Link>
-        {" · "}
-        <Link href={`/send/${vendor.id}`} className="text-xs underline">
-          Send their packet
-        </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">{vendor.name}</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          {vendor.category} · {vendor.status.replaceAll("_", " ")}
-          {payments.length
-            ? ` · $${paidPay.toLocaleString()} paid · $${openPay.toLocaleString()} open`
-            : ""}
-          {vendor.contractReview?.reviewedAt
-            ? flags
-              ? ` · ${flags} flag${flags === 1 ? "" : "s"}`
-              : " · contract reviewed"
-            : ""}
-        </p>
-      </div>
+    <div className="mx-auto max-w-2xl space-y-8">
+      <Link href="/vendors" className="text-xs underline">
+        All vendors
+      </Link>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm space-y-2">
-        {vendor.email && <p>Email: {vendor.email}</p>}
-        {vendor.phone && <p>Phone: {vendor.phone}</p>}
-        {vendor.website && (
-          <p>
-            Site:{" "}
-            <a href={vendor.website} className="underline" target="_blank" rel="noreferrer">
-              {vendor.website}
-            </a>
-          </p>
-        )}
-        {vendor.notes && <p className="text-slate-600">{vendor.notes}</p>}
-        {!vendor.email && !vendor.phone && !vendor.notes && !vendor.website && (
-          <p className="text-slate-500">No contact details yet.</p>
-        )}
-      </div>
+      <VendorHero
+        vendor={vendor}
+        paid={paidPay}
+        open={openPay}
+        flags={flags}
+        strip={strip}
+        onSaved={(v) => setVendor((cur) => (cur ? { ...cur, ...v } : v))}
+      />
+
+      <VendorFace
+        vendorId={vendor.id}
+        category={vendor.category}
+        initial={vendor.face}
+        onSaved={(face) => setVendor((cur) => (cur ? { ...cur, face } : cur))}
+      />
 
       <VendorChecklist
         items={vendor.checklist || []}
@@ -249,8 +244,8 @@ export default function VendorDetailPage() {
         }}
       />
 
-      <form onSubmit={saveMoney} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
-        <p className="text-sm font-semibold">Contract & money</p>
+      <form onSubmit={saveMoney} className="space-y-3 rounded-[1.6rem] border border-line bg-surface p-5 sm:p-6">
+        <p className="font-serif text-2xl">Contract & money</p>
         <label className="block text-sm">
           Contract link
           <input
@@ -347,13 +342,13 @@ export default function VendorDetailPage() {
         <button
           type="submit"
           disabled={busy}
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
         >
           {busy ? "Saving…" : "Save contract & payments"}
         </button>
       </form>
 
-      <form onSubmit={saveReview} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={saveReview} className="space-y-3 rounded-[1.6rem] border border-line bg-surface p-5 sm:p-6">
         <p className="text-sm font-semibold">Review the contract</p>
         <p className="text-xs text-slate-500">
           Not legal advice — five minutes so the PDF is more than a link. Mark what looks good and flag what
@@ -479,7 +474,7 @@ export default function VendorDetailPage() {
         <button
           type="submit"
           disabled={busy}
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
         >
           {busy ? "Saving…" : "Save review"}
         </button>
@@ -532,7 +527,7 @@ export default function VendorDetailPage() {
         <VendorLog vendorId={vendor.id} sendHref={`/send/${vendor.id}`} initial={vendor.inquiries || []} />
       )}
 
-      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+      <div className="rounded-[1.4rem] border border-line bg-surface p-5 text-sm">
         <p className="font-medium">Coordination next</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
           <li>
@@ -571,9 +566,9 @@ function VendorChecklist({
     <section className="rounded-2xl border border-line bg-surface p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-medium">Checklist · {category}</p>
+          <p className="font-serif text-2xl">Checklist</p>
           <p className="text-xs text-muted">
-            {done}/{items.length} — what to lock before you stop thinking about them.
+            {category} · {done}/{items.length}
           </p>
         </div>
         <button type="button" onClick={onApply} className="text-xs underline">

@@ -24,6 +24,7 @@ import {
 } from "./attachments";
 import { getSendForVendor, type VendorSend } from "@/lib/data/sends-store";
 import { findHandoffNote } from "./handoff-notes";
+import { faceLine } from "@/lib/vendor-face";
 import type { StoredVendor } from "@/lib/data/vendors-store";
 
 const ALLERGY = [
@@ -279,7 +280,7 @@ export async function assemblePacket(
     },
     contacts,
     floral: {
-      notes: vendor.notes,
+      notes: [vendor.notes, faceLine(vendor.face, vendor.category)].filter(Boolean).join(" · ") || undefined,
       fixtures: floralFixtures.length ? floralFixtures : fixtures,
     },
     handoffNote: (await findHandoffNote(workspaceId, vendor)) || undefined,

@@ -30,6 +30,7 @@ export type StoredVendor = {
   inquiries?: VendorInquiry[];
   directorySlug?: string;
   checklist?: VendorCheckItem[];
+  face?: Record<string, string>;
   createdAt: string;
   updatedAt: string;
 };

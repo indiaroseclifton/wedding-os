@@ -5,12 +5,17 @@ import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { reviewHint } from "@/lib/data/contract-review";
 import { listPayments, paymentsForVendor, vendorMoneyHint } from "@/lib/data/payments-store";
+import { listSends } from "@/lib/data/sends-store";
+import { sendStrip } from "@/lib/send/status";
+import { faceLine } from "@/lib/vendor-face";
 import { VendorsClient } from "./VendorsClient";
 
 export default async function VendorsPage() {
   const { workspace } = await ensureDemoWorkspace();
   const vendors = await listVendors(workspace.id);
   const payments = await listPayments(workspace.id);
+  const sends = await listSends(workspace.id);
+  const sendBy = new Map(sends.map((s) => [s.vendorId, s]));
   const booked = vendors.filter((v) =>
     ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status)
   ).length;
@@ -68,6 +73,8 @@ export default async function VendorsPage() {
             if (!moneyHint && v.contractUrl) moneyHint = "contract attached";
             const review = reviewHint(v.contractReview);
             if (review) moneyHint = moneyHint ? `${moneyHint} · ${review}` : review;
+            const strip = sendStrip(sendBy.get(v.id)).line;
+            const hint = faceLine(v.face, v.category);
             return {
               id: v.id,
               name: v.name,
@@ -75,6 +82,8 @@ export default async function VendorsPage() {
               status: v.status,
               email: v.email,
               moneyHint,
+              strip,
+              faceHint: hint,
             };
           })}
         />

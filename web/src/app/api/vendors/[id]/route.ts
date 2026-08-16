@@ -11,6 +11,8 @@ import {
 import { ensureDemoWorkspace, loadWorkspaceMeta } from "@/lib/data/workspace";
 import { seedChecklist } from "@/lib/vendor-checklists";
 import { sendInquiryEmails } from "@/lib/email/resend";
+import { getSendForVendor, patchSendByToken } from "@/lib/data/sends-store";
+import { defaultNeeds } from "@/lib/send/needs";
 
 export async function GET(
   _request: Request,
@@ -47,10 +49,28 @@ export async function PATCH(
     "website",
     "notes",
     "contractUrl",
+    "face",
   ] as const;
   const patch: Record<string, unknown> = {};
   for (const key of allowed) {
     if (key in body) patch[key] = body[key];
+  }
+  const current = await getVendor(id);
+  if (!current) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (typeof body.category === "string" && body.category !== current.category) {
+    const keepDone = (current.checklist || []).filter((i) => i.done);
+    const fresh = seedChecklist(body.category);
+    const titles = new Set(keepDone.map((i) => i.title));
+    patch.checklist = [...keepDone, ...fresh.filter((i) => !titles.has(i.title))];
+    const send = await getSendForVendor(current.workspaceId, current.id);
+    if (send) {
+      const kept = (send.needs || []).filter((n) => n.done || n.fileUrl);
+      const nextNeeds = defaultNeeds(body.category);
+      const have = new Set(kept.map((n) => n.label));
+      await patchSendByToken(send.token, (s) => {
+        s.needs = [...kept, ...nextNeeds.filter((n) => !have.has(n.label))];
+      });
+    }
   }
   const vendor = await updateVendor(id, patch);
   if (!vendor) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -173,6 +193,18 @@ export async function POST(
       emailedVendor: mailed.emailedVendor,
       emailError: mailed.error || undefined,
     });
+  }
+
+  if (body.action === "face") {
+    const face = { ...(vendor.face || {}) };
+    if (body.face && typeof body.face === "object") {
+      for (const [k, v] of Object.entries(body.face as Record<string, unknown>)) {
+        face[String(k).slice(0, 40)] = String(v || "").slice(0, 200);
+      }
+    }
+    const next = await updateVendor(id, { face });
+    const payments = paymentsForVendor(await listPayments(workspace.id), vendor);
+    return NextResponse.json({ vendor: next, payments });
   }
 
   if (body.action === "checklist") {
