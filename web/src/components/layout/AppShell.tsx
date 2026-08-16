@@ -14,6 +14,7 @@ import {
 } from "@/lib/visual-rooms";
 
 import { Icon } from "@/components/icons";
+import { RoomTile } from "@/components/layout/RoomTile";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -180,19 +181,7 @@ export function AppShell({
             </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               {VISUAL_ROOMS.map((room) => (
-                <Link
-                  key={room.href}
-                  href={room.href}
-                  onClick={() => setRooms(false)}
-                  className="group relative aspect-[5/4] overflow-hidden rounded-2xl"
-                >
-                  <img src={room.photo} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-3 text-ivory">
-                    <p className="font-serif text-xl">{room.label}</p>
-                    <p className="mt-0.5 text-[11px] leading-4 text-white/70">{room.line}</p>
-                  </div>
-                </Link>
+                <RoomTile key={room.href} {...room} onClick={() => setRooms(false)} />
               ))}
             </div>
             <div className="mt-5 flex flex-wrap gap-2">

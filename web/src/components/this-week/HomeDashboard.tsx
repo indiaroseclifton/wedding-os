@@ -164,8 +164,9 @@ export function HomeDashboard({
                 <img
                   src={room.photo}
                   alt=""
-                  className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
+                  className="aspect-square w-full object-cover opacity-70 saturate-[.7] transition duration-500 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-paper/25 backdrop-blur-[1px]" />
                 <span className="absolute bottom-1.5 left-1.5 rounded-full bg-paper/80 p-1 text-ink backdrop-blur">
                   <Icon name={room.icon} className="h-3.5 w-3.5" />
                 </span>

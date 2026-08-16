@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/brand/BrandMark";
 import { CommandPalette } from "@/components/search/CommandPalette";
+import { RoomTile } from "@/components/layout/RoomTile";
 import { MORE_ROOMS, VISUAL_ROOMS, firstNames, prettyWeddingDate } from "@/lib/visual-rooms";
 
 const TABS: { href: string; label: string; match: string[]; icon: string }[] = [
@@ -141,23 +142,7 @@ export function AppNav({
             </div>
             <div className="grid grid-cols-2 gap-3">
               {VISUAL_ROOMS.map((room) => (
-                <Link
-                  key={room.href}
-                  href={room.href}
-                  onClick={() => setRooms(false)}
-                  className="group relative aspect-[5/4] overflow-hidden rounded-2xl"
-                >
-                  <img
-                    src={room.photo}
-                    alt=""
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-black/5" />
-                  <div className="absolute inset-x-0 bottom-0 p-3 text-ivory">
-                    <p className="font-serif text-xl leading-tight">{room.label}</p>
-                    <p className="text-[11px] text-white/70">{room.line}</p>
-                  </div>
-                </Link>
+                <RoomTile key={room.href} {...room} onClick={() => setRooms(false)} />
               ))}
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
