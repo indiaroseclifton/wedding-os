@@ -1,11 +1,11 @@
 export const NAV_ITEMS = [
-  { href: "/dashboard", label: "Home", icon: "home", match: ["/dashboard"] },
-  { href: "/guests", label: "Guests", icon: "guests", match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site"] },
-  { href: "/vendors", label: "Vendors", icon: "vendors", match: ["/vendors", "/payments", "/handoffs"] },
-  { href: "/planning", label: "Planning", icon: "planning", match: ["/planning", "/checklist", "/timeline", "/tasks", "/diy", "/moodboard", "/decisions"] },
-  { href: "/day-of", label: "The Day", icon: "day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire", "/music"] },
-  { href: "/budget", label: "Budget", icon: "budget", match: ["/budget"] },
-  { href: "/registry", label: "Registry", icon: "registry", match: ["/registry"] },
+  { href: "/dashboard", label: "Home", icon: "home", room: null, match: ["/dashboard"] },
+  { href: "/guests", label: "Guests", icon: "guests", room: "guests", match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site"] },
+  { href: "/vendors", label: "Vendors", icon: "vendors", room: "vendors", match: ["/vendors", "/payments", "/handoffs"] },
+  { href: "/planning", label: "Planning", icon: "planning", room: "planning", match: ["/planning", "/checklist", "/timeline", "/tasks", "/diy", "/moodboard", "/decisions"] },
+  { href: "/day-of", label: "The Day", icon: "day", room: "day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire", "/music"] },
+  { href: "/budget", label: "Budget", icon: "budget", room: "budget", match: ["/budget"] },
+  { href: "/registry", label: "Registry", icon: "registry", room: null, match: ["/registry"] },
 ] as const;
 
 export const VISUAL_ROOMS = [

@@ -15,6 +15,7 @@ import {
 
 import { Icon } from "@/components/icons";
 import { RoomTile } from "@/components/layout/RoomTile";
+import { DeskNav, currentRoomLabel } from "@/components/layout/DeskNav";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -76,35 +77,7 @@ export function AppShell({
     window.location.href = "/login";
   }
 
-  const links = (
-    <nav className="space-y-0.5" aria-label="Rooms">
-      {NAV_ITEMS.map((item) => {
-        const on = tabOn(pathname, item.match);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            scroll={false}
-            prefetch
-            className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm ${
-              on ? "bg-white/70 font-medium text-ink shadow-sm backdrop-blur" : "text-ink-soft hover:bg-white/40"
-            }`}
-          >
-            <Icon name={item.icon} />
-            {item.label}
-          </Link>
-        );
-      })}
-      <button
-        type="button"
-        onClick={() => setRooms(true)}
-        className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-ink-soft hover:bg-white/60"
-      >
-        <span className="inline-flex h-[18px] w-[18px] items-center justify-center text-lg leading-none">···</span>
-        More
-      </button>
-    </nav>
-  );
+  const roomLabel = currentRoomLabel(pathname);
 
   return (
     <div className="relative h-dvh overflow-hidden bg-paper lg:flex">
@@ -116,8 +89,8 @@ export function AppShell({
         <img src={coverUrl || "/brand/tablescape.jpg"} alt="" className="h-full w-full object-cover opacity-[0.22]" />
         <div className="absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
       </div>
-      <aside className="hidden h-dvh w-56 shrink-0 flex-col border-r border-white/40 bg-surface/40 px-3 py-5 backdrop-blur-xl lg:flex">
-        <Link href="/dashboard" scroll={false} className="mb-8 flex items-center gap-2 px-2">
+      <aside className="hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto border-r border-white/40 bg-surface/40 px-3 py-5 backdrop-blur-xl lg:flex">
+        <Link href="/dashboard" scroll={false} className="mb-6 flex items-center gap-2 px-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-moss text-[11px] font-medium text-ivory">
             {names
               .split(" & ")
@@ -126,7 +99,15 @@ export function AppShell({
               .slice(0, 2)}
           </span>
         </Link>
-        {links}
+        <DeskNav />
+        <button
+          type="button"
+          onClick={() => setRooms(true)}
+          className="mt-2 flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-ink-soft hover:bg-white/60"
+        >
+          <span className="inline-flex h-[18px] w-[18px] items-center justify-center text-lg leading-none">···</span>
+          More
+        </button>
         <Link
           href="/settings"
           scroll={false}
@@ -145,6 +126,7 @@ export function AppShell({
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold uppercase tracking-[0.14em]">{names}</p>
             <p className="truncate text-[11px] text-muted">
+              {roomLabel ? `${roomLabel}  ·  ` : ""}
               {date}
               {location ? `  ·  ${location}` : ""}
             </p>
