@@ -90,6 +90,18 @@ export default async function SendDeskPage() {
                             : "Preview"}
                     </p>
                   </div>
+                  {(() => {
+                    const openQ = (send?.questions || []).filter((q) => !q.answer).length;
+                    const openN = (send?.needs || []).filter((n) => !n.done).length;
+                    if (!openQ && !openN) return null;
+                    return (
+                      <p className="mt-1 text-xs text-clay">
+                        {openQ ? `${openQ} question${openQ === 1 ? "" : "s"}` : ""}
+                        {openQ && openN ? " · " : ""}
+                        {openN ? `${openN} still needed from them` : ""}
+                      </p>
+                    );
+                  })()}
                   <ul className="mt-3 flex flex-wrap gap-1.5">
                     {attachments.map((id) => {
                       const row = packet.readiness.find((r) => r.id === id);

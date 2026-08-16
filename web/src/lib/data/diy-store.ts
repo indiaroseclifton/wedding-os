@@ -2,6 +2,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import { dataDir, ensureDir, readText, writeText } from "./store-io";
 import { estimateQty, getPlaybook } from "./diy-playbooks";
+import { addBudgetLine, getBudget, updateBudgetLine } from "./budget-store";
 
 const diyFile = path.join(dataDir, "diy.json");
 
@@ -230,7 +231,31 @@ export async function pushFloralShop(
       });
     }
   }
-  return patchProject(workspaceId, project.id, { shopping, tables });
+  const next = await patchProject(workspaceId, project.id, { shopping, tables });
+  const amount = shopping.reduce((s, i) => s + (i.qty || 0) * (i.estEach || 0), 0);
+  await writeDiyBudget(workspaceId, "flowers", "DIY flowers", amount);
+  return next;
+}
+
+async function writeDiyBudget(workspaceId: string, category: string, label: string, amount: number) {
+  if (!amount) return;
+  const budget = await getBudget(workspaceId);
+  const existing = budget.lines.find((l) => l.path === "diy" && l.label === label);
+  if (existing) {
+    await updateBudgetLine(workspaceId, existing.id, {
+      diyEstimate: Math.round(amount),
+      planned: Math.round(amount),
+      path: "diy",
+    });
+    return;
+  }
+  await addBudgetLine(workspaceId, {
+    category,
+    label,
+    diyEstimate: Math.round(amount),
+    planned: Math.round(amount),
+    path: "diy",
+  });
 }
 
 export async function pushTableShop(
@@ -264,5 +289,8 @@ export async function pushTableShop(
       });
     }
   }
-  return patchProject(workspaceId, project.id, { shopping, tables });
+  const next = await patchProject(workspaceId, project.id, { shopping, tables });
+  const amount = shopping.reduce((s, i) => s + (i.qty || 0) * (i.estEach || 0), 0);
+  await writeDiyBudget(workspaceId, "decor", "DIY tables", amount);
+  return next;
 }

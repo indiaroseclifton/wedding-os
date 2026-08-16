@@ -1,5 +1,21 @@
 import { NextResponse } from "next/server";
-import { getSendByToken, markSendReceived } from "@/lib/data/sends-store";
+import { randomUUID } from "crypto";
+import { getSendByToken, markSendReceived, patchSendByToken } from "@/lib/data/sends-store";
+import { addSlotComment, confirmSlot } from "@/lib/data/dayof-store";
+import { getVendor } from "@/lib/data/vendors-store";
+import { defaultNeeds } from "@/lib/send/needs";
+
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ token: string }> }
+) {
+  const { token } = await context.params;
+  const send = await getSendByToken(token);
+  if (!send || send.status !== "SENT") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  return NextResponse.json({ send });
+}
 
 export async function POST(
   request: Request,
@@ -11,7 +27,59 @@ export async function POST(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   const body = await request.json().catch(() => ({}));
-  const name = typeof body.name === "string" ? body.name : "";
-  const row = await markSendReceived(token, name);
-  return NextResponse.json({ ok: true, receivedAt: row?.receivedAt, receivedName: row?.receivedName });
+  const action = String(body.action || "ack");
+  const name = typeof body.name === "string" ? body.name : existing.receivedName || "";
+
+  if (action === "ack") {
+    const row = await markSendReceived(token, name);
+    return NextResponse.json({ ok: true, send: row });
+  }
+
+  if (action === "confirm") {
+    const slotId = String(body.slotId || "");
+    if (!slotId) return NextResponse.json({ error: "Need a cue" }, { status: 400 });
+    await confirmSlot(existing.workspaceId, slotId, name || "Vendor");
+    const row = await markSendReceived(token, name);
+    return NextResponse.json({ ok: true, send: row });
+  }
+
+  if (action === "comment") {
+    const slotId = String(body.slotId || "");
+    if (!slotId) return NextResponse.json({ error: "Need a cue" }, { status: 400 });
+    await addSlotComment(existing.workspaceId, slotId, name || "Vendor", String(body.body || "").slice(0, 500));
+    return NextResponse.json({ ok: true });
+  }
+
+  if (action === "question") {
+    const text = String(body.body || "").trim().slice(0, 500);
+    if (!text) return NextResponse.json({ error: "Write a question" }, { status: 400 });
+    const row = await patchSendByToken(token, (s) => {
+      s.questions = [
+        ...(s.questions || []),
+        { id: randomUUID(), from: (name || "Vendor").slice(0, 80), body: text, at: new Date().toISOString() },
+      ];
+    });
+    return NextResponse.json({ ok: true, send: row });
+  }
+
+  if (action === "need") {
+    const needId = String(body.needId || "");
+    const vendor = await getVendor(existing.vendorId);
+    const row = await patchSendByToken(token, (s) => {
+      if (!s.needs?.length) s.needs = defaultNeeds(vendor?.category || "");
+      s.needs = (s.needs || []).map((n) =>
+        n.id === needId
+          ? {
+              ...n,
+              done: body.done !== false,
+              fileUrl: typeof body.fileUrl === "string" ? body.fileUrl : n.fileUrl,
+              fileName: typeof body.fileName === "string" ? body.fileName : n.fileName,
+            }
+          : n
+      );
+    });
+    return NextResponse.json({ ok: true, send: row });
+  }
+
+  return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }

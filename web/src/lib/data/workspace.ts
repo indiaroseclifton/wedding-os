@@ -35,6 +35,7 @@ import {
   assignGuestToTable,
   assignGuestsToTable,
   remapGuestTableLabel,
+  expandPlusOnes,
   addOrActivateMember,
 } from "@/lib/data/store";
 
@@ -194,6 +195,10 @@ export async function seatGuests(
   seatIndex?: number
 ) {
   return assignGuestsToTable(guestIds, tableName, seatIndex);
+}
+
+export async function promotePlusOnes(workspaceId: string) {
+  return expandPlusOnes(workspaceId);
 }
 
 export async function remapSeats(

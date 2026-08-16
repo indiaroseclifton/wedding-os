@@ -44,6 +44,8 @@ export function RoomCanvas({
   posRef.current = positions;
   objRef.current = objects;
 
+  const [selectedObj, setSelectedObj] = useState<string | null>(null);
+
   useEffect(() => {
     fetch("/api/floorplan")
       .then((r) => r.json())
@@ -102,6 +104,29 @@ export function RoomCanvas({
     persist(positions, next);
   }
 
+  function removeFixture(id: string) {
+    const next = objects.filter((o) => o.id !== id);
+    setObjects(next);
+    setSelectedObj(null);
+    persist(positions, next);
+  }
+
+  const overlaps = (() => {
+    const hits: string[] = [];
+    for (let i = 0; i < tables.length; i++) {
+      const a = positions.find((p) => p.tableId === tables[i].id);
+      if (!a) continue;
+      for (let j = i + 1; j < tables.length; j++) {
+        const b = positions.find((p) => p.tableId === tables[j].id);
+        if (!b) continue;
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        if (dx * dx + dy * dy < 64) hits.push(`${tables[i].name} / ${tables[j].name}`);
+      }
+    }
+    return hits;
+  })();
+
   const ratio = room.depthFt / Math.max(20, room.widthFt);
 
   return (
@@ -119,7 +144,7 @@ export function RoomCanvas({
           </button>
         ))}
         <label className="ml-auto flex items-center gap-1 text-xs text-muted">
-          {room.widthFt}×{room.depthFt} ft
+          W {room.widthFt} ft
           <input
             type="range"
             min={30}
@@ -133,6 +158,30 @@ export function RoomCanvas({
             onPointerUp={() => persist()}
           />
         </label>
+        <label className="flex items-center gap-1 text-xs text-muted">
+          D {room.depthFt} ft
+          <input
+            type="range"
+            min={24}
+            max={80}
+            aria-label="Room depth"
+            value={room.depthFt}
+            onChange={(e) => {
+              const next = { ...room, depthFt: Number(e.target.value) };
+              setRoom(next);
+            }}
+            onPointerUp={() => persist()}
+          />
+        </label>
+        {selectedObj && (
+          <button
+            type="button"
+            onClick={() => removeFixture(selectedObj)}
+            className="min-h-11 rounded-full border border-clay px-3 text-xs text-clay"
+          >
+            Remove fixture
+          </button>
+        )}
       </div>
       <div
         ref={boardRef}
@@ -152,6 +201,7 @@ export function RoomCanvas({
             onPointerDown={(e) => {
               e.currentTarget.setPointerCapture(e.pointerId);
               setDrag({ kind: "obj", id: o.id });
+              setSelectedObj(o.id);
             }}
             className="absolute -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-lg border border-dashed border-ink/30 bg-white/50 text-[10px] uppercase tracking-wide text-ink/70 backdrop-blur-sm"
             style={{
@@ -192,7 +242,8 @@ export function RoomCanvas({
         })}
       </div>
       <p className="text-xs text-muted print:hidden">
-        Drag tables and fixtures. Select people below, then tap a table to seat them.
+        Drag tables and fixtures. Select people below, then tap a table. Tap a fixture, then remove.
+        {overlaps.length ? ` · Overlap: ${overlaps.join(", ")}` : ""}
       </p>
     </div>
   );

@@ -5,6 +5,7 @@ import type { Suggestion } from "@/lib/smart-home";
 import { PayWidget, RsvpWidget, ThisWeekWidget } from "@/components/this-week/HomeDesk";
 import { RoomTile } from "@/components/layout/RoomTile";
 import { ToolTable } from "@/components/layout/ToolTable";
+import { SundayCard } from "@/components/this-week/SundayCard";
 
 const QUICK = [
   { href: "/guests/new", label: "Add a guest" },
@@ -70,15 +71,7 @@ export function HomeDashboard({
         <div className="absolute inset-x-0 bottom-0 space-y-4 p-6 sm:p-10">
           <p className="font-serif text-[clamp(4.5rem,14vw,8rem)] leading-none tracking-tight text-ink">{headline}</p>
           <p className="text-sm uppercase tracking-[0.22em] text-ink-soft">{sub}</p>
-          <p className="max-w-xl text-base leading-7 text-ink">{brief}</p>
-          {next && (
-            <Link
-              href={next.href}
-              className="inline-flex min-h-11 items-center rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory"
-            >
-              {next.cta}
-            </Link>
-          )}
+          <SundayCard next={next} brief={brief} />
         </div>
       </section>
 

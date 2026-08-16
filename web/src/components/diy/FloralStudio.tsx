@@ -102,6 +102,14 @@ export function FloralStudio() {
   });
 
   const math = useMemo(() => rollup(pieces), [pieces]);
+  const blocked = useMemo(() => {
+    const names: string[] = [];
+    for (const p of pieces) {
+      const s = stemById(p.stemId);
+      if (s && stemFit(s, month) === "out") names.push(s.name);
+    }
+    return [...new Set(names)];
+  }, [pieces, month]);
   const selected = pieces.find((p) => p.id === sel);
   const vesselMeta = VESSELS.find((v) => v.id === vessel);
 
@@ -514,6 +522,11 @@ export function FloralStudio() {
                 ? " · mixed real + silk"
                 : ""}
             </p>
+            {blocked.length > 0 && (
+              <p className="text-sm text-clay">
+                Off season in {place} this month: {blocked.join(", ")}. Silk the faces or swap them.
+              </p>
+            )}
             {vessel !== "bouquet" && vessel !== "bout" && (
               <label className="block text-xs">
                 × tables

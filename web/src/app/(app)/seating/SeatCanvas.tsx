@@ -82,7 +82,7 @@ export function SeatCanvas({
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 e.preventDefault();
-                const id = e.dataTransfer.getData("text/guest-id");
+                const id = e.dataTransfer.getData("text/guest-id") || e.dataTransfer.getData("text/plain");
                 if (id) onDropSeat(id, table.name, i);
               }}
               style={pos(i)}

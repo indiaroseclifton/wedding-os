@@ -16,9 +16,12 @@ export const PATH_CATEGORIES = [
 
 export type PathChoice = "undecided" | "hire" | "diy" | "mix";
 
+export type PieceChoice = "undecided" | "hire" | "make" | "skip";
+
 export type StoredPath = {
   workspaceId: string;
   choices: Record<string, PathChoice>;
+  pieces?: Record<string, { choice: PieceChoice; hours?: number }>;
   updatedAt: string;
 };
 
@@ -52,6 +55,21 @@ export async function setPathChoice(workspaceId: string, category: string, choic
     choices: { ...current.choices, [category]: choice },
     updatedAt: new Date().toISOString(),
   };
+  await writeAll(all);
+  return all[workspaceId];
+}
+
+export async function setPieceChoice(
+  workspaceId: string,
+  pieceId: string,
+  choice: PieceChoice,
+  hours?: number
+) {
+  const current = await getPath(workspaceId);
+  const pieces = { ...(current.pieces || {}) };
+  pieces[pieceId] = { choice, hours };
+  const all = await readAll();
+  all[workspaceId] = { ...current, pieces, updatedAt: new Date().toISOString() };
   await writeAll(all);
   return all[workspaceId];
 }

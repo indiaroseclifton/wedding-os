@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SeatingChart } from "./SeatingChart";
 import { SeatCanvas } from "./SeatCanvas";
 import { RoomCanvas } from "./RoomCanvas";
 import { PrintButton } from "@/components/ui/PrintButton";
 import {
+  type SeatConstraint,
+  type SeatFreeze,
   type SeatGuest,
+  freezeDiff,
   groupHouseholds,
   seatWeight,
   tableFill,
@@ -36,6 +39,23 @@ export function SeatingClient({
   const [editing, setEditing] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editCap, setEditCap] = useState(8);
+  const [constraints, setConstraints] = useState<SeatConstraint[]>([]);
+  const [freezes, setFreezes] = useState<SeatFreeze[]>([]);
+  const [violations, setViolations] = useState<{ id: string; message: string }[]>([]);
+  const [kind, setKind] = useState<SeatConstraint["kind"]>("never");
+  const [pickA, setPickA] = useState("");
+  const [pickB, setPickB] = useState("");
+  const [lockTable, setLockTable] = useState("");
+
+  useEffect(() => {
+    fetch("/api/seating")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d) return;
+        applyPayload(d);
+      })
+      .catch(() => {});
+  }, []);
 
   const unseated = guests.filter((g) => !g.tableLabel && g.rsvp !== "NO");
   const filteredUnseated = unseated.filter((g) =>
@@ -50,7 +70,12 @@ export function SeatingClient({
   const seatedCount = guests.filter((g) => g.tableLabel).reduce((s, g) => s + seatWeight(g), 0);
   const openCount = unseated.reduce((s, g) => s + seatWeight(g), 0);
 
-  function applyPayload(data: { tables?: Table[]; guests?: SeatGuest[] }) {
+  function applyPayload(data: {
+    tables?: Table[];
+    guests?: SeatGuest[];
+    plan?: { constraints?: SeatConstraint[]; freezes?: SeatFreeze[] };
+    violations?: { id: string; message: string }[];
+  }) {
     if (data.tables) {
       setTables(
         data.tables.map((t) => ({
@@ -79,6 +104,11 @@ export function SeatingClient({
           }))
       );
     }
+    if (data.plan) {
+      setConstraints(data.plan.constraints || []);
+      setFreezes(data.plan.freezes || []);
+    }
+    if (data.violations) setViolations(data.violations);
   }
 
   async function addTable(e: React.FormEvent) {
@@ -141,6 +171,76 @@ export function SeatingClient({
     } finally {
       setBusy(false);
     }
+  }
+
+  async function freezeNow() {
+    setBusy(true);
+    try {
+      const res = await fetch("/api/seating", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "freeze" }),
+      });
+      if (!res.ok) throw new Error("Could not freeze");
+      applyPayload(await res.json());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function expandNamed() {
+    setBusy(true);
+    try {
+      const res = await fetch("/api/seating", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "expand" }),
+      });
+      if (!res.ok) throw new Error("Could not expand plus-ones");
+      applyPayload(await res.json());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveConstraint(e: React.FormEvent) {
+    e.preventDefault();
+    if (!pickA) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/seating", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "constraint",
+          kind,
+          a: pickA,
+          b: kind === "lock" ? undefined : pickB,
+          tableName: kind === "lock" ? lockTable : undefined,
+        }),
+      });
+      if (!res.ok) throw new Error("Could not save rule");
+      applyPayload(await res.json());
+      setPickA("");
+      setPickB("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function dropConstraint(id: string) {
+    const res = await fetch("/api/seating", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "constraint", remove: id }),
+    });
+    if (res.ok) applyPayload(await res.json());
   }
 
   async function saveTable(id: string) {
@@ -210,6 +310,10 @@ export function SeatingClient({
   const escort = [...guests]
     .filter((g) => g.tableLabel)
     .sort((a, b) => a.name.localeCompare(b.name));
+  const namedPlus = guests.filter((g) => (g.plusOneNames || []).some((n) => n.trim())).length;
+  const lastFreeze = freezes[0] || null;
+  const diff = freezeDiff(guests, lastFreeze);
+  const guestById = useMemo(() => new Map(guests.map((g) => [g.id, g])), [guests]);
 
   return (
     <div className="space-y-6">
@@ -275,6 +379,24 @@ export function SeatingClient({
         >
           Auto-seat leftovers
         </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={freezeNow}
+          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+        >
+          Freeze {lastFreeze ? `· ${lastFreeze.label}` : "chart"}
+        </button>
+        {namedPlus > 0 && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={expandNamed}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+          >
+            Name {namedPlus} plus-one{namedPlus === 1 ? "" : "s"}
+          </button>
+        )}
         <select
           value={printMode}
           onChange={(e) => setPrintMode(e.target.value as typeof printMode)}
@@ -299,6 +421,113 @@ export function SeatingClient({
             .join(", ")}
         </div>
       )}
+
+      {violations.length > 0 && (
+        <div className="rounded-xl border border-clay/40 bg-clay/10 p-4 text-sm text-clay print:hidden">
+          {violations.map((v) => v.message).join(" · ")}
+        </div>
+      )}
+
+      {lastFreeze && (diff.moved || diff.newly || diff.unseated) ? (
+        <p className="text-xs text-muted print:hidden">
+          Since {lastFreeze.label}: {diff.newly} newly seated · {diff.moved} moved · {diff.unseated} unseated
+          {diff.lines[0] ? ` — ${diff.lines[0]}` : ""}
+        </p>
+      ) : null}
+
+      <form
+        onSubmit={saveConstraint}
+        className="flex flex-wrap items-end gap-2 rounded-2xl border border-line bg-surface p-4 print:hidden"
+      >
+        <p className="w-full text-[11px] uppercase tracking-[0.16em] text-moss">Rules</p>
+        <label className="text-sm">
+          Kind
+          <select
+            value={kind}
+            onChange={(e) => setKind(e.target.value as SeatConstraint["kind"])}
+            className="mt-1 block rounded-lg border border-line px-2 py-2 text-sm"
+          >
+            <option value="never">Never together</option>
+            <option value="must">Must sit together</option>
+            <option value="lock">Lock to table</option>
+          </select>
+        </label>
+        <label className="text-sm">
+          Person
+          <select
+            value={pickA}
+            onChange={(e) => setPickA(e.target.value)}
+            className="mt-1 block max-w-[10rem] rounded-lg border border-line px-2 py-2 text-sm"
+          >
+            <option value="">—</option>
+            {guests.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        {kind === "lock" ? (
+          <label className="text-sm">
+            Table
+            <select
+              value={lockTable}
+              onChange={(e) => setLockTable(e.target.value)}
+              className="mt-1 block rounded-lg border border-line px-2 py-2 text-sm"
+            >
+              <option value="">—</option>
+              {tables.map((t) => (
+                <option key={t.id} value={t.name}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <label className="text-sm">
+            With
+            <select
+              value={pickB}
+              onChange={(e) => setPickB(e.target.value)}
+              className="mt-1 block max-w-[10rem] rounded-lg border border-line px-2 py-2 text-sm"
+            >
+              <option value="">—</option>
+              {guests
+                .filter((g) => g.id !== pickA)
+                .map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+            </select>
+          </label>
+        )}
+        <button
+          type="submit"
+          disabled={busy || !pickA || (kind !== "lock" && !pickB) || (kind === "lock" && !lockTable)}
+          className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory disabled:opacity-50"
+        >
+          Add rule
+        </button>
+        {constraints.length > 0 && (
+          <ul className="w-full space-y-1 text-xs text-muted">
+            {constraints.map((c) => (
+              <li key={c.id} className="flex justify-between gap-2">
+                <span>
+                  {c.kind === "never" &&
+                    `${guestById.get(c.a)?.name || "?"} never with ${guestById.get(c.b || "")?.name || "?"}`}
+                  {c.kind === "must" &&
+                    `${guestById.get(c.a)?.name || "?"} with ${guestById.get(c.b || "")?.name || "?"}`}
+                  {c.kind === "lock" && `${guestById.get(c.a)?.name || "?"} locked to ${c.tableName}`}
+                </span>
+                <button type="button" className="underline" onClick={() => dropConstraint(c.id)}>
+                  Drop
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </form>
 
       {showChart && printMode === "board" && (
         <div className="print:break-inside-avoid">
@@ -509,6 +738,7 @@ export function SeatingClient({
                         onDragStart={(e) => {
                           e.stopPropagation();
                           e.dataTransfer.setData("text/plain", g.id);
+                          e.dataTransfer.setData("text/guest-id", g.id);
                         }}
                         className="flex items-center justify-between text-xs"
                       >

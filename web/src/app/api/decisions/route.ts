@@ -10,6 +10,7 @@ import {
 import { updateDecision } from "@/lib/data/store";
 import { addTimelineItem } from "@/lib/data/timeline-store";
 import { PLANNER_DECISIONS } from "@/lib/planner-decisions";
+import { applyDecisionEffects } from "@/lib/planner-effects";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -72,6 +73,12 @@ export async function POST(request: Request) {
         summary: answer || current.summary,
         payload: { ...current.payload, answer: answer ?? current.payload?.answer },
       });
+      const catalogId = String(decision?.payload?.catalogId || current.payload?.catalogId || "");
+      const decided = (status || current.status) === "DECIDED";
+      const effects =
+        decided && catalogId
+          ? await applyDecisionEffects(workspace.id, catalogId, String(answer ?? current.payload?.answer ?? ""))
+          : { wrote: [] as string[] };
       let task = null;
       let timelineItem = null;
       if (body.promote && decision) {
@@ -91,7 +98,7 @@ export async function POST(request: Request) {
           notes: String(decision.payload?.answer || ""),
         });
       }
-      return NextResponse.json({ decision, task, timelineItem });
+      return NextResponse.json({ decision, task, timelineItem, effects });
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

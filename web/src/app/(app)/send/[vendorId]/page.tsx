@@ -5,6 +5,7 @@ import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { loadSendPreview, sendHref } from "@/lib/send/assemble";
 import { SendComposer } from "@/components/send/SendComposer";
+import { AnswerInbox } from "@/components/send/AnswerInbox";
 
 export default async function SendVendorPage({
   params,
@@ -40,6 +41,10 @@ export default async function SendVendorPage({
           </Link>
         </div>
       </div>
+
+      {existing && (existing.questions?.length || existing.needs?.some((n) => n.done || n.fileUrl)) ? (
+        <AnswerInbox sendId={existing.id} questions={existing.questions || []} needs={existing.needs || []} />
+      ) : null}
 
       <SendComposer
         vendorId={vendor.id}

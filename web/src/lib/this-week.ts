@@ -2,6 +2,7 @@ import { getWorkspaceGuests, getWorkspaceTasks } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { listPackages } from "@/lib/data/handoffs-store";
 import { listSends } from "@/lib/data/sends-store";
+import { getSeatingPlan } from "@/lib/data/seating-plan-store";
 import { listPayments } from "@/lib/data/payments-store";
 import { getDayOf } from "@/lib/data/dayof-store";
 import { getChecklist } from "@/lib/data/checklist-store";
@@ -67,7 +68,7 @@ export async function loadThisWeek(
   weddingDate?: string,
   today = new Date()
 ) {
-  const [tasks, guests, vendors, packages, payments, dayOf, checklist, budget, sends] =
+  const [tasks, guests, vendors, packages, payments, dayOf, checklist, budget, sends, seatingPlan] =
     await Promise.all([
       getWorkspaceTasks(workspaceId),
       getWorkspaceGuests(workspaceId),
@@ -78,6 +79,7 @@ export async function loadThisWeek(
       getChecklist(workspaceId),
       getBudget(workspaceId),
       listSends(workspaceId),
+      getSeatingPlan(workspaceId),
     ]);
 
   const days = daysUntil(weddingDate, today);
@@ -144,6 +146,33 @@ export async function loadThisWeek(
       detail: unsentBooked.map((v) => v.name).join(" · "),
       href: "/send",
       cta: "Send packets",
+    });
+  }
+
+  const openQs = sends.flatMap((s) => (s.questions || []).filter((q) => !q.answer));
+  if (openQs.length) {
+    items.push({
+      id: "vendor-questions",
+      urgency: "now",
+      title: `${openQs.length} vendor question${openQs.length === 1 ? "" : "s"} waiting`,
+      detail: openQs.map((q) => q.body).slice(0, 2).join(" · "),
+      href: "/send",
+      cta: "Answer",
+    });
+  }
+
+  const coming = guests.filter((g) => g.rsvp !== "NO");
+  const unseated = coming.filter((g) => !g.tableLabel);
+  if (coming.length >= 8 && unseated.length >= 4) {
+    items.push({
+      id: "seat-people",
+      urgency: days != null && days <= 21 ? "now" : "week",
+      title: `${unseated.length} guests still need a table`,
+      detail: seatingPlan.constraints.length
+        ? `${seatingPlan.constraints.length} seating rule${seatingPlan.constraints.length === 1 ? "" : "s"} on the chart`
+        : "Auto-seat leftovers, then freeze before you send the venue.",
+      href: "/seating",
+      cta: "Open seating",
     });
   }
 

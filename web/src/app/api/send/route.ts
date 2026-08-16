@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { getVendor, listVendors } from "@/lib/data/vendors-store";
-import { listSends, upsertSend, markSendShared } from "@/lib/data/sends-store";
+import { listSends, upsertSend, markSendShared, answerQuestion } from "@/lib/data/sends-store";
 import { defaultAttachments, isAttachmentId, type AttachmentId } from "@/lib/send/attachments";
 import { assemblePacket, sendHref, tickHandoffChecklist } from "@/lib/send/assemble";
 import { sendAppEmail, requestOrigin } from "@/lib/email/send";
@@ -21,6 +21,14 @@ export async function POST(request: Request) {
   const { workspace } = await ensureDemoWorkspace();
   const body = await request.json().catch(() => ({}));
   const vendorId = String(body.vendorId || "");
+  if (body.action === "answer") {
+    const sendId = String(body.sendId || "");
+    const questionId = String(body.questionId || "");
+    const answer = String(body.answer || "").slice(0, 500);
+    const row = await answerQuestion(workspace.id, sendId, questionId, answer);
+    if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ send: row });
+  }
   const vendor = await getVendor(vendorId);
   if (!vendor || vendor.workspaceId !== workspace.id) {
     return NextResponse.json({ error: "Vendor not found" }, { status: 404 });

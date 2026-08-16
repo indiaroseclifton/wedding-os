@@ -6,6 +6,7 @@ import { diyPhoto } from "@/lib/brand";
 import { motion, fadeUp, stagger } from "@/components/motion";
 import { playbookFitsVibe } from "@/lib/vision-match";
 import { Icon } from "@/components/icons";
+import { MixBoard } from "@/components/diy/MixBoard";
 
 type Project = {
   id: string;
@@ -59,9 +60,11 @@ export default function DiyHubPage() {
       >
         <h1 className="text-2xl font-medium tracking-tight">DIY studio</h1>
         <p className="mt-1 text-sm text-ink-soft">
-          Playbooks for couples who make it themselves — skip the 40-tab YouTube spiral.
+          Lock the mix first. Then mock a look and take a list to the store.
         </p>
       </motion.div>
+
+      <MixBoard />
 
       <section className="grid gap-3 sm:grid-cols-2">
         <Link

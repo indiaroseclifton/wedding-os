@@ -3,8 +3,9 @@ import { PrintButton } from "@/components/ui/PrintButton";
 import { getSendByToken } from "@/lib/data/sends-store";
 import { getVendor } from "@/lib/data/vendors-store";
 import { assemblePacket } from "@/lib/send/assemble";
+import { defaultNeeds } from "@/lib/send/needs";
 import { PacketView } from "@/components/send/PacketView";
-import { ReceivePacket } from "./ReceivePacket";
+import { VendorDesk } from "@/components/send/VendorDesk";
 
 export default async function VendorPacketPage({
   params,
@@ -17,6 +18,7 @@ export default async function VendorPacketPage({
   const vendor = await getVendor(send.vendorId);
   if (!vendor) notFound();
   const packet = await assemblePacket(send.workspaceId, vendor, send.attachments);
+  const needs = send.needs?.length ? send.needs : defaultNeeds(vendor.category);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -26,7 +28,14 @@ export default async function VendorPacketPage({
           <PrintButton label="Print" />
         </div>
         <PacketView packet={packet} attachments={send.attachments} note={send.note} />
-        <ReceivePacket token={token} receivedAt={send.receivedAt} receivedName={send.receivedName} />
+        <VendorDesk
+          token={token}
+          receivedAt={send.receivedAt}
+          receivedName={send.receivedName}
+          slots={packet.callSheet}
+          needs={needs}
+          questions={send.questions || []}
+        />
         <p className="mt-10 text-xs text-muted print:hidden">
           This page stays current. If they change the room or the kitchen, refresh — same link.
         </p>

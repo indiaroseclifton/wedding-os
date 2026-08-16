@@ -22,7 +22,7 @@ export default async function SeatingPage() {
         <div>
           <h1 className="font-serif text-4xl">Room planner</h1>
           <p className="mt-1 text-sm text-muted">
-            Place the room, then the chairs. Dance floor, buffet, bar — then print escort cards.
+            Place the room, then the chairs. Rules survive auto-seat. Freeze before you send the venue.
           </p>
         </div>
         <div className="flex gap-2">

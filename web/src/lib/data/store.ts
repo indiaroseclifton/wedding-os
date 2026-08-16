@@ -530,6 +530,55 @@ export async function assignGuestsToTable(
   return rows.filter((r) => ids.has(r.id));
 }
 
+export async function expandPlusOnes(workspaceId: string) {
+  const rows = await readJson<StoredGuest>(guestsFile);
+  const mine = rows.filter((r) => r.workspaceId === workspaceId);
+  const existing = new Set(mine.map((g) => g.name.trim().toLowerCase()));
+  const created: StoredGuest[] = [];
+  const now = new Date().toISOString();
+  for (const parent of mine) {
+    const names = (parent.plusOneNames || []).map((n) => n.trim()).filter(Boolean);
+    if (!names.length) continue;
+    let made = 0;
+    for (const name of names) {
+      const key = name.toLowerCase();
+      if (existing.has(key)) continue;
+      const row: StoredGuest = {
+        workspaceId,
+        name,
+        side: parent.side,
+        partyName: parent.partyName || householdFrom(parent.name),
+        rsvp: parent.rsvp === "NO" ? "NO" : parent.rsvp || "UNKNOWN",
+        plusOnes: 0,
+        plusOneNames: [],
+        dietary: undefined,
+        meal: parent.meal,
+        tableLabel: parent.tableLabel,
+        notes: `Plus-one of ${parent.name}`,
+        id: randomUUID(),
+        rsvpToken: randomUUID().replace(/-/g, "").slice(0, 16),
+        createdAt: now,
+        updatedAt: now,
+      };
+      rows.push(row);
+      created.push(row);
+      existing.add(key);
+      made += 1;
+    }
+    if (made) {
+      parent.plusOnes = Math.max(0, (parent.plusOnes || 0) - made);
+      parent.plusOneNames = [];
+      parent.updatedAt = now;
+    }
+  }
+  if (created.length) await writeJson(guestsFile, rows);
+  return created;
+}
+
+function householdFrom(name: string) {
+  return name.trim().split(/\s+/).slice(-1)[0] || name;
+}
+
 export async function remapGuestTableLabel(
   workspaceId: string,
   fromName: string,

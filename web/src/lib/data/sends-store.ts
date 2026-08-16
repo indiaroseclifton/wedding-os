@@ -2,6 +2,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import { dataDir, readJson, writeJson } from "./store-io";
 import { type AttachmentId, defaultAttachments, isAttachmentId } from "@/lib/send/attachments";
+import { defaultNeeds, type VendorNeed, type VendorQuestion } from "@/lib/send/needs";
 
 const sendsFile = path.join(dataDir, "sends.json");
 
@@ -18,6 +19,8 @@ export type VendorSend = {
   emailedAt?: string;
   receivedAt?: string;
   receivedName?: string;
+  needs?: VendorNeed[];
+  questions?: VendorQuestion[];
   createdAt: string;
   updatedAt: string;
 };
@@ -60,6 +63,7 @@ export async function upsertSend(input: {
   if (existing) {
     existing.attachments = attachments;
     if (input.note !== undefined) existing.note = input.note.slice(0, 800);
+    if (!existing.needs?.length && input.category) existing.needs = defaultNeeds(input.category);
     existing.updatedAt = now;
     await writeJson(sendsFile, rows);
     return existing;
@@ -72,6 +76,8 @@ export async function upsertSend(input: {
     attachments,
     note: input.note?.slice(0, 800),
     status: "DRAFT",
+    needs: defaultNeeds(input.category || ""),
+    questions: [],
     createdAt: now,
     updatedAt: now,
   };
@@ -100,6 +106,31 @@ export async function markSendReceived(token: string, name?: string) {
   if (!row) return null;
   row.receivedAt = new Date().toISOString();
   row.receivedName = (name || "").trim().slice(0, 80) || row.receivedName || "Vendor";
+  row.updatedAt = new Date().toISOString();
+  await writeJson(sendsFile, rows);
+  return row;
+}
+
+export async function patchSendByToken(
+  token: string,
+  patch: (row: VendorSend) => void
+) {
+  const rows = await readJson<VendorSend>(sendsFile);
+  const row = rows.find((r) => r.token === token);
+  if (!row) return null;
+  patch(row);
+  row.updatedAt = new Date().toISOString();
+  await writeJson(sendsFile, rows);
+  return row;
+}
+
+export async function answerQuestion(workspaceId: string, sendId: string, questionId: string, answer: string) {
+  const rows = await readJson<VendorSend>(sendsFile);
+  const row = rows.find((r) => r.id === sendId && r.workspaceId === workspaceId);
+  if (!row) return null;
+  row.questions = (row.questions || []).map((q) =>
+    q.id === questionId ? { ...q, answer: answer.slice(0, 500), answeredAt: new Date().toISOString() } : q
+  );
   row.updatedAt = new Date().toISOString();
   await writeJson(sendsFile, rows);
   return row;
