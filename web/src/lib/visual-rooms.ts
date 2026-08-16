@@ -28,6 +28,7 @@ export const MORE_ROOMS: { href: string; label: string }[] = [
   { href: "/site", label: "Guest site" },
   { href: "/moodboard", label: "Moodboard" },
   { href: "/settings", label: "Settings" },
+  { href: "/mobile", label: "Phone / app" },
   { href: "/discover", label: "Discover" },
   { href: "/", label: "Marketing site" },
 ];

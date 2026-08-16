@@ -334,6 +334,16 @@ export default function SettingsPage() {
       {msg && <p className="text-xs text-moss">{msg}</p>}
 
       <section className="space-y-3 glass-panel rounded-2xl p-5 text-sm">
+        <p className="font-medium">Phone</p>
+        <p className="text-muted">
+          Put the desk on a home screen now. The App Store is a later step — listed in order.
+        </p>
+        <Link href="/mobile" className="inline-block rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+          Mobile steps
+        </Link>
+      </section>
+
+      <section className="space-y-3 glass-panel rounded-2xl p-5 text-sm">
         <p className="font-medium">Session</p>
         <button type="button" onClick={logout} className="rounded-full border border-line px-4 py-2 text-sm">
           Log out

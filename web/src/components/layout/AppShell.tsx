@@ -40,6 +40,12 @@ export function AppShell({
   const date = shortWeddingDate(weddingDate);
 
   useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
     setRooms(false);
   }, [pathname]);
 
