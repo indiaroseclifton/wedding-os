@@ -42,13 +42,9 @@ export default async function GuestsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Guests</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Select multiple guests for bulk RSVP, seating, side, or delete. Or send the{" "}
-            <Link href="/site" className="underline">
-              guest site
-            </Link>{" "}
-            so they reply themselves.
+          <h1 className="font-serif text-4xl">Guests</h1>
+          <p className="mt-1 text-sm text-muted">
+            {guests.length} people · {yes} attending · {pending} waiting
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -76,7 +72,7 @@ export default async function GuestsPage() {
           </Link>
           <Link
             href="/guests/new"
-            className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
           >
             Add guest
           </Link>
@@ -124,6 +120,7 @@ export default async function GuestsPage() {
             id: g.id,
             name: g.name,
             rsvp: g.rsvp,
+            plusOnes: g.plusOnes,
             dietary: g.dietary,
             tableLabel: g.tableLabel,
             side: g.side,

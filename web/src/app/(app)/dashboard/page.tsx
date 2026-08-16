@@ -1,17 +1,17 @@
-import { getSessionUser } from "@/lib/auth/session";
-import { ensureDemoWorkspace, getWorkspaceDecisions } from "@/lib/data/workspace";
+import { ensureDemoWorkspace } from "@/lib/data/workspace";
+import { getBudget } from "@/lib/data/budget-store";
+import { listPayments } from "@/lib/data/payments-store";
 import { getMedia } from "@/lib/data/media-store";
 import { getMoodboard } from "@/lib/data/moodboard-store";
-import { SeedButton } from "./SeedButton";
 import { loadThisWeek } from "@/lib/this-week";
-import { CinematicDash } from "@/components/this-week/CinematicDash";
+import { HomeDashboard } from "@/components/this-week/HomeDashboard";
 
 export default async function DashboardPage() {
-  const session = await getSessionUser();
   const { workspace, meta } = await ensureDemoWorkspace();
-  const [decisions, week, media, mood] = await Promise.all([
-    getWorkspaceDecisions(workspace.id),
+  const [week, budget, payments, media, mood] = await Promise.all([
     loadThisWeek(workspace.id, meta.weddingDate),
+    getBudget(workspace.id),
+    listPayments(workspace.id),
     getMedia(workspace.id),
     getMoodboard(workspace.id),
   ]);
@@ -20,26 +20,18 @@ export default async function DashboardPage() {
     media.items.find((i) => i.kind === "PHOTO" && i.url)?.url ||
     mood.items.find((i) => i.url)?.url;
   const coverUrl = meta.coverUrl || fromLibrary || "/brand/tablescape.jpg";
-  const hello = session?.name ? `Hi, ${session.name.split(" ")[0]}` : "This week";
+  const spent =
+    budget.lines.reduce((s, l) => s + (l.actual || 0), 0) +
+    payments.filter((p) => p.status === "PAID").reduce((s, p) => s + (p.amount || 0), 0);
+  const cap = budget.overallLimit || budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-end">
-        <SeedButton />
-      </div>
-      <CinematicDash
-        hello={hello}
-        coupleNames={meta.coupleNames}
-        location={meta.location}
-        days={week.days}
-        date={meta.weddingDate}
-        weekCount={week.now + week.week}
-        coverUrl={coverUrl}
-        items={week.items}
-      />
-      <p className="text-xs text-muted">
-        {decisions.length} decisions logged. Put your photo in Settings if this still looks like ours.
-      </p>
-    </div>
+    <HomeDashboard
+      days={week.days}
+      coverUrl={coverUrl}
+      weekItems={week.items}
+      spent={spent}
+      cap={cap}
+    />
   );
 }

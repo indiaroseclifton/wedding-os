@@ -11,6 +11,7 @@ type Guest = {
   dietary?: string;
   tableLabel?: string;
   side?: string;
+  plusOnes?: number;
   missingAddress?: boolean;
   eventStatus?: Record<string, string>;
 };
@@ -142,13 +143,25 @@ export function GuestFilters({
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              filter === f
-                ? "bg-slate-900 text-white"
-                : "border border-slate-300 bg-white text-slate-700"
+            className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+              filter === f ? "bg-moss text-ivory" : "text-ink-soft hover:bg-white"
             }`}
           >
-            {f === "ALL" ? "All" : f === "NO_ADDRESS" ? "No address" : f}
+            {f === "ALL"
+              ? "All"
+              : f === "YES"
+                ? "Attending"
+                : f === "NO"
+                  ? "Not attending"
+                  : f === "UNKNOWN" || f === "INVITED"
+                    ? f === "INVITED"
+                      ? "Invited"
+                      : "No response"
+                    : f === "NO_ADDRESS"
+                      ? "No address"
+                      : f === "MAYBE"
+                        ? "Maybe"
+                        : f}
           </button>
         ))}
       </div>
@@ -278,48 +291,41 @@ export function GuestFilters({
         </div>
       )}
 
-      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-        {visible.map((g) => (
-          <li key={g.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-            <input
-              type="checkbox"
-              checked={selected.has(g.id)}
-              onChange={() => toggleOne(g.id)}
-              className="h-4 w-4 rounded border-slate-300"
-              aria-label={`Select ${g.name}`}
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-slate-900">{g.name}</p>
-              <p className="text-xs text-slate-500">
-                {g.dietary ? `${g.dietary}` : "No dietary note"}
-                {g.tableLabel ? ` · ${g.tableLabel}` : ""}
-                {g.side ? ` · side ${g.side}` : ""}
+      <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+        <div className="hidden grid-cols-[1.4fr_1fr_0.7fr_0.8fr_1fr_5rem] gap-2 border-b border-line px-4 py-2 text-[10px] font-medium uppercase tracking-wide text-muted sm:grid">
+          <span>Name</span>
+          <span>Status</span>
+          <span>Plus one</span>
+          <span>Table</span>
+          <span>Dietary</span>
+          <span>RSVP</span>
+        </div>
+        <ul className="divide-y divide-line">
+          {visible.map((g) => (
+            <li key={g.id} className="grid items-center gap-2 px-4 py-3 sm:grid-cols-[1.4fr_1fr_0.7fr_0.8fr_1fr_5rem]">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selected.has(g.id)}
+                  onChange={() => toggleOne(g.id)}
+                  className="h-4 w-4 rounded border-line"
+                  aria-label={`Select ${g.name}`}
+                />
+                <Link href={`/guests/${g.id}`} className="truncate text-sm font-medium">
+                  {g.name}
+                </Link>
+              </div>
+              <p className="text-sm text-ink-soft">
+                {g.rsvp === "YES" ? "Attending" : g.rsvp === "NO" ? "Not attending" : g.rsvp === "MAYBE" ? "Maybe" : "No response"}
               </p>
-              {eventCols.length > 0 && (
-                <p className="mt-1 flex flex-wrap gap-1">
-                  {eventCols.map((col) => {
-                    const st = g.eventStatus?.[col.id];
-                    const mark =
-                      st === "YES" ? "Y" : st === "NO" ? "N" : st === "MAYBE" ? "?" : st === "INVITED" ? "·" : "—";
-                    return (
-                      <span
-                        key={col.id}
-                        title={`${col.short}: ${st || "not invited"}`}
-                        className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-600"
-                      >
-                        {col.short} {mark}
-                      </span>
-                    );
-                  })}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
+              <p className="text-sm text-ink-soft">{g.plusOnes ? "Yes" : "—"}</p>
+              <p className="text-sm text-ink-soft">{g.tableLabel || "—"}</p>
+              <p className="text-sm text-ink-soft">{g.dietary || "—"}</p>
               <select
                 disabled={busy}
                 value={g.rsvp}
                 onChange={(e) => setRsvp(g.id, e.target.value)}
-                className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                className="rounded-lg border border-line bg-surface px-2 py-1 text-xs"
               >
                 {RSVPS.map((r) => (
                   <option key={r} value={r}>
@@ -327,16 +333,13 @@ export function GuestFilters({
                   </option>
                 ))}
               </select>
-              <Link href={`/guests/${g.id}`} className="text-xs font-medium underline">
-                Edit
-              </Link>
-            </div>
-          </li>
-        ))}
-        {!visible.length && (
-          <li className="px-4 py-8 text-center text-sm text-slate-500">No guests in this filter</li>
-        )}
-      </ul>
+            </li>
+          ))}
+          {!visible.length && (
+            <li className="px-4 py-8 text-center text-sm text-muted">No guests in this filter</li>
+          )}
+        </ul>
+      </div>
     </div>
   );
 }

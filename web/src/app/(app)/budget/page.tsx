@@ -109,9 +109,9 @@ export default function BudgetPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Budget</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            One number: vendor payments + DIY lists + these lines. Don't enter the same florist twice.
+          <h1 className="font-serif text-4xl">Budget</h1>
+          <p className="mt-1 text-sm text-muted">
+            Vendor payments, DIY lists, and these lines — one number.
           </p>
         </div>
         <div className="flex gap-3 text-xs font-medium">
@@ -124,8 +124,31 @@ export default function BudgetPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
-        <p className="text-3xl font-semibold tracking-tight">${inPlay.toLocaleString()}</p>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="rounded-2xl border border-line bg-surface p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted">Total</p>
+          <p className="mt-1 font-serif text-2xl">{rollup?.cap ? `$${rollup.cap.toLocaleString()}` : "—"}</p>
+        </div>
+        <div className="rounded-2xl border border-line bg-surface p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted">Spent</p>
+          <p className="mt-1 font-serif text-2xl">${inPlay.toLocaleString()}</p>
+        </div>
+        <div className="rounded-2xl border border-line bg-surface p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted">Remaining</p>
+          <p className="mt-1 font-serif text-2xl">
+            {rollup?.remaining != null ? `$${Math.max(0, rollup.remaining).toLocaleString()}` : "—"}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-line bg-surface p-4">
+          <p className="text-[11px] uppercase tracking-wide text-muted">Used</p>
+          <p className="mt-1 font-serif text-2xl">
+            {rollup?.cap ? `${Math.min(100, Math.round((inPlay / rollup.cap) * 100))}%` : "—"}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-line bg-surface p-4">
+        <p className="text-sm font-medium">Cap and notes</p>
         <p className="text-sm text-slate-500">
           in play
           {rollup?.cap ? ` of $${rollup.cap.toLocaleString()} cap` : ""}

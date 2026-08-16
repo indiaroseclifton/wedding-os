@@ -18,15 +18,15 @@ export default async function VendorsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">My vendors</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            The people on this wedding. Browse to find them, then run status, payments, and handoffs here.
+          <h1 className="font-serif text-4xl">Vendors</h1>
+          <p className="mt-1 text-sm text-muted">
+            {vendors.length} total · {booked} booked
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
             href="/vendors/browse"
-            className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+            className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory hover:bg-moss/90"
           >
             Browse directory
           </Link>

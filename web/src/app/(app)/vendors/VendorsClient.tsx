@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 
 type Vendor = {
   id: string;
@@ -47,35 +46,31 @@ export function VendorsClient({ vendors }: { vendors: Vendor[] }) {
   }
 
   return (
-    <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+    <ul className="space-y-3">
       {rows.map((v) => (
-        <li key={v.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <div>
-            <p className="text-sm font-medium text-slate-900">{v.name}</p>
-            <p className="text-xs text-slate-500">
-              {v.category}
-              {v.email ? ` · ${v.email}` : ""}
-              {v.moneyHint ? ` · ${v.moneyHint}` : ""}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge status={v.status} />
-            <select
-              disabled={busy === v.id}
-              value={v.status}
-              onChange={(e) => setStatus(v.id, e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
-            >
-              {STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s.replaceAll("_", " ")}
-                </option>
-              ))}
-            </select>
-            <Link href={`/vendors/${v.id}`} className="text-xs font-medium underline">
-              Open
-            </Link>
-          </div>
+        <li key={v.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3">
+          <Link href={`/vendors/${v.id}`} className="flex min-w-0 flex-1 items-center gap-4">
+            <img src="/brand/flowers.jpg" alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
+            <div className="min-w-0">
+              <p className="font-medium">{v.name}</p>
+              <p className="text-xs text-muted">
+                {v.category}
+                {v.moneyHint ? ` · ${v.moneyHint}` : ""}
+              </p>
+            </div>
+          </Link>
+          <select
+            disabled={busy === v.id}
+            value={v.status}
+            onChange={(e) => setStatus(v.id, e.target.value)}
+            className="rounded-full border border-line bg-paper px-2 py-1 text-[11px]"
+          >
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s.replaceAll("_", " ")}
+              </option>
+            ))}
+          </select>
         </li>
       ))}
     </ul>

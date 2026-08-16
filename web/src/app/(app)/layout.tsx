@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
 import { ensureDemoWorkspace, ensureEmailMember } from "@/lib/data/workspace";
-import { AppNav } from "@/components/layout/AppNav";
+import { AppShell } from "@/components/layout/AppShell";
 
 export default async function AppLayout({
   children,
@@ -16,14 +16,14 @@ export default async function AppLayout({
   const { workspace, meta } = await ensureDemoWorkspace();
 
   return (
-    <div className="min-h-screen">
-      <AppNav
-        userName={session.name}
-        weddingName={workspace.name}
-        weddingDate={meta.weddingDate}
-        coupleNames={meta.coupleNames}
-      />
-      <main className="mx-auto max-w-6xl px-4 py-5 pb-24 lg:py-8 lg:pb-8">{children}</main>
-    </div>
+    <AppShell
+      userName={session.name}
+      coupleNames={meta.coupleNames}
+      weddingDate={meta.weddingDate}
+      location={meta.location}
+      coverUrl={meta.coverUrl}
+    >
+      {children}
+    </AppShell>
   );
 }

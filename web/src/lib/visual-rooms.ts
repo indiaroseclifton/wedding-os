@@ -1,24 +1,32 @@
+export const NAV_ITEMS = [
+  { href: "/dashboard", label: "Home", icon: "home", match: ["/dashboard"] },
+  { href: "/guests", label: "Guests", icon: "guests", match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site"] },
+  { href: "/vendors", label: "Vendors", icon: "vendors", match: ["/vendors", "/payments", "/handoffs"] },
+  { href: "/checklist", label: "Planning", icon: "planning", match: ["/checklist", "/timeline", "/tasks", "/diy"] },
+  { href: "/day-of", label: "The Day", icon: "day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire", "/music"] },
+  { href: "/budget", label: "Budget", icon: "budget", match: ["/budget"] },
+  { href: "/registry", label: "Registry", icon: "registry", match: ["/registry"] },
+] as const;
+
 export const VISUAL_ROOMS = [
-  { href: "/guests", label: "Guests", photo: "/brand/setting.jpg", line: "Who’s coming" },
-  { href: "/diy", label: "Make it", photo: "/brand/flowers.jpg", line: "Flowers, tables, the rest" },
-  { href: "/vendors", label: "Vendors", photo: "/brand/garden.jpg", line: "Who you’re hiring" },
-  { href: "/day-of", label: "The day", photo: "/brand/candles.jpg", line: "Hour by hour" },
-  { href: "/music", label: "Music", photo: "/brand/candles.jpg", line: "Must-plays" },
-  { href: "/site", label: "Guest site", photo: "/brand/garden.jpg", line: "What they open" },
+  { href: "/guests", label: "Guests", photo: "/brand/setting.jpg", line: "Manage your guest list, RSVPs, plus-ones and seating" },
+  { href: "/vendors", label: "Vendors", photo: "/brand/garden.jpg", line: "Find, book, and manage your vendors" },
+  { href: "/checklist", label: "Planning", photo: "/brand/flowers.jpg", line: "Checklists, timeline, and to-dos" },
+  { href: "/day-of", label: "The Day", photo: "/brand/candles.jpg", line: "Run of show and day-of details" },
+  { href: "/budget", label: "Budget", photo: "/brand/setting.jpg", line: "Track budget, payments, and expenses" },
+  { href: "/registry", label: "Registry", photo: "/brand/garden.jpg", line: "Manage your registry and gifts" },
 ] as const;
 
 export const MORE_ROOMS: { href: string; label: string }[] = [
-  { href: "/checklist", label: "Checklist" },
+  { href: "/diy", label: "DIY studio" },
   { href: "/seating", label: "Seating" },
   { href: "/floorplan", label: "Floor plan" },
+  { href: "/music", label: "Music" },
   { href: "/travel", label: "Travel" },
   { href: "/payments", label: "Payments" },
-  { href: "/handoffs", label: "Handoffs" },
   { href: "/run-of-show", label: "Run of show" },
-  { href: "/budget", label: "Budget" },
-  { href: "/registry", label: "Registry" },
+  { href: "/site", label: "Guest site" },
   { href: "/moodboard", label: "Moodboard" },
-  { href: "/media", label: "Photos" },
   { href: "/settings", label: "Settings" },
 ];
 
@@ -40,4 +48,19 @@ export function prettyWeddingDate(value?: string) {
     day: "numeric",
     year: "numeric",
   });
+}
+
+export function shortWeddingDate(value?: string) {
+  if (!value) return "";
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export function money(n: number) {
+  return n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
