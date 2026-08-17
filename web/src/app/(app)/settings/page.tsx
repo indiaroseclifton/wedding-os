@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { COVER_PRESETS, DENSITY, FAITHS, GLASS_LEVELS, MOTION, PACK_OPTIONS, THEMES, TYPE_SCALES } from "@/lib/preferences";
 import { applyLook, applyTheme } from "@/components/theme/ThemeProvider";
 import { ENTER_CARDS, SHAPE_CARDS, type EnterHow, type WeddingShape } from "@/lib/shape";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -163,6 +164,7 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-6 pb-16">
+      <RoomSubnav room="planning" />
       <div>
         <h1 className="font-serif text-4xl">Settings</h1>
         <p className="mt-1 text-sm text-muted">The wedding, how the desk looks, and what the checklist includes.</p>

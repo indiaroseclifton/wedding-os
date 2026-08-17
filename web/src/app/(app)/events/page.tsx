@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 const TYPES = [
   "Engagement party",
@@ -91,6 +92,7 @@ export default function EventsPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="guests" />
       <div>
         <h1 className="title">Events</h1>
         <p className="mt-1 text-sm text-muted">

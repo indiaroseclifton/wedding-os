@@ -22,6 +22,8 @@ export const NAV_ITEMS = [
       "/legal",
       "/registry",
       "/traditions",
+      "/together",
+      "/settings",
     ],
   },
   {
@@ -29,7 +31,7 @@ export const NAV_ITEMS = [
     label: "People",
     icon: "guests",
     room: "guests",
-    match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site"],
+    match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site", "/events"],
   },
   {
     href: "/studio",
@@ -43,7 +45,7 @@ export const NAV_ITEMS = [
     label: "The day",
     icon: "day",
     room: "day",
-    match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire", "/music"],
+    match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/planning/party", "/attire", "/music"],
   },
 ] as const;
 
@@ -55,6 +57,11 @@ export const VISUAL_ROOMS = [
 ] as const;
 
 export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
+  { href: "/events", label: "Events", icon: "calendar" },
+  { href: "/payments", label: "Payments", icon: "card" },
+  { href: "/planning/party", label: "Party", icon: "users" },
+  { href: "/traditions", label: "Traditions", icon: "heart" },
+  { href: "/together", label: "Together", icon: "heart" },
   { href: "/registry", label: "Registry", icon: "gift" },
   { href: "/settings", label: "Settings", icon: "settings" },
   { href: "/studio", label: "Studio", icon: "scissors" },

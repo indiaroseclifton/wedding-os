@@ -60,7 +60,7 @@ export default async function PartyHubPage() {
 
   return (
     <div>
-      <RoomSubnav room="planning" />
+      <RoomSubnav room="day" />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Wedding party</h1>
