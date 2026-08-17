@@ -26,12 +26,7 @@ import { findHandoffNote } from "./handoff-notes";
 import { faceLine } from "@/lib/vendor-face";
 import { normalizeVision } from "@/lib/vision";
 
-const ALLERGY = [
-  { id: "nut", label: "Nut", re: /nut|peanut|tree nut/i },
-  { id: "shell", label: "Shellfish", re: /shellfish|shrimp/i },
-  { id: "gf", label: "Gluten", re: /gluten|\bgf\b|celiac/i },
-  { id: "dairy", label: "Dairy", re: /dairy|lactose/i },
-];
+import { kitchenRollup } from "@/lib/data/dietary";
 
 export type PacketSlot = {
   id: string;
@@ -75,6 +70,7 @@ export type AssembledPacket = {
   };
   kitchen: {
     heads: number;
+    holding?: number;
     meals: { label: string; n: number }[];
     cards: { name: string; note: string; table?: string; meal?: string }[];
     leftover?: { packOut?: string; leftoverTo?: string; donate?: string; fridge?: string; notes?: string };
@@ -127,20 +123,14 @@ export async function assemblePacket(
 
   const couple = meta.coupleNames || meta.name;
   const key = categoryKey(vendor.category);
-  const attending = guests.filter((g) => g.rsvp !== "NO");
-  const meals = new Map<string, number>();
-  for (const g of attending) {
-    const meal = g.meal?.trim() || "Unspecified";
-    meals.set(meal, (meals.get(meal) || 0) + 1 + (g.plusOnes || 0));
-  }
-  const cards = attending
-    .filter((g) => ALLERGY.some((a) => a.re.test(g.dietary || "") || a.re.test(g.meal || "")))
-    .map((g) => ({
-      name: g.name,
-      note: g.dietary || g.meal || "",
-      table: g.tableLabel,
-      meal: g.meal,
-    }));
+  const kitchen = kitchenRollup(guests, "plates");
+  const meals = kitchen.meals;
+  const cards = kitchen.cards.map((g) => ({
+    name: g.name,
+    note: g.dietary || g.meal || "",
+    table: g.tableLabel,
+    meal: g.meal,
+  }));
 
   const cues = mergeCues(music.cues || music.moments);
   const acts = (["ceremony", "cocktail", "reception"] as const).map((act) => ({
@@ -259,7 +249,8 @@ export async function assemblePacket(
       apple: music.appleMusic?.playlistUrl,
     },
     kitchen: {
-      heads: attending.reduce((s, g) => s + 1 + (g.plusOnes || 0), 0),
+      heads: kitchen.heads,
+      holding: kitchen.holding !== kitchen.plates ? kitchen.holding : undefined,
       meals: Array.from(meals.entries()).map(([label, n]) => ({ label, n })),
       cards,
       leftover: {

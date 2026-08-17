@@ -23,7 +23,7 @@ export async function loadVendorPortal(token: string) {
     if (events.length) {
       const rsvps = await listEventRsvps(pkg.workspaceId);
       live.headcount = [
-        `Wedding day: ${live.headcount}`,
+        `Wedding day plates: ${live.headcount}`,
         ...events.map((e) => {
           const ev = eventDietarySections(guests, rsvps, e.id);
           return `${e.name}: ${ev.headcount}`;

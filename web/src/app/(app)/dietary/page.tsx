@@ -2,41 +2,18 @@ import Link from "next/link";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { kitchenRollup, type KitchenMode } from "@/lib/data/dietary";
 
-const TAGS: { id: string; label: string; re: RegExp }[] = [
-  { id: "veg", label: "Vegetarian", re: /veg(?!an)|vegetarian/i },
-  { id: "vegan", label: "Vegan", re: /vegan/i },
-  { id: "gf", label: "Gluten-free", re: /gluten|\bgf\b|celiac/i },
-  { id: "nut", label: "Nut allergy", re: /nut|peanut|tree nut/i },
-  { id: "dairy", label: "Dairy-free", re: /dairy|lactose/i },
-  { id: "shell", label: "Shellfish", re: /shellfish|shrimp/i },
-  { id: "kid", label: "Kids meal", re: /kid|child/i },
-];
-
-export default async function DietaryPage() {
+export default async function DietaryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mode?: string }>;
+}) {
   const { workspace } = await ensureDemoWorkspace();
   const guests = await getWorkspaceGuests(workspace.id);
-  const attending = guests.filter((g) => g.rsvp !== "NO");
-  const withDiet = attending.filter((g) => g.dietary && g.dietary.trim());
-  const none = attending.filter((g) => !g.dietary?.trim()).length;
-
-  const meals = new Map<string, number>();
-  for (const g of attending) {
-    if (!g.meal?.trim()) continue;
-    meals.set(g.meal.trim(), (meals.get(g.meal.trim()) || 0) + 1 + (g.plusOnes || 0));
-  }
-
-  const tags = TAGS.map((t) => ({
-    ...t,
-    count: attending.filter((g) => t.re.test(g.dietary || "") || t.re.test(g.meal || "")).length,
-  })).filter((t) => t.count > 0);
-
-  const leftovers = new Map<string, number>();
-  for (const g of withDiet) {
-    const raw = g.dietary!.trim();
-    if (TAGS.some((t) => t.re.test(raw))) continue;
-    leftovers.set(raw.toLowerCase(), (leftovers.get(raw.toLowerCase()) || 0) + 1 + (g.plusOnes || 0));
-  }
+  const q = await searchParams;
+  const mode: KitchenMode = q.mode === "holding" ? "holding" : "plates";
+  const k = kitchenRollup(guests, mode);
 
   return (
     <div className="space-y-6">
@@ -44,7 +21,9 @@ export default async function DietaryPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Dietary</h1>
-          <p className="mt-1 text-sm text-muted">Meals and allergies the caterer can actually cook from.</p>
+          <p className="mt-1 text-sm text-muted">
+            Kitchen buys plates — yes, plus named extras. Holding is chairs you might still fill.
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/dietary/packet" className="rounded-full border border-line px-4 py-2 text-sm">
@@ -57,40 +36,59 @@ export default async function DietaryPage() {
         </div>
       </div>
 
+      <div className="flex flex-wrap gap-2 print:hidden">
+        {(["plates", "holding"] as const).map((m) => (
+          <Link
+            key={m}
+            href={m === "plates" ? "/dietary" : "/dietary?mode=holding"}
+            className={`min-h-11 rounded-full px-4 text-sm leading-[2.75rem] ${
+              mode === m ? "bg-moss text-ivory" : "border border-line"
+            }`}
+          >
+            {m === "plates" ? "Plates" : "Holding"}
+          </Link>
+        ))}
+      </div>
+
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-2xl border border-line bg-surface p-4">
-          <p className="kicker">Eating</p>
-          <p className="font-serif text-3xl">{attending.length}</p>
+          <p className="kicker">{mode === "plates" ? "Plates" : "Holding"}</p>
+          <p className="font-serif text-3xl">{k.heads}</p>
+          {k.holding !== k.plates && (
+            <p className="mt-1 text-xs text-muted">
+              {mode === "plates" ? `${k.holding} holding` : `${k.plates} plates`}
+            </p>
+          )}
         </div>
         <div className="rounded-2xl border border-line bg-surface p-4">
           <p className="kicker">Notes</p>
-          <p className="font-serif text-3xl">{withDiet.length}</p>
+          <p className="font-serif text-3xl">{k.withDiet.length}</p>
         </div>
         <div className="rounded-2xl border border-line bg-surface p-4">
           <p className="kicker">Silent</p>
-          <p className="font-serif text-3xl">{none}</p>
+          <p className="font-serif text-3xl">{k.silent}</p>
         </div>
       </div>
 
-      {meals.size > 0 && (
+      {k.meals.size > 0 && (
         <section>
           <p className="mb-2 text-sm font-medium">Meals</p>
           <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface">
-            {Array.from(meals.entries()).map(([label, count]) => (
+            {Array.from(k.meals.entries()).map(([label, count]) => (
               <li key={label} className="flex justify-between px-4 py-3 text-sm">
                 <span>{label}</span>
-                <span>{count}</span>
+                <span className="tabular-nums">{count}</span>
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      {tags.length > 0 && (
+      {k.tags.length > 0 && (
         <section>
           <p className="mb-2 text-sm font-medium">Allergies & tags</p>
           <div className="flex flex-wrap gap-2">
-            {tags.map((t) => (
+            {k.tags.map((t) => (
               <span key={t.id} className="rounded-full bg-moss-soft px-3 py-1 text-xs">
                 {t.label} · {t.count}
               </span>
@@ -99,11 +97,11 @@ export default async function DietaryPage() {
         </section>
       )}
 
-      {leftovers.size > 0 && (
+      {k.leftovers.size > 0 && (
         <section>
           <p className="mb-2 text-sm font-medium">Other notes</p>
           <ul className="text-sm text-ink-soft">
-            {Array.from(leftovers.entries()).map(([label, count]) => (
+            {Array.from(k.leftovers.entries()).map(([label, count]) => (
               <li key={label}>
                 {count}× {label}
               </li>
@@ -113,7 +111,7 @@ export default async function DietaryPage() {
       )}
 
       <ul className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface">
-        {attending.map((g) => (
+        {k.pool.map((g) => (
           <li key={g.id} className="px-4 py-3 text-sm">
             <Link href={`/guests/${g.id}`} className="font-medium">
               {g.name}
@@ -122,11 +120,14 @@ export default async function DietaryPage() {
               {g.meal || "No meal"}
               {g.dietary ? ` · ${g.dietary}` : " · no note"}
               {g.tableLabel ? ` · ${g.tableLabel}` : ""}
+              {g.rsvp !== "YES" ? ` · ${g.rsvp.toLowerCase()}` : ""}
             </p>
           </li>
         ))}
-        {!attending.length && (
-          <li className="px-4 py-8 text-center text-sm text-muted">No one on the list yet.</li>
+        {!k.pool.length && (
+          <li className="px-4 py-8 text-center text-sm text-muted">
+            {mode === "plates" ? "No yeses yet — nothing for the kitchen." : "No one on the list yet."}
+          </li>
         )}
       </ul>
     </div>

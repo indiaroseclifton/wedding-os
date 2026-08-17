@@ -244,9 +244,15 @@ export function PacketView({
               </li>
             ))}
             <li className="flex justify-between px-4 py-2.5 text-sm font-medium">
-              <span>Heads</span>
+              <span>Plates</span>
               <span className="tabular-nums">{packet.kitchen.heads}</span>
             </li>
+            {packet.kitchen.holding != null && (
+              <li className="flex justify-between px-4 py-2.5 text-xs text-muted">
+                <span>Still holding a chair</span>
+                <span className="tabular-nums">{packet.kitchen.holding}</span>
+              </li>
+            )}
           </ul>
           <h3 className="mt-5 font-serif text-xl">Allergy cards</h3>
           <div className="mt-2 grid gap-3 sm:grid-cols-2">

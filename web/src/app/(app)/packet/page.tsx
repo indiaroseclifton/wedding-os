@@ -79,7 +79,7 @@ export default async function PacketPage() {
       </section>
 
       <section data-packet="dietary" className="print:break-before-page">
-        <h3 className="mb-3 text-sm font-semibold">Dietary · {diet.headcount} heads</h3>
+        <h3 className="mb-3 text-sm font-semibold">Dietary · {diet.headcount} plates</h3>
         <p className="whitespace-pre-wrap text-sm">{diet.dietary_summary}</p>
         <p className="mt-2 whitespace-pre-wrap text-xs text-muted">{diet.dietary_detail}</p>
       </section>
