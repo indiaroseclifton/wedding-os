@@ -13,7 +13,9 @@ import {
 import { VendorLog } from "@/components/send/VendorLog";
 import { VendorHero } from "@/components/vendors/VendorHero";
 import { VendorFace } from "@/components/vendors/VendorFace";
+import { VendorGut } from "@/components/vendors/VendorGut";
 import { sendStrip } from "@/lib/send/status";
+import type { GutMark } from "@/lib/vendor-gut";
 import type { VendorSend } from "@/lib/data/sends-store";
 
 type Vendor = {
@@ -31,6 +33,8 @@ type Vendor = {
   checklist?: { id: string; title: string; done: boolean }[];
   contactName?: string;
   face?: Record<string, string>;
+  gutMark?: GutMark;
+  gutNote?: string;
 };
 
 type Payment = {
@@ -207,6 +211,20 @@ export default function VendorDetailPage() {
         strip={strip}
         onSaved={(v) => setVendor((cur) => (cur ? { ...cur, ...v } : v))}
       />
+
+      <section className="rounded-[1.6rem] border border-line bg-surface p-5 sm:p-6">
+        <p className="kicker kicker-moss">After you met</p>
+        <p className="mt-1 font-serif text-2xl">Would we hire them?</p>
+        <p className="mt-1 text-sm text-muted">Private. Find never sees this.</p>
+        <div className="mt-4">
+          <VendorGut
+            vendorId={vendor.id}
+            mark={vendor.gutMark}
+            note={vendor.gutNote}
+            onSaved={(next) => setVendor((cur) => (cur ? { ...cur, ...next } : cur))}
+          />
+        </div>
+      </section>
 
       <VendorFace
         vendorId={vendor.id}

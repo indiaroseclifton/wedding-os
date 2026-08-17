@@ -48,7 +48,7 @@ export const CHECKLIST_ACTIONS: Record<string, ChecklistAction> = {
   "Review and choose photos": { href: "/media", cta: "Photos", lane: "couple" },
   "Preserve dress / suit": { href: "/attire", cta: "Attire", lane: "couple" },
   "Name-change paperwork if needed": { href: "/legal", cta: "Legal", lane: "couple" },
-  "Leave vendor reviews": { href: "/vendors", cta: "My team", lane: "couple" },
+  "Leave vendor reviews": { href: "/thanks#team", cta: "Mark the team", lane: "couple" },
   "Learn the license rules for this county": { href: "/legal", cta: "Legal", lane: "couple" },
   "Decide who we tell, and when": { href: "/site", cta: "Announcement", lane: "couple" },
   "Book a photographer — or a trusted friend": {

@@ -76,6 +76,8 @@ export default async function VendorsPage() {
                   moneyHint,
                   strip,
                   faceHint: hint,
+                  gutMark: v.gutMark,
+                  gutNote: v.gutNote,
                 };
               })}
             />

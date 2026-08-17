@@ -50,6 +50,8 @@ export async function PATCH(
     "notes",
     "contractUrl",
     "face",
+    "gutMark",
+    "gutNote",
   ] as const;
   const patch: Record<string, unknown> = {};
   for (const key of allowed) {
@@ -72,6 +74,17 @@ export async function PATCH(
       });
     }
   }
+  if (typeof body.gutMark === "string") {
+    const mark = body.gutMark;
+    if (mark === "yes" || mark === "maybe" || mark === "no") {
+      patch.gutMark = mark;
+      patch.gutAt = new Date().toISOString();
+    } else if (mark === "") {
+      patch.gutMark = undefined;
+      patch.gutAt = undefined;
+    }
+  }
+  if (typeof body.gutNote === "string") patch.gutNote = body.gutNote.slice(0, 240);
   const vendor = await updateVendor(id, patch);
   if (!vendor) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ vendor });

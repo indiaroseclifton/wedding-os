@@ -31,6 +31,9 @@ export type StoredVendor = {
   directorySlug?: string;
   checklist?: VendorCheckItem[];
   face?: Record<string, string>;
+  gutMark?: "yes" | "maybe" | "no";
+  gutNote?: string;
+  gutAt?: string;
   createdAt: string;
   updatedAt: string;
 };

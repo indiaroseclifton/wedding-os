@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { VendorGut } from "@/components/vendors/VendorGut";
+import { googleReviewUrl, type GutMark } from "@/lib/vendor-gut";
 
 type Item = {
   id: string;
@@ -11,8 +13,19 @@ type Item = {
   sentDate?: string;
 };
 
+type Team = {
+  id: string;
+  name: string;
+  category: string;
+  website?: string;
+  gutMark?: GutMark;
+  gutNote?: string;
+};
+
 export default function ThanksPage() {
   const [items, setItems] = useState<Item[]>([]);
+  const [team, setTeam] = useState<Team[]>([]);
+  const [city, setCity] = useState("");
   const [guestName, setGuestName] = useState("");
   const [gift, setGift] = useState("");
   const [note, setNote] = useState<string | null>(null);
@@ -27,6 +40,14 @@ export default function ThanksPage() {
 
   useEffect(() => {
     load();
+    fetch("/api/vendors")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setTeam(d?.vendors || []))
+      .catch(() => {});
+    fetch("/api/workspace")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setCity(d?.meta?.location || ""))
+      .catch(() => {});
   }, []);
 
   async function post(body: Record<string, unknown>) {
@@ -63,6 +84,39 @@ export default function ThanksPage() {
         {open} still to write · {items.length} total
       </p>
       {note && <p className="text-xs text-emerald-700">{note}</p>}
+
+      {team.length ? (
+        <section id="team" className="space-y-3 rounded-[1.6rem] border border-line bg-surface p-5">
+          <p className="kicker kicker-moss">The people who made the day</p>
+          <h2 className="font-serif text-2xl">Mark them. Tell Google if you want.</h2>
+          <p className="text-sm text-muted">
+            Yes / Maybe / No stays on your desk. Public praise lives on their Google page — we don’t host reviews.
+          </p>
+          <ul className="space-y-4">
+            {team.map((v) => (
+              <li key={v.id} className="border-t border-line pt-4 first:border-0 first:pt-0">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <p className="font-medium">{v.name}</p>
+                    <p className="text-xs text-muted">{v.category}</p>
+                  </div>
+                  <a
+                    href={googleReviewUrl(v.name, city)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs underline"
+                  >
+                    Tell Google
+                  </a>
+                </div>
+                <div className="mt-2">
+                  <VendorGut vendorId={v.id} mark={v.gutMark} note={v.gutNote} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <div className="flex flex-wrap gap-2">
         <button
