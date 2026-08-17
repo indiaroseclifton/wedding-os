@@ -62,26 +62,26 @@ export default function ShortlistPage() {
         <Link href="/vendors/browse" className="text-xs font-medium underline">
           Browse
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Shortlist</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="mt-2 title">Shortlist</h1>
+        <p className="mt-1 text-sm text-muted">
           Compare up to three, then add the one you want to your wedding.
         </p>
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-muted">
           Nothing saved yet.{" "}
           <Link href="/vendors/browse" className="underline">
             Browse vendors
           </Link>
         </p>
       ) : (
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+        <ul className="divide-y divide-line glass-panel rounded-2xl">
           {rows.map((v) => (
             <li key={v.slug} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
               <div>
                 <p className="font-medium">{v.name}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted">
                   {v.category} · {v.city} · {v.priceBand} · {v.startingFrom}
                 </p>
               </div>
@@ -113,13 +113,13 @@ export default function ShortlistPage() {
 
       {compared.length > 1 && (
         <div className="overflow-x-auto">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Compare</p>
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Compare</p>
           <table className="min-w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+              <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
                 <th className="py-2 pr-3"> </th>
                 {compared.map((v) => (
-                  <th key={v.slug} className="py-2 pr-3 font-medium text-slate-900">
+                  <th key={v.slug} className="py-2 pr-3 font-medium text-ink">
                     {v.name}
                   </th>
                 ))}
@@ -127,7 +127,7 @@ export default function ShortlistPage() {
             </thead>
             <tbody className="text-slate-600">
               <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3 text-xs font-medium text-slate-500">Category</td>
+                <td className="py-2 pr-3 text-xs font-medium text-muted">Category</td>
                 {compared.map((v) => (
                   <td key={v.slug} className="py-2 pr-3">
                     {v.category}
@@ -135,7 +135,7 @@ export default function ShortlistPage() {
                 ))}
               </tr>
               <tr className="border-b border-slate-100">
-                <td className="py-2 pr-3 text-xs font-medium text-slate-500">From</td>
+                <td className="py-2 pr-3 text-xs font-medium text-muted">From</td>
                 {compared.map((v) => (
                   <td key={v.slug} className="py-2 pr-3">
                     {v.startingFrom}
@@ -143,7 +143,7 @@ export default function ShortlistPage() {
                 ))}
               </tr>
               <tr>
-                <td className="py-2 pr-3 text-xs font-medium text-slate-500">Fit</td>
+                <td className="py-2 pr-3 text-xs font-medium text-muted">Fit</td>
                 {compared.map((v) => (
                   <td key={v.slug} className="py-2 pr-3">
                     {v.blurb}

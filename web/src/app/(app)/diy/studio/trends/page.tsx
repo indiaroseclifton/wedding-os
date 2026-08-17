@@ -31,7 +31,7 @@ export default function DecorTrendsPage() {
           type="button"
           onClick={() => setTag("all")}
           className={`rounded-full px-3 py-1.5 text-xs ${
-            tag === "all" ? "bg-moss text-ivory" : "border border-line"
+            tag === "all" ? "bg-moss text-moss-fg" : "border border-line"
           }`}
         >
           All
@@ -42,7 +42,7 @@ export default function DecorTrendsPage() {
             type="button"
             onClick={() => setTag(t)}
             className={`rounded-full px-3 py-1.5 text-xs ${
-              tag === t ? "bg-moss text-ivory" : "border border-line"
+              tag === t ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {t.replace("-", " ")}

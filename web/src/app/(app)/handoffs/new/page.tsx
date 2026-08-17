@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 const TEMPLATES = [
   { id: "DJ", label: "DJ / Band", title: "DJ package" },
@@ -55,20 +56,20 @@ export default function NewHandoffPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
+      <RoomSubnav room="vendors" />
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">New handoff package</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          DJ pulls from Music; Catering pulls dietary notes from Guests.
-        </p>
+        <p className="kicker kicker-moss">Vendors</p>
+        <h1 className="title mt-2">New handoff package</h1>
+        <p className="deck mt-2">DJ pulls from Music. Catering pulls dietary from Guests.</p>
       </div>
-      <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={onSubmit} className="glass-panel space-y-4 rounded-2xl p-5">
         <label className="block text-sm">
-          <span className="font-medium">Template</span>
+          <span className="kicker">Template</span>
           <select
             name="template"
             value={template}
             onChange={(e) => setTemplate(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="field mt-1"
           >
             {TEMPLATES.map((t) => (
               <option key={t.id} value={t.id}>
@@ -78,16 +79,16 @@ export default function NewHandoffPage() {
           </select>
         </label>
         <label className="block text-sm">
-          <span className="font-medium">Title</span>
-          <input name="title" required defaultValue="Handoff package" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Title</span>
+          <input name="title" required defaultValue="Handoff package" className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium">Recipient name</span>
-          <input name="recipientName" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Recipient name</span>
+          <input name="recipientName" className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium">Recipient email</span>
-          <input name="recipientEmail" type="email" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Recipient email</span>
+          <input name="recipientEmail" type="email" className="field mt-1" />
         </label>
         {template === "DJ" && (
           <label className="flex items-center gap-2 text-sm">
@@ -101,11 +102,11 @@ export default function NewHandoffPage() {
             <span>Prefill headcount & dietary from Guests</span>
           </label>
         )}
-        {error && <p className="text-xs text-rose-600">{error}</p>}
+        {error && <p className="text-xs text-clay">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="btn btn-primary w-full disabled:opacity-50"
         >
           {loading ? "Creating…" : "Create package"}
         </button>

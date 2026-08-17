@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { CopyButton } from "@/components/ui/CopyButton";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 type Member = {
   id: string;
@@ -30,6 +32,7 @@ export default function PeoplePage() {
   const [emailNote, setEmailNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [emailConnected, setEmailConnected] = useState(false);
 
   async function load() {
     const res = await fetch("/api/invites");
@@ -42,6 +45,10 @@ export default function PeoplePage() {
 
   useEffect(() => {
     load();
+    fetch("/api/health")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setEmailConnected(Boolean(d?.email)))
+      .catch(() => {});
   }, []);
 
   async function createInvite(e: React.FormEvent) {
@@ -75,103 +82,120 @@ export default function PeoplePage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="day" />
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">People</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Invite a partner or wedding party. They get a simpler portal for their tasks.
-        </p>
+        <p className="kicker kicker-moss">Day-of</p>
+        <h1 className="title mt-2">People</h1>
+        <p className="deck mt-2">Partner or party. They get the smaller desk.</p>
       </div>
 
-      <form onSubmit={createInvite} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={createInvite} className="glass-panel space-y-3 rounded-2xl p-5">
         <p className="text-sm font-medium">Send an invite</p>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Name"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="field"
         />
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           type="email"
           placeholder="Email"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="field"
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="field"
         >
           <option value="WEDDING_PARTY">Wedding party</option>
           <option value="COUPLE">Partner / couple</option>
         </select>
-        {error && <p className="text-xs text-rose-600">{error}</p>}
+        {error && <p className="text-xs text-clay">{error}</p>}
         <button
           type="submit"
           disabled={sending}
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className={`btn disabled:opacity-50 ${emailConnected ? "btn-primary" : "btn-ghost"}`}
         >
-          {sending ? "Sending…" : "Create invite"}
+          {sending
+            ? emailConnected
+              ? "Sending…"
+              : "Creating…"
+            : emailConnected
+              ? "Create invite"
+              : "Create link"}
         </button>
       </form>
 
       {lastLink && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm">
+        <div className="glass-panel rounded-2xl p-5 text-sm">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-medium text-emerald-900">Share this link</p>
-            <CopyButton value={lastLink} />
+            <p className="font-medium text-ink">Share this link</p>
+            <CopyButton value={lastLink} primary={!emailConnected} />
           </div>
-          <p className="mt-2 break-all text-emerald-800">{lastLink}</p>
-          {emailNote && <p className="mt-2 text-xs text-emerald-900">{emailNote}</p>}
+          <p className="mt-2 break-all text-ink-soft">{lastLink}</p>
+          {emailNote && <p className="mt-2 text-xs text-ink-soft">{emailNote}</p>}
         </div>
       )}
 
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Members</p>
-        <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-          {members.map((m) => (
-            <li key={m.id} className="flex justify-between px-4 py-3 text-sm">
-              <span>
-                {m.name}
-                <span className="text-xs text-slate-500">
-                  {" "}
-                  · {m.role}
-                  {m.email ? ` · ${m.email}` : ""}
+        <p className="kicker">Members</p>
+        {members.length === 0 ? (
+          <div className="mt-2">
+            <EmptyState title="No members yet" body="Invite a partner or someone in the party." />
+          </div>
+        ) : (
+          <ul className="panel mt-2 divide-y divide-line">
+            {members.map((m) => (
+              <li key={m.id} className="flex justify-between px-4 py-3 text-sm">
+                <span>
+                  {m.name}
+                  <span className="text-xs text-muted">
+                    {" "}
+                    · {m.role}
+                    {m.email ? ` · ${m.email}` : ""}
+                  </span>
                 </span>
-              </span>
-              <span className="text-xs text-slate-500">{m.status}</span>
-            </li>
-          ))}
-        </ul>
+                <span className="text-xs text-muted">{m.status}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Invites</p>
-        <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-          {invites.map((i) => {
-            const link =
-              typeof window !== "undefined"
-                ? `${window.location.origin}/invite/${i.token}`
-                : `/invite/${i.token}`;
-            return (
-              <li key={i.id} className="px-4 py-3 text-sm">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p>
-                    {i.name || i.email || "Invite"}
-                    <span className="text-xs text-slate-500">
-                      {" "}
-                      · {i.role} · {i.status}
-                    </span>
-                  </p>
-                  {i.status === "PENDING" && <CopyButton value={link} label="Copy link" />}
-                </div>
-              </li>
-            );
-          })}
-          {!invites.length && (
-            <li className="px-4 py-6 text-center text-sm text-slate-500">No invites yet</li>
-          )}
-        </ul>
+        <p className="kicker">Invites</p>
+        {invites.length === 0 ? (
+          <div className="mt-2">
+            <EmptyState title="No invites yet" body="Create a link. They join from their phone." />
+          </div>
+        ) : (
+          <ul className="panel mt-2 divide-y divide-line">
+            {invites.map((i) => {
+              const link =
+                typeof window !== "undefined"
+                  ? `${window.location.origin}/invite/${i.token}`
+                  : `/invite/${i.token}`;
+              return (
+                <li key={i.id} className="px-4 py-3 text-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p>
+                      {i.name || i.email || "Invite"}
+                      <span className="text-xs text-muted">
+                        {" "}
+                        · {i.role} · {i.status}
+                      </span>
+                    </p>
+                    {i.status === "PENDING" && (
+                      <CopyButton value={link} label="Copy link" primary={!emailConnected} />
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );

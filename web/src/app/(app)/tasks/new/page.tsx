@@ -62,23 +62,22 @@ export default function NewTaskPage() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Add task</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Assign to you, your partner, or anyone in People.
-        </p>
+        <p className="kicker kicker-moss">Tasks</p>
+        <h1 className="title mt-2">Add task</h1>
+        <p className="deck mt-2">You, your partner, or anyone in People.</p>
       </div>
-      <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={onSubmit} className="glass-panel space-y-4 rounded-2xl p-5">
         <label className="block text-sm">
-          <span className="font-medium">Title</span>
-          <input name="title" required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Title</span>
+          <input name="title" required className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium">Description</span>
-          <textarea name="description" rows={3} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Description</span>
+          <textarea name="description" rows={3} className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium">Owner</span>
-          <select name="ownerId" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <span className="kicker">Owner</span>
+          <select name="ownerId" className="field mt-1">
             {members.map((m) => (
               <option key={m.userId} value={m.userId}>
                 {m.name} ({m.role === "WEDDING_PARTY" ? "party" : "couple"})
@@ -87,14 +86,14 @@ export default function NewTaskPage() {
           </select>
         </label>
         <label className="block text-sm">
-          <span className="font-medium">Due (optional)</span>
-          <input name="dueDate" type="date" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Due (optional)</span>
+          <input name="dueDate" type="date" className="field mt-1" />
         </label>
-        {error && <p className="text-xs text-rose-600">{error}</p>}
+        {error && <p className="text-xs text-clay">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="btn btn-primary w-full disabled:opacity-50"
         >
           {loading ? "Saving…" : "Save task"}
         </button>

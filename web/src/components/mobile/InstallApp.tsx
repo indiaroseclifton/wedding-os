@@ -39,7 +39,7 @@ export function InstallApp({ compact = false }: { compact?: boolean }) {
         <button
           type="button"
           onClick={() => prompt.prompt()}
-          className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
+          className="btn btn-primary"
         >
           Install on this phone
         </button>

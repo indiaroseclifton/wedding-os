@@ -110,7 +110,7 @@ export function DecisionsDesk() {
             key={f}
             type="button"
             onClick={() => setFilter(f)}
-            className={`rounded-full px-3 py-1.5 text-xs ${filter === f ? "bg-moss text-ivory" : "border border-line"}`}
+            className={`rounded-full px-3 py-1.5 text-xs ${filter === f ? "bg-moss text-moss-fg" : "border border-line"}`}
           >
             {f === "open" ? "Still open" : f === "decided" ? "Called" : "All"}
           </button>
@@ -149,7 +149,7 @@ export function DecisionsDesk() {
           placeholder="A decision only you two have — “Aunt May gives a toast?”"
           className="min-w-[16rem] flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-sm"
         />
-        <button type="submit" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <button type="submit" className="btn btn-primary">
           Add ours
         </button>
       </form>
@@ -271,7 +271,7 @@ function DecisionCard({
                   type="button"
                   onClick={() => onAnswer(h)}
                   className={`rounded-full px-2.5 py-1 text-[11px] ${
-                    answer === h ? "bg-moss text-ivory" : "border border-line"
+                    answer === h ? "bg-moss text-moss-fg" : "border border-line"
                   }`}
                 >
                   {h}

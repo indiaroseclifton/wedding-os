@@ -118,7 +118,7 @@ export default function RegistryPage() {
           placeholder="Link (optional)"
           className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm"
         />
-        <button type="submit" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <button type="submit" className="btn btn-primary">
           Add item
         </button>
       </form>
@@ -229,7 +229,7 @@ export default function RegistryPage() {
           placeholder="What they gave"
           className="rounded-lg border border-line bg-paper px-3 py-2 text-sm"
         />
-        <button type="submit" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <button type="submit" className="btn btn-primary">
           Log gift
         </button>
       </form>

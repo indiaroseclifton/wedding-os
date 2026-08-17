@@ -3,6 +3,7 @@ import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { rangeFor } from "@/lib/vendor-ranges";
 import { FirstAsk } from "./FirstAsk";
+import { isBooked } from "@/lib/send/status";
 
 const STARTERS = [
   "What's the floor for our headcount and date — not a package PDF?",
@@ -13,7 +14,7 @@ const STARTERS = [
 export default async function AskPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
   const vendors = await listVendors(workspace.id);
-  const researching = vendors.filter((v) => !["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status));
+  const researching = vendors.filter((v) => !isBooked(v.status));
 
   return (
     <div className="space-y-6">

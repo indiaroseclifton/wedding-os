@@ -29,7 +29,7 @@ export default async function DiscoverVendorsPage({
           <div className="mt-6 flex flex-wrap gap-2">
             <Link
               href="/discover/vendors"
-              className={`rounded-full px-3 py-1.5 text-xs ${!category ? "bg-moss text-ivory" : "border border-line"}`}
+              className={`rounded-full px-3 py-1.5 text-xs ${!category ? "bg-moss text-moss-fg" : "border border-line"}`}
             >
               All
             </Link>
@@ -38,7 +38,7 @@ export default async function DiscoverVendorsPage({
                 key={c}
                 href={`/discover/vendors?category=${encodeURIComponent(c)}`}
                 className={`rounded-full px-3 py-1.5 text-xs ${
-                  category === c ? "bg-moss text-ivory" : "border border-line"
+                  category === c ? "bg-moss text-moss-fg" : "border border-line"
                 }`}
               >
                 {c}

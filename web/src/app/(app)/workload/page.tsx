@@ -23,22 +23,22 @@ export default async function WorkloadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Workload</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="title">Workload</h1>
+        <p className="mt-1 text-sm text-muted">
           Who is carrying open tasks — a gentle check against planning resentment.
         </p>
       </div>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         {open.length} open tasks across {rows.length} people
       </p>
 
       <ul className="space-y-4">
         {rows.map((r) => (
-          <li key={r.name} className="rounded-xl border border-slate-200 bg-white p-4">
+          <li key={r.name} className="glass-panel rounded-2xl p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">{r.name}</span>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-muted">
                 {r.open} open · {r.done} done
               </span>
             </div>
@@ -51,7 +51,7 @@ export default async function WorkloadPage() {
           </li>
         ))}
         {!rows.length && (
-          <li className="py-8 text-center text-sm text-slate-500">
+          <li className="py-8 text-center text-sm text-muted">
             No tasks yet.{" "}
             <Link href="/tasks/new" className="underline">
               Add one

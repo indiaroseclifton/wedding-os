@@ -3,6 +3,7 @@ import { requireCoupleApi } from "@/lib/auth/access";
 import { addGuest, ensureDemoWorkspace, updateWorkspaceMeta } from "@/lib/data/workspace";
 import { createVendor } from "@/lib/data/vendors-store";
 import { getSite, publishSite, saveSite } from "@/lib/data/site-store";
+import { siteModeFor } from "@/lib/shape";
 import { requiredString, ValidationError } from "@/lib/validation";
 
 export async function POST(request: Request) {
@@ -41,20 +42,21 @@ export async function POST(request: Request) {
         workspaceId: workspace.id,
         name,
         category,
-        status: "HIRED",
+        status: "BOOKED",
       });
       return NextResponse.json({ ok: true });
     }
 
     if (body.action === "publish") {
       const site = await getSite(workspace.id);
+      const announce = siteModeFor(meta.shape) === "announce";
       await saveSite(workspace.id, {
         headline: site.headline || `${meta.coupleNames || meta.name} are getting married`,
-        rsvpOpen: true,
+        rsvpOpen: announce ? false : true,
       });
       const published = await publishSite(workspace.id);
       await updateWorkspaceMeta(workspace.id, { firstWalkDone: true, onboarded: true });
-      return NextResponse.json({ ok: true, token: published.siteToken });
+      return NextResponse.json({ ok: true, token: published.siteToken, announce });
     }
 
     if (body.action === "skip") {

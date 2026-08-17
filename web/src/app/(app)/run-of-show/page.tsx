@@ -111,14 +111,14 @@ export default function RunOfShowPage() {
     }
   }
 
-  if (!dayOf) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (!dayOf) return <p className="text-sm text-muted">Loading…</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Run of show</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="title">Run of show</h1>
+          <p className="mt-1 text-sm text-muted">
             One timeline. Each beat has a time, a place, a lead, and who is allowed to see it.
           </p>
         </div>
@@ -130,14 +130,14 @@ export default function RunOfShowPage() {
               await post({ action: "schedule_share" });
               setMsg("Share link ready");
             }}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           >
             Share link
           </button>
-          <Link href="/packet" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <Link href="/packet" className="rounded-lg border border-line px-3 py-2 text-sm">
             Packet
           </Link>
-          <Link href="/day-of" className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <Link href="/day-of" className="rounded-lg border border-line px-3 py-2 text-sm">
             Live board
           </Link>
         </div>
@@ -157,7 +157,7 @@ export default function RunOfShowPage() {
           type="button"
           onClick={() => post({ action: "plan", plan: "main" })}
           className={`rounded-full px-3 py-1 text-xs ${
-            (dayOf.activePlan || "main") === "main" ? "bg-slate-900 text-white" : "border border-slate-300"
+            (dayOf.activePlan || "main") === "main" ? "bg-slate-900 text-white" : "border border-line"
           }`}
         >
           Fair weather
@@ -166,7 +166,7 @@ export default function RunOfShowPage() {
           type="button"
           onClick={() => post({ action: "plan", plan: "rain" })}
           className={`rounded-full px-3 py-1 text-xs ${
-            dayOf.activePlan === "rain" ? "bg-slate-900 text-white" : "border border-slate-300"
+            dayOf.activePlan === "rain" ? "bg-slate-900 text-white" : "border border-line"
           }`}
         >
           Rain plan
@@ -187,7 +187,7 @@ export default function RunOfShowPage() {
             type="button"
             onClick={() => setView(v.id)}
             className={`rounded-full px-3 py-1 text-xs ${
-              view === v.id ? "bg-slate-900 text-white" : "border border-slate-300"
+              view === v.id ? "bg-slate-900 text-white" : "border border-line"
             }`}
           >
             {v.label}
@@ -196,8 +196,8 @@ export default function RunOfShowPage() {
       </div>
 
       {view !== "all" ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-slate-500">
+        <div className="glass-panel rounded-2xl p-4">
+          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted">
             Preview · {view}
           </p>
           <ScheduleView
@@ -209,7 +209,7 @@ export default function RunOfShowPage() {
           />
         </div>
       ) : (
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+        <ul className="divide-y divide-line glass-panel rounded-2xl">
           {dayOf.schedule.map((s) => (
             <li key={s.id} className="px-4 py-3">
               {editing === s.id ? (
@@ -224,17 +224,17 @@ export default function RunOfShowPage() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-medium">
-                      <span className="tabular-nums text-slate-500">
+                      <span className="tabular-nums text-muted">
                         {formatRange(s.time, s.endTime)}
                       </span>{" "}
                       {s.title}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted">
                       {[s.location, s.lead, s.guestTitle ? `guests see “${s.guestTitle}”` : ""]
                         .filter(Boolean)
                         .join(" · ")}
                     </p>
-                    {s.notes && <p className="mt-1 text-xs text-slate-600">{s.notes}</p>}
+                    {s.notes && <p className="mt-1 text-xs text-muted">{s.notes}</p>}
                     <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">
                       {audiencesOf(s).map(audienceLabel).join(" · ")}
                     </p>
@@ -259,7 +259,7 @@ export default function RunOfShowPage() {
       )}
 
       {editing === "new" ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 print:hidden">
+        <div className="glass-panel rounded-2xl p-4 print:hidden">
           <SlotForm
             draft={draft}
             setDraft={setDraft}
@@ -276,14 +276,14 @@ export default function RunOfShowPage() {
               setDraft(emptyDraft);
               setEditing("new");
             }}
-            className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white print:hidden"
+            className="btn btn-primary print:hidden"
           >
             Add beat
           </button>
         )
       )}
 
-      {msg && <p className="text-xs text-slate-500 print:hidden">{msg}</p>}
+      {msg && <p className="text-xs text-muted print:hidden">{msg}</p>}
     </div>
   );
 }
@@ -309,7 +309,7 @@ function SlotForm({
           type="time"
           value={draft.time}
           onChange={(e) => setDraft((d) => ({ ...d, time: e.target.value }))}
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <label className="text-xs">
@@ -318,7 +318,7 @@ function SlotForm({
           type="time"
           value={draft.endTime}
           onChange={(e) => setDraft((d) => ({ ...d, endTime: e.target.value }))}
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <label className="text-xs sm:col-span-2">
@@ -327,7 +327,7 @@ function SlotForm({
           required
           value={draft.title}
           onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <label className="text-xs sm:col-span-2">
@@ -336,7 +336,7 @@ function SlotForm({
           value={draft.guestTitle}
           onChange={(e) => setDraft((d) => ({ ...d, guestTitle: e.target.value }))}
           placeholder="What guests see — leave blank to hide the detail"
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <label className="text-xs">
@@ -344,7 +344,7 @@ function SlotForm({
         <input
           value={draft.location}
           onChange={(e) => setDraft((d) => ({ ...d, location: e.target.value }))}
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <label className="text-xs">
@@ -353,7 +353,7 @@ function SlotForm({
           value={draft.lead}
           onChange={(e) => setDraft((d) => ({ ...d, lead: e.target.value }))}
           placeholder="DJ, MOH, catering…"
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <label className="text-xs">
@@ -362,7 +362,7 @@ function SlotForm({
           value={draft.assignee}
           onChange={(e) => setDraft((d) => ({ ...d, assignee: e.target.value }))}
           placeholder="Maya · guestbook"
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <label className="text-xs sm:col-span-2">
@@ -371,7 +371,7 @@ function SlotForm({
           value={draft.notes}
           onChange={(e) => setDraft((d) => ({ ...d, notes: e.target.value }))}
           rows={2}
-          className="mt-1 block w-full rounded-lg border border-slate-300 px-2 py-1.5 text-sm"
+          className="mt-1 block w-full rounded-lg border border-line px-2 py-1.5 text-sm"
         />
       </label>
       <div className="sm:col-span-2">
@@ -385,7 +385,7 @@ function SlotForm({
               className={`rounded-full px-2.5 py-0.5 text-xs ${
                 draft.audiences.includes(a)
                   ? "bg-slate-900 text-white"
-                  : "border border-slate-300"
+                  : "border border-line"
               }`}
             >
               {audienceLabel(a)}
@@ -394,7 +394,7 @@ function SlotForm({
         </div>
       </div>
       <div className="flex gap-2 sm:col-span-2">
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">
+        <button type="submit" className="btn btn-primary !min-h-9 px-3 text-xs">
           Save
         </button>
         <button type="button" onClick={onCancel} className="text-xs underline">

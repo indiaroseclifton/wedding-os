@@ -66,8 +66,8 @@ export default function TravelPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Travel & hotels</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="title">Travel & hotels</h1>
+        <p className="mt-1 text-sm text-muted">
           Guest room blocks, airport, shuttle, and honeymoon notes. Courtesy blocks
           hold rooms without you paying for unused ones.
         </p>
@@ -79,7 +79,7 @@ export default function TravelPage() {
           await post({ action: "meta", airport, shuttle, parking, honeymoon, notes });
           setMsg("Travel notes saved");
         }}
-        className="space-y-3 rounded-xl border border-slate-200 bg-white p-4"
+        className="space-y-3 glass-panel rounded-2xl p-4"
       >
         <p className="text-sm font-medium">Guest logistics</p>
         <label className="block text-sm">
@@ -88,7 +88,7 @@ export default function TravelPage() {
             value={airport}
             onChange={(e) => setAirport(e.target.value)}
             placeholder="ATL — 35 min to venue"
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="block text-sm">
@@ -96,7 +96,7 @@ export default function TravelPage() {
           <input
             value={shuttle}
             onChange={(e) => setShuttle(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="block text-sm">
@@ -104,7 +104,7 @@ export default function TravelPage() {
           <input
             value={parking}
             onChange={(e) => setParking(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="block text-sm">
@@ -113,7 +113,7 @@ export default function TravelPage() {
             value={honeymoon}
             onChange={(e) => setHoneymoon(e.target.value)}
             placeholder="Destination, dates, passport check"
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="block text-sm">
@@ -122,10 +122,10 @@ export default function TravelPage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={2}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <button type="submit" className="btn btn-primary">
           Save notes
         </button>
         {msg && <p className="text-xs text-emerald-700">{msg}</p>}
@@ -151,7 +151,7 @@ export default function TravelPage() {
           setRooms("");
           setBookingUrl("");
         }}
-        className="space-y-3 rounded-xl border border-slate-200 bg-white p-4"
+        className="space-y-3 glass-panel rounded-2xl p-4"
       >
         <p className="text-sm font-medium">Add a hotel block</p>
         <input
@@ -159,26 +159,26 @@ export default function TravelPage() {
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Hotel name"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-line px-3 py-2 text-sm"
         />
         <div className="grid gap-2 sm:grid-cols-2">
           <input
             value={rate}
             onChange={(e) => setRate(e.target.value)}
             placeholder="Nightly rate"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           />
           <input
             value={blockCode}
             onChange={(e) => setBlockCode(e.target.value)}
             placeholder="Block code"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           />
           <input
             type="date"
             value={cutoff}
             onChange={(e) => setCutoff(e.target.value)}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           />
           <input
             type="number"
@@ -186,36 +186,36 @@ export default function TravelPage() {
             value={rooms}
             onChange={(e) => setRooms(e.target.value)}
             placeholder="Rooms held"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           />
         </div>
         <input
           value={bookingUrl}
           onChange={(e) => setBookingUrl(e.target.value)}
           placeholder="Booking link"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-line px-3 py-2 text-sm"
         />
         <select
           value={kind}
           onChange={(e) => setKind(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-line px-3 py-2 text-sm"
         >
           <option value="courtesy">Courtesy block (no unused-room risk)</option>
           <option value="guaranteed">Guaranteed block (you pay unused rooms)</option>
           <option value="other">Other / overflow hotel</option>
         </select>
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <button type="submit" className="btn btn-primary">
           Add hotel
         </button>
       </form>
 
       <ul className="space-y-3">
         {hotels.map((h) => (
-          <li key={h.id} className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+          <li key={h.id} className="glass-panel rounded-2xl p-4 text-sm">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-semibold">{h.name}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted">
                   {h.kind}
                   {h.rate ? ` · ${h.rate}` : ""}
                   {h.blockCode ? ` · code ${h.blockCode}` : ""}
@@ -244,7 +244,7 @@ export default function TravelPage() {
           </li>
         ))}
         {!hotels.length && (
-          <li className="py-6 text-center text-sm text-slate-500">No hotel blocks yet</li>
+          <li className="py-6 text-center text-sm text-muted">No hotel blocks yet</li>
         )}
       </ul>
     </div>

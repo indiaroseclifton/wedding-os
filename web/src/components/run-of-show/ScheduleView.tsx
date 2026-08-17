@@ -21,14 +21,14 @@ export function ScheduleView({
 }) {
   const rows = slots.filter((s) => slotVisible(s, view));
   if (!rows.length) {
-    return <p className="text-sm text-slate-500">Nothing on this view yet.</p>;
+    return <p className="text-sm text-muted">Nothing on this view yet.</p>;
   }
   return (
     <ol className="space-y-0">
       {rows.map((s, i) => (
         <li key={s.id} className="flex gap-3 print:break-inside-avoid">
           <div className="flex w-[4.5rem] flex-col items-start">
-            <span className="text-xs font-semibold tabular-nums text-slate-900">
+            <span className="text-xs font-semibold tabular-nums text-ink">
               {formatRange(s.time, s.endTime)}
             </span>
             {i < rows.length - 1 && (
@@ -36,12 +36,12 @@ export function ScheduleView({
             )}
           </div>
           <div className="flex-1 pb-4">
-            <p className="text-sm font-medium text-slate-900">{slotTitle(s, view)}</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm font-medium text-ink">{slotTitle(s, view)}</p>
+            <p className="text-xs text-muted">
               {[s.location, s.lead, s.assignee ? `assigned: ${s.assignee}` : ""].filter(Boolean).join(" · ")}
             </p>
             {showNotes && view !== "guests" && s.notes && (
-              <p className="mt-1 text-xs text-slate-600">{s.notes}</p>
+              <p className="mt-1 text-xs text-muted">{s.notes}</p>
             )}
             {s.diySlug && (
               <p className="mt-1 text-[11px] text-emerald-700">DIY · {s.diySlug}</p>

@@ -44,7 +44,7 @@ export default function MobilePage() {
               <div className="flex items-start gap-3">
                 <span
                   className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] ${
-                    item.done ? "bg-moss text-ivory" : "border border-line text-muted"
+                    item.done ? "bg-moss text-moss-fg" : "border border-line text-muted"
                   }`}
                 >
                   {item.done ? "✓" : i + 1}
@@ -74,7 +74,7 @@ export default function MobilePage() {
                 <div className="flex items-start gap-3">
                   <span
                     className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] ${
-                      item.done ? "bg-moss text-ivory" : "border border-line text-muted"
+                      item.done ? "bg-moss text-moss-fg" : "border border-line text-muted"
                     }`}
                   >
                     {item.done ? "✓" : i + 1}

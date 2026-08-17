@@ -56,7 +56,7 @@ export function ReceivePacket({
       <button
         type="submit"
         disabled={busy}
-        className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
+        className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-moss-fg disabled:opacity-50"
       >
         I have this
       </button>

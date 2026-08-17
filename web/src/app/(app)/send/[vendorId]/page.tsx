@@ -7,6 +7,7 @@ import { loadSendPreview, sendHref } from "@/lib/send/assemble";
 import { SendComposer } from "@/components/send/SendComposer";
 import { AnswerInbox } from "@/components/send/AnswerInbox";
 import { sendStrip } from "@/lib/send/status";
+import { emailIsConnected } from "@/lib/email/send";
 
 export default async function SendVendorPage({
   params,
@@ -58,6 +59,7 @@ export default async function SendVendorPage({
         lastSentTo={existing?.sentTo}
         emailedAt={existing?.emailedAt}
         receivedAt={existing?.receivedAt}
+        emailConnected={emailIsConnected()}
       />
     </div>
   );

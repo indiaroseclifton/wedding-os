@@ -16,6 +16,7 @@ export function SendComposer({
   lastSentTo,
   emailedAt,
   receivedAt,
+  emailConnected = false,
 }: {
   vendorId: string;
   packet: AssembledPacket;
@@ -26,6 +27,7 @@ export function SendComposer({
   lastSentTo?: string;
   emailedAt?: string;
   receivedAt?: string;
+  emailConnected?: boolean;
 }) {
   const [on, setOn] = useState<AttachmentId[]>(initialAttachments);
   const [note, setNote] = useState(initialNote || "");
@@ -126,13 +128,14 @@ export function SendComposer({
         </label>
 
         <label className="block text-sm">
-          Email
+          Email {emailConnected ? "" : "— mail is off, copy the link"}
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="vendor@studio.com"
-            className="mt-1 w-full rounded-2xl border border-line bg-surface px-3 py-2 text-sm"
+            className="field mt-1"
+            disabled={!emailConnected}
           />
         </label>
 
@@ -149,18 +152,19 @@ export function SendComposer({
             type="button"
             disabled={busy || on.length === 0}
             onClick={() => submit("send")}
-            className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
+            className="btn btn-primary"
           >
-            {busy ? "Working…" : "Send packet"}
+            {busy ? "Working…" : emailConnected && email ? "Send packet" : "Make their link"}
           </button>
           <button
             type="button"
             disabled={busy}
             onClick={() => submit("save")}
-            className="min-h-11 rounded-full border border-line px-4 text-sm"
+            className="btn btn-ghost"
           >
             Save
           </button>
+          {link ? <CopyButton value={link} label="Copy link" /> : null}
         </div>
 
         {msg && <p className="text-sm text-ink-soft">{msg}</p>}

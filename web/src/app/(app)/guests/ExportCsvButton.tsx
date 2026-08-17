@@ -86,7 +86,7 @@ export function ExportCsvButton({ guests }: { guests: Guest[] }) {
       type="button"
       onClick={download}
       disabled={!guests.length}
-      className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:opacity-40"
+      className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium text-ink hover:bg-surface disabled:opacity-40"
     >
       Export CSV
     </button>

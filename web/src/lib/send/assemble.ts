@@ -13,6 +13,7 @@ import { DJ_CUES, mergeCues } from "@/lib/dj-cues";
 import { getDietary } from "@/lib/data/dietary-store";
 import { getFloorPlan } from "@/lib/data/floorplan-store";
 import { CONTRACT_CLAUSES, type ClauseId } from "@/lib/data/contract-review";
+import { isBooked } from "@/lib/send/status";
 import { slotVisible } from "@/lib/data/run-of-show";
 import { prettyWeddingDate } from "@/lib/visual-rooms";
 import {
@@ -195,7 +196,7 @@ export async function assemblePacket(
       };
     });
 
-  const booked = vendors.filter((v) => ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status));
+  const booked = vendors.filter((v) => isBooked(v.status));
   const contacts: AssembledPacket["contacts"] = [
     { role: "Couple", name: couple, phone: dayOf.emergencyContact, email: undefined },
   ];

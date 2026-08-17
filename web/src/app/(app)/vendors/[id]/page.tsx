@@ -191,7 +191,7 @@ export default function VendorDetailPage() {
   }
 
   if (error) return <p className="text-sm text-rose-600">{error}</p>;
-  if (!vendor) return <p className="text-sm text-slate-600">Loading…</p>;
+  if (!vendor) return <p className="text-sm text-muted">Loading…</p>;
 
   const openPay = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + p.amount, 0);
   const paidPay = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + p.amount, 0);
@@ -270,7 +270,7 @@ export default function VendorDetailPage() {
             value={contractUrl}
             onChange={(e) => setContractUrl(e.target.value)}
             placeholder="Google Drive, Dropbox, HelloSign…"
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <div className="grid grid-cols-2 gap-2">
@@ -281,7 +281,7 @@ export default function VendorDetailPage() {
               onChange={(e) => setDeposit(e.target.value)}
               type="number"
               min={0}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="block text-sm">
@@ -290,7 +290,7 @@ export default function VendorDetailPage() {
               value={depositDue}
               onChange={(e) => setDepositDue(e.target.value)}
               type="date"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
         </div>
@@ -310,7 +310,7 @@ export default function VendorDetailPage() {
               onChange={(e) => setProgress(e.target.value)}
               type="number"
               min={0}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="block text-sm">
@@ -319,7 +319,7 @@ export default function VendorDetailPage() {
               value={progressDue}
               onChange={(e) => setProgressDue(e.target.value)}
               type="date"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
         </div>
@@ -339,7 +339,7 @@ export default function VendorDetailPage() {
               onChange={(e) => setFinalAmt(e.target.value)}
               type="number"
               min={0}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="block text-sm">
@@ -348,7 +348,7 @@ export default function VendorDetailPage() {
               value={finalDue}
               onChange={(e) => setFinalDue(e.target.value)}
               type="date"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
         </div>
@@ -356,11 +356,11 @@ export default function VendorDetailPage() {
           <input type="checkbox" checked={finalPaid} onChange={(e) => setFinalPaid(e.target.checked)} />
           Final paid
         </label>
-        {msg && <p className="text-xs text-slate-500">{msg}</p>}
+        {msg && <p className="text-xs text-muted">{msg}</p>}
         <button
           type="submit"
           disabled={busy}
-          className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
+          className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-moss-fg disabled:opacity-50"
         >
           {busy ? "Saving…" : "Save contract & payments"}
         </button>
@@ -368,7 +368,7 @@ export default function VendorDetailPage() {
 
       <form onSubmit={saveReview} className="space-y-3 rounded-[1.6rem] border border-line bg-surface p-5 sm:p-6">
         <p className="text-sm font-semibold">Review the contract</p>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           Not legal advice — five minutes so the PDF is more than a link. Mark what looks good and flag what
           you’d ask about before you pay.
         </p>
@@ -379,7 +379,7 @@ export default function VendorDetailPage() {
               type="date"
               value={review.signedAt || ""}
               onChange={(e) => setReview((r) => ({ ...r, signedAt: e.target.value }))}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="block text-sm">
@@ -392,7 +392,7 @@ export default function VendorDetailPage() {
                   depositRefundable: e.target.value as ContractReview["depositRefundable"],
                 }))
               }
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             >
               <option value="unknown">Not sure</option>
               <option value="yes">Yes</option>
@@ -406,7 +406,7 @@ export default function VendorDetailPage() {
               value={review.namedLead || ""}
               onChange={(e) => setReview((r) => ({ ...r, namedLead: e.target.value }))}
               placeholder="Who actually shows up"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="block text-sm">
@@ -415,7 +415,7 @@ export default function VendorDetailPage() {
               value={review.hours || ""}
               onChange={(e) => setReview((r) => ({ ...r, hours: e.target.value }))}
               placeholder="2pm–10pm"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="block text-sm">
@@ -424,7 +424,7 @@ export default function VendorDetailPage() {
               value={review.overtimeRate || ""}
               onChange={(e) => setReview((r) => ({ ...r, overtimeRate: e.target.value }))}
               placeholder="$200/hr"
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="block text-sm">
@@ -433,7 +433,7 @@ export default function VendorDetailPage() {
               type="date"
               value={review.deliveryDate || ""}
               onChange={(e) => setReview((r) => ({ ...r, deliveryDate: e.target.value }))}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             />
           </label>
           <label className="flex items-end gap-2 pb-2 text-sm">
@@ -449,9 +449,9 @@ export default function VendorDetailPage() {
           {CONTRACT_CLAUSES.map((c) => {
             const mark = review.clauses?.[c.id] || "skip";
             return (
-              <li key={c.id} className="rounded-lg bg-slate-50 px-3 py-2">
+              <li key={c.id} className="rounded-lg bg-surface px-3 py-2">
                 <p className="text-sm font-medium">{c.label}</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">
+                <p className="mt-0.5 text-[11px] text-muted">
                   Good: {c.good}. Flag: {c.flag}.
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
@@ -467,7 +467,7 @@ export default function VendorDetailPage() {
                             : m === "good"
                               ? "bg-emerald-800 text-white"
                               : "bg-slate-900 text-white"
-                          : "border border-slate-300"
+                          : "border border-line"
                       }`}
                     >
                       {m === "good" ? "Looks good" : m === "flag" ? "Flag" : "Skip"}
@@ -485,14 +485,14 @@ export default function VendorDetailPage() {
             onChange={(e) => setReview((r) => ({ ...r, notes: e.target.value }))}
             rows={2}
             placeholder="What you’ll ask before you pay…"
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
-        {reviewMsg && <p className="text-xs text-slate-500">{reviewMsg}</p>}
+        {reviewMsg && <p className="text-xs text-muted">{reviewMsg}</p>}
         <button
           type="submit"
           disabled={busy}
-          className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
+          className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-moss-fg disabled:opacity-50"
         >
           {busy ? "Saving…" : "Save review"}
         </button>
@@ -505,10 +505,10 @@ export default function VendorDetailPage() {
             All payments
           </Link>
         </div>
-        <p className="mt-1 text-xs text-slate-500">
+        <p className="mt-1 text-xs text-muted">
           Open for this vendor: ${openPay.toLocaleString()}
         </p>
-        <ul className="mt-3 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+        <ul className="mt-3 divide-y divide-line glass-panel rounded-2xl">
           {payments.map((p) => (
             <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
               <span>
@@ -534,7 +534,7 @@ export default function VendorDetailPage() {
             </li>
           ))}
           {!payments.length && (
-            <li className="px-4 py-6 text-center text-sm text-slate-500">
+            <li className="px-4 py-6 text-center text-sm text-muted">
               Save a deposit, progress, or final above — it stays if you rename this vendor.
             </li>
           )}

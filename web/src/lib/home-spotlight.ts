@@ -6,6 +6,7 @@ import type { StoredGuest } from "@/lib/data/store";
 import type { StoredVendor } from "@/lib/data/vendors-store";
 import type { VendorSend } from "@/lib/data/sends-store";
 import { shapeCard } from "@/lib/shape";
+import { isBooked } from "@/lib/send/status";
 
 export type SpotlightCard = {
   id: string;
@@ -59,7 +60,7 @@ export function buildSpotlight(input: {
   const missingAddr = input.guests.filter((g) => g.rsvp === "YES" && !hasMailingAddress(g));
   const yeses = input.guests.filter((g) => g.rsvp === "YES").length;
   const sentIds = new Set(input.sends.filter((s) => s.status === "SENT").map((s) => s.vendorId));
-  const booked = input.vendors.filter((v) => ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status));
+  const booked = input.vendors.filter((v) => isBooked(v.status));
   const noPacket = booked.filter((v) => !sentIds.has(v.id));
 
   const openPay = input.payments.filter((p) => effectiveStatus(p) !== "PAID");

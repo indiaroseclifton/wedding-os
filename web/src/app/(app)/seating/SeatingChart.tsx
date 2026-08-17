@@ -21,7 +21,7 @@ function TableShape({
   return (
     <div className="flex flex-col items-center gap-2">
       <div
-        className={`relative flex flex-wrap items-center justify-center gap-1 border-2 border-slate-300 bg-white p-3 shadow-sm ${
+        className={`relative flex flex-wrap items-center justify-center gap-1 border-2 border-line bg-surface p-3 shadow-sm ${
           isRound
             ? "h-36 w-36 rounded-full"
             : isHead
@@ -39,14 +39,14 @@ function TableShape({
             <span
               key={g.id}
               title={g.dietary || g.name}
-              className="max-w-[4.5rem] truncate rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] text-slate-700"
+              className="max-w-[4.5rem] truncate rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] text-ink-soft"
             >
               {g.name.split(" ")[0]}
             </span>
           ))
         )}
       </div>
-      <p className={`text-[10px] ${over ? "text-rose-600" : "text-slate-500"}`}>
+      <p className={`text-[10px] ${over ? "text-rose-600" : "text-muted"}`}>
         {guests.length}/{capacity}
       </p>
     </div>
@@ -63,8 +63,8 @@ export function SeatingChart({
   if (!tables.length) return null;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-6">
-      <p className="mb-4 text-xs font-medium uppercase tracking-wide text-slate-500">
+    <div className="rounded-xl border border-line bg-surface p-6">
+      <p className="mb-4 text-xs font-medium uppercase tracking-wide text-muted">
         Chart preview
       </p>
       <div className="flex flex-wrap items-start justify-center gap-8">

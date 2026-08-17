@@ -88,7 +88,7 @@ export function PartyMyAttire({
               ))}
             </select>
           </label>
-          <button type="button" onClick={save} className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+          <button type="button" onClick={save} className="btn btn-primary">
             Save my row
           </button>
           {msg && <p className="text-xs text-muted">{msg}</p>}

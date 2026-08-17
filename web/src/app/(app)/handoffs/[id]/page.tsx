@@ -148,7 +148,7 @@ export default function HandoffDetailPage() {
   }
 
   if (error && !pkg) return <p className="text-sm text-rose-600">{error}</p>;
-  if (!pkg) return <p className="text-sm text-slate-600">Loading…</p>;
+  if (!pkg) return <p className="text-sm text-muted">Loading…</p>;
 
   const canRefresh = pkg.template === "DJ" || pkg.template === "CATERING";
   const sourceLabel = pkg.template === "DJ" ? "Music" : "Guests";
@@ -157,8 +157,8 @@ export default function HandoffDetailPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{pkg.title}</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="title">{pkg.title}</h1>
+          <p className="mt-1 text-sm text-muted">
             {pkg.template.replace("_", " ")} · {pkg.status}
             {pkg.recipientName ? ` · ${pkg.recipientName}` : ""}
           </p>
@@ -187,22 +187,22 @@ export default function HandoffDetailPage() {
             type="button"
             disabled={saving}
             onClick={refreshFromSource}
-            className="mt-2 rounded-lg border border-sky-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+            className="mt-2 rounded-lg border border-sky-300 bg-surface px-3 py-1.5 text-xs font-medium disabled:opacity-50"
           >
             Refresh from {sourceLabel}
           </button>
         </div>
       )}
 
-      <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 print:border-0 print:p-0">
+      <div className="space-y-4 glass-panel rounded-2xl p-4 print:border-0 print:p-0">
         {Object.keys(sections).map((key) => (
           <label key={key} className="block text-sm">
-            <span className="font-medium text-slate-800">{LABELS[key] || key}</span>
+            <span className="font-medium text-ink">{LABELS[key] || key}</span>
             <textarea
               rows={3}
               value={sections[key] || ""}
               onChange={(e) => setSections((s) => ({ ...s, [key]: e.target.value }))}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm print:border-0 print:p-0"
+              className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm print:border-0 print:p-0"
             />
           </label>
         ))}
@@ -216,7 +216,7 @@ export default function HandoffDetailPage() {
           type="button"
           onClick={save}
           disabled={saving}
-          className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="btn btn-primary"
         >
           {saving ? "Working…" : "Save draft"}
         </button>
@@ -224,7 +224,7 @@ export default function HandoffDetailPage() {
           type="button"
           onClick={share}
           disabled={saving}
-          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-800"
+          className="rounded-lg border border-line bg-surface px-4 py-2 text-sm font-medium text-ink"
         >
           Share link
         </button>

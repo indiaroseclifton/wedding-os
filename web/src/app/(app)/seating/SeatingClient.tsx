@@ -352,17 +352,17 @@ export function SeatingClient({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-3 gap-3 print:hidden">
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
           <p className="text-lg font-semibold">{tables.length}</p>
-          <p className="text-xs text-slate-500">Tables</p>
+          <p className="text-xs text-muted">Tables</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
           <p className="text-lg font-semibold">{seatedCount}</p>
-          <p className="text-xs text-slate-500">Seats filled</p>
+          <p className="text-xs text-muted">Seats filled</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
           <p className="text-lg font-semibold">{openCount}</p>
-          <p className="text-xs text-slate-500">Still open</p>
+          <p className="text-xs text-muted">Still open</p>
         </div>
       </div>
 
@@ -373,7 +373,7 @@ export function SeatingClient({
             type="button"
             onClick={() => setView(v)}
             className={`min-h-11 rounded-full px-4 text-sm ${
-              view === v ? "bg-moss text-ivory" : "border border-line"
+              view === v ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {v === "room" ? "Room" : "Chairs"}
@@ -385,7 +385,7 @@ export function SeatingClient({
             type="button"
             onClick={() => changeMode(m)}
             className={`min-h-11 rounded-full px-4 text-sm ${
-              seatMode === m ? "bg-moss text-ivory" : "border border-line"
+              seatMode === m ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {m === "holding" ? "Holding" : "Plates"}
@@ -413,7 +413,7 @@ export function SeatingClient({
         <button
           type="button"
           onClick={() => setShowChart((v) => !v)}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium"
+          className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium"
         >
           {showChart ? "Hide preview" : "Chart preview"}
         </button>
@@ -421,7 +421,7 @@ export function SeatingClient({
           type="button"
           disabled={busy || !unseated.length}
           onClick={autoFill}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+          className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium disabled:opacity-50"
         >
           Auto-seat leftovers
         </button>
@@ -429,7 +429,7 @@ export function SeatingClient({
           type="button"
           disabled={busy}
           onClick={freezeNow}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+          className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium disabled:opacity-50"
         >
           Freeze {lastFreeze ? `· ${lastFreeze.label}` : "chart"}
         </button>
@@ -438,7 +438,7 @@ export function SeatingClient({
             type="button"
             disabled={busy}
             onClick={restoreNow}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium disabled:opacity-50"
           >
             Put back {lastFreeze.label}
           </button>
@@ -448,7 +448,7 @@ export function SeatingClient({
             type="button"
             disabled={busy}
             onClick={expandNamed}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium disabled:opacity-50"
           >
             Name {namedPlus} plus-one{namedPlus === 1 ? "" : "s"}
           </button>
@@ -458,7 +458,7 @@ export function SeatingClient({
           Usher card
         </Link>
         {selected.length > 0 && (
-          <span className="text-xs text-slate-500">{selected.length} selected — tap a table</span>
+          <span className="text-xs text-muted">{selected.length} selected — tap a table</span>
         )}
       </div>
 
@@ -586,7 +586,7 @@ export function SeatingClient({
 
       <form
         onSubmit={addTable}
-        className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-4 print:hidden"
+        className="flex flex-wrap items-end gap-2 glass-panel rounded-2xl p-4 print:hidden"
       >
         <label className="text-sm">
           <span className="font-medium">New table</span>
@@ -595,7 +595,7 @@ export function SeatingClient({
             onChange={(e) => setName(e.target.value)}
             required
             placeholder="Table 3"
-            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="text-sm">
@@ -605,7 +605,7 @@ export function SeatingClient({
             min={1}
             value={capacity}
             onChange={(e) => setCapacity(Number(e.target.value) || 8)}
-            className="mt-1 block w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-20 rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="text-sm">
@@ -613,7 +613,7 @@ export function SeatingClient({
           <select
             value={shape}
             onChange={(e) => setShape(e.target.value)}
-            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block rounded-lg border border-line px-3 py-2 text-sm"
           >
             <option value="ROUND">Round</option>
             <option value="RECT">Rectangle</option>
@@ -624,7 +624,7 @@ export function SeatingClient({
         <button
           type="submit"
           disabled={busy}
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="btn btn-primary"
         >
           Add table
         </button>
@@ -639,7 +639,7 @@ export function SeatingClient({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search Dad, a plus-one, a household…"
-              className="mt-2 w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm"
+              className="mt-2 w-full rounded-lg border border-amber-300 bg-surface px-3 py-2 text-sm"
             />
             <ul className="mt-3 space-y-3">
               {houses.map((h) => (
@@ -665,7 +665,7 @@ export function SeatingClient({
                           className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs ${
                             selected.includes(g.id)
                               ? "bg-slate-900 text-white"
-                              : "bg-white text-amber-950"
+                              : "bg-surface text-amber-950"
                           }`}
                         >
                           <span>
@@ -703,8 +703,8 @@ export function SeatingClient({
                   onClick={() => {
                     if (selected.length) assign(selected, t.name);
                   }}
-                  className={`rounded-xl border bg-white p-4 print:break-inside-avoid ${
-                    over ? "border-rose-300" : "border-slate-200"
+                  className={`rounded-xl border bg-surface p-4 print:break-inside-avoid ${
+                    over ? "border-rose-300" : "border-line"
                   }`}
                 >
                   {editing === t.id ? (
@@ -720,14 +720,14 @@ export function SeatingClient({
                       <input
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className="w-28 rounded border border-slate-300 px-2 py-1 text-sm"
+                        className="w-28 rounded border border-line px-2 py-1 text-sm"
                       />
                       <input
                         type="number"
                         min={1}
                         value={editCap}
                         onChange={(e) => setEditCap(Number(e.target.value) || 1)}
-                        className="w-16 rounded border border-slate-300 px-2 py-1 text-sm"
+                        className="w-16 rounded border border-line px-2 py-1 text-sm"
                       />
                       <button type="submit" className="text-xs underline">
                         Save
@@ -736,7 +736,7 @@ export function SeatingClient({
                   ) : (
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-semibold">{t.name}</p>
-                      <p className={`text-xs ${over ? "font-medium text-rose-600" : "text-slate-500"}`}>
+                      <p className={`text-xs ${over ? "font-medium text-rose-600" : "text-muted"}`}>
                         {fill}/{t.capacity}
                         {over ? " over" : ""}
                       </p>
@@ -793,7 +793,7 @@ export function SeatingClient({
                         setEditName(t.name);
                         setEditCap(t.capacity);
                       }}
-                      className="text-[11px] text-slate-500 underline"
+                      className="text-[11px] text-muted underline"
                     >
                       Rename
                     </button>

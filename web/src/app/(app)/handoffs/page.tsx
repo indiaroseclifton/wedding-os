@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listPackages } from "@/lib/data/handoffs-store";
 
@@ -10,10 +11,12 @@ export default async function HandoffsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
+      <RoomSubnav room="vendors" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Extra notes</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="kicker kicker-moss">Vendors</p>
+          <h1 className="title mt-2">Extra notes</h1>
+          <p className="deck mt-2">
             These land on the live packet. Vendors never get this link — they get{" "}
             <Link href="/send" className="underline">
               Send
@@ -21,10 +24,7 @@ export default async function HandoffsPage() {
             .
           </p>
         </div>
-        <Link
-          href="/handoffs/new"
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
-        >
+        <Link href="/handoffs/new" className="btn btn-primary">
           New package
         </Link>
       </div>
@@ -37,12 +37,12 @@ export default async function HandoffsPage() {
           primaryLabel="New package"
         />
       ) : (
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+        <ul className="panel divide-y divide-line">
           {packages.map((p) => (
             <li key={p.id} className="flex items-center justify-between gap-3 px-4 py-3">
               <div>
-                <p className="text-sm font-medium text-slate-900">{p.title}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm font-medium text-ink">{p.title}</p>
+                <p className="text-xs text-muted">
                   {p.template.replace("_", " ")}
                   {p.recipientName ? ` · ${p.recipientName}` : ""}
                 </p>

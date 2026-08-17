@@ -56,11 +56,11 @@ export default function DemoPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted">
           Milestone A · Happy path
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Demo walkthrough</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <h1 className="mt-1 title">Demo walkthrough</h1>
+        <p className="mt-2 text-sm text-muted">
           This is the core product story: decisions → guests → handoffs → party coordination.
           Other modules can wait for Phase 2 depth.
         </p>
@@ -70,17 +70,17 @@ export default function DemoPage() {
         {STEPS.map((s) => (
           <li
             key={s.n}
-            className="rounded-xl border border-slate-200 bg-white p-4"
+            className="glass-panel rounded-2xl p-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-medium text-slate-400">Step {s.n}</p>
-                <p className="mt-1 text-sm font-semibold text-slate-900">{s.title}</p>
-                <p className="mt-2 text-sm text-slate-600">{s.body}</p>
+                <p className="mt-1 text-sm font-semibold text-ink">{s.title}</p>
+                <p className="mt-2 text-sm text-muted">{s.body}</p>
               </div>
               <Link
                 href={s.href}
-                className="shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium hover:bg-slate-50"
+                className="shrink-0 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium hover:bg-surface"
               >
                 {s.cta}
               </Link>
@@ -89,8 +89,8 @@ export default function DemoPage() {
         ))}
       </ol>
 
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        <p className="font-medium text-slate-900">What this proves</p>
+      <div className="rounded-xl border border-line bg-surface p-4 text-sm text-muted">
+        <p className="font-medium text-ink">What this proves</p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
           <li>Couple can decide and turn choices into work</li>
           <li>Guest data feeds vendor handoffs (catering + DJ)</li>

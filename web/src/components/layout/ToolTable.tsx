@@ -20,7 +20,7 @@ export function ToolTable() {
               <tr key={t.href} className="border-t border-white/30">
                 <td className="px-4 py-3">
                   <Link href={t.href} scroll={false} className="flex min-h-11 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/60 text-moss">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface/60 text-moss">
                       <Icon name={t.icon} className="h-5 w-5" />
                     </span>
                     <span>

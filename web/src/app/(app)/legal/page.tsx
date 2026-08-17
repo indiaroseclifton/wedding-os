@@ -76,8 +76,8 @@ export default function LegalPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Legal & admin</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="title">Legal & admin</h1>
+          <p className="mt-1 text-sm text-muted">
             License, name change, and private notes — not mixed into the guest list.
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function LegalPage() {
         </button>
       </div>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         {open} open · {items.length} total
       </p>
       {note && <p className="text-xs text-emerald-700">{note}</p>}
@@ -97,7 +97,7 @@ export default function LegalPage() {
           <input
             value={countyState}
             onChange={(e) => setCountyState(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
             placeholder="Fulton County, GA"
           />
         </label>
@@ -106,7 +106,7 @@ export default function LegalPage() {
           <input
             value={privateNotes}
             onChange={(e) => setPrivateNotes(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
       </div>
@@ -114,14 +114,14 @@ export default function LegalPage() {
         Save county & notes
       </button>
 
-      <form onSubmit={addItem} className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={addItem} className="flex flex-wrap items-end gap-2 glass-panel rounded-2xl p-4">
         <label className="text-sm">
           <span className="font-medium">New item</span>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="text-sm">
@@ -129,7 +129,7 @@ export default function LegalPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block rounded-lg border border-line px-3 py-2 text-sm"
           >
             <option>License</option>
             <option>Name change</option>
@@ -143,22 +143,22 @@ export default function LegalPage() {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <button type="submit" className="btn btn-primary">
           Add
         </button>
       </form>
 
-      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+      <ul className="divide-y divide-line glass-panel rounded-2xl">
         {items.map((item) => (
           <li key={item.id} className="flex items-center justify-between gap-3 px-4 py-3">
             <div>
               <p className={`text-sm font-medium ${item.done ? "line-through text-slate-400" : ""}`}>
                 {item.title}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted">
                 {item.category}
                 {item.dueDate ? ` · ${item.dueDate}` : ""}
               </p>

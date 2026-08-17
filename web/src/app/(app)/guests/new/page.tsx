@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 export default function NewGuestPage() {
   const router = useRouter();
@@ -50,23 +52,25 @@ export default function NewGuestPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
+      <RoomSubnav room="guests" />
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Add guest</h1>
-        <p className="mt-1 text-sm text-slate-600">Name is required. Everything else is optional.</p>
+        <p className="kicker kicker-moss">Guests</p>
+        <h1 className="title mt-2">Add one</h1>
+        <p className="deck mt-2">A name is enough to start.</p>
       </div>
-      <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={onSubmit} className="glass-panel space-y-4 rounded-2xl p-5">
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Name</span>
-          <input name="name" required className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Name</span>
+          <input name="name" required className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Email</span>
-          <input name="email" type="email" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Email</span>
+          <input name="email" type="email" className="field mt-1" />
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="block text-sm">
-            <span className="font-medium text-slate-800">Side</span>
-            <select name="side" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <span className="kicker">Side</span>
+            <select name="side" className="field mt-1">
               <option value="OTHER">Other</option>
               <option value="A">Partner A</option>
               <option value="B">Partner B</option>
@@ -74,8 +78,8 @@ export default function NewGuestPage() {
             </select>
           </label>
           <label className="block text-sm">
-            <span className="font-medium text-slate-800">RSVP</span>
-            <select name="rsvp" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <span className="kicker">RSVP</span>
+            <select name="rsvp" className="field mt-1">
               <option value="UNKNOWN">Unknown</option>
               <option value="INVITED">Invited</option>
               <option value="YES">Yes</option>
@@ -85,70 +89,71 @@ export default function NewGuestPage() {
           </label>
         </div>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Plus-ones — names if you know them</span>
-          <input name="plusOnes" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Plus-ones — names if you know them</span>
+          <input name="plusOnes" type="number" min={0} defaultValue={0} className="field mt-1" />
           <textarea
             name="plusOneText"
             rows={2}
             placeholder="One name per line — Sam Chen"
-            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="field mt-2"
           />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Street</span>
-          <input name="address" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Street</span>
+          <input name="address" className="field mt-1" />
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="block text-sm">
-            <span className="font-medium text-slate-800">City</span>
-            <input name="city" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <span className="kicker">City</span>
+            <input name="city" className="field mt-1" />
           </label>
           <label className="block text-sm">
-            <span className="font-medium text-slate-800">State</span>
-            <input name="region" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <span className="kicker">State</span>
+            <input name="region" className="field mt-1" />
           </label>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <label className="block text-sm">
-            <span className="font-medium text-slate-800">ZIP</span>
-            <input name="postal" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <span className="kicker">ZIP</span>
+            <input name="postal" className="field mt-1" />
           </label>
           <label className="block text-sm">
-            <span className="font-medium text-slate-800">Phone</span>
-            <input name="phone" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+            <span className="kicker">Phone</span>
+            <input name="phone" className="field mt-1" />
           </label>
         </div>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">List</span>
-          <select name="listTier" defaultValue="A" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+          <span className="kicker">List</span>
+          <select name="listTier" defaultValue="A" className="field mt-1">
             <option value="A">A — invited first</option>
             <option value="B">B — if space opens. No save-the-date.</option>
           </select>
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Household / party name</span>
-          <input name="partyName" placeholder="The Garcias" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Household</span>
+          <input name="partyName" placeholder="The Garcias" className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Meal</span>
-          <input name="meal" placeholder="Chicken, fish, veg" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Meal</span>
+          <input name="meal" placeholder="Chicken, fish, veg" className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Dietary</span>
-          <input name="dietary" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Dietary</span>
+          <input name="dietary" className="field mt-1" />
         </label>
         <label className="block text-sm">
-          <span className="font-medium text-slate-800">Notes</span>
-          <textarea name="notes" rows={3} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <span className="kicker">Notes</span>
+          <textarea name="notes" rows={3} className="field mt-1" />
         </label>
-        {error && <p className="text-xs text-rose-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
-        >
-          {loading ? "Saving…" : "Save guest"}
-        </button>
+        {error && <p className="text-xs text-clay">{error}</p>}
+        <div className="flex flex-wrap gap-2">
+          <button type="submit" disabled={loading} className="btn btn-primary">
+            {loading ? "Saving…" : "Save guest"}
+          </button>
+          <Link href="/guests" className="btn btn-ghost">
+            Cancel
+          </Link>
+        </div>
       </form>
     </div>
   );

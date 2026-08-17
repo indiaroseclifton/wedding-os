@@ -231,21 +231,21 @@ export function FloralStudio() {
           <button
             type="button"
             onClick={() => setTab("compose")}
-            className={`rounded-full px-3 py-1.5 text-xs ${tab === "compose" ? "bg-moss text-ivory" : "border border-line"}`}
+            className={`rounded-full px-3 py-1.5 text-xs ${tab === "compose" ? "bg-moss text-moss-fg" : "border border-line"}`}
           >
             Canvas
           </button>
           <button
             type="button"
             onClick={() => setTab("inspire")}
-            className={`rounded-full px-3 py-1.5 text-xs ${tab === "inspire" ? "bg-moss text-ivory" : "border border-line"}`}
+            className={`rounded-full px-3 py-1.5 text-xs ${tab === "inspire" ? "bg-moss text-moss-fg" : "border border-line"}`}
           >
             Inspiration
           </button>
           <button
             type="button"
             onClick={() => setTab("palette")}
-            className={`rounded-full px-3 py-1.5 text-xs ${tab === "palette" ? "bg-moss text-ivory" : "border border-line"}`}
+            className={`rounded-full px-3 py-1.5 text-xs ${tab === "palette" ? "bg-moss text-moss-fg" : "border border-line"}`}
           >
             Palettes
           </button>
@@ -324,7 +324,7 @@ export function FloralStudio() {
                   type="button"
                   onClick={() => setStory(s.id)}
                   className={`min-h-11 rounded-full px-2.5 py-1 text-[11px] ${
-                    story === s.id ? "bg-moss text-ivory" : "border border-line"
+                    story === s.id ? "bg-moss text-moss-fg" : "border border-line"
                   }`}
                 >
                   <span className="flex overflow-hidden rounded-full">
@@ -343,7 +343,7 @@ export function FloralStudio() {
                   type="button"
                   onClick={() => setMaterial(m)}
                   className={`rounded-full px-2.5 py-1 text-[11px] ${
-                    material === m ? "bg-moss text-ivory" : "border border-line"
+                    material === m ? "bg-moss text-moss-fg" : "border border-line"
                   }`}
                 >
                   {m === "all" ? "All" : m === "fresh" ? "Real" : m === "silk" ? "Silk" : "Mix"}
@@ -372,7 +372,7 @@ export function FloralStudio() {
                 type="button"
                 onClick={() => setInSeasonOnly((v) => !v)}
                 className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide ${
-                  inSeasonOnly ? "bg-moss text-ivory" : "border border-line text-muted"
+                  inSeasonOnly ? "bg-moss text-moss-fg" : "border border-line text-muted"
                 }`}
               >
                 In season
@@ -419,7 +419,7 @@ export function FloralStudio() {
                   type="button"
                   onClick={() => setVessel(v.id)}
                   className={`rounded-full px-3 py-1.5 text-xs ${
-                    vessel === v.id ? "bg-moss text-ivory" : "border border-line"
+                    vessel === v.id ? "bg-moss text-moss-fg" : "border border-line"
                   }`}
                 >
                   {v.name}
@@ -567,7 +567,7 @@ export function FloralStudio() {
               <button
                 type="button"
                 onClick={persist}
-                className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
+                className="btn btn-primary"
               >
                 Save this look
               </button>

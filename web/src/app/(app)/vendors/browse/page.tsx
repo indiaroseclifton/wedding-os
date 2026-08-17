@@ -295,7 +295,7 @@ export default function VendorBrowsePage() {
                 type="button"
                 onClick={() => setCategory(role.category)}
                 className={`rounded-full px-3 py-1 text-[11px] font-medium ${
-                  on ? "bg-moss text-ivory" : "border border-line"
+                  on ? "bg-moss text-moss-fg" : "border border-line"
                 }`}
               >
                 {on ? "✓ " : ""}
@@ -335,7 +335,7 @@ export default function VendorBrowsePage() {
           type="button"
           onClick={() => setSource("near")}
           className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-            source === "near" ? "bg-moss text-ivory" : "border border-line"
+            source === "near" ? "bg-moss text-moss-fg" : "border border-line"
           }`}
         >
           Near you
@@ -344,7 +344,7 @@ export default function VendorBrowsePage() {
           type="button"
           onClick={() => setSource("curated")}
           className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-            source === "curated" ? "bg-moss text-ivory" : "border border-line"
+            source === "curated" ? "bg-moss text-moss-fg" : "border border-line"
           }`}
         >
           Curated demo

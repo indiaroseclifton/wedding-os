@@ -71,38 +71,38 @@ export default function DayOfPage() {
     load();
   }
 
-  if (!dayOf) return <p className="text-sm text-slate-600">Loading…</p>;
+  if (!dayOf) return <p className="text-sm text-muted">Loading…</p>;
 
   return (
     <div className="space-y-6">
       <RoomSubnav room="day" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Day-of board</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="title">Day-of board</h1>
+          <p className="mt-1 text-sm text-muted">
             Live check-ins and notes. The timeline lives on Run of show.
           </p>
         </div>
         <Link
           href="/run-of-show"
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white"
+          className="btn btn-primary"
         >
           Edit run of show
         </Link>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="glass-panel rounded-2xl p-4">
         <ScheduleView slots={dayOf.schedule || []} view="all" showNotes={false} />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <label className="block glass-panel rounded-2xl p-4 text-sm">
           <span className="font-medium">Weather</span>
           <textarea
             value={weather}
             onChange={(e) => setWeather(e.target.value)}
             rows={3}
-            className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
           <div className="mt-2 flex flex-wrap gap-2">
             <button
@@ -122,23 +122,23 @@ export default function DayOfPage() {
             >
               Pull forecast for our city
             </button>
-            {weatherMsg && <span className="text-xs text-slate-500">{weatherMsg}</span>}
+            {weatherMsg && <span className="text-xs text-muted">{weatherMsg}</span>}
           </div>
         </label>
-        <label className="block rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <label className="block glass-panel rounded-2xl p-4 text-sm">
           <span className="font-medium">Emergency contact</span>
           <textarea
             value={emergency}
             onChange={(e) => setEmergency(e.target.value)}
             rows={2}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
       </div>
       <button
         type="button"
         onClick={saveMeta}
-        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+        className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium"
       >
         Save weather & emergency
       </button>
@@ -147,16 +147,16 @@ export default function DayOfPage() {
         {dayOf.checkIns.map((c) => (
           <li
             key={c.id}
-            className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm"
+            className="flex flex-wrap items-center justify-between gap-2 glass-panel rounded-2xl px-4 py-3 text-sm"
           >
             <span>
               {c.name}
-              <span className="text-xs text-slate-500"> · {c.role}</span>
+              <span className="text-xs text-muted"> · {c.role}</span>
             </span>
             <select
               value={c.status}
               onChange={(e) => setStatus(c.id, e.target.value)}
-              className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs"
+              className="rounded-lg border border-line px-2 py-1.5 text-xs"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -173,16 +173,16 @@ export default function DayOfPage() {
           value={update}
           onChange={(e) => setUpdate(e.target.value)}
           placeholder="Live update…"
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="flex-1 rounded-lg border border-line px-3 py-2 text-sm"
         />
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <button type="submit" className="btn btn-primary">
           Post
         </button>
       </form>
 
       <ul className="space-y-2">
         {dayOf.updates.map((u) => (
-          <li key={u.id} className="rounded-xl border border-slate-200 bg-white p-3 text-sm">
+          <li key={u.id} className="glass-panel rounded-2xl p-3 text-sm">
             {u.body}
             <p className="mt-1 text-[10px] text-slate-400">{u.createdAt}</p>
           </li>

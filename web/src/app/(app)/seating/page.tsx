@@ -29,7 +29,7 @@ export default async function SeatingPage() {
         <div className="flex gap-2">
           <Link
             href="/guests"
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+            className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium"
           >
             Guest list
           </Link>

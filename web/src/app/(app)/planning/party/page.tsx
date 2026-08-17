@@ -68,7 +68,7 @@ export default async function PartyHubPage() {
             {party.length} in · {pending.length} invite{pending.length === 1 ? "" : "s"} waiting
           </p>
         </div>
-        <Link href="/people" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <Link href="/people" className="btn btn-primary">
           Invite someone
         </Link>
       </div>

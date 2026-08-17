@@ -7,6 +7,7 @@ import { HomeDashboard } from "@/components/this-week/HomeDashboard";
 import { nextShapeDate } from "@/lib/shape";
 import { firstNames, prettyWeddingDate } from "@/lib/visual-rooms";
 import { isPendingRsvp } from "@/lib/data/guest-mail";
+import { isBooked } from "@/lib/send/status";
 
 export default async function DashboardPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
@@ -23,8 +24,8 @@ export default async function DashboardPage() {
     budget.lines.reduce((s, l) => s + (l.actual || 0), 0) +
     payments.filter((p) => p.status === "PAID").reduce((s, p) => s + (p.amount || 0), 0);
   const cap = budget.overallLimit || budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
-  const booked = vendors.filter((v) => ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status)).length;
-  const pending = vendors.filter((v) => !["BOOKED", "PAID_DEPOSIT", "DONE", "PASSED"].includes(v.status)).length;
+  const booked = vendors.filter((v) => isBooked(v.status)).length;
+  const pending = vendors.filter((v) => !isBooked(v.status) && v.status !== "PASSED").length;
   const dateLine = [prettyWeddingDate(countDate).toUpperCase(), meta.location?.toUpperCase()].filter(Boolean).join("  ·  ");
 
   const nextUp = week.items.slice(0, 2).map((item) => ({

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { VendorGut } from "@/components/vendors/VendorGut";
 import { googleReviewUrl, type GutMark } from "@/lib/vendor-gut";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type Item = {
   id: string;
@@ -68,30 +70,32 @@ export default function ThanksPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-serif text-4xl">Thank-you notes</h1>
-          <p className="mt-1 text-sm text-muted">
+          <p className="kicker kicker-moss">Planning</p>
+          <h1 className="title mt-2">Thank-you notes</h1>
+          <p className="deck mt-2">
             Industry practice is three months. After walks the stack. This is the full list.
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href="/after" className="rounded-full border border-line px-3 py-1.5 text-xs">
+          <Link href="/after" className="btn btn-ghost">
             After
           </Link>
-          <Link href="/registry" className="text-xs font-medium underline">
+          <Link href="/registry" className="btn btn-ghost">
             Registry
           </Link>
         </div>
       </div>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-muted">
         {open} still to write · {items.length} total
       </p>
-      {note && <p className="text-xs text-emerald-700">{note}</p>}
+      {note && <p className="text-xs text-moss">{note}</p>}
 
       {team.length ? (
-        <section id="team" className="space-y-3 rounded-[1.6rem] border border-line bg-surface p-5">
+        <section id="team" className="glass-panel space-y-3 rounded-2xl p-5">
           <p className="kicker kicker-moss">The people who made the day</p>
           <h2 className="font-serif text-2xl">Mark them. Tell Google if you want.</h2>
           <p className="text-sm text-muted">
@@ -130,7 +134,7 @@ export default function ThanksPage() {
             await post({ action: "import_gifts" });
             setNote("Pulled gifts from Registry (skips duplicates)");
           }}
-          className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+          className="btn btn-ghost"
         >
           Import gifts from Registry
         </button>
@@ -143,70 +147,74 @@ export default function ThanksPage() {
           setGuestName("");
           setGift("");
         }}
-        className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-4"
+        className="glass-panel flex flex-wrap items-end gap-2 rounded-2xl p-5"
       >
         <label className="text-sm">
-          <span className="font-medium">Name</span>
+          <span className="kicker">Name</span>
           <input
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
             required
-            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="field mt-1"
           />
         </label>
         <label className="text-sm">
-          <span className="font-medium">Gift (optional)</span>
+          <span className="kicker">Gift (optional)</span>
           <input
             value={gift}
             onChange={(e) => setGift(e.target.value)}
-            className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="field mt-1"
           />
         </label>
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <button type="submit" className="btn btn-primary">
           Add
         </button>
       </form>
 
-      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-        {items.map((item) => (
-          <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
-            <div>
-              <p className={item.status === "SENT" ? "text-slate-400 line-through" : "font-medium"}>
-                {item.guestName}
-              </p>
-              <p className="text-xs text-slate-500">
-                {item.gift || "—"}
-                {item.sentDate ? ` · sent ${item.sentDate}` : ""}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() =>
-                  post({
-                    action: "toggle",
-                    id: item.id,
-                    status: item.status === "SENT" ? "TODO" : "SENT",
-                  })
-                }
-                className="text-xs font-medium underline"
-              >
-                {item.status === "SENT" ? "Undo" : "Mark sent"}
-              </button>
-              <button
-                type="button"
-                onClick={() => post({ action: "delete", id: item.id })}
-                className="text-xs text-slate-400 underline"
-              >
-                Remove
-              </button>
-            </div>
-          </li>
-        ))}
-        {!items.length && (
-          <li className="px-4 py-6 text-center text-sm text-slate-500">No thank-yous yet</li>
-        )}
-      </ul>
+      {items.length === 0 ? (
+        <EmptyState
+          title="No thank-yous yet"
+          body="Add a name, or pull gifts from Registry."
+        />
+      ) : (
+        <ul className="panel divide-y divide-line">
+          {items.map((item) => (
+            <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
+              <div>
+                <p className={item.status === "SENT" ? "text-muted line-through" : "font-medium"}>
+                  {item.guestName}
+                </p>
+                <p className="text-xs text-muted">
+                  {item.gift || "—"}
+                  {item.sentDate ? ` · sent ${item.sentDate}` : ""}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    post({
+                      action: "toggle",
+                      id: item.id,
+                      status: item.status === "SENT" ? "TODO" : "SENT",
+                    })
+                  }
+                  className="text-xs font-medium underline"
+                >
+                  {item.status === "SENT" ? "Undo" : "Mark sent"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => post({ action: "delete", id: item.id })}
+                  className="text-xs text-muted underline"
+                >
+                  Remove
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

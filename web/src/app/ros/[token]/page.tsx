@@ -32,11 +32,11 @@ export default async function PublicRunOfShowPage({
     <div className="mx-auto min-h-screen max-w-xl px-4 py-10">
       <div className="mb-6 flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
+          <h1 className="mt-1 title">
             {meta.coupleNames || meta.name}
           </h1>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted">
             {[meta.weddingDate, meta.location].filter(Boolean).join(" · ")}
           </p>
         </div>
@@ -48,7 +48,7 @@ export default async function PublicRunOfShowPage({
         showNotes={view !== "guests"}
       />
       {dayOf.emergencyContact && view !== "guests" && (
-        <p className="mt-8 text-sm text-slate-600">Day-of contact: {dayOf.emergencyContact}</p>
+        <p className="mt-8 text-sm text-muted">Day-of contact: {dayOf.emergencyContact}</p>
       )}
     </div>
   );

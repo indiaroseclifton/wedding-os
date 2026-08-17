@@ -62,7 +62,7 @@ export function CueSheet({
             type="button"
             onClick={() => setAct(a.id)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-              act === a.id ? "bg-moss text-ivory" : "border border-line"
+              act === a.id ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {a.label}

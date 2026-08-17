@@ -12,14 +12,14 @@ export default async function PollsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Polls</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="title">Polls</h1>
+          <p className="mt-1 text-sm text-muted">
             Quick votes for menu, song, color, or anything else.
           </p>
         </div>
         <Link
           href="/polls/new"
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="btn btn-primary"
         >
           New poll
         </Link>
@@ -33,14 +33,14 @@ export default async function PollsPage() {
           primaryLabel="New poll"
         />
       ) : (
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+        <ul className="divide-y divide-line glass-panel rounded-2xl">
           {polls.map((p) => {
             const voteCount = Object.keys(p.votes || {}).length;
             return (
               <li key={p.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{p.title}</p>
-                  <p className="text-xs text-slate-500">{voteCount} vote{voteCount === 1 ? "" : "s"}</p>
+                  <p className="text-sm font-medium text-ink">{p.title}</p>
+                  <p className="text-xs text-muted">{voteCount} vote{voteCount === 1 ? "" : "s"}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <StatusBadge status={p.status} />

@@ -42,7 +42,7 @@ export function PromoteButtons({ decisionId }: { decisionId: string }) {
         type="button"
         disabled={busy}
         onClick={() => promote({ createTask: true, createTimeline: false })}
-        className="text-xs font-medium text-slate-500 underline disabled:opacity-50"
+        className="text-xs font-medium text-muted underline disabled:opacity-50"
       >
         Task only
       </button>

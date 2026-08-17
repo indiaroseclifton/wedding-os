@@ -87,7 +87,7 @@ export default function StartPage() {
 
       {step === 2 && (
         <p className="text-sm leading-6 text-ink-soft">
-          We’ll publish a simple guest page with your names and an RSVP. You can dress it later — password, gallery, story.
+          We’ll publish a simple guest page with your names. If this day is just the two of you, it’s an announcement — no RSVP. You can dress it later.
         </p>
       )}
 

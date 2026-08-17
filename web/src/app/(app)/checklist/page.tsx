@@ -94,7 +94,7 @@ export default function ChecklistPage() {
             type="button"
             onClick={() => setLane(l)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-              lane === l ? "bg-moss text-ivory" : "border border-line bg-surface"
+              lane === l ? "bg-moss text-moss-fg" : "border border-line bg-surface"
             }`}
           >
             {l === "all" ? "All" : l === "party" ? "Wedding party" : l === "faith" ? `Faith · ${faithLabel}` : "Couple"}
@@ -166,7 +166,7 @@ export default function ChecklistPage() {
             ))}
           </select>
         </label>
-        <button type="submit" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <button type="submit" className="btn btn-primary">
           Add
         </button>
       </form>

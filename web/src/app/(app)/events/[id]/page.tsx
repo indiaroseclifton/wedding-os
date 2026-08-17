@@ -62,7 +62,7 @@ export default function EventDetailPage() {
     router.push("/events");
   }
 
-  if (!event) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (!event) return <p className="text-sm text-muted">Loading…</p>;
 
   const byGuest = new Map(rsvps.map((r) => [r.guestId, r]));
   const weddingYes = guests.filter((g) => g.rsvp === "YES");
@@ -77,8 +77,8 @@ export default function EventDetailPage() {
         <Link href="/events" className="text-xs underline">
           All events
         </Link>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">{event.name}</h1>
-        <p className="text-sm text-slate-600">
+        <h1 className="mt-2 title">{event.name}</h1>
+        <p className="text-sm text-muted">
           {event.type}
           {event.date ? ` · ${event.date}` : ""}
           {event.location ? ` · ${event.location}` : ""}
@@ -86,11 +86,11 @@ export default function EventDetailPage() {
       </div>
 
       {weddingDay ? (
-        <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+        <p className="glass-panel rounded-2xl px-4 py-3 text-sm text-muted">
           Wedding day uses the main guest RSVP. Add rehearsal or brunch if you want a second yes/no.
         </p>
       ) : (
-        <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+        <div className="space-y-3 glass-panel rounded-2xl p-4">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -112,7 +112,7 @@ export default function EventDetailPage() {
             <select
               value={event.inviteMode}
               onChange={(e) => patch({ inviteMode: e.target.value })}
-              className="mt-1 block rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="mt-1 block rounded-lg border border-line px-3 py-2 text-sm"
             >
               <option value="invited">Only people I invite</option>
               <option value="everyone">Everyone on the guest list</option>
@@ -123,14 +123,14 @@ export default function EventDetailPage() {
               <button
                 type="button"
                 onClick={() => post({ action: "invite", preset: "wedding_yes" })}
-                className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
+                className="btn btn-primary !min-h-9 px-3 text-xs"
               >
                 Invite wedding-day yes ({weddingYes.length})
               </button>
               <button
                 type="button"
                 onClick={() => post({ action: "invite", preset: "all" })}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs"
+                className="rounded-lg border border-line px-3 py-1.5 text-xs"
               >
                 Invite everyone except nos
               </button>
@@ -145,21 +145,21 @@ export default function EventDetailPage() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search guests"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-line px-3 py-2 text-sm"
           />
-          <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+          <ul className="divide-y divide-line glass-panel rounded-2xl">
             {filtered.map((g) => {
               const row = byGuest.get(g.id);
               return (
                 <li key={g.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-sm">
                   <span>
                     {g.name}
-                    <span className="text-xs text-slate-500"> · wedding {g.rsvp}</span>
+                    <span className="text-xs text-muted"> · wedding {g.rsvp}</span>
                   </span>
                   <div className="flex items-center gap-2">
                     {row ? (
                       <>
-                        <span className="text-xs text-slate-600">{row.status}</span>
+                        <span className="text-xs text-muted">{row.status}</span>
                         <button
                           type="button"
                           onClick={() => post({ action: "uninvite", guestId: g.id })}

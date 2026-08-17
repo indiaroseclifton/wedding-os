@@ -90,7 +90,7 @@ export function SeatCanvas({
                 sit
                   ? sit.plus
                     ? "border-line bg-paper text-muted"
-                    : "border-moss bg-moss text-ivory"
+                    : "border-moss bg-moss text-moss-fg"
                   : "border-dashed border-line bg-surface/80 text-muted"
               }`}
               title={sit ? sit.label : `Seat ${i + 1}`}

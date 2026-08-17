@@ -7,8 +7,8 @@ import type { WeekItem, WeekUrgency } from "@/lib/this-week";
 
 const URGENCY: Record<WeekUrgency, { label: string; className: string }> = {
   now: { label: "Do now", className: "bg-clay/20 text-clay-soft" },
-  week: { label: "This week", className: "bg-white/10 text-champagne" },
-  soon: { label: "Soon", className: "bg-white/5 text-white/55" },
+  week: { label: "This week", className: "bg-surface/10 text-champagne" },
+  soon: { label: "Soon", className: "bg-surface/5 text-white/55" },
 };
 
 export function CinematicDash({

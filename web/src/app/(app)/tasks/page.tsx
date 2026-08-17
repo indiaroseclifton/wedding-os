@@ -19,14 +19,14 @@ export default async function TasksPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Tasks</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="title">Tasks</h1>
+          <p className="mt-1 text-sm text-muted">
             Select multiple tasks to change status, reassign, or delete.
           </p>
         </div>
         <Link
           href="/tasks/new"
-          className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          className="btn btn-primary"
         >
           Add task
         </Link>
@@ -41,7 +41,7 @@ export default async function TasksPage() {
         />
       ) : (
         <div className="space-y-3">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             {open.length} open · {tasks.length} total
           </p>
           <TasksClient

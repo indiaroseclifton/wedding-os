@@ -203,7 +203,7 @@ export function RoomCanvas({
               setDrag({ kind: "obj", id: o.id });
               setSelectedObj(o.id);
             }}
-            className="absolute -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-lg border border-dashed border-ink/30 bg-white/50 text-[10px] uppercase tracking-wide text-ink/70 backdrop-blur-sm"
+            className="absolute -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-lg border border-dashed border-ink/30 bg-surface/50 text-[10px] uppercase tracking-wide text-ink/70 backdrop-blur-sm"
             style={{
               left: `${o.x}%`,
               top: `${o.y}%`,

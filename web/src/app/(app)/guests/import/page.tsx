@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
@@ -126,9 +127,11 @@ export default function ImportGuestsPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
+      <RoomSubnav room="guests" />
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Import guests</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="kicker kicker-moss">Guests</p>
+        <h1 className="title mt-2">Import guests</h1>
+        <p className="deck mt-2">
           Name is required. Household, street, city, meal, and A/B list come through if the columns exist.
         </p>
       </div>
@@ -136,12 +139,12 @@ export default function ImportGuestsPage() {
         type="file"
         accept=".csv,text/csv"
         onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
-        className="block w-full text-sm"
+        className="field"
       />
       {preview && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <div className="glass-panel rounded-2xl p-5 text-sm">
           <p className="font-medium">{preview.length} guests ready</p>
-          <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-xs text-slate-600">
+          <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-xs text-ink-soft">
             {preview.slice(0, 20).map((r, i) => (
               <li key={i}>
                 {r.name}
@@ -156,13 +159,13 @@ export default function ImportGuestsPage() {
             type="button"
             disabled={loading}
             onClick={importRows}
-            className="mt-4 w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+            className="btn btn-primary mt-4 w-full disabled:opacity-50"
           >
             {loading ? "Importing…" : "Import all"}
           </button>
         </div>
       )}
-      {error && <p className="text-xs text-rose-600">{error}</p>}
+      {error && <p className="text-xs text-clay">{error}</p>}
     </div>
   );
 }

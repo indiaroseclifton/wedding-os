@@ -17,7 +17,7 @@ export function SundayCard({ next, brief }: { next: WeekItem | null; brief: stri
       <div className="flex flex-wrap gap-2">
         <Link
           href={next.href}
-          className="inline-flex min-h-11 items-center rounded-full bg-moss px-5 text-sm font-medium text-ivory"
+          className="inline-flex min-h-11 items-center rounded-full bg-moss px-5 text-sm font-medium text-moss-fg"
         >
           {next.cta}
         </Link>

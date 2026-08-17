@@ -4,7 +4,7 @@ Read this before the README. The README route list is stale.
 
 One desk for one wedding. Not four apps. Not The Knot with nicer type.
 
-Most planners sell **one wedding**: 12–18 months, two venues, a processional, 80 chairs, a last dance, then a blog post about thank-yous. This desk is supposed to follow the *shape* of the day, do the coordination after hire that competitors drop, and — not built yet — stay useful after the date.
+Most planners sell **one wedding**: 12–18 months, two venues, a processional, 80 chairs, a last dance, then a blog post about thank-yous. This desk follows the *shape* of the day, does the coordination after hire, and stays useful after the date.
 
 ## Thesis
 
@@ -43,11 +43,14 @@ One couple workspace. File JSON under `web/.data/` is the source of truth (`DATA
 | Budget / payments | Envelopes, deposit/progress/final, print statement | No Stripe. Shape reweights envelopes. |
 | The day | Run of show, cue book, day-of board | Templates follow shape + enter |
 | Guest site `/w/[token]` | Invite **or** announcement | `siteMode` / `us` → announce, no RSVP |
+| Florist board `/b/[token]` | The pictures, not the brief | Same board they edit. Print is that page. |
 | Calendar `/c/[token]` | ICS subscribe | Dues + day |
-| Thank-yous `/thanks` | Stub list + 3-month line | **Not** the After season yet |
-| Legal / name-change | Checklist lines | Name change is optional, never assumed |
+| After `/after` | The 90 days | Clock, today’s card, seed from guests |
+| Thank-yous `/thanks` | The list After walks | Same stack |
 
-Public, unguessable tokens: `/v` vendor packet, `/w` guest site, `/c` calendar. Couple tools use `requireCoupleApi`.
+Public, unguessable tokens: `/v` vendor packet, `/w` guest site, `/b` florist board, `/c` calendar, `/ros` run of show. Couple tools use `requireCoupleApi`.
+
+`HIRED` and `BOOKED` both count as booked for Send. Start writes `BOOKED`. Email is optional — if Resend is off, the UI says copy the link. It does not pretend mail left.
 
 ## What we are not
 
@@ -59,17 +62,16 @@ Public, unguessable tokens: `/v` vendor packet, `/w` guest site, `/c` calendar. 
 - Not a Grok/chat concierge. “What next” is a rule engine (`this-week.ts`, `planner-decisions.ts`).
 - Not four standalone apps. Expand rooms. Share guests, date, vendors, floor, ROS.
 
-## After (planned, not built)
+## After (shipped as a room)
 
-The industry mentions “thank-yous in three months” and then sells cards. Rules:
+The industry mentions “thank-yous in three months” and then sells cards. This desk walks the 90 days.
 
 - Gifts **before** the day: thank within **two weeks**.
 - Gifts **on/after** the day: thank within **three months of the wedding**.
 - Thank presence, not only SKUs. Cash has no registry line.
-- Name change is a branch (keep / hyphen / change). Hidden if they keep the name.
-- Photographer gallery, license filed, finals/tips, reviews, dress preserve, leftover registry, announcement to people who weren’t there.
+- Home still talks like planning until the season cut lands. Open `/after` after the date.
 
-When we build it: **Home becomes a quieter season** with a clock to the 90-day mark — not “N days ago” on a planning dashboard. Shape must stay in force so an eloper is not nagged about table 6.
+Name change is a branch (keep / hyphen / change). Hidden if they keep the name — still a later cut.
 
 ## Design rules
 

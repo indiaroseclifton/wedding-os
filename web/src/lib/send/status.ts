@@ -1,5 +1,11 @@
 import type { VendorSend } from "@/lib/data/sends-store";
 
+export const BOOKED_STATUSES = ["HIRED", "BOOKED", "PAID_DEPOSIT", "DONE"] as const;
+
+export function isBooked(status?: string) {
+  return BOOKED_STATUSES.includes(status as (typeof BOOKED_STATUSES)[number]);
+}
+
 export function sendStrip(send?: VendorSend | null) {
   if (!send || send.status !== "SENT") {
     return {

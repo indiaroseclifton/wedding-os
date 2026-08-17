@@ -89,12 +89,12 @@ export default function DiyPlaybookPage() {
 
   if (missing) {
     return (
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-muted">
         Unknown playbook. <Link href="/diy" className="underline">Back to DIY</Link>
       </p>
     );
   }
-  if (!book) return <p className="text-sm text-slate-500">Loading…</p>;
+  if (!book) return <p className="text-sm text-muted">Loading…</p>;
 
   return (
     <div className="space-y-6">
@@ -110,7 +110,7 @@ export default function DiyPlaybookPage() {
         {slug === "flowers" && (
           <Link
             href="/diy/studio/floral"
-            className="mt-3 inline-block rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
+            className="mt-3 inline-block btn btn-primary"
           >
             Open floral studio
           </Link>
@@ -118,7 +118,7 @@ export default function DiyPlaybookPage() {
         {slug === "table-decor" && (
           <Link
             href="/diy/studio/table"
-            className="mt-3 inline-block rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
+            className="mt-3 inline-block btn btn-primary"
           >
             Open tablescape
           </Link>
@@ -126,11 +126,11 @@ export default function DiyPlaybookPage() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <div className="glass-panel rounded-2xl p-4 text-sm">
           <p className="font-medium">DIY this if</p>
           <p className="mt-1 text-slate-600">{book.whenDiy}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <div className="glass-panel rounded-2xl p-4 text-sm">
           <p className="font-medium">Hire it if</p>
           <p className="mt-1 text-slate-600">{book.whenHire}</p>
         </div>
@@ -141,12 +141,12 @@ export default function DiyPlaybookPage() {
           <h2 className="text-sm font-semibold">How it looks</h2>
           <ol className="mt-3 grid gap-3 sm:grid-cols-3">
             {book.steps.map((s, i) => (
-              <li key={s.title} className="rounded-xl border border-slate-200 bg-white p-4">
+              <li key={s.title} className="glass-panel rounded-2xl p-4">
                 <div className="mb-2 flex h-16 items-center justify-center rounded-lg bg-slate-100">
                   <span className="text-2xl text-slate-400">{i + 1}</span>
                 </div>
                 <p className="text-sm font-medium">{s.title}</p>
-                <p className="mt-1 text-xs text-slate-600">{s.detail}</p>
+                <p className="mt-1 text-xs text-muted">{s.detail}</p>
               </li>
             ))}
           </ol>
@@ -156,10 +156,10 @@ export default function DiyPlaybookPage() {
       {book.weekTasks && book.weekTasks.length > 0 && (
         <div>
           <h2 className="text-sm font-semibold">Week-of</h2>
-          <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+          <ul className="mt-2 divide-y divide-line glass-panel rounded-2xl">
             {book.weekTasks.map((t) => (
               <li key={t.day + t.what} className="flex gap-3 px-4 py-2 text-sm">
-                <span className="w-10 font-medium text-slate-500">{t.day}</span>
+                <span className="w-10 font-medium text-muted">{t.day}</span>
                 <span>{t.what}</span>
               </li>
             ))}
@@ -176,7 +176,7 @@ export default function DiyPlaybookPage() {
             await post({ action: "start", slug: book.slug, tables, guests });
           }
         }}
-        className="flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-4"
+        className="flex flex-wrap items-end gap-2 glass-panel rounded-2xl p-4"
       >
         <label className="text-sm">
           <span className="font-medium">Tables</span>
@@ -185,7 +185,7 @@ export default function DiyPlaybookPage() {
             min={1}
             value={tables}
             onChange={(e) => setTables(Number(e.target.value) || 1)}
-            className="mt-1 block w-24 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-24 rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
         <label className="text-sm">
@@ -195,29 +195,29 @@ export default function DiyPlaybookPage() {
             min={1}
             value={guests}
             onChange={(e) => setGuests(Number(e.target.value) || 1)}
-            className="mt-1 block w-24 rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="mt-1 block w-24 rounded-lg border border-line px-3 py-2 text-sm"
           />
         </label>
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <button type="submit" className="btn btn-primary">
           {project ? "Update list" : "Start this project"}
         </button>
       </form>
 
       {project && (
-        <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+        <div className="space-y-3 glass-panel rounded-2xl p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm font-medium">Shopping list</p>
             <select
               value={project.status}
               onChange={(e) => post({ action: "status", id: project.id, status: e.target.value })}
-              className="rounded-lg border border-slate-300 px-2 py-1 text-xs"
+              className="rounded-lg border border-line px-2 py-1 text-xs"
             >
               <option value="exploring">Exploring</option>
               <option value="committed">Committed</option>
               <option value="done">Done</option>
             </select>
           </div>
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-line">
             {project.shopping.map((s) => (
               <li key={s.id} className="flex items-center justify-between gap-3 py-2 text-sm">
                 <label className="flex items-center gap-2">
@@ -230,7 +230,7 @@ export default function DiyPlaybookPage() {
                   />
                   <span className={s.bought ? "text-slate-400 line-through" : ""}>
                     {s.label}
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted">
                       {" "}
                       · {s.qty} {s.unit}
                       {s.estEach
@@ -246,18 +246,18 @@ export default function DiyPlaybookPage() {
       )}
 
       <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">
           Source comparison
         </p>
         <ul className="space-y-3">
           {book.sources.map((s) => {
             const chosen = project?.chosenSourceId === s.id;
             return (
-              <li key={s.id} className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+              <li key={s.id} className="glass-panel rounded-2xl p-4 text-sm">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <p className="font-medium">{s.name}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted">
                       {COST[s.cost] || s.cost} · effort {s.effort} · {s.lead}
                     </p>
                   </div>
@@ -274,7 +274,7 @@ export default function DiyPlaybookPage() {
                   )}
                 </div>
                 <p className="mt-2 text-slate-600">{s.bestFor}</p>
-                <p className="mt-1 text-xs text-slate-500">Watch: {s.watch}</p>
+                <p className="mt-1 text-xs text-muted">Watch: {s.watch}</p>
               </li>
             );
           })}
@@ -282,12 +282,12 @@ export default function DiyPlaybookPage() {
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Recipes</p>
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Recipes</p>
         <div className="grid gap-3 sm:grid-cols-2">
           {book.recipes.map((r) => (
-            <div key={r.id} className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+            <div key={r.id} className="glass-panel rounded-2xl p-4 text-sm">
               <p className="font-medium">{r.name}</p>
-              <p className="text-xs text-slate-500">{r.forWhat}</p>
+              <p className="text-xs text-muted">{r.forWhat}</p>
               <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
                 {r.pieces.map((p) => (
                   <li key={p}>{p}</li>
@@ -299,8 +299,8 @@ export default function DiyPlaybookPage() {
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Timeline</p>
-        <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Timeline</p>
+        <ul className="divide-y divide-line glass-panel rounded-2xl">
           {book.timeline.map((t) => (
             <li key={t.when} className="px-4 py-3 text-sm">
               <p className="font-medium">{t.when}</p>
@@ -311,8 +311,8 @@ export default function DiyPlaybookPage() {
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">Don’t learn this the hard way</p>
-        <ul className="list-disc space-y-1 rounded-xl border border-slate-200 bg-white px-8 py-4 text-sm text-slate-600">
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted">Don’t learn this the hard way</p>
+        <ul className="list-disc space-y-1 glass-panel rounded-2xl px-8 py-4 text-sm text-muted">
           {book.pitfalls.map((p) => (
             <li key={p}>{p}</li>
           ))}

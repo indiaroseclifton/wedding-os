@@ -33,11 +33,11 @@ export function SeedButton() {
         type="button"
         disabled={busy}
         onClick={seed}
-        className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+        className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium disabled:opacity-50"
       >
         {busy ? "Seeding…" : "Load sample data"}
       </button>
-      {msg && <span className="text-xs text-slate-500">{msg}</span>}
+      {msg && <span className="text-xs text-muted">{msg}</span>}
     </div>
   );
 }

@@ -1,14 +1,19 @@
+export function emailIsConnected() {
+  const key = process.env.RESEND_API_KEY || "";
+  return key.startsWith("re_") && key !== "re_demo_unused";
+}
+
 export async function sendAppEmail(input: {
   to: string;
   subject: string;
   html: string;
   text?: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
-  const key = process.env.RESEND_API_KEY || "";
-  if (!key.startsWith("re_") || key === "re_demo_unused") {
-    return { ok: false, error: "Email is not connected." };
+  if (!emailIsConnected()) {
+    return { ok: false, error: "Email is not connected. Copy the link instead." };
   }
 
+  const key = process.env.RESEND_API_KEY as string;
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {

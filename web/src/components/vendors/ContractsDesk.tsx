@@ -82,7 +82,7 @@ export function ContractsDesk({ rows }: { rows: ContractRow[] }) {
             type="button"
             onClick={() => setFilter(id)}
             className={`min-h-11 rounded-full px-3 text-xs ${
-              filter === id ? "bg-moss text-ivory" : "border border-line"
+              filter === id ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {label}

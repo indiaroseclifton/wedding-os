@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type Member = {
   id: string;
@@ -18,7 +19,7 @@ export default function AttirePage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [palette, setPalette] = useState("");
   const [name, setName] = useState("");
-  const [role, setRole] = useState("Bridesmaid");
+  const [role, setRole] = useState("Party");
   const [color, setColor] = useState("");
   const [link, setLink] = useState("");
 
@@ -88,19 +89,18 @@ export default function AttirePage() {
     <div className="space-y-6">
       <RoomSubnav room="planning" />
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Attire</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Colors, links, and status for the wedding party — the bridesmaids tab idea.
-        </p>
+        <p className="kicker kicker-moss">Planning</p>
+        <h1 className="title mt-2">Attire</h1>
+        <p className="deck mt-2">Colors, links, and who has theirs.</p>
       </div>
 
       <label className="block text-sm">
-        <span className="font-medium">Palette / dress notes</span>
+        <span className="kicker">Palette / dress notes</span>
         <textarea
           value={palette}
           onChange={(e) => setPalette(e.target.value)}
           rows={2}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="field mt-1"
           placeholder="Champagne satin, no strapless…"
         />
         <button type="button" onClick={savePalette} className="mt-2 text-xs font-medium underline">
@@ -108,49 +108,56 @@ export default function AttirePage() {
         </button>
       </label>
 
-      <form onSubmit={add} className="space-y-2 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={add} className="glass-panel space-y-2 rounded-2xl p-5">
         <p className="text-sm font-medium">Add party member</p>
-        <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Name" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Name" className="field" />
         <div className="grid grid-cols-2 gap-2">
-          <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-          <input value={color} onChange={(e) => setColor(e.target.value)} placeholder="Color" className="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+          <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" className="field" />
+          <input value={color} onChange={(e) => setColor(e.target.value)} placeholder="Color" className="field" />
         </div>
-        <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Dress / suit link" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="Dress / suit link" className="field" />
+        <button type="submit" className="btn btn-primary">
           Add
         </button>
       </form>
 
-      <ul className="space-y-3">
-        {members.map((m) => (
-          <li key={m.id} className="rounded-xl border border-slate-200 bg-white p-4">
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold">{m.name}</p>
-                <p className="text-xs text-slate-500">
-                  {m.role}
-                  {m.color ? ` · ${m.color}` : ""}
-                </p>
-                {m.dressLink && (
-                  <a href={m.dressLink} target="_blank" rel="noreferrer" className="mt-1 block text-xs text-sky-700 underline">
-                    Open link
-                  </a>
-                )}
+      {members.length === 0 ? (
+        <EmptyState
+          title="No one on attire yet"
+          body="Add the party. Color, link, and whether they have it."
+        />
+      ) : (
+        <ul className="space-y-3">
+          {members.map((m) => (
+            <li key={m.id} className="glass-panel rounded-2xl p-5">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold">{m.name}</p>
+                  <p className="text-xs text-muted">
+                    {m.role}
+                    {m.color ? ` · ${m.color}` : ""}
+                  </p>
+                  {m.dressLink && (
+                    <a href={m.dressLink} target="_blank" rel="noreferrer" className="mt-1 block text-xs underline">
+                      Open link
+                    </a>
+                  )}
+                </div>
+                <select
+                  value={m.status}
+                  onChange={(e) => setStatus(m.id, e.target.value)}
+                  className="field w-auto"
+                >
+                  <option value="NOT_STARTED">Not started</option>
+                  <option value="ORDERED">Ordered</option>
+                  <option value="ALTERING">Altering</option>
+                  <option value="READY">Ready</option>
+                </select>
               </div>
-              <select
-                value={m.status}
-                onChange={(e) => setStatus(m.id, e.target.value)}
-                className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs"
-              >
-                <option value="NOT_STARTED">Not started</option>
-                <option value="ORDERED">Ordered</option>
-                <option value="ALTERING">Altering</option>
-                <option value="READY">Ready</option>
-              </select>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

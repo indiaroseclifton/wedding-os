@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type Guest = {
   id: string;
@@ -167,7 +168,7 @@ export function GuestFilters({
             type="button"
             onClick={() => setFilter(f)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-              filter === f ? "bg-moss text-ivory" : "text-ink-soft hover:bg-white"
+              filter === f ? "bg-moss text-moss-fg" : "text-ink-soft hover:bg-surface"
             }`}
           >
             {f === "ALL"
@@ -197,7 +198,7 @@ export function GuestFilters({
         <button
           type="button"
           onClick={toggleAllVisible}
-          className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 font-medium"
+          className="btn btn-ghost !min-h-8 px-3 text-xs"
         >
           {allVisibleSelected ? "Clear visible" : "Select visible"}
         </button>
@@ -205,7 +206,7 @@ export function GuestFilters({
           <button
             type="button"
             onClick={clearSelection}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 font-medium"
+            className="btn btn-ghost !min-h-8 px-3 text-xs"
           >
             Clear ({selected.size})
           </button>
@@ -213,18 +214,18 @@ export function GuestFilters({
       </div>
 
       {selected.size > 0 && (
-        <div className="space-y-3 rounded-xl border border-slate-900/10 bg-slate-50 p-4">
-          <p className="text-sm font-medium text-slate-900">
+        <div className="glass-panel space-y-3 rounded-2xl p-5">
+          <p className="text-sm font-medium text-ink">
             Bulk actions · {selected.size} selected
           </p>
 
           <div className="flex flex-wrap items-end gap-2">
             <label className="text-xs">
-              <span className="font-medium">RSVP</span>
+              <span className="kicker">RSVP</span>
               <select
                 value={bulkRsvp}
                 onChange={(e) => setBulkRsvp(e.target.value)}
-                className="mt-1 block rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                className="field mt-1"
               >
                 {RSVPS.map((r) => (
                   <option key={r} value={r}>
@@ -237,7 +238,7 @@ export function GuestFilters({
               type="button"
               disabled={busy}
               onClick={() => runBulk({ action: "rsvp", rsvp: bulkRsvp })}
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              className="btn btn-primary !min-h-8 px-3 text-xs disabled:opacity-50"
             >
               Apply RSVP
             </button>
@@ -245,11 +246,11 @@ export function GuestFilters({
 
           <div className="flex flex-wrap items-end gap-2">
             <label className="text-xs">
-              <span className="font-medium">Table</span>
+              <span className="kicker">Table</span>
               <select
                 value={bulkTable}
                 onChange={(e) => setBulkTable(e.target.value)}
-                className="mt-1 block rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                className="field mt-1"
               >
                 <option value="">Unassign</option>
                 {tableNames.map((t) => (
@@ -268,7 +269,7 @@ export function GuestFilters({
                   tableLabel: bulkTable || null,
                 })
               }
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              className="btn btn-primary !min-h-8 px-3 text-xs disabled:opacity-50"
             >
               Apply table
             </button>
@@ -276,11 +277,11 @@ export function GuestFilters({
 
           <div className="flex flex-wrap items-end gap-2">
             <label className="text-xs">
-              <span className="font-medium">Side</span>
+              <span className="kicker">Side</span>
               <select
                 value={bulkSide}
                 onChange={(e) => setBulkSide(e.target.value)}
-                className="mt-1 block rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                className="field mt-1"
               >
                 <option value="A">Side A</option>
                 <option value="B">Side B</option>
@@ -291,7 +292,7 @@ export function GuestFilters({
               type="button"
               disabled={busy}
               onClick={() => runBulk({ action: "side", side: bulkSide })}
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              className="btn btn-primary !min-h-8 px-3 text-xs disabled:opacity-50"
             >
               Apply side
             </button>
@@ -302,7 +303,7 @@ export function GuestFilters({
               type="button"
               disabled={busy}
               onClick={() => runBulk({ action: "list", listTier: "A" })}
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              className="btn btn-primary !min-h-8 px-3 text-xs disabled:opacity-50"
             >
               Move to A
             </button>
@@ -310,7 +311,7 @@ export function GuestFilters({
               type="button"
               disabled={busy}
               onClick={() => runBulk({ action: "list", listTier: "B" })}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+              className="btn btn-ghost !min-h-8 px-3 text-xs disabled:opacity-50"
             >
               Move to B
             </button>
@@ -328,12 +329,12 @@ export function GuestFilters({
                 runBulk({ action: "delete" });
               }
             }}
-            className="rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-medium text-rose-700 disabled:opacity-50"
+            className="btn btn-ghost !min-h-8 px-3 text-xs text-clay disabled:opacity-50"
           >
             Delete selected
           </button>
 
-          {error && <p className="text-xs text-rose-600">{error}</p>}
+          {error && <p className="text-xs text-clay">{error}</p>}
         </div>
       )}
 
@@ -358,80 +359,81 @@ export function GuestFilters({
             </span>
           ))}
         </div>
-        <ul className="divide-y divide-line">
-          {visible.map((g) => (
-            <li
-              key={g.id}
-              className="grid items-center gap-2 px-4 py-3"
-              style={{
-                gridTemplateColumns: `minmax(10rem,1.4fr) 1fr 4.5rem 5rem 1fr 5rem ${eventCols
-                  .map(() => "4.2rem")
-                  .join(" ")}`,
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={selected.has(g.id)}
-                  onChange={() => toggleOne(g.id)}
-                  className="h-4 w-4 rounded border-line"
-                  aria-label={`Select ${g.name}`}
-                />
-                <Link href={`/guests/${g.id}`} className="truncate text-sm font-medium">
-                  {g.name}
-                  {g.plusOneNames?.length
-                    ? ` + ${g.plusOneNames.join(", ")}`
-                    : g.plusOnes
-                      ? ` +${g.plusOnes}`
-                      : ""}
-                  {g.listTier === "B" ? (
-                    <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted">B</span>
-                  ) : null}
-                  {g.partyName ? (
-                    <span className="mt-0.5 block truncate text-[11px] font-normal text-muted">{g.partyName}</span>
-                  ) : null}
-                </Link>
-              </div>
-              <p className="text-sm text-ink-soft">
-                {g.rsvp === "YES"
-                  ? "Attending"
-                  : g.rsvp === "NO"
-                    ? "Not attending"
-                    : g.rsvp === "MAYBE"
-                      ? "Maybe"
-                      : "No response"}
-              </p>
-              <p className="text-sm text-ink-soft">{g.plusOnes ? "Yes" : "—"}</p>
-              <p className="text-sm text-ink-soft">{g.tableLabel || "—"}</p>
-              <p className="text-sm text-ink-soft">{g.dietary || "—"}</p>
-              <select
-                disabled={busy}
-                value={g.rsvp}
-                onChange={(e) => setRsvp(g.id, e.target.value)}
-                className="rounded-lg border border-line bg-surface px-2 py-1 text-xs"
+        {visible.length === 0 ? (
+          <EmptyState title="No guests in this filter" body="Try another chip, or add someone." />
+        ) : (
+          <ul className="divide-y divide-line">
+            {visible.map((g) => (
+              <li
+                key={g.id}
+                className="grid items-center gap-2 px-4 py-3"
+                style={{
+                  gridTemplateColumns: `minmax(10rem,1.4fr) 1fr 4.5rem 5rem 1fr 5rem ${eventCols
+                    .map(() => "4.2rem")
+                    .join(" ")}`,
+                }}
               >
-                {RSVPS.map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-              {eventCols.map((e) => {
-                const st = g.eventStatus?.[e.id] || "";
-                const label =
-                  st === "YES" ? "Yes" : st === "NO" ? "No" : st === "MAYBE" ? "Maybe" : "—";
-                return (
-                  <p key={e.id} className="text-xs text-ink-soft" title={e.short}>
-                    {label}
-                  </p>
-                );
-              })}
-            </li>
-          ))}
-          {!visible.length && (
-            <li className="px-4 py-8 text-center text-sm text-muted">No guests in this filter</li>
-          )}
-        </ul>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={selected.has(g.id)}
+                    onChange={() => toggleOne(g.id)}
+                    className="h-4 w-4 rounded border-line"
+                    aria-label={`Select ${g.name}`}
+                  />
+                  <Link href={`/guests/${g.id}`} className="truncate text-sm font-medium">
+                    {g.name}
+                    {g.plusOneNames?.length
+                      ? ` + ${g.plusOneNames.join(", ")}`
+                      : g.plusOnes
+                        ? ` +${g.plusOnes}`
+                        : ""}
+                    {g.listTier === "B" ? (
+                      <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted">B</span>
+                    ) : null}
+                    {g.partyName ? (
+                      <span className="mt-0.5 block truncate text-[11px] font-normal text-muted">{g.partyName}</span>
+                    ) : null}
+                  </Link>
+                </div>
+                <p className="text-sm text-ink-soft">
+                  {g.rsvp === "YES"
+                    ? "Attending"
+                    : g.rsvp === "NO"
+                      ? "Not attending"
+                      : g.rsvp === "MAYBE"
+                        ? "Maybe"
+                        : "No response"}
+                </p>
+                <p className="text-sm text-ink-soft">{g.plusOnes ? "Yes" : "—"}</p>
+                <p className="text-sm text-ink-soft">{g.tableLabel || "—"}</p>
+                <p className="text-sm text-ink-soft">{g.dietary || "—"}</p>
+                <select
+                  disabled={busy}
+                  value={g.rsvp}
+                  onChange={(e) => setRsvp(g.id, e.target.value)}
+                  className="field"
+                >
+                  {RSVPS.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
+                </select>
+                {eventCols.map((e) => {
+                  const st = g.eventStatus?.[e.id] || "";
+                  const label =
+                    st === "YES" ? "Yes" : st === "NO" ? "No" : st === "MAYBE" ? "Maybe" : "—";
+                  return (
+                    <p key={e.id} className="text-xs text-ink-soft" title={e.short}>
+                      {label}
+                    </p>
+                  );
+                })}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

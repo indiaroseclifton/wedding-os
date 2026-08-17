@@ -276,7 +276,7 @@ function MusicInner() {
             type="button"
             onClick={() => setTab(id)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium ${
-              tab === id ? "bg-moss text-ivory" : "border border-line"
+              tab === id ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {label}

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 type Task = {
   id: string;
@@ -142,6 +143,11 @@ export function TasksClient({
 
   if (!rows.length) return null;
 
+  const chip = (on: boolean) =>
+    `rounded-full px-3 py-1 text-xs font-medium ${
+      on ? "bg-moss text-moss-fg" : "text-ink-soft hover:bg-surface"
+    }`;
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
@@ -150,11 +156,7 @@ export function TasksClient({
             key={s}
             type="button"
             onClick={() => setStatusFilter(s)}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              statusFilter === s
-                ? "bg-slate-900 text-white"
-                : "border border-slate-300 bg-white text-slate-700"
-            }`}
+            className={chip(statusFilter === s)}
           >
             {s === "OPEN" ? "Open" : s === "ALL" ? "All" : s.replaceAll("_", " ")}
           </button>
@@ -164,11 +166,7 @@ export function TasksClient({
         <button
           type="button"
           onClick={() => setOwnerFilter("ALL")}
-          className={`rounded-full px-3 py-1 text-xs font-medium ${
-            ownerFilter === "ALL"
-              ? "bg-slate-900 text-white"
-              : "border border-slate-300 bg-white text-slate-700"
-          }`}
+          className={chip(ownerFilter === "ALL")}
         >
           All people
         </button>
@@ -177,11 +175,7 @@ export function TasksClient({
             key={o}
             type="button"
             onClick={() => setOwnerFilter(o)}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              ownerFilter === o
-                ? "bg-slate-900 text-white"
-                : "border border-slate-300 bg-white text-slate-700"
-            }`}
+            className={chip(ownerFilter === o)}
           >
             {o}
           </button>
@@ -192,7 +186,7 @@ export function TasksClient({
         <button
           type="button"
           onClick={toggleAllVisible}
-          className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 font-medium"
+          className="btn btn-ghost !min-h-8 px-3 text-xs"
         >
           {allVisibleSelected ? "Clear visible" : "Select visible"}
         </button>
@@ -200,7 +194,7 @@ export function TasksClient({
           <button
             type="button"
             onClick={() => setSelected(new Set())}
-            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 font-medium"
+            className="btn btn-ghost !min-h-8 px-3 text-xs"
           >
             Clear ({selected.size})
           </button>
@@ -208,18 +202,18 @@ export function TasksClient({
       </div>
 
       {selected.size > 0 && (
-        <div className="space-y-3 rounded-xl border border-slate-900/10 bg-slate-50 p-4">
-          <p className="text-sm font-medium text-slate-900">
+        <div className="glass-panel space-y-3 rounded-2xl p-5">
+          <p className="text-sm font-medium text-ink">
             Bulk actions · {selected.size} selected
           </p>
 
           <div className="flex flex-wrap items-end gap-2">
             <label className="text-xs">
-              <span className="font-medium">Status</span>
+              <span className="kicker">Status</span>
               <select
                 value={bulkStatus}
                 onChange={(e) => setBulkStatus(e.target.value)}
-                className="mt-1 block rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                className="field mt-1"
               >
                 {STATUSES.map((s) => (
                   <option key={s} value={s}>
@@ -232,7 +226,7 @@ export function TasksClient({
               type="button"
               disabled={busy}
               onClick={() => runBulk({ action: "status", status: bulkStatus })}
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              className="btn btn-primary !min-h-8 px-3 text-xs disabled:opacity-50"
             >
               Apply status
             </button>
@@ -241,11 +235,11 @@ export function TasksClient({
           {members.length > 0 && (
             <div className="flex flex-wrap items-end gap-2">
               <label className="text-xs">
-                <span className="font-medium">Owner</span>
+                <span className="kicker">Owner</span>
                 <select
                   value={bulkOwnerId}
                   onChange={(e) => setBulkOwnerId(e.target.value)}
-                  className="mt-1 block rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                  className="field mt-1"
                 >
                   {members.map((m) => (
                     <option key={m.userId} value={m.userId}>
@@ -258,7 +252,7 @@ export function TasksClient({
                 type="button"
                 disabled={busy || !bulkOwnerId}
                 onClick={() => runBulk({ action: "owner", ownerId: bulkOwnerId })}
-                className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+                className="btn btn-primary !min-h-8 px-3 text-xs disabled:opacity-50"
               >
                 Reassign
               </button>
@@ -277,59 +271,60 @@ export function TasksClient({
                 runBulk({ action: "delete" });
               }
             }}
-            className="rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-medium text-rose-700 disabled:opacity-50"
+            className="btn btn-ghost !min-h-8 px-3 text-xs text-clay disabled:opacity-50"
           >
             Delete selected
           </button>
 
-          {error && <p className="text-xs text-rose-600">{error}</p>}
+          {error && <p className="text-xs text-clay">{error}</p>}
         </div>
       )}
 
-      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-        {visible.map((t) => {
-          const overdue = isOverdue(t.dueDate, t.status);
-          return (
-            <li
-              key={t.id}
-              className={`flex flex-wrap items-center gap-3 px-4 py-3 ${
-                overdue ? "bg-rose-50" : ""
-              }`}
-            >
-              <input
-                type="checkbox"
-                checked={selected.has(t.id)}
-                onChange={() => toggleOne(t.id)}
-                className="h-4 w-4 rounded border-slate-300"
-                aria-label={`Select ${t.title}`}
-              />
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-900">{t.title}</p>
-                <p className={`text-xs ${overdue ? "font-medium text-rose-700" : "text-slate-500"}`}>
-                  {t.ownerName || "Unassigned"}
-                  {t.dueDate ? ` · due ${t.dueDate}` : ""}
-                  {overdue ? " · overdue" : ""}
-                </p>
-              </div>
-              <select
-                disabled={busy}
-                value={t.status}
-                onChange={(e) => setStatus(t.id, e.target.value)}
-                className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+      {visible.length === 0 ? (
+        <EmptyState title="No tasks in this filter" body="Try another chip, or add a task." />
+      ) : (
+        <ul className="panel divide-y divide-line">
+          {visible.map((t) => {
+            const overdue = isOverdue(t.dueDate, t.status);
+            return (
+              <li
+                key={t.id}
+                className={`flex flex-wrap items-center gap-3 px-4 py-3 ${
+                  overdue ? "bg-clay-soft" : ""
+                }`}
               >
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s.replaceAll("_", " ")}
-                  </option>
-                ))}
-              </select>
-            </li>
-          );
-        })}
-        {!visible.length && (
-          <li className="px-4 py-8 text-center text-sm text-slate-500">No tasks in this filter</li>
-        )}
-      </ul>
+                <input
+                  type="checkbox"
+                  checked={selected.has(t.id)}
+                  onChange={() => toggleOne(t.id)}
+                  className="h-4 w-4 rounded border-line"
+                  aria-label={`Select ${t.title}`}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-ink">{t.title}</p>
+                  <p className={`text-xs ${overdue ? "font-medium text-clay" : "text-muted"}`}>
+                    {t.ownerName || "Unassigned"}
+                    {t.dueDate ? ` · due ${t.dueDate}` : ""}
+                    {overdue ? " · overdue" : ""}
+                  </p>
+                </div>
+                <select
+                  disabled={busy}
+                  value={t.status}
+                  onChange={(e) => setStatus(t.id, e.target.value)}
+                  className="field w-auto"
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {s.replaceAll("_", " ")}
+                    </option>
+                  ))}
+                </select>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

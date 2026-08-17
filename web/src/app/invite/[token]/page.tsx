@@ -38,31 +38,30 @@ export default function AcceptInvitePage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <form
         onSubmit={accept}
-        className="w-full max-w-sm space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+        className="glass-panel w-full max-w-sm space-y-4 rounded-2xl p-6"
       >
         <div>
-          <h1 className="text-xl font-semibold">Join the wedding workspace</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            You were invited to help with planning tasks and party coordination.
-          </p>
+          <p className="kicker kicker-moss">Invite</p>
+          <h1 className="title mt-2">You're on this wedding</h1>
+          <p className="deck mt-2">Your name, then you're in.</p>
         </div>
         <label className="block text-sm">
-          <span className="font-medium">Your name</span>
+          <span className="kicker">Your name</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="field mt-1"
           />
         </label>
-        {error && <p className="text-xs text-rose-600">{error}</p>}
+        {error && <p className="text-xs text-clay">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-slate-900 px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="btn btn-primary w-full disabled:opacity-50"
         >
           {loading ? "Joining…" : "Accept invite"}
         </button>

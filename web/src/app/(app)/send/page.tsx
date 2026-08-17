@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { listSends } from "@/lib/data/sends-store";
 import { defaultAttachments, ATTACHMENTS } from "@/lib/send/attachments";
 import { assemblePacket } from "@/lib/send/assemble";
-import { sendStrip } from "@/lib/send/status";
+import { sendStrip, isBooked } from "@/lib/send/status";
 
 export default async function SendDeskPage() {
   const { workspace } = await ensureDemoWorkspace();
   const [vendors, sends] = await Promise.all([listVendors(workspace.id), listSends(workspace.id)]);
   const sendByVendor = new Map(sends.map((s) => [s.vendorId, s]));
   const bookedFirst = [...vendors].sort((a, b) => {
-    const rank = (s: string) => (["BOOKED", "PAID_DEPOSIT", "DONE"].includes(s) ? 0 : 1);
+    const rank = (s: string) => (isBooked(s) ? 0 : 1);
     return rank(a.status) - rank(b.status) || a.name.localeCompare(b.name);
   });
 
@@ -26,7 +27,7 @@ export default async function SendDeskPage() {
   );
 
   const unsent = cards.filter(
-    (c) => ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(c.vendor.status) && c.send?.status !== "SENT"
+    (c) => isBooked(c.vendor.status) && c.send?.status !== "SENT"
   ).length;
 
   return (
@@ -47,18 +48,16 @@ export default async function SendDeskPage() {
       </div>
 
       {cards.length === 0 ? (
-        <div className="rounded-2xl border border-line bg-surface px-5 py-10 text-sm text-muted">
-          Add a vendor first. Then this desk knows what to send them.
-          <div className="mt-4">
-            <Link href="/vendors" className="rounded-full bg-moss px-4 py-2 text-ivory">
-              Open vendors
-            </Link>
-          </div>
-        </div>
+        <EmptyState
+          title="No one to send to yet"
+          body="Add a vendor first. Then this desk knows what to send them."
+          primaryHref="/vendors"
+          primaryLabel="Open vendors"
+        />
       ) : (
         <ul className="grid gap-3">
           {cards.map(({ vendor, send, attachments, packet }) => {
-            const booked = ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(vendor.status);
+            const booked = isBooked(vendor.status);
             return (
               <li key={vendor.id}>
                 <Link

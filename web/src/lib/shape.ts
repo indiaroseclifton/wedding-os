@@ -58,7 +58,7 @@ export function shapeOf(v?: string | null): WeddingShape {
 }
 
 export function enterOf(v?: string | null): EnterHow {
-  return isEnterHow(v) ? v : "one-then";
+  return isEnterHow(v) ? v : "together";
 }
 
 export function shapeCard(id?: string | null) {

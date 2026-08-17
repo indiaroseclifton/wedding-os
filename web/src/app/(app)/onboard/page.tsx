@@ -12,7 +12,7 @@ export default function OnboardPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [shape, setShape] = useState<WeddingShape>("weekend");
-  const [enterHow, setEnterHow] = useState<EnterHow>("one-then");
+  const [enterHow, setEnterHow] = useState<EnterHow | "">("");
   const [weddingDate, setWeddingDate] = useState("");
   const [gatheringDate, setGatheringDate] = useState("");
   const [location, setLocation] = useState("");
@@ -46,7 +46,7 @@ export default function OnboardPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         shape,
-        enterHow,
+        enterHow: enterHow || "together",
         weddingDate,
         gatheringDate: shape === "two" ? gatheringDate : undefined,
         location,
@@ -105,6 +105,7 @@ export default function OnboardPage() {
       {step === 1 && (
         <div className="space-y-3">
           <p className="text-sm font-medium">How do you enter?</p>
+          <p className="text-xs text-muted">Pick one. We will not assume an aisle.</p>
           {ENTER_CARDS.map((c) => (
             <button
               key={c.id}
@@ -220,8 +221,15 @@ export default function OnboardPage() {
         {step < 5 ? (
           <button
             type="button"
-            onClick={() => setStep((s) => s + 1)}
-            className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory"
+            onClick={() => {
+              if (step === 1 && !enterHow) {
+                setMsg("Pick how you enter — we will not assume an aisle.");
+                return;
+              }
+              setMsg(null);
+              setStep((s) => s + 1);
+            }}
+            className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-moss-fg"
           >
             Continue
           </button>
@@ -231,7 +239,7 @@ export default function OnboardPage() {
             type="button"
             disabled={busy}
             onClick={() => finish("/start")}
-            className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
+            className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-moss-fg disabled:opacity-50"
           >
             {busy ? "Building…" : "Open my desk"}
           </button>

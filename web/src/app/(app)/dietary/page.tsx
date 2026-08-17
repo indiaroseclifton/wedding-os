@@ -30,7 +30,7 @@ export default async function DietaryPage({
             Caterer packet
           </Link>
           <PrintButton />
-          <Link href="/handoffs" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+          <Link href="/handoffs" className="btn btn-primary">
             Catering handoff
           </Link>
         </div>
@@ -42,7 +42,7 @@ export default async function DietaryPage({
             key={m}
             href={m === "plates" ? "/dietary" : "/dietary?mode=holding"}
             className={`min-h-11 rounded-full px-4 text-sm leading-[2.75rem] ${
-              mode === m ? "bg-moss text-ivory" : "border border-line"
+              mode === m ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {m === "plates" ? "Plates" : "Holding"}

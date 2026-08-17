@@ -45,22 +45,23 @@ export function DayOfPartyClient({
   return (
     <div className="space-y-6">
       {(dayOf.schedule || []).length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
+        <div className="glass-panel rounded-2xl p-5">
           <p className="mb-3 text-sm font-semibold">Your hours</p>
           <ScheduleView slots={dayOf.schedule || []} view="party" />
         </div>
-      )}      {(dayOf.weatherNote || dayOf.emergencyContact) && (
-        <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+      )}
+      {(dayOf.weatherNote || dayOf.emergencyContact) && (
+        <div className="glass-panel space-y-2 rounded-2xl p-5 text-sm">
           {dayOf.weatherNote && (
             <p>
-              <span className="text-xs text-slate-500">Weather</span>
+              <span className="kicker">Weather</span>
               <br />
               {dayOf.weatherNote}
             </p>
           )}
           {dayOf.emergencyContact && (
             <p>
-              <span className="text-xs text-slate-500">Emergency</span>
+              <span className="kicker">Emergency</span>
               <br />
               {dayOf.emergencyContact}
             </p>
@@ -74,17 +75,17 @@ export function DayOfPartyClient({
           return (
           <li
             key={c.id}
-            className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm"
+            className="glass-panel flex flex-wrap items-center justify-between gap-2 rounded-2xl px-4 py-3 text-sm"
           >
             <span>
               {c.name}
-              <span className="text-xs text-slate-500"> · {c.role}</span>
+              <span className="text-xs text-muted"> · {c.role}</span>
             </span>
             <select
               value={c.status}
               disabled={!mine}
               onChange={(e) => setStatus(c.id, e.target.value)}
-              className="rounded-lg border border-slate-300 px-2 py-1.5 text-xs disabled:opacity-50"
+              className="field w-auto disabled:opacity-50"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -99,7 +100,7 @@ export function DayOfPartyClient({
 
       <ul className="space-y-2">
         {dayOf.updates.slice(0, 10).map((u) => (
-          <li key={u.id} className="rounded-xl border border-slate-200 bg-white p-3 text-sm">
+          <li key={u.id} className="glass-panel rounded-2xl p-3 text-sm">
             {u.body}
           </li>
         ))}

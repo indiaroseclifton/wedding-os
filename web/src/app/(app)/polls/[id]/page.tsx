@@ -88,16 +88,16 @@ export default function PollDetailPage() {
   }
 
   if (error) return <p className="text-sm text-rose-600">{error}</p>;
-  if (!poll) return <p className="text-sm text-slate-600">Loading…</p>;
+  if (!poll) return <p className="text-sm text-muted">Loading…</p>;
 
   const totalVoters = Object.keys(poll.votes || {}).length;
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{poll.title}</h1>
-        {poll.description && <p className="mt-1 text-sm text-slate-600">{poll.description}</p>}
-        <p className="mt-2 text-xs text-slate-500">
+        <h1 className="title">{poll.title}</h1>
+        {poll.description && <p className="mt-1 text-sm text-muted">{poll.description}</p>}
+        <p className="mt-2 text-xs text-muted">
           {poll.mode === "RANKED" ? "Ranked" : "Single"} · {poll.status} · {totalVoters} vote
           {totalVoters === 1 ? "" : "s"}
         </p>
@@ -109,10 +109,10 @@ export default function PollDetailPage() {
             const n = Object.values(poll.votes).filter((v) => v === o.id).length;
             const pct = totalVoters ? Math.round((n / totalVoters) * 100) : 0;
             return (
-              <li key={o.id} className="rounded-xl border border-slate-200 bg-white p-3">
+              <li key={o.id} className="glass-panel rounded-2xl p-3">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium">{o.label}</span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted">
                     {n} ({pct}%)
                   </span>
                 </div>
@@ -131,8 +131,8 @@ export default function PollDetailPage() {
       ) : (
         <div className="space-y-4">
           {poll.status === "OPEN" && (
-            <div className="rounded-xl border border-slate-200 bg-white p-4">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <div className="glass-panel rounded-2xl p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">
                 Your ranking (1 = favorite)
               </p>
               <ul className="mt-3 space-y-2">
@@ -151,7 +151,7 @@ export default function PollDetailPage() {
               <button
                 type="button"
                 onClick={voteRanked}
-                className="mt-4 rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white"
+                className="mt-4 btn btn-primary"
               >
                 Submit ranking
               </button>
@@ -164,10 +164,10 @@ export default function PollDetailPage() {
                 const max = rankedTally[0]?.points || 1;
                 const pct = Math.round((row.points / max) * 100);
                 return (
-                  <li key={row.optionId} className="rounded-xl border border-slate-200 bg-white p-3">
+                  <li key={row.optionId} className="glass-panel rounded-2xl p-3">
                     <div className="flex justify-between text-sm">
                       <span className="font-medium">{opt?.label}</span>
-                      <span className="text-xs text-slate-500">{row.points} pts</span>
+                      <span className="text-xs text-muted">{row.points} pts</span>
                     </div>
                     <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
                       <div className="h-full bg-slate-900" style={{ width: `${pct}%` }} />
@@ -181,7 +181,7 @@ export default function PollDetailPage() {
       )}
 
       {poll.status === "OPEN" && (
-        <button type="button" onClick={close} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium">
+        <button type="button" onClick={close} className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium">
           Close poll
         </button>
       )}

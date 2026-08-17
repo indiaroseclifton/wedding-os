@@ -62,7 +62,7 @@ export function MixBoard() {
                     disabled={busy}
                     onClick={() => setChoice(p.id, c)}
                     className={`min-h-11 rounded-full px-3 text-xs capitalize ${
-                      choice === c ? "bg-moss text-ivory" : "border border-line"
+                      choice === c ? "bg-moss text-moss-fg" : "border border-line"
                     }`}
                   >
                     {c}

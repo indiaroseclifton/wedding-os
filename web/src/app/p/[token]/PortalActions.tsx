@@ -28,7 +28,7 @@ export function PortalActions({
   }
 
   return (
-    <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4 print:hidden">
+    <div className="space-y-3 glass-panel rounded-2xl p-4 print:hidden">
       <p className="text-sm font-medium">Your call sheet</p>
       {!acked ? (
         <div className="flex flex-wrap gap-2">
@@ -36,7 +36,7 @@ export function PortalActions({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+            className="rounded-lg border border-line px-3 py-1.5 text-sm"
           />
           <button
             type="button"
@@ -79,7 +79,7 @@ export function PortalActions({
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="Comment on first beat…"
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+          className="flex-1 rounded-lg border border-line px-3 py-1.5 text-sm"
         />
         <button
           type="button"

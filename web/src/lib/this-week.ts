@@ -13,6 +13,7 @@ import { hasMailingAddress, isPendingRsvp } from "@/lib/data/guest-mail";
 import { getDismissedWeek } from "@/lib/data/week-dismiss-store";
 import { getThanks } from "@/lib/data/thanks-store";
 import { cardPace } from "@/lib/after-arc";
+import { isBooked } from "@/lib/send/status";
 import type { StoredTask } from "@/lib/data/store";
 
 export type WeekUrgency = "now" | "week" | "soon";
@@ -139,7 +140,7 @@ export async function loadThisWeek(
 
   const sentIds = new Set(sends.filter((s) => s.status === "SENT").map((s) => s.vendorId));
   const unsentBooked = vendors.filter(
-    (v) => ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status) && !sentIds.has(v.id)
+    (v) => isBooked(v.status) && !sentIds.has(v.id)
   );
   if (unsentBooked.length) {
     items.push({

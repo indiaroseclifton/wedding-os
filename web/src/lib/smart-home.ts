@@ -4,6 +4,7 @@ import { getBudget } from "@/lib/data/budget-store";
 import { getWorkspaceGuests } from "@/lib/data/workspace";
 import { isPendingRsvp } from "@/lib/data/guest-mail";
 import type { WeekItem } from "@/lib/this-week";
+import { isBooked } from "@/lib/send/status";
 
 export type Suggestion = {
   id: string;
@@ -44,7 +45,7 @@ export async function loadSuggestions(
 
   const out: Suggestion[] = [];
   const booked = (re: RegExp) =>
-    vendors.some((v) => re.test(`${v.category} ${v.name}`) && ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status));
+    vendors.some((v) => re.test(`${v.category} ${v.name}`) && isBooked(v.status));
 
   if (days != null && days > 60 && !booked(/photo|photograph/i)) {
     out.push({

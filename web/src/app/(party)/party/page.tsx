@@ -54,42 +54,40 @@ export default async function PartyHomePage() {
   return (
     <div className="mx-auto min-h-screen max-w-lg px-4 py-8">
       <div className="mb-6">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-          Wedding party
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Hi, {session.name}</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="kicker kicker-moss">Wedding party</p>
+        <h1 className="mt-1 font-serif text-4xl">{session.name}</h1>
+        <p className="mt-1 text-sm text-muted">
           {membership?.role === "WEDDING_PARTY"
             ? "Your week for this wedding."
             : "Couple preview of the party portal."}
         </p>
       </div>
 
-      <section className="mb-6 rounded-xl border border-slate-200 bg-white p-4">
-        <p className="text-sm font-semibold text-slate-900">My week</p>
+      <section className="glass-panel mb-6 rounded-2xl p-5">
+        <p className="text-sm font-semibold text-ink">My week</p>
         <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-lg bg-slate-50 px-2 py-2">
-            <p className="text-lg font-semibold">{openMine.length}</p>
-            <p className="text-[10px] text-slate-500">Open tasks</p>
+          <div className="rounded-lg bg-moss-soft px-2 py-2">
+            <p className="font-serif text-lg">{openMine.length}</p>
+            <p className="text-[10px] text-muted">Open tasks</p>
           </div>
-          <div className="rounded-lg bg-slate-50 px-2 py-2">
-            <p className="text-lg font-semibold">{dueSoon.length}</p>
-            <p className="text-[10px] text-slate-500">Due in 7 days</p>
+          <div className="rounded-lg bg-moss-soft px-2 py-2">
+            <p className="font-serif text-lg">{dueSoon.length}</p>
+            <p className="text-[10px] text-muted">Due in 7 days</p>
           </div>
-          <div className="rounded-lg bg-rose-50 px-2 py-2">
-            <p className="text-lg font-semibold text-rose-800">{overdue.length}</p>
-            <p className="text-[10px] text-rose-700">Overdue</p>
+          <div className="rounded-lg bg-clay-soft px-2 py-2">
+            <p className="font-serif text-lg text-clay">{overdue.length}</p>
+            <p className="text-[10px] text-clay">Overdue</p>
           </div>
         </div>
 
         {openMine.length === 0 ? (
-          <p className="mt-3 text-xs text-slate-500">No open tasks assigned to you.</p>
+          <p className="mt-3 text-xs text-muted">No open tasks assigned to you.</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {openMine.slice(0, 5).map((t) => (
               <li key={t.id} className="text-sm">
                 <span className="font-medium">{t.title}</span>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-muted">
                   {" "}
                   · {t.status.replaceAll("_", " ")}
                   {t.dueDate ? ` · due ${t.dueDate}` : ""}
@@ -106,17 +104,17 @@ export default async function PartyHomePage() {
       <div className="space-y-3">
         <Link
           href="/party/tasks"
-          className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+          className="glass-panel block rounded-2xl p-5 hover:bg-paper"
         >
           <p className="text-sm font-semibold">My tasks</p>
-          <p className="text-xs text-slate-500">{mine.length} assigned to you</p>
+          <p className="text-xs text-muted">{mine.length} assigned to you</p>
         </Link>
         <Link
           href="/party/attire"
-          className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+          className="glass-panel block rounded-2xl p-5 hover:bg-paper"
         >
           <p className="text-sm font-semibold">Attire</p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             {myAttire
               ? `${myAttire.status.replaceAll("_", " ")}${myAttire.color ? ` · ${myAttire.color}` : ""}`
               : "Colors, links, status"}
@@ -124,24 +122,24 @@ export default async function PartyHomePage() {
         </Link>
         <Link
           href="/party/stay"
-          className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+          className="glass-panel block rounded-2xl p-5 hover:bg-paper"
         >
           <p className="text-sm font-semibold">Stay</p>
-          <p className="text-xs text-slate-500">Hotel block, shuttle, parking</p>
+          <p className="text-xs text-muted">Hotel block, shuttle, parking</p>
         </Link>
         <Link
           href="/party/speech"
-          className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+          className="glass-panel block rounded-2xl p-5 hover:bg-paper"
         >
           <p className="text-sm font-semibold">Speech</p>
-          <p className="text-xs text-slate-500">Draft and mark ready</p>
+          <p className="text-xs text-muted">Draft and mark ready</p>
         </Link>
         <Link
           href="/party/day-of"
-          className="block rounded-xl border border-slate-200 bg-white p-4 hover:bg-slate-50"
+          className="glass-panel block rounded-2xl p-5 hover:bg-paper"
         >
           <p className="text-sm font-semibold">Day-of board</p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted">
             {dayOf.checkIns.filter((c) => c.status === "READY").length}/
             {dayOf.checkIns.length} ready · check-ins & updates
           </p>
@@ -149,9 +147,9 @@ export default async function PartyHomePage() {
       </div>
 
       {membership?.role !== "WEDDING_PARTY" && (
-        <p className="mt-6 text-center text-xs text-slate-400">
+        <p className="mt-6 text-center text-xs text-muted">
           <Link href="/dashboard" className="underline">
-            Back to full couple dashboard
+            Back to the desk
           </Link>
         </p>
       )}

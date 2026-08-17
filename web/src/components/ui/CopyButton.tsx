@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 
-export function CopyButton({ value, label = "Copy" }: { value: string; label?: string }) {
+export function CopyButton({
+  value,
+  label = "Copy",
+  primary = false,
+}: {
+  value: string;
+  label?: string;
+  primary?: boolean;
+}) {
   const [done, setDone] = useState(false);
 
   async function copy() {
@@ -19,7 +27,7 @@ export function CopyButton({ value, label = "Copy" }: { value: string; label?: s
     <button
       type="button"
       onClick={copy}
-      className="btn btn-ghost !min-h-8 px-3 text-xs"
+      className={`btn !min-h-8 px-3 text-xs ${primary ? "btn-primary" : "btn-ghost"}`}
     >
       {done ? "Copied" : label}
     </button>

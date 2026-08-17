@@ -352,7 +352,7 @@ export default function BudgetPage() {
             <option value="diy">DIY</option>
           </select>
         </div>
-        <button type="submit" className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <button type="submit" className="btn btn-primary">
           Add
         </button>
       </form>

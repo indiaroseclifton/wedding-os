@@ -80,7 +80,7 @@ export function VendorDesk({
                 setBusy(false);
               }
             }}
-            className="mt-3 min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
+            className="mt-3 min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-moss-fg disabled:opacity-50"
           >
             I have this
           </button>

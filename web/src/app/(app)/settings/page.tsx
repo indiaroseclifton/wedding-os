@@ -298,7 +298,7 @@ export default function SettingsPage() {
                   applyLook({ glass: g.id });
                 }}
                 className={`min-h-11 rounded-full px-3 py-1.5 text-xs ${
-                  form.glass === g.id ? "bg-moss text-ivory" : "border border-line"
+                  form.glass === g.id ? "bg-moss text-moss-fg" : "border border-line"
                 }`}
               >
                 {g.label}
@@ -323,7 +323,7 @@ export default function SettingsPage() {
                   applyLook({ density: d.id });
                 }}
                 className={`rounded-full px-3 py-1.5 text-xs ${
-                  form.density === d.id ? "bg-moss text-ivory" : "border border-line"
+                  form.density === d.id ? "bg-moss text-moss-fg" : "border border-line"
                 }`}
               >
                 {d.label}
@@ -343,7 +343,7 @@ export default function SettingsPage() {
                   applyLook({ typeScale: d.id });
                 }}
                 className={`rounded-full px-3 py-1.5 text-xs ${
-                  form.typeScale === d.id ? "bg-moss text-ivory" : "border border-line"
+                  form.typeScale === d.id ? "bg-moss text-moss-fg" : "border border-line"
                 }`}
               >
                 {d.label}
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                   applyLook({ motion: d.id });
                 }}
                 className={`min-h-11 rounded-full px-3 py-1.5 text-xs ${
-                  form.motion === d.id ? "bg-moss text-ivory" : "border border-line"
+                  form.motion === d.id ? "bg-moss text-moss-fg" : "border border-line"
                 }`}
               >
                 {d.label}
@@ -436,7 +436,7 @@ export default function SettingsPage() {
                         on ? form.faithPacks.filter((x) => x !== p.id) : [...form.faithPacks, p.id]
                       )
                     }
-                    className={`rounded-full px-3 py-1 text-xs ${on ? "bg-moss text-ivory" : "border border-line"}`}
+                    className={`rounded-full px-3 py-1 text-xs ${on ? "bg-moss text-moss-fg" : "border border-line"}`}
                   >
                     {p.name}
                   </button>
@@ -528,7 +528,7 @@ export default function SettingsPage() {
         <p className="text-muted">
           Put the desk on a home screen now. The App Store is a later step — listed in order.
         </p>
-        <Link href="/mobile" className="inline-block rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <Link href="/mobile" className="inline-block btn btn-primary">
           Mobile steps
         </Link>
         <Link href="/improvements" className="ml-2 inline-block text-xs underline">

@@ -92,45 +92,45 @@ export default function EventsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Events</h1>
-        <p className="mt-1 text-sm text-slate-600">
+        <h1 className="title">Events</h1>
+        <p className="mt-1 text-sm text-muted">
           Rehearsal, brunch, welcome drinks — each can have its own RSVP on the same guest link.
           Wedding day stays the main yes/no.
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
           <p className="text-lg font-semibold">{rollup.count}</p>
-          <p className="text-xs text-slate-500">Events</p>
+          <p className="text-xs text-muted">Events</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
           <p className="text-lg font-semibold">{rollup.rsvpOpen || 0}</p>
-          <p className="text-xs text-slate-500">On the RSVP</p>
+          <p className="text-xs text-muted">On the RSVP</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
           <p className="text-lg font-semibold">${rollup.budgetTotal.toLocaleString()}</p>
-          <p className="text-xs text-slate-500">Budget caps</p>
+          <p className="text-xs text-muted">Budget caps</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center">
+        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
           <p className="text-lg font-semibold">{rollup.guestsTotal}</p>
-          <p className="text-xs text-slate-500">Expected</p>
+          <p className="text-xs text-muted">Expected</p>
         </div>
       </div>
 
-      <form onSubmit={add} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+      <form onSubmit={add} className="space-y-3 glass-panel rounded-2xl p-4">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Event name"
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-line px-3 py-2 text-sm"
         />
         <div className="grid gap-2 sm:grid-cols-2">
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           >
             {TYPES.map((t) => (
               <option key={t}>{t}</option>
@@ -140,13 +140,13 @@ export default function EventsPage() {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             type="date"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           />
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Location"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           />
           <input
             value={budgetCap}
@@ -154,7 +154,7 @@ export default function EventsPage() {
             type="number"
             min={0}
             placeholder="Budget cap $"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            className="rounded-lg border border-line px-3 py-2 text-sm"
           />
         </div>
         {type !== "Wedding day" && (
@@ -167,18 +167,18 @@ export default function EventsPage() {
             Ask on the guest RSVP
           </label>
         )}
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white">
+        <button type="submit" className="btn btn-primary">
           Add event
         </button>
       </form>
 
       <ul className="space-y-3">
         {events.map((ev) => (
-          <li key={ev.id} className="rounded-xl border border-slate-200 bg-white p-4">
+          <li key={ev.id} className="glass-panel rounded-2xl p-4">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <p className="text-sm font-semibold">{ev.name}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted">
                   {ev.type}
                   {ev.date ? ` · ${ev.date}` : ""}
                   {ev.location ? ` · ${ev.location}` : ""}
@@ -197,7 +197,7 @@ export default function EventsPage() {
               )}
             </div>
             {ev.rsvpEnabled && ev.rsvpCounts && (
-              <p className="mt-2 text-xs text-slate-600">
+              <p className="mt-2 text-xs text-muted">
                 {ev.rsvpCounts.yes} yes · {ev.rsvpCounts.no} no · {ev.rsvpCounts.pending} pending
                 {ev.inviteMode === "everyone" ? " · everyone can answer" : ""}
               </p>
@@ -210,7 +210,7 @@ export default function EventsPage() {
           </li>
         ))}
         {!events.length && (
-          <li className="py-8 text-center text-sm text-slate-500">No sub-events yet</li>
+          <li className="py-8 text-center text-sm text-muted">No sub-events yet</li>
         )}
       </ul>
     </div>

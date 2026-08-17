@@ -101,7 +101,7 @@ export function PacketClient({
           type="button"
           disabled={busy || !email}
           onClick={send}
-          className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory disabled:opacity-50"
+          className="btn btn-primary disabled:opacity-50"
         >
           Email packet
         </button>

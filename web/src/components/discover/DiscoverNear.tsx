@@ -55,7 +55,7 @@ export function DiscoverNear() {
             <option key={c}>{c}</option>
           ))}
         </select>
-        <button type="submit" disabled={busy} className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory">
+        <button type="submit" disabled={busy} className="btn btn-primary">
           {busy ? "Searching…" : "Search"}
         </button>
       </form>

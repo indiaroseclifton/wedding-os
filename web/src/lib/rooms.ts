@@ -15,9 +15,6 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
       children: [
         { href: "/decisions", label: "All" },
         { href: "/decisions/path", label: "Hire or make" },
-        { href: "/planning/vision", label: "Venue" },
-        { href: "/planning/vision", label: "Style" },
-        { href: "/planning/vision", label: "Priorities" },
       ],
     },
     { href: "/checklist", label: "Checklist" },
@@ -38,7 +35,6 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
         { href: "/diy/calendar", label: "Week-of" },
       ],
     },
-    { href: "/moodboard", label: "Moodboard" },
   ],
   vendors: [
     { href: "/vendors", label: "My team" },
@@ -91,7 +87,7 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
       label: "Guest site",
       children: [
         { href: "/site", label: "Build" },
-        { href: "/site/preview", label: "Preview" },
+        { href: "/site/preview", label: "Open guest page" },
       ],
     },
   ],

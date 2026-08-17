@@ -93,7 +93,7 @@ export function ClauseStudio({
                     type="button"
                     onClick={() => mark(c.id, opt)}
                     className={`min-h-11 rounded-full px-3 text-xs ${
-                      m === opt ? "bg-moss text-ivory" : "border border-line"
+                      m === opt ? "bg-moss text-moss-fg" : "border border-line"
                     }`}
                   >
                     {opt}

@@ -49,7 +49,7 @@ export default function RootLayout({
     <html lang="en" className={`${fraunces.variable} ${geist.variable}`}>
       <script
         dangerouslySetInnerHTML={{
-          __html: `try{var t=document.cookie.match(/wedding_os_theme=([^;]+)/);if(t)document.documentElement.dataset.theme=t[1];var g=document.cookie.match(/wedding_os_glass=([^;]+)/);if(g)document.documentElement.dataset.glass=g[1];var d=document.cookie.match(/wedding_os_density=([^;]+)/);if(d)document.documentElement.dataset.density=d[1];var y=document.cookie.match(/wedding_os_type=([^;]+)/);if(y)document.documentElement.dataset.type=y[1]}catch(e){}`,
+          __html: `try{var t=document.cookie.match(/wedding_os_theme=([^;]+)/);if(t)document.documentElement.dataset.theme=t[1];var g=document.cookie.match(/wedding_os_glass=([^;]+)/);if(g)document.documentElement.dataset.glass=g[1];var d=document.cookie.match(/wedding_os_density=([^;]+)/);if(d)document.documentElement.dataset.density=d[1];var y=document.cookie.match(/wedding_os_type=([^;]+)/);if(y)document.documentElement.dataset.type=y[1];var m=document.cookie.match(/wedding_os_motion=([^;]+)/);if(m)document.documentElement.dataset.motion=m[1]}catch(e){}`,
         }}
       />
       <body className="min-h-screen bg-paper font-sans text-ink antialiased">

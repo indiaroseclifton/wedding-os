@@ -166,7 +166,7 @@ export function CommandPalette({ tone = "paper", iconOnly = false }: { tone?: "p
                     onMouseEnter={() => setActive(i)}
                     onClick={() => go(item.href)}
                     className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm ${
-                      i === active ? "bg-white/10" : ""
+                      i === active ? "bg-surface/10" : ""
                     }`}
                   >
                     <span className="font-medium">{item.title}</span>

@@ -69,16 +69,10 @@ export default async function GuestsPage() {
               listTier: g.listTier,
             }))}
           />
-          <Link
-            href="/guests/import"
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50"
-          >
+          <Link href="/guests/import" className="btn btn-ghost">
             Import CSV
           </Link>
-          <Link
-            href="/guests/new"
-            className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory"
-          >
+          <Link href="/guests/new" className="btn btn-primary">
             Add guest
           </Link>
         </div>
@@ -110,7 +104,7 @@ export default async function GuestsPage() {
       {guests.length === 0 ? (
         <EmptyState
           title="No guests yet"
-          body="Add people one by one or import a CSV."
+          body="No one is on the list. A name is enough to start."
           primaryHref="/guests/new"
           primaryLabel="Add guest"
           secondaryHref="/guests/import"

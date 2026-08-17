@@ -104,7 +104,7 @@ export default function TraditionsPage() {
           <button
             type="button"
             onClick={pushAllToTimeline}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium"
+            className="rounded-lg border border-line bg-surface px-3 py-2 text-xs font-medium"
           >
             Push open items to timeline
           </button>
@@ -117,9 +117,9 @@ export default function TraditionsPage() {
         {packs.map((p) => {
           const active = activePackIds.includes(p.id);
           return (
-            <div key={p.id} className="rounded-xl border border-slate-200 bg-white p-4">
+            <div key={p.id} className="glass-panel rounded-2xl p-4">
               <p className="text-sm font-semibold">{p.name}</p>
-              <p className="mt-1 text-xs text-slate-500">{p.description}</p>
+              <p className="mt-1 text-xs text-muted">{p.description}</p>
               <button
                 type="button"
                 disabled={active}
@@ -139,21 +139,21 @@ export default function TraditionsPage() {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
         />
         <button type="button" onClick={saveNotes} className="mt-2 text-xs font-medium underline">
           Save notes
         </button>
       </label>
 
-      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+      <ul className="divide-y divide-line glass-panel rounded-2xl">
         {items.map((item) => (
           <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div>
               <p className={`text-sm font-medium ${item.done ? "line-through text-slate-400" : ""}`}>
                 {item.title}
               </p>
-              {item.timing && <p className="text-xs text-slate-500">{item.timing}</p>}
+              {item.timing && <p className="text-xs text-muted">{item.timing}</p>}
             </div>
             <div className="flex gap-3">
               {!item.done && (
@@ -168,7 +168,7 @@ export default function TraditionsPage() {
           </li>
         ))}
         {!items.length && (
-          <li className="px-4 py-8 text-center text-sm text-slate-500">
+          <li className="px-4 py-8 text-center text-sm text-muted">
             Add a tradition pack to populate checklist items.
           </li>
         )}
