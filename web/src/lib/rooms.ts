@@ -21,7 +21,7 @@ export const ROOM_TREE: Record<NavRoom, NavNode[]> = {
   ],
   guests: [
     { href: "/guests", label: "List", children: [{ href: "/guests", label: "Everyone" }, { href: "/guests/chase", label: "The chase" }, { href: "/guests/new", label: "Add one" }] },
-    { href: "/seating", label: "Seating", children: [{ href: "/seating", label: "Chart" }, { href: "/seating/usher", label: "Usher card" }] },
+    { href: "/seating", label: "Seating", children: [{ href: "/seating", label: "Chart" }, { href: "/seating/usher", label: "Usher card" }, { href: "/studio/cards", label: "Cards" }] },
     { href: "/site", label: "The letter", children: [{ href: "/site", label: "Write" }, { href: "/site/preview", label: "See as a guest" }] },
     { href: "/travel", label: "Travel" },
     { href: "/dietary", label: "Dietary" },
@@ -36,6 +36,7 @@ export const ROOM_TREE: Record<NavRoom, NavNode[]> = {
     { href: "/diy/studio/table", label: "Tablescapes" },
     { href: "/studio/decor", label: "Decor Builds" },
     { href: "/studio/signage", label: "Cricut" },
+    { href: "/studio/cards", label: "Cards" },
     { href: "/vendors", label: "Vendors" },
   ],
   day: [
