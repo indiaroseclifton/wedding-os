@@ -59,16 +59,10 @@ export function HomeDashboard({
         <div className="absolute inset-x-0 bottom-0 px-6 pb-28 pt-24 sm:px-10 sm:pb-32">
           <p className="kicker kicker-soft">{shapeTitle}</p>
           <div className="mt-1 flex flex-wrap items-end gap-x-5 gap-y-1">
-            <p className="font-serif text-[clamp(6rem,15vw,8.75rem)] leading-[0.78] tracking-[-0.055em] text-ink">
-              {headline}
-            </p>
+            <p className="display text-ink">{headline}</p>
             <div className="mb-2 min-w-0">
-              <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-ink/50">{sub}</p>
-              {dateLabel ? (
-                <p className="mt-0.5 font-serif text-[clamp(1.6rem,4vw,2.35rem)] leading-none tracking-tight text-ink">
-                  {dateLabel}
-                </p>
-              ) : null}
+              <p className="kicker kicker-soft">{sub}</p>
+              {dateLabel ? <p className="title mt-1 text-ink">{dateLabel}</p> : null}
             </div>
           </div>
         </div>
@@ -84,16 +78,12 @@ export function HomeDashboard({
               }`}
             >
               <div>
-                <p
-                  className={`text-[10px] font-medium uppercase tracking-[0.2em] ${
-                    card.alert ? "text-clay" : "text-muted"
-                  }`}
-                >
+                <p className={`kicker ${card.alert ? "text-clay" : ""}`}>
                   {card.alert ? <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-clay" /> : null}
                   {card.kicker}
                 </p>
-                <h2 className="mt-2.5 font-serif text-[1.7rem] leading-[1.15] tracking-tight">{card.title}</h2>
-                <p className="mt-1.5 text-[13px] leading-5 text-muted">{card.detail}</p>
+                <h2 className="spot mt-2">{card.title}</h2>
+                <p className="mt-1.5 text-sm leading-5 text-muted">{card.detail}</p>
               </div>
               <div className="flex flex-wrap items-center gap-4">
                 {card.alert || card.id === "pay" ? (
@@ -161,7 +151,7 @@ export function HomeDashboard({
         <aside className="span-4 space-y-10 border-t border-line pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
           <div>
             <p className="kicker">Ledger</p>
-            <p className="mt-2 font-serif text-[3.25rem] leading-none tracking-tight">{money(spent)}</p>
+            <p className="figure mt-2">{money(spent)}</p>
             <p className="mt-2 text-sm text-muted">committed of {cap ? money(cap) : "—"}</p>
             <div className="mt-5 h-px bg-line">
               <div className="h-px bg-moss" style={{ width: `${Math.max(pct, 2)}%` }} />
@@ -169,7 +159,7 @@ export function HomeDashboard({
           </div>
           <div>
             <p className="kicker">Replies</p>
-            <p className="mt-2 font-serif text-[3.25rem] leading-none tracking-tight">{replies}</p>
+            <p className="figure mt-2">{replies}</p>
             <p className="mt-2 text-sm text-muted">yes so far</p>
           </div>
         </aside>

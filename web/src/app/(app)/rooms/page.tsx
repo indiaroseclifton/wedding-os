@@ -23,10 +23,10 @@ export default async function RoomsPage() {
 
   return (
     <div className="paper">
-      <header className="span-12 max-w-2xl pb-2">
-        <h1 className="font-serif text-[clamp(3.5rem,10vw,5.5rem)] leading-[0.88] tracking-[-0.04em]">Rooms</h1>
-        <p className="mt-5 max-w-xl text-[1.05rem] leading-7 text-ink-soft">
-          Organize the details of the day. Each room holds one part of it — the list, the hour, the money, the people you hired.
+      <header className="span-12 max-w-2xl pb-4">
+        <h1 className="headline">Rooms</h1>
+        <p className="deck mt-5">
+          Each room holds one part of the day — the list, the hour, the money, the people you hired.
         </p>
       </header>
 
@@ -36,12 +36,19 @@ export default async function RoomsPage() {
         ))}
       </div>
 
-      <nav className="span-12 flex flex-wrap justify-center gap-2 pt-4" aria-label="More rooms">
-        {chips.map((r) => (
-          <Link key={r.href} href={r.href} className="rounded-full border border-line bg-surface px-3.5 py-2 text-[13px] text-ink-soft">
-            {r.label}
-          </Link>
-        ))}
+      <nav className="span-12 pt-6" aria-label="More rooms">
+        <p className="kicker mb-3 text-center">Also</p>
+        <div className="flex flex-wrap justify-center gap-2">
+          {chips.map((r) => (
+            <Link
+              key={r.href}
+              href={r.href}
+              className="rounded-full border border-line/80 bg-surface px-3 py-1.5 text-xs text-muted"
+            >
+              {r.label}
+            </Link>
+          ))}
+        </div>
       </nav>
     </div>
   );

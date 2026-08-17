@@ -92,7 +92,7 @@ export function AppShell({
         <div className="rail-wash absolute inset-0" />
         <div className="relative z-10 flex h-full flex-col px-4 pb-5 pt-7">
           <Link href="/dashboard" scroll={false} className="px-2">
-            <p className="font-serif text-[1.65rem] leading-tight tracking-tight text-moss-fg">{names}</p>
+            <p className="brand text-moss-fg">{names}</p>
             <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.16em] text-moss-fg/55">
               {date}
               {location ? ` · ${location}` : ""}
@@ -163,7 +163,7 @@ export function AppShell({
                   {date}
                   {location ? `  ·  ${location}` : ""}
                 </p>
-                <h2 className="mt-1 font-serif text-3xl">Rooms</h2>
+                <h2 className="title mt-1">Rooms</h2>
               </div>
               <button type="button" onClick={() => setRooms(false)} className="text-xl leading-none">
                 ×

@@ -40,11 +40,11 @@ export function RoomTile({
         }`}
       />
       <div className="absolute inset-x-0 bottom-0 p-5">
-        <p className={`flex items-center gap-2 font-serif text-[1.65rem] leading-none tracking-tight ${deep ? "text-ivory" : "text-ink"}`}>
-          {icon ? <Icon name={icon} className="h-[1.1rem] w-[1.1rem]" /> : null}
+        <p className={`spot flex items-center gap-2 ${deep ? "text-ivory" : "text-ink"}`}>
+          {icon ? <Icon name={icon} className="h-4 w-4 opacity-80" /> : null}
           {label}
         </p>
-        <p className={`mt-1.5 text-sm ${deep ? "text-ivory/75" : "text-ink-soft"}`}>{line}</p>
+        <p className={`mt-1 text-[13px] ${deep ? "text-ivory/70" : "text-muted"}`}>{line}</p>
       </div>
     </Link>
   );

@@ -26,8 +26,8 @@ export default async function VendorsPage() {
         <RoomSubnav room="vendors" />
       </div>
       <header className="span-8">
-        <h1 className="font-serif text-4xl">Vendors</h1>
-        <p className="mt-1 text-sm text-muted">
+        <h1 className="title">Vendors</h1>
+        <p className="deck mt-2">
           {vendors.length} total · {booked} booked
         </p>
       </header>
@@ -82,7 +82,7 @@ export default async function VendorsPage() {
           </div>
           <aside className="span-4 space-y-4 border-t border-line pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-1">
             <p className="kicker">On the books</p>
-            <p className="font-serif text-5xl leading-none tracking-tight">{booked}</p>
+            <p className="figure">{booked}</p>
             <p className="text-sm text-muted">booked of {vendors.length}</p>
             <Link href="/vendors/contracts" className="inline-block text-sm underline underline-offset-4">
               Contracts
