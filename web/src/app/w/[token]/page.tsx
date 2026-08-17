@@ -13,8 +13,9 @@ import { GuestHero } from "@/components/site/GuestHero";
 import { SiteGate } from "@/components/site/SiteGate";
 import { Icon } from "@/components/icons";
 import { getSessionUser } from "@/lib/auth/session";
-import { DEMO_WORKSPACE } from "@/lib/data/workspace";
+import { DEMO_WORKSPACE, getWorkspaceDecisions } from "@/lib/data/workspace";
 import { siteModeFor } from "@/lib/shape";
+import { normalizeVision, siteTemplateFor, visionAccent, visionCover } from "@/lib/vision";
 
 function prettyDate(iso?: string) {
   if (!iso) return null;
@@ -47,6 +48,12 @@ export default async function WeddingSitePage({
     }
   }
   const meta = await getWorkspaceMeta(site.workspaceId, DEMO_WORKSPACE.name);
+  const decisions = await getWorkspaceDecisions(site.workspaceId);
+  const vision = normalizeVision(decisions.find((d) => d.type === "STYLE_VIBE")?.payload);
+  const look = site.template !== "letter" ? site.template : siteTemplateFor(vision.story);
+  const cover = visionCover(vision, meta.coverUrl);
+  const accent = visionAccent(vision);
+  const dress = site.dressCode || vision.formal || meta.formality;
   const travel = site.showTravel ? await getTravel(site.workspaceId) : null;
   const registry = site.showRegistry ? await getRegistry(site.workspaceId) : null;
   const dayOf = await getDayOf(site.workspaceId);
@@ -59,19 +66,20 @@ export default async function WeddingSitePage({
   const open = rsvpIsOpen(site);
   const announce = meta.siteMode === "announce" || siteModeFor(meta.shape) === "announce";
   const gallery = site.gallery || [];
-  const night = site.template === "midnight";
-  const garden = site.template === "garden";
+  const night = look === "midnight";
+  const garden = look === "garden";
 
   return (
     <div
       className={`min-h-screen ${night ? "bg-[#141311] text-[#f3efe6]" : "bg-paper text-ink"}`}
       data-theme={meta.theme || "linen"}
+      style={accent ? { ["--color-moss" as string]: accent, ["--color-moss-fg" as string]: "#f6f1e8" } : undefined}
     >
       <GuestHero
         names={names}
         date={date}
         location={meta.location}
-        coverUrl={meta.coverUrl}
+        coverUrl={cover || "/brand/tablescape.jpg"}
       />
       <main className={`mx-auto max-w-xl px-5 py-10 sm:py-12 ${garden ? "max-w-2xl" : ""}`}>
 
@@ -176,17 +184,16 @@ export default async function WeddingSitePage({
           </section>
         )}
 
-        {site.dressCode && (
+        {dress && (
           <section className="mt-8">
             <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
               <Icon name="shirt" className="h-3.5 w-3.5" /> What to wear
             </h2>
-            <p className="mt-2 whitespace-pre-wrap text-sm text-ink-soft">{site.dressCode}</p>
+            <p className="mt-2 whitespace-pre-wrap text-sm text-ink-soft">{dress}</p>
           </section>
         )}
-        {(meta.unplugged || meta.kidsWelcome === false || meta.formality) && (
+        {(meta.unplugged || meta.kidsWelcome === false) && (
           <section className="mt-8 grid gap-2 text-sm text-ink-soft">
-            {meta.formality && <p>Dress: {meta.formality}</p>}
             {meta.unplugged && <p>Unplugged ceremony — phones down, photographer’s got it.</p>}
             {meta.kidsWelcome === false && <p>Adults-only reception.</p>}
           </section>

@@ -24,7 +24,7 @@ import {
 import { getSendForVendor, type VendorSend } from "@/lib/data/sends-store";
 import { findHandoffNote } from "./handoff-notes";
 import { faceLine } from "@/lib/vendor-face";
-import { normalizeVision } from "@/lib/vision";
+import { normalizeVision, visionCover } from "@/lib/vision";
 
 import { kitchenRollup } from "@/lib/data/dietary";
 
@@ -290,7 +290,7 @@ export async function assemblePacket(
       story: vision.story,
       avoid: vision.avoid,
       hex: vision.palette?.hex || [],
-      cover: vision.feel[0]?.url,
+      cover: visionCover(vision),
       nos: vision.reject.map((p) => p.url),
     },
     handoffNote: (await findHandoffNote(workspaceId, vendor)) || undefined,

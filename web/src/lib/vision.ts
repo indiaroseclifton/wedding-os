@@ -39,6 +39,7 @@ export type VisionPayload = {
   reject: VisionPin[];
   story?: string;
   lockedAt?: string;
+  coverUrl?: string;
 };
 
 export const EMPTY_VISION: VisionPayload = {
@@ -382,6 +383,7 @@ export function normalizeVision(raw: unknown): VisionPayload {
     reject,
     story: typeof p.story === "string" ? p.story : palette?.story,
     lockedAt: typeof p.lockedAt === "string" ? p.lockedAt : undefined,
+    coverUrl: typeof p.coverUrl === "string" ? p.coverUrl : undefined,
   };
 }
 
@@ -406,6 +408,7 @@ export function mergeVision(prev: VisionPayload, next: Partial<VisionPayload>): 
     reject: next.reject && next.reject.length ? next.reject : prev.reject,
     story: next.story || prev.story,
     lockedAt: next.lockedAt || prev.lockedAt,
+    coverUrl: next.coverUrl || prev.coverUrl,
   };
 }
 
@@ -460,6 +463,27 @@ export function siteTemplateFor(story?: string): "letter" | "garden" | "midnight
   if (story === "midnight" || story === "ink-blush") return "midnight";
   if (story === "garden" || story === "citrus") return "garden";
   return "letter";
+}
+
+export function visionCover(v: Pick<VisionPayload, "coverUrl" | "feel">, fallback?: string) {
+  return v.coverUrl || v.feel[0]?.url || fallback || "";
+}
+
+function hexLum(hex: string) {
+  const h = hex.replace("#", "");
+  if (h.length < 6) return 1;
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+export function visionAccent(v: Pick<VisionPayload, "palette">) {
+  const hex = (v.palette?.hex || []).filter((x) => /^#[0-9a-fA-F]{6}$/.test(x));
+  if (!hex.length) return null;
+  const dark = [...hex].sort((a, b) => hexLum(a) - hexLum(b))[0];
+  if (hexLum(dark) > 0.45) return null;
+  return dark;
 }
 
 export const HOUSE_LIBRARY = uniqueSides(VISION_PAIRS);

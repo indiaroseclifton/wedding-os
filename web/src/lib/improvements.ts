@@ -12,7 +12,7 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
     items: [
       { id: "planning", title: "Planning is a desk", body: "Vision, checklist %, next milestone, hire-or-make — not six tiles.", href: "/planning", status: "shipped" },
       { id: "party", title: "Party roster and a real portal", body: "They mark their task, size, and check-in.", href: "/planning/party", status: "shipped" },
-      { id: "mood", title: "Moodboard with pictures", body: "Pin a photo, tag it, use as cover.", href: "/moodboard", status: "shipped" },
+      { id: "mood", title: "Moodboard with pictures", body: "The vision board is the board. One pin is the cover. The guest site wears it.", href: "/planning/vision?view=board", status: "shipped" },
       { id: "timeline", title: "Timeline on the wedding date", body: "“6 months out” becomes a day. Build from the date.", href: "/timeline", status: "shipped" },
       { id: "events", title: "Extra-event RSVPs on the list", body: "Rehearsal, brunch — columns, not a hidden map.", href: "/guests", status: "shipped" },
       { id: "budget", title: "Budget envelopes", body: "Typical wedding split, bars, who pays, coming due.", href: "/budget", status: "shipped" },
@@ -20,7 +20,7 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
       { id: "dietary", title: "Dietary that catering can use", body: "Meals, veg / GF / nut tags, every guest, one tap to the catering handoff.", href: "/dietary", status: "shipped" },
       { id: "registry", title: "Registry as a store", body: "Items with open / claimed / purchased. Thank-yous from the same list.", href: "/registry", status: "shipped" },
       { id: "site", title: "Guest site as a wedding website", body: "Letter, garden, or midnight. Gallery. RSVP close date.", href: "/site", status: "shipped" },
-      { id: "vision", title: "Vision that actually steers", body: "Browse and DIY follow the locked vibe.", href: "/planning/vision", status: "shipped" },
+      { id: "vision", title: "Vision that actually steers", body: "Lock it: cover, formality, and palette dress the guest site.", href: "/planning/vision", status: "shipped" },
       { id: "discover", title: "Public Discover with real places", body: "Search a city without signing in.", href: "/discover/vendors", status: "shipped" },
       { id: "packet", title: "Packet you can trim", body: "Pick sections. Email the coordinator.", href: "/packet", status: "shipped" },
       { id: "send", title: "One packet per vendor", body: "Room, cues, kitchen, money. One link. They mark received.", href: "/send", status: "shipped" },

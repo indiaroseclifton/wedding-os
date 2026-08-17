@@ -17,6 +17,7 @@ import {
   paletteForStory,
   storyLabel,
   suggestFromSides,
+  visionCover,
   visionSummary,
 } from "@/lib/vision";
 import { VisionBoard } from "./VisionBoard";
@@ -93,12 +94,12 @@ export function VisionStudio({
     if (index + rest.length >= VISION_PAIRS.length) setMode("brief");
   }
 
-  async function save(status: "EXPLORING" | "DECIDED") {
+  async function save(status: "EXPLORING" | "DECIDED", next = vision) {
     setSaving(true);
     setMsg(null);
     const payload = {
-      ...vision,
-      lockedAt: status === "DECIDED" ? new Date().toISOString() : vision.lockedAt,
+      ...next,
+      lockedAt: status === "DECIDED" ? new Date().toISOString() : next.lockedAt,
     };
     const res = await fetch("/api/decisions/style-vibe", {
       method: "POST",
@@ -178,14 +179,18 @@ export function VisionStudio({
         <h1 className="headline mt-2">Pictures you keep</h1>
         <p className="deck mt-2 max-w-xl">Kept from the walk, plus anything you pin. The No strip stays visible.</p>
         <div className="mt-6">
-          <VisionBoard vision={vision} onChange={setVision} onSave={() => save("EXPLORING")} />
+          <VisionBoard
+            vision={vision}
+            onChange={setVision}
+            onSave={(next) => save("EXPLORING", next)}
+          />
         </div>
         {msg ? <p className="mt-3 text-sm text-muted">{msg}</p> : null}
       </div>
     );
   }
 
-  const cover = vision.feel[0]?.url;
+  const cover = visionCover(vision);
   const hex = vision.palette?.hex || [];
 
   return (

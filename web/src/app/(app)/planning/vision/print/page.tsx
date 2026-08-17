@@ -1,7 +1,7 @@
 import { PrintButton } from "@/components/ui/PrintButton";
 import { PrintSeal } from "@/components/ui/PrintSeal";
 import { ensureDemoWorkspace, getWorkspaceDecisions } from "@/lib/data/workspace";
-import { colorsLine, normalizeVision, storyLabel } from "@/lib/vision";
+import { colorsLine, normalizeVision, storyLabel, visionCover } from "@/lib/vision";
 import Link from "next/link";
 
 export default async function VisionPrintPage() {
@@ -9,7 +9,7 @@ export default async function VisionPrintPage() {
   const decisions = await getWorkspaceDecisions(workspace.id);
   const row = decisions.find((d) => d.type === "STYLE_VIBE");
   const v = normalizeVision(row?.payload);
-  const cover = v.feel[0]?.url;
+  const cover = visionCover(v);
   const hex = v.palette?.hex || [];
 
   return (

@@ -14,7 +14,7 @@ export function VisionBoard({
 }: {
   vision: VisionPayload;
   onChange: (next: VisionPayload) => void;
-  onSave: () => void;
+  onSave: (next?: VisionPayload) => void;
 }) {
   const [url, setUrl] = useState("");
   const [why, setWhy] = useState("");
@@ -39,14 +39,6 @@ export function VisionBoard({
 
   function drop(id: string) {
     onChange({ ...vision, feel: vision.feel.filter((p) => p.id !== id) });
-  }
-
-  async function useCover(coverUrl: string) {
-    await fetch("/api/workspace", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ coverUrl }),
-    });
   }
 
   return (
@@ -91,7 +83,7 @@ export function VisionBoard({
           <button type="submit" className="btn btn-primary min-h-11">
             Pin
           </button>
-          <button type="button" onClick={onSave} className="btn btn-ghost min-h-11">
+          <button type="button" onClick={() => onSave(vision)} className="btn btn-ghost min-h-11">
             Save board
           </button>
         </div>
@@ -146,14 +138,30 @@ export function VisionBoard({
 
       <div className="columns-2 gap-3 sm:columns-3">
         {visible.map((item) => (
-          <article key={item.id} className="group relative mb-3 break-inside-avoid overflow-hidden rounded-[1.2rem]">
+          <article
+            key={item.id}
+            className={`group relative mb-3 break-inside-avoid overflow-hidden rounded-[1.2rem] ${
+              vision.coverUrl === item.url ? "ring-2 ring-moss" : ""
+            }`}
+          >
             <img src={item.url} alt="" className="w-full object-cover" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/60 to-transparent p-3">
               <p className="font-serif text-lg leading-tight text-ivory">{item.why || item.tag}</p>
               <div className="mt-1 flex gap-2 text-[11px] text-ivory/80">
-                <button type="button" onClick={() => useCover(item.url)}>
-                  Use as cover
-                </button>
+                {vision.coverUrl === item.url ? (
+                  <span>On the cover</span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = { ...vision, coverUrl: item.url };
+                      onChange(next);
+                      onSave(next);
+                    }}
+                  >
+                    Use as cover
+                  </button>
+                )}
                 <button type="button" onClick={() => drop(item.id)}>
                   Remove
                 </button>

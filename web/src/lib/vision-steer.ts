@@ -1,27 +1,17 @@
 import { getAttire, saveAttire } from "@/lib/data/attire-store";
-import { upsertMoodPins } from "@/lib/data/moodboard-store";
 import { getSite, saveSite } from "@/lib/data/site-store";
-import { siteTemplateFor, type VisionPayload } from "@/lib/vision";
+import { updateWorkspaceMeta } from "@/lib/data/workspace";
+import { siteTemplateFor, visionCover, type VisionPayload } from "@/lib/vision";
 
 export async function applyVisionSteering(
   workspaceId: string,
   vision: VisionPayload,
   decided: boolean
 ) {
-  await upsertMoodPins(workspaceId, [
-    ...vision.feel.map((p) => ({
-      title: p.why || p.tag,
-      url: p.url,
-      notes: p.why,
-      tag: tagFor(p.tag),
-    })),
-    ...vision.reject.map((p) => ({
-      title: "No",
-      url: p.url,
-      notes: "Hard no",
-      tag: "No",
-    })),
-  ]);
+  const cover = visionCover(vision);
+  if (cover) {
+    await updateWorkspaceMeta(workspaceId, { coverUrl: cover });
+  }
 
   if (!decided) return;
 
@@ -31,17 +21,13 @@ export async function applyVisionSteering(
   }
 
   const site = await getSite(workspaceId);
-  const patch: { template?: "letter" | "garden" | "midnight"; dressCode?: string } = {};
-  if (!site.template || site.template === "letter") patch.template = siteTemplateFor(vision.story);
-  if (!site.dressCode && vision.formal) patch.dressCode = vision.formal;
-  if (Object.keys(patch).length) await saveSite(workspaceId, patch);
-}
-
-function tagFor(tag: string) {
-  if (tag === "flower") return "Florals";
-  if (tag === "table" || tag === "light") return "Tables";
-  if (tag === "dress") return "Dress";
-  if (tag === "place") return "Venue";
-  if (tag === "paper") return "Paper";
-  return "Other";
+  const patch: {
+    template?: "letter" | "garden" | "midnight";
+    dressCode?: string;
+  } = {
+    template: siteTemplateFor(vision.story),
+  };
+  if (vision.formal) patch.dressCode = vision.formal;
+  else if (site.dressCode) patch.dressCode = site.dressCode;
+  await saveSite(workspaceId, patch);
 }
