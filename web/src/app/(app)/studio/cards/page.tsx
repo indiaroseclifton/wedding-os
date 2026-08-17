@@ -8,6 +8,7 @@ export default async function CardsPage() {
     <CardsDesk
       guests={guests}
       names={meta.coupleNames || meta.name}
+      date={meta.weddingDate || ""}
     />
   );
 }

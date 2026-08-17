@@ -12,6 +12,9 @@ export type CardRow = {
   meal: string;
   rsvp: string;
   source: "guest" | "plus";
+  party: string;
+  first: string;
+  last: string;
 };
 
 export type CardProof = {
@@ -29,6 +32,12 @@ function clean(s?: string | null) {
   return (s || "").trim();
 }
 
+function splitName(name: string) {
+  const parts = name.split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return { first: name, last: "" };
+  return { first: parts[0], last: parts.slice(1).join(" ") };
+}
+
 export function mergeCards(guests: StoredGuest[], mode: CardMode) {
   const rows: CardRow[] = [];
   const unnamedPlus: CardProof["unnamedPlus"] = [];
@@ -36,19 +45,26 @@ export function mergeCards(guests: StoredGuest[], mode: CardMode) {
   for (const g of guests) {
     if (!inCardPool(g, mode)) continue;
     const table = clean(g.tableLabel) || null;
+    const party = clean(g.partyName) || clean(g.name);
+    const guestName = clean(g.name) || "Guest";
+    const guestParts = splitName(guestName);
     rows.push({
       id: g.id,
       guestId: g.id,
-      name: clean(g.name) || "Guest",
+      name: guestName,
       table,
       seat: g.seatIndex ?? null,
       meal: clean(g.meal),
       rsvp: g.rsvp,
       source: "guest",
+      party,
+      first: guestParts.first,
+      last: guestParts.last,
     });
     const named = (g.plusOneNames || []).map(clean).filter(Boolean);
     const slots = Math.max(0, g.plusOnes || 0);
     named.forEach((plusName, i) => {
+      const parts = splitName(plusName);
       rows.push({
         id: `${g.id}-plus-${i}`,
         guestId: g.id,
@@ -58,10 +74,13 @@ export function mergeCards(guests: StoredGuest[], mode: CardMode) {
         meal: "",
         rsvp: g.rsvp,
         source: "plus",
+        party,
+        first: parts.first,
+        last: parts.last,
       });
     });
     const missing = Math.max(0, slots - named.length);
-    if (missing) unnamedPlus.push({ guestId: g.id, name: clean(g.name) || "Guest", missing });
+    if (missing) unnamedPlus.push({ guestId: g.id, name: guestName, missing });
   }
 
   const noTable = rows.filter((r) => !r.table);
@@ -83,14 +102,43 @@ export function sortCards(rows: CardRow[], kind: CardKind) {
   return copy;
 }
 
+function csvEscape(c: string) {
+  return `"${c.replace(/"/g, '""')}"`;
+}
+
+export const CANVA_FIELDS = [
+  { token: "{{Name}}", col: "Name", line: "Full name on the card" },
+  { token: "{{First}}", col: "First", line: "First word" },
+  { token: "{{Last}}", col: "Last", line: "The rest of the name" },
+  { token: "{{Table}}", col: "Table", line: "Table 12" },
+  { token: "{{Seat}}", col: "Seat", line: "Seat number, if you have one" },
+  { token: "{{Meal}}", col: "Meal", line: "Kitchen mark" },
+  { token: "{{Party}}", col: "Party", line: "Household" },
+] as const;
+
+export const CANVA_SIZES = [
+  { id: "letter-8", label: "Letter · 8-up escort", size: "3.75\" × 2.5\"" },
+  { id: "letter-tent", label: "Letter · tent", size: "3.75\" × 5\" (fold in half)" },
+  { id: "avery-5302", label: "Avery 5302 tent", size: "2\" × 3.5\" · 4 per sheet" },
+  { id: "avery-5371", label: "Avery 5371 / 8371", size: "2\" × 3.5\" · 10 per sheet" },
+  { id: "menu", label: "Menu", size: "5\" × 7\" or 4.25\" × 9.5\"" },
+  { id: "program", label: "Program", size: "5\" × 7\"" },
+] as const;
+
 export function cardsCsv(rows: CardRow[]) {
-  const header = "Name,Table,Seat,Meal,Rsvp";
+  const header = "Name,First,Last,Table,Seat,Meal,Party,Rsvp";
   const body = rows.map((r) =>
-    [r.name, r.table || "", r.seat != null ? String(r.seat + 1) : "", r.meal, r.rsvp]
-      .map((c) => `"${c.replace(/"/g, '""')}"`)
+    [r.name, r.first, r.last, r.table || "", r.seat != null ? String(r.seat + 1) : "", r.meal, r.party, r.rsvp]
+      .map(csvEscape)
       .join(",")
   );
   return [header, ...body].join("\n");
+}
+
+export function menuCsv(input: { names: string; date: string; heading?: string; courses?: string }) {
+  const header = "Names,Date,Heading,Courses";
+  const row = [input.names, input.date, input.heading || "Menu", (input.courses || "").replace(/\n/g, " · ")].map(csvEscape).join(",");
+  return [header, row].join("\n");
 }
 
 export function mealMark(meal: string) {

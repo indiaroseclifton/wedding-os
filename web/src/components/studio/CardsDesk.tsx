@@ -3,9 +3,27 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { StoredGuest } from "@/lib/data/store";
-import { cardsCsv, mergeCards, sortCards, type CardKind, type CardMode } from "@/lib/cards";
+import { CANVA_FIELDS, CANVA_SIZES, cardsCsv, menuCsv, mergeCards, sortCards, type CardKind, type CardMode } from "@/lib/cards";
 
-export function CardsDesk({ guests, names }: { guests: StoredGuest[]; names: string }) {
+function downloadText(name: string, text: string) {
+  const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export function CardsDesk({
+  guests,
+  names,
+  date,
+}: {
+  guests: StoredGuest[];
+  names: string;
+  date: string;
+}) {
   const [mode, setMode] = useState<CardMode>("plates");
   const [kind, setKind] = useState<CardKind>("escort");
   const [meals, setMeals] = useState(false);
@@ -14,15 +32,18 @@ export function CardsDesk({ guests, names }: { guests: StoredGuest[]; names: str
   const { rows, proof } = useMemo(() => mergeCards(guests, mode), [guests, mode]);
   const sorted = useMemo(() => sortCards(rows, kind), [rows, kind]);
 
-  function downloadCsv() {
-    const blob = new Blob([cardsCsv(sorted)], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Vowfolk-${kind}-cards.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setMsg("CSV saved — Avery Design & Print can mail-merge this");
+  const prettyDate = date
+    ? new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })
+    : "";
+
+  function downloadGuestCsv() {
+    downloadText(`Vowfolk-${kind}-canva.csv`, cardsCsv(sorted));
+    setMsg("CSV saved — Canva Bulk Create or Avery mail-merge");
+  }
+
+  function downloadMenu() {
+    downloadText("Vowfolk-menu-canva.csv", menuCsv({ names, date: prettyDate }));
+    setMsg("One-row menu file — tag {{Names}} {{Date}} {{Heading}} {{Courses}}");
   }
 
   const printHref = `/studio/cards/print?kind=${kind}&mode=${mode}${meals ? "&meals=1" : ""}`;
@@ -35,12 +56,12 @@ export function CardsDesk({ guests, names }: { guests: StoredGuest[]; names: str
           <h1 className="mt-2 font-serif text-[clamp(2.2rem,6vw,3.6rem)] leading-none tracking-tight">Cards</h1>
           <p className="home-script mt-2">The list becomes paper.</p>
           <p className="mt-2 max-w-xl text-sm text-muted">
-            Names and tables from People. Print escort cards A–Z or tents by table on letter paper tonight. Avery and Cricut use the same merge.
+            Names and tables from People. Print on letter tonight, or take the same file to Canva Bulk Create or Avery.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={downloadCsv} className="btn btn-ghost">
-            CSV
+          <button type="button" onClick={downloadGuestCsv} className="btn btn-ghost">
+            Canva CSV
           </button>
           <Link href={printHref} className="btn btn-primary">
             Print {kind === "escort" ? "escort" : "tents"}
@@ -147,6 +168,67 @@ export function CardsDesk({ guests, names }: { guests: StoredGuest[]; names: str
       </div>
 
       {msg ? <p className="text-xs text-sage">{msg}</p> : null}
+
+      <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+        <p className="kicker">Canva</p>
+        <h2 className="mt-1 font-serif text-2xl tracking-tight">Their art. Our names.</h2>
+        <p className="mt-2 max-w-xl text-sm text-muted">
+          We cannot open her Canva file and stamp the list — that API is Enterprise. Bulk Create on any plan takes this CSV.
+        </p>
+        <ol className="mt-4 list-decimal space-y-1 pl-5 text-sm text-muted">
+          <li>Download the guest CSV (or the one-row menu file).</li>
+          <li>In Canva, set the page to a size below.</li>
+          <li>Type the tokens on the text boxes — they must match exactly.</li>
+          <li>Apps → Bulk Create → upload the CSV → Generate.</li>
+          <li>Print from Canva, or export PDF and use our letter / Avery sheet later.</li>
+        </ol>
+
+        <div className="mt-5">
+          <p className="kicker">Tokens</p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
+            {CANVA_FIELDS.map((f) => (
+              <button
+                key={f.col}
+                type="button"
+                className="flex min-h-12 items-center justify-between rounded-xl border border-line px-3 text-left text-sm"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(f.token);
+                  setMsg(`${f.token} copied`);
+                }}
+              >
+                <span>
+                  <span className="font-medium">{f.token}</span>
+                  <span className="ml-2 text-muted">{f.line}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <p className="kicker">Design at this size</p>
+          <ul className="mt-2 divide-y divide-line text-sm">
+            {CANVA_SIZES.map((s) => (
+              <li key={s.id} className="flex justify-between gap-3 py-2">
+                <span>{s.label}</span>
+                <span className="text-muted">{s.size}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          <button type="button" onClick={downloadGuestCsv} className="btn btn-primary">
+            Guest CSV for Bulk Create
+          </button>
+          <button type="button" onClick={downloadMenu} className="btn btn-ghost">
+            Menu CSV (one row)
+          </button>
+          <a href="https://www.canva.com/" target="_blank" rel="noreferrer" className="btn btn-ghost">
+            Open Canva
+          </a>
+        </div>
+      </section>
     </div>
   );
 }
