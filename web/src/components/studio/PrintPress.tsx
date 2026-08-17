@@ -7,6 +7,7 @@ import {
   defaultPrint,
   formatOffset,
   pressAdvice,
+  printDialogRows,
   type PrintKind,
   type PrintProfile,
 } from "@/lib/cards";
@@ -30,6 +31,7 @@ export function PrintPress({ stock = "letter" }: { stock?: "letter" | "avery5302
   }
 
   const lines = pressAdvice(p.kind, pack);
+  const dialog = printDialogRows(p.kind, pack);
 
   return (
     <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
@@ -82,6 +84,15 @@ export function PrintPress({ stock = "letter" }: { stock?: "letter" | "avery5302
           <li key={l}>{l}</li>
         ))}
       </ol>
+
+      <dl className="mt-5 divide-y divide-line text-sm">
+        {dialog.map((r) => (
+          <div key={r.label} className="flex flex-wrap justify-between gap-2 py-2">
+            <dt className="text-muted">{r.label}</dt>
+            <dd className="text-right">{r.set}</dd>
+          </div>
+        ))}
+      </dl>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <p className="text-sm">

@@ -193,6 +193,19 @@ export function pressAdvice(kind: PrintKind, stock: "letter" | "avery5302" | "av
   return lines;
 }
 
+export function printDialogRows(kind: PrintKind, stock: "letter" | "avery5302" | "avery5371" | "menu") {
+  return [
+    { label: "Paper size", set: "Letter · 8.5 × 11" },
+    { label: "Scale", set: "100% / Actual size — never Fit" },
+    { label: "Sides", set: stock === "avery5302" ? "One-sided. Do not duplex." : "One-sided" },
+    { label: "Media", set: kind === "laser" ? "Labels (laser-safe pack only)" : "Labels, Heavyweight, or Cardstock" },
+    { label: "Tray", set: "Manual or rear — straightest path" },
+    { label: "Quality", set: "Best / High" },
+    { label: "Headers", set: "Off. No date, no URL." },
+    { label: "If you don’t see Media", set: "Print using system dialog" },
+  ];
+}
+
 export function mealMark(meal: string) {
   const s = meal.toLowerCase();
   if (!s) return "";

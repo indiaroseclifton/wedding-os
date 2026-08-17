@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { PRINT_KEY, defaultPrint, formatOffset, pressAdvice, type PrintKind } from "@/lib/cards";
+import {
+  PRINT_KEY,
+  defaultPrint,
+  formatOffset,
+  printDialogRows,
+  type PrintKind,
+} from "@/lib/cards";
 
 export function PrintScale({
   stock,
@@ -14,6 +20,7 @@ export function PrintScale({
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
   const [kind, setKind] = useState<PrintKind>("inkjet");
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     try {
@@ -29,7 +36,7 @@ export function PrintScale({
     }
   }, []);
 
-  const lines = pressAdvice(kind, stock);
+  const rows = printDialogRows(kind, stock);
 
   return (
     <div
@@ -39,16 +46,35 @@ export function PrintScale({
         ["--print-y" as string]: `${y}in`,
       }}
     >
-      <aside className="no-print mb-6 rounded-2xl border border-line bg-surface p-4 text-sm">
-        <p className="kicker">This tray</p>
-        <ol className="mt-2 list-decimal space-y-1 pl-5 text-muted">
-          {lines.map((l) => (
-            <li key={l}>{l}</li>
-          ))}
-        </ol>
-        <p className="mt-2 text-xs text-muted">
-          Scale {Math.round(scale * 100)}% · {formatOffset(x)} across · {formatOffset(y)} down. This side up.
+      <aside className="no-print mb-6 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+        <p className="kicker">Print dialog</p>
+        <h2 className="mt-1 font-serif text-2xl tracking-tight">Set this, then print.</h2>
+        <p className="mt-2 max-w-xl text-sm text-muted">
+          We cannot touch HP or Canon. Chrome hides Media — use the system dialog. {kind === "laser" ? "Laser." : "Inkjet."}
         </p>
+        <dl className="mt-4 divide-y divide-line text-sm">
+          {rows.map((r) => (
+            <div key={r.label} className="flex flex-wrap justify-between gap-2 py-2">
+              <dt className="text-muted">{r.label}</dt>
+              <dd className="text-right font-medium">{r.set}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-3 text-xs text-muted">
+          Vowfolk origin {Math.round(scale * 100)}% · {formatOffset(x)} across · {formatOffset(y)} down. This side up.
+        </p>
+        <label className="mt-4 flex min-h-11 items-center gap-2 text-sm">
+          <input type="checkbox" checked={ready} onChange={(e) => setReady(e.target.checked)} />
+          The dialog is set
+        </label>
+        <button
+          type="button"
+          disabled={!ready}
+          onClick={() => window.print()}
+          className="btn btn-primary mt-3 disabled:opacity-40"
+        >
+          Print
+        </button>
       </aside>
       {children}
     </div>

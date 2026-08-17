@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PrintButton } from "@/components/ui/PrintButton";
 import { PrintScale } from "@/components/studio/PrintScale";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { mealMark, mergeCards, sortCards, type CardKind, type CardMode } from "@/lib/cards";
@@ -72,7 +71,9 @@ export default async function CardsPrintPage({
           </p>
         </div>
         <div className="flex gap-2">
-          <PrintButton label="Print" />
+          <Link href="/studio/cards/calibrate" className="btn btn-ghost">
+            Calibrate
+          </Link>
           <Link href="/studio/cards" className="btn btn-ghost">
             Back
           </Link>
