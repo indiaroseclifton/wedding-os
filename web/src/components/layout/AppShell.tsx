@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { CommandPalette } from "@/components/search/CommandPalette";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { DeskNav, currentRoomLabel } from "@/components/layout/DeskNav";
+import { TopNav } from "@/components/layout/TopNav";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { MORE_ROOMS, NAV_ITEMS, firstNames } from "@/lib/visual-rooms";
 import { roomVisible } from "@/lib/shape";
@@ -14,14 +15,6 @@ import { Icon } from "@/components/icons";
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
 }
-
-const TOP: { href: string; label: string; match: readonly string[] }[] = [
-  { href: "/dashboard", label: "Home", match: ["/dashboard"] },
-  { href: "/planning", label: "Plan", match: ["/planning", "/checklist", "/decisions", "/vendors", "/send", "/budget", "/registry", "/payments", "/traditions", "/together", "/after", "/thanks", "/legal", "/settings"] },
-  { href: "/guests", label: "People", match: ["/guests", "/seating", "/site", "/travel", "/dietary", "/events"] },
-  { href: "/studio", label: "Studio", match: ["/studio", "/diy"] },
-  { href: "/day-of", label: "Wedding Day", match: ["/day-of", "/run-of-show", "/music", "/packet", "/planning/party", "/people", "/party", "/attire"] },
-];
 
 export function AppShell({
   userName,
@@ -96,25 +89,7 @@ export function AppShell({
           </button>
           <Wordmark />
         </div>
-        <nav className="hidden items-center gap-7 lg:flex" aria-label="Main">
-          {TOP.map((tab) => {
-            const on = tabOn(pathname, tab.match);
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                scroll={false}
-                prefetch
-                className={`relative py-2 text-[11px] font-medium uppercase tracking-[0.18em] ${
-                  on ? "text-ink" : "text-muted hover:text-ink"
-                }`}
-              >
-                {tab.label}
-                {on ? <span className="absolute inset-x-0 -bottom-1 h-px bg-dusty" /> : null}
-              </Link>
-            );
-          })}
-        </nav>
+        <TopNav />
         <div className="flex items-center gap-1">
           <CommandPalette tone="paper" iconOnly />
           <Link
@@ -164,7 +139,7 @@ export function AppShell({
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5">
-          {TOP.map((tab) => {
+          {NAV_ITEMS.map((tab) => {
             const on = tabOn(pathname, tab.match);
             return (
               <li key={tab.href}>
@@ -176,7 +151,7 @@ export function AppShell({
                     on ? "text-ink" : "text-muted"
                   }`}
                 >
-                  {tab.label === "Wedding Day" ? "Day" : tab.label}
+                  {tab.label}
                 </Link>
               </li>
             );

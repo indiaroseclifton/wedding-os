@@ -10,10 +10,10 @@ import { MORE_ROOMS, VISUAL_ROOMS, firstNames, prettyWeddingDate } from "@/lib/v
 
 const TABS: { href: string; label: string; match: string[]; icon: string }[] = [
   { href: "/dashboard", label: "Home", match: ["/dashboard"], icon: "week" },
-  { href: "/planning", label: "Plan", match: ["/planning", "/checklist", "/vendors", "/send", "/budget", "/registry", "/payments", "/traditions", "/together", "/after", "/thanks", "/settings"], icon: "vendors" },
-  { href: "/guests", label: "People", match: ["/guests", "/site", "/seating", "/floorplan", "/dietary", "/travel", "/events"], icon: "guests" },
+  { href: "/planning", label: "Before", match: ["/planning", "/checklist", "/vendors", "/send", "/budget", "/registry", "/payments", "/traditions", "/together", "/guests", "/site", "/seating", "/events", "/travel", "/dietary"], icon: "vendors" },
   { href: "/studio", label: "Studio", match: ["/studio", "/diy"], icon: "diy" },
   { href: "/day-of", label: "Day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/planning/party", "/attire", "/music"], icon: "day" },
+  { href: "/after", label: "After", match: ["/after", "/thanks"], icon: "guests" },
 ];
 
 function tabActive(pathname: string, match: string[]) {

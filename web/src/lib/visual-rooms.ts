@@ -2,9 +2,9 @@ export const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: "home", room: null, match: ["/dashboard"] },
   {
     href: "/planning",
-    label: "Plan",
+    label: "Before",
     icon: "planning",
-    room: "planning",
+    room: "before",
     match: [
       "/planning",
       "/checklist",
@@ -17,21 +17,18 @@ export const NAV_ITEMS = [
       "/handoffs",
       "/send",
       "/budget",
-      "/after",
-      "/thanks",
       "/legal",
       "/registry",
       "/traditions",
       "/together",
-      "/settings",
+      "/guests",
+      "/seating",
+      "/floorplan",
+      "/dietary",
+      "/travel",
+      "/site",
+      "/events",
     ],
-  },
-  {
-    href: "/guests",
-    label: "People",
-    icon: "guests",
-    room: "guests",
-    match: ["/guests", "/seating", "/floorplan", "/dietary", "/travel", "/site", "/events"],
   },
   {
     href: "/studio",
@@ -47,13 +44,20 @@ export const NAV_ITEMS = [
     room: "day",
     match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/planning/party", "/attire", "/music"],
   },
+  {
+    href: "/after",
+    label: "After",
+    icon: "heart",
+    room: "after",
+    match: ["/after", "/thanks"],
+  },
 ] as const;
 
 export const VISUAL_ROOMS = [
-  { href: "/planning", label: "Plan", photo: "/brand/rooms/planning.jpg", line: "Vision, vendors, the week", icon: "calendar", rank: "lead" },
-  { href: "/guests", label: "People", photo: "/brand/rooms/guests.jpg", line: "The list, the letter, chairs", icon: "users", rank: "lead" },
+  { href: "/planning", label: "Before", photo: "/brand/rooms/planning.jpg", line: "Plan it, gather your people", icon: "calendar", rank: "lead" },
   { href: "/studio", label: "Studio", photo: "/brand/flowers.jpg", line: "Make the flowers, the table, the signs", icon: "scissors", rank: "lead" },
   { href: "/day-of", label: "The day", photo: "/brand/rooms/day.jpg", line: "Call sheet, music, the hour", icon: "sun", rank: "lead" },
+  { href: "/after", label: "After", photo: "/brand/rooms/guests.jpg", line: "Thank-yous and the weeks after", icon: "heart", rank: "lead" },
 ] as const;
 
 export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
