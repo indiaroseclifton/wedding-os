@@ -38,12 +38,12 @@ export function VendorFace({
 
   return (
     <section className="rounded-[1.6rem] border border-line bg-surface p-5 sm:p-7">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-moss">{def.eyebrow}</p>
+      <p className="kicker kicker-moss">{def.eyebrow}</p>
       <h2 className="mt-1 font-serif text-3xl">{def.line}</h2>
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {def.fields.map((f) => (
           <label key={f.id} className="block">
-            <span className="text-[11px] uppercase tracking-[0.14em] text-muted">{f.label}</span>
+            <span className="kicker">{f.label}</span>
             <input
               value={face[f.id] || ""}
               onChange={(e) => {

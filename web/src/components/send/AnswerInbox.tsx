@@ -21,7 +21,7 @@ export function AnswerInbox({
 
   return (
     <section className="rounded-2xl border border-line bg-surface p-5 print:hidden">
-      <p className="text-[11px] uppercase tracking-[0.16em] text-moss">From them</p>
+      <p className="kicker kicker-moss">From them</p>
       {needs.filter((n) => n.done || n.fileUrl).length > 0 && (
         <ul className="mt-2 space-y-1 text-sm">
           {needs

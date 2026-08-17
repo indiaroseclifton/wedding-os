@@ -5,11 +5,11 @@ import { DESK_TOOLS } from "@/lib/tools";
 export function ToolTable() {
   return (
     <section>
-      <p className="mb-3 text-[11px] uppercase tracking-[0.18em] text-moss">Tools</p>
+      <p className="mb-3 kicker kicker-moss">Tools</p>
       <div className="overflow-hidden rounded-2xl border border-white/50 bg-surface/40 backdrop-blur-md">
         <table className="w-full text-left">
           <caption className="sr-only">Standalone tools on the desk</caption>
-          <thead className="border-b border-white/40 text-[11px] uppercase tracking-wide text-muted">
+          <thead className="border-b border-white/40 kicker">
             <tr>
               <th className="px-4 py-3 font-medium">Tool</th>
               <th className="hidden px-4 py-3 font-medium sm:table-cell">What it does</th>

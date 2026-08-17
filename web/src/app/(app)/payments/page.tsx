@@ -167,7 +167,7 @@ export default function PaymentsPage() {
       <RoomSubnav room="vendors" />
       <div className="flex flex-wrap items-end justify-between gap-3 print:hidden">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Vendor ledger</p>
+          <p className="kicker kicker-moss">Vendor ledger</p>
           <h1 className="mt-1 font-serif text-4xl">Payments</h1>
           <p className="mt-1 text-sm text-muted">
             Deposit, progress, final — by vendor. Paid rolls into the budget. Due dates land on the calendar.
@@ -188,19 +188,19 @@ export default function PaymentsPage() {
 
       <div className="grid gap-3 sm:grid-cols-4">
         <p className="glass-panel rounded-2xl p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Paid</span>
+          <span className="block kicker">Paid</span>
           <span className="font-serif text-3xl">{money(paid)}</span>
         </p>
         <p className="glass-panel rounded-2xl p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Still open</span>
+          <span className="block kicker">Still open</span>
           <span className="font-serif text-3xl">{money(open)}</span>
         </p>
         <p className="glass-panel rounded-2xl p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Overdue</span>
+          <span className="block kicker">Overdue</span>
           <span className={`font-serif text-3xl ${overdue ? "text-clay" : ""}`}>{money(overdue)}</span>
         </p>
         <p className="glass-panel rounded-2xl p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Next due</span>
+          <span className="block kicker">Next due</span>
           <span className="font-serif text-2xl leading-tight">
             {next ? next.dueDate : "—"}
           </span>

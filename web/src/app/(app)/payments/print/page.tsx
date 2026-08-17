@@ -39,7 +39,7 @@ export default async function PaymentStatementPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Vendor ledger</p>
+          <p className="kicker kicker-moss">Vendor ledger</p>
           <h1 className="mt-1 font-serif text-4xl">Statement</h1>
         </div>
         <div className="flex gap-2">
@@ -51,7 +51,7 @@ export default async function PaymentStatementPage() {
       </div>
 
       <header className="hidden print:block">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Vendor ledger</p>
+        <p className="kicker kicker-moss">Vendor ledger</p>
         <h1 className="mt-1 font-serif text-4xl">{meta.coupleNames || meta.name || "Wedding"}</h1>
         <p className="mt-1 text-sm text-muted">
           {meta.weddingDate || ""}
@@ -61,15 +61,15 @@ export default async function PaymentStatementPage() {
 
       <section className="grid gap-3 sm:grid-cols-3">
         <p className="rounded-2xl border border-line bg-surface p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Paid</span>
+          <span className="block kicker">Paid</span>
           <span className="font-serif text-3xl">{money(rollup.paid)}</span>
         </p>
         <p className="rounded-2xl border border-line bg-surface p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Still open</span>
+          <span className="block kicker">Still open</span>
           <span className="font-serif text-3xl">{money(rollup.open)}</span>
         </p>
         <p className="rounded-2xl border border-line bg-surface p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Overdue</span>
+          <span className="block kicker">Overdue</span>
           <span className={`font-serif text-3xl ${rollup.overdue ? "text-clay" : ""}`}>
             {money(rollup.overdue)}
           </span>

@@ -89,7 +89,7 @@ export default function RegistryPage() {
           ["Purchased", bought],
         ].map(([l, n]) => (
           <div key={String(l)} className="rounded-2xl border border-line bg-surface p-4">
-            <p className="text-[11px] uppercase tracking-wide text-muted">{l}</p>
+            <p className="kicker">{l}</p>
             <p className="font-serif text-3xl">{n}</p>
           </div>
         ))}

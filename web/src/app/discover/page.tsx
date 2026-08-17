@@ -56,7 +56,7 @@ export default async function DiscoverPage() {
           <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {DIRECTORY.slice(0, 6).map((v) => (
               <li key={v.slug} className="rounded-2xl border border-line bg-surface p-5">
-                <p className="text-[11px] uppercase tracking-wider text-muted">{v.category}</p>
+                <p className="kicker">{v.category}</p>
                 <p className="mt-1 font-serif text-2xl">{v.name}</p>
                 <p className="mt-2 text-sm text-ink-soft">{v.blurb}</p>
                 <p className="mt-2 text-xs text-muted">

@@ -24,7 +24,7 @@ export default async function VendorPacketPage({
     <div className="min-h-screen bg-paper text-ink">
       <div className="mx-auto max-w-2xl px-5 py-10 sm:px-8">
         <div className="mb-6 flex items-start justify-between gap-3 print:hidden">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-moss">For you</p>
+          <p className="kicker kicker-moss">For you</p>
           <PrintButton label="Print" />
         </div>
         <PacketView packet={packet} attachments={send.attachments} note={send.note} />

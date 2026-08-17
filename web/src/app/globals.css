@@ -51,6 +51,7 @@
   --desk-rail: 15.75rem;
   --desk-gutter: 2rem;
   --desk-gutter-sm: 1.15rem;
+  --shadow-lift: 0 28px 64px -24px rgb(28 22 14 / 0.28);
 }
 
 html {
@@ -191,6 +192,23 @@ html {
   --color-moss-fg: #0e1420;
   --color-moss-soft: #222c40;
   --color-ivory: #eef2f8;
+}
+
+[data-theme="night"],
+[data-theme="ink"],
+[data-theme="cocoa"],
+[data-theme="midnight"] {
+  --color-slate-50: var(--color-surface);
+  --color-slate-100: var(--color-surface);
+  --color-slate-200: var(--color-line);
+  --color-slate-300: var(--color-line);
+  --color-slate-400: var(--color-muted);
+  --color-slate-500: var(--color-muted);
+  --color-slate-600: var(--color-ink-soft);
+  --color-slate-700: var(--color-ink-soft);
+  --color-slate-800: var(--color-ink);
+  --color-slate-900: var(--color-ink);
+  --shadow-lift: 0 28px 64px -24px rgb(0 0 0 / 0.55);
 }
 
 [data-glass="low"] .glass-panel {
@@ -546,6 +564,73 @@ html {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 1rem;
+}
+
+.kicker {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.kicker-moss {
+  color: var(--color-moss);
+}
+
+.kicker-soft {
+  color: color-mix(in srgb, var(--color-ink) 48%, transparent);
+}
+
+.lift {
+  box-shadow: var(--shadow-lift);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: var(--color-moss);
+  color: var(--color-moss-fg);
+}
+
+.btn-ghost {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.btn-line {
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.field {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 1.15rem;
 }
 
 .home-desk {

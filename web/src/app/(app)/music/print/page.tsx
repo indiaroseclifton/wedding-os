@@ -12,7 +12,7 @@ export default async function DjPrintPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between print:hidden">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-moss">DJ packet</p>
+          <p className="kicker kicker-moss">DJ packet</p>
           <h1 className="mt-1 font-serif text-4xl">Cue book</h1>
         </div>
         <div className="flex gap-2">

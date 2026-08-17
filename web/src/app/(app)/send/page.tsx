@@ -34,7 +34,7 @@ export default async function SendDeskPage() {
       <RoomSubnav room="vendors" />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Vendors</p>
+          <p className="kicker kicker-moss">Vendors</p>
           <h1 className="mt-1 font-serif text-4xl">Send</h1>
           <p className="mt-2 max-w-xl text-sm text-muted">
             One live page each. They confirm, attach, and ask — you see it here.

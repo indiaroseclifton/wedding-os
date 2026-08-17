@@ -156,7 +156,7 @@ export function DecisionsDesk() {
 
       {customRows.length > 0 && (
         <section>
-          <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-moss">Yours</p>
+          <p className="mb-2 kicker kicker-moss">Yours</p>
           <ul className="space-y-2">
             {customRows
               .filter((d) => (filter === "decided" ? d.status === "DECIDED" : filter === "open" ? d.status !== "DECIDED" : true))
@@ -189,7 +189,7 @@ export function DecisionsDesk() {
         if (!rows.length) return null;
         return (
           <section key={g}>
-            <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-moss">{g}</p>
+            <p className="mb-2 kicker kicker-moss">{g}</p>
             <ul className="space-y-2">
               {rows.map((item) => {
                 const row = byCatalog.get(item.id);

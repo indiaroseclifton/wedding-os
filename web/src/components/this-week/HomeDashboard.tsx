@@ -57,7 +57,7 @@ export function HomeDashboard({
         />
         <div className="home-hero-wash absolute inset-0" />
         <div className="absolute inset-x-0 bottom-0 px-6 pb-28 pt-24 sm:px-10 sm:pb-32">
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-ink/55">{shapeTitle}</p>
+          <p className="kicker kicker-soft">{shapeTitle}</p>
           <div className="mt-1 flex flex-wrap items-end gap-x-5 gap-y-1">
             <p className="font-serif text-[clamp(6rem,15vw,8.75rem)] leading-[0.78] tracking-[-0.055em] text-ink">
               {headline}
@@ -75,7 +75,7 @@ export function HomeDashboard({
       </section>
 
       <div className="home-cards">
-        <div className="grid overflow-hidden rounded-[1.15rem] bg-surface shadow-[0_28px_64px_-24px_rgba(28,22,14,0.28)] sm:grid-cols-3">
+        <div className="lift grid overflow-hidden rounded-[1.15rem] bg-surface sm:grid-cols-3">
           {cards.map((card, i) => (
             <article
               key={card.id}
@@ -127,7 +127,7 @@ export function HomeDashboard({
 
       <section className="home-rest">
         <div className="span-8">
-          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Also open</p>
+          <p className="kicker">Also open</p>
           {!onboarded ? (
             <p className="mt-3 text-sm text-muted">
               <Link href="/onboard" className="underline underline-offset-4">
@@ -160,7 +160,7 @@ export function HomeDashboard({
 
         <aside className="span-4 space-y-10 border-t border-line pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Ledger</p>
+            <p className="kicker">Ledger</p>
             <p className="mt-2 font-serif text-[3.25rem] leading-none tracking-tight">{money(spent)}</p>
             <p className="mt-2 text-sm text-muted">committed of {cap ? money(cap) : "—"}</p>
             <div className="mt-5 h-px bg-line">
@@ -168,7 +168,7 @@ export function HomeDashboard({
             </div>
           </div>
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Replies</p>
+            <p className="kicker">Replies</p>
             <p className="mt-2 font-serif text-[3.25rem] leading-none tracking-tight">{replies}</p>
             <p className="mt-2 text-sm text-muted">yes so far</p>
           </div>

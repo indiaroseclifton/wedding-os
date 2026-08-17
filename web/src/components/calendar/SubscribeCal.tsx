@@ -28,7 +28,7 @@ export function SubscribeCal() {
 
   return (
     <section className="glass-panel rounded-2xl p-4">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Calendar</p>
+      <p className="kicker kicker-moss">Calendar</p>
       <p className="mt-1 font-serif text-2xl">Subscribe</p>
       <p className="mt-1 text-sm text-muted">
         The day, extra events, run of show, hotel cutoffs, payment dues. Add once — it updates.

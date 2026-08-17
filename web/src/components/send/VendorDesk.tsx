@@ -56,7 +56,7 @@ export function VendorDesk({
   return (
     <div className="mt-10 space-y-6 print:hidden">
       <section className="rounded-2xl border border-line bg-surface p-5">
-        <p className="text-[11px] uppercase tracking-[0.16em] text-moss">Your desk</p>
+        <p className="kicker kicker-moss">Your desk</p>
         <label className="mt-3 block text-sm">
           Your name
           <input

@@ -29,7 +29,7 @@ export default function MobilePage() {
       <InstallApp />
 
       <section>
-        <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-moss">Capacitor wrapper</p>
+        <p className="mb-2 kicker kicker-moss">Capacitor wrapper</p>
         <p className="mb-3 text-sm text-muted">
           The shell is already written. You only need a Mac and Xcode to see it on an iPhone.
         </p>
@@ -62,7 +62,7 @@ export default function MobilePage() {
 
       {MOBILE_STEPS.map((phase) => (
         <section key={phase.phase}>
-          <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-moss">{phase.phase}</p>
+          <p className="mb-2 kicker kicker-moss">{phase.phase}</p>
           <ol className="space-y-2">
             {phase.items.map((item, i) => (
               <li

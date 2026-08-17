@@ -49,7 +49,7 @@ export function PartyMyAttire({
     <div className="space-y-6">
       {palette && (
         <div className="rounded-2xl border border-line bg-surface p-4 text-sm">
-          <p className="text-[11px] uppercase tracking-wide text-muted">Palette</p>
+          <p className="kicker">Palette</p>
           <p className="mt-1 whitespace-pre-wrap">{palette}</p>
         </div>
       )}

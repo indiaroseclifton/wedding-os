@@ -68,7 +68,7 @@ export default function OnboardPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8 py-6">
       <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">The desk follows this</p>
+        <p className="kicker kicker-moss">The desk follows this</p>
         <h1 className="mt-2 font-serif text-4xl sm:text-5xl">What kind of day is it?</h1>
         <p className="mt-2 max-w-lg text-sm text-muted">
           Not a theme. Whether there’s an aisle, a dinner, or just the two of you. Everything else reads this.

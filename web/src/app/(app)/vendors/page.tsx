@@ -34,13 +34,13 @@ export default async function VendorsPage() {
       <div className="span-4 flex flex-wrap gap-2 lg:justify-end">
         <Link
           href="/vendors/browse"
-          className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-medium text-moss-fg"
+          className="btn btn-primary"
         >
           Browse directory
         </Link>
         <Link
           href="/vendors/new"
-          className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm"
+          className="btn btn-ghost"
         >
           Add your own
         </Link>
@@ -81,7 +81,7 @@ export default async function VendorsPage() {
             />
           </div>
           <aside className="span-4 space-y-4 border-t border-line pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-1">
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">On the books</p>
+            <p className="kicker">On the books</p>
             <p className="font-serif text-5xl leading-none tracking-tight">{booked}</p>
             <p className="text-sm text-muted">booked of {vendors.length}</p>
             <Link href="/vendors/contracts" className="inline-block text-sm underline underline-offset-4">

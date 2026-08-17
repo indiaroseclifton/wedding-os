@@ -30,7 +30,7 @@ export function EmptyState({
           {primaryHref && primaryLabel ? (
             <Link
               href={primaryHref}
-              className="inline-flex w-full items-center justify-center rounded-lg bg-moss px-3 py-2.5 text-sm font-medium text-moss-fg hover:bg-moss/90 sm:w-auto"
+              className="btn btn-primary w-full sm:w-auto"
             >
               {primaryLabel}
             </Link>
@@ -38,7 +38,7 @@ export function EmptyState({
           {secondaryHref && secondaryLabel ? (
             <Link
               href={secondaryHref}
-              className="inline-flex w-full items-center justify-center rounded-lg border border-line bg-surface px-3 py-2.5 text-sm font-medium text-ink hover:bg-paper sm:w-auto"
+              className="btn btn-ghost w-full sm:w-auto"
             >
               {secondaryLabel}
             </Link>

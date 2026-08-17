@@ -155,7 +155,7 @@ export default function BudgetPage() {
       <section className="rounded-2xl border border-line bg-surface p-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-moss">In play</p>
+            <p className="kicker kicker-moss">In play</p>
             <p className="font-serif text-5xl">{money(committed)}</p>
             <p className="mt-1 text-sm text-muted">
               {cap ? `${money(cap)} cap` : "Set a cap"}

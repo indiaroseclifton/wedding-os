@@ -19,7 +19,7 @@ export default async function DiscoverVendorProfile({
       <div className="relative pt-24">
         <MarketingNav signedIn={Boolean(session)} tone="light" />
         <article className="mx-auto max-w-2xl px-5 pb-20 sm:px-10">
-          <p className="text-[11px] uppercase tracking-wider text-muted">
+          <p className="kicker">
             {v.category} · {v.city}
           </p>
           <h1 className="mt-2 font-serif text-5xl">{v.name}</h1>

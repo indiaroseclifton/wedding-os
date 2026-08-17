@@ -97,7 +97,7 @@ export function VendorHero({
         <img src={face.cover} alt="" className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-          <p className="text-[11px] uppercase tracking-[0.2em] text-ivory/80">{face.eyebrow}</p>
+          <p className="kicker text-ivory/80">{face.eyebrow}</p>
           <h1 className="mt-1 font-serif text-4xl leading-none text-ivory sm:text-5xl">{vendor.name}</h1>
           <p className="mt-2 text-sm text-ivory/85">
             {vendor.category}

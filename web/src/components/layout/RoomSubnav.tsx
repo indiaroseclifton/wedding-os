@@ -18,7 +18,7 @@ export function RoomSubnav({ room }: { room: keyof typeof ROOM_SUBNAV }) {
             href={item.href}
             scroll={false}
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-              on ? "bg-moss/90 text-ivory backdrop-blur" : "bg-white/35 text-ink-soft hover:bg-white/55"
+              on ? "bg-moss text-moss-fg" : "bg-surface text-ink-soft hover:bg-paper"
             }`}
           >
             {item.label}

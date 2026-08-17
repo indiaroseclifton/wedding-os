@@ -28,7 +28,7 @@ export default function ImprovementsPage() {
 
       {IMPROVEMENTS.map((phase) => (
         <section key={phase.phase}>
-          <p className="mb-2 text-[11px] uppercase tracking-[0.16em] text-moss">{phase.phase}</p>
+          <p className="mb-2 kicker kicker-moss">{phase.phase}</p>
           <ul className="space-y-2">
             {phase.items.map((item) => (
               <li

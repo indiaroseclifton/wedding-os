@@ -26,7 +26,7 @@ export function PacketView({
   return (
     <article className="space-y-8 text-ink">
       <header className="border-b border-line pb-5">
-        <p className="text-[11px] uppercase tracking-[0.22em] text-moss">Vendor packet</p>
+        <p className="kicker kicker-moss">Vendor packet</p>
         <h1 className="mt-1 font-serif text-4xl leading-tight">{packet.vendor.name}</h1>
         <p className="mt-1 text-sm text-muted">
           {packet.couple}
@@ -38,14 +38,14 @@ export function PacketView({
 
       {note?.trim() && (
         <section className="rounded-2xl border border-line bg-surface px-5 py-4">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-moss">A note from us</p>
+          <p className="kicker kicker-moss">A note from us</p>
           <p className="mt-2 whitespace-pre-wrap font-serif text-xl leading-snug">{note.trim()}</p>
         </section>
       )}
 
       {packet.handoffNote?.trim() && (
         <section className="rounded-2xl border border-line bg-surface px-5 py-4">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-moss">Extra notes</p>
+          <p className="kicker kicker-moss">Extra notes</p>
           <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{packet.handoffNote.trim()}</p>
         </section>
       )}
@@ -159,7 +159,7 @@ export function PacketView({
           <h2 className="font-serif text-2xl">Cue book</h2>
           {packet.cues.acts.map((act) => (
             <div key={act.act} className="mt-4">
-              <h3 className="text-[11px] uppercase tracking-[0.16em] text-moss">{act.act}</h3>
+              <h3 className="kicker kicker-moss">{act.act}</h3>
               <ul className="mt-2 divide-y divide-line rounded-2xl border border-line bg-surface">
                 {act.rows.map((r) => (
                   <li key={r.label} className="px-4 py-3 text-sm">

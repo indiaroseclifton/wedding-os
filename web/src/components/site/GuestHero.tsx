@@ -32,7 +32,7 @@ export function GuestHero({
       >
         <motion.p
           variants={fadeUp}
-          className="text-[11px] font-medium uppercase tracking-[0.28em] text-moss"
+          className="kicker kicker-moss"
         >
           You're invited
         </motion.p>

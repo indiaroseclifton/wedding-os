@@ -18,7 +18,7 @@ export default async function DiscoverVendorsPage({
       <div className="relative pb-8 pt-24">
         <MarketingNav signedIn={Boolean(session)} tone="light" />
         <div className="mx-auto max-w-6xl px-5 sm:px-10">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-moss">Marketplace</p>
+          <p className="kicker kicker-moss">Marketplace</p>
           <h1 className="mt-2 font-serif text-5xl">Find vendors</h1>
           <p className="mt-2 max-w-xl text-sm text-muted">
             Search a city without signing in. Demo Atlanta listings stay below as a fallback.

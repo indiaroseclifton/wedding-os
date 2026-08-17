@@ -11,7 +11,7 @@ export function SundayCard({ next, brief }: { next: WeekItem | null; brief: stri
   }
   return (
     <div className="max-w-xl space-y-3">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-moss">This hour</p>
+      <p className="kicker kicker-moss">This hour</p>
       <p className="font-serif text-3xl leading-tight">{next.title}</p>
       <p className="text-sm leading-6 text-ink-soft">{next.detail || brief}</p>
       <div className="flex flex-wrap gap-2">

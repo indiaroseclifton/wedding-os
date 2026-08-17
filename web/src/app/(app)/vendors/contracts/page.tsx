@@ -34,7 +34,7 @@ export default async function VendorContractsPage() {
     <div className="space-y-6">
       <RoomSubnav room="vendors" />
       <div>
-        <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Vendors</p>
+        <p className="kicker kicker-moss">Vendors</p>
         <h1 className="mt-1 font-serif text-4xl">Contracts</h1>
         <p className="mt-2 max-w-xl text-sm text-muted">
           One desk for every agreement — who signed, what’s flagged, what’s still just a handshake.

@@ -5,9 +5,9 @@ import { motion, fadeUp, stagger } from "@/components/motion";
 import type { WeekItem, WeekUrgency } from "@/lib/this-week";
 
 const URGENCY: Record<WeekUrgency, { label: string; className: string }> = {
-  now: { label: "Do now", className: "bg-rose-50 text-rose-800" },
+  now: { label: "Do now", className: "bg-clay-soft text-clay" },
   week: { label: "This week", className: "bg-moss-soft text-moss" },
-  soon: { label: "Soon", className: "bg-slate-100 text-slate-600" },
+  soon: { label: "Soon", className: "bg-paper text-muted" },
 };
 
 export function WeekList({ items }: { items: WeekItem[] }) {

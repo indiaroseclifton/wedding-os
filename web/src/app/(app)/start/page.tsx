@@ -34,7 +34,7 @@ export default function StartPage() {
   return (
     <div className="mx-auto max-w-lg space-y-8 py-6">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-moss">First wedding</p>
+        <p className="kicker kicker-moss">First wedding</p>
         <h1 className="mt-2 font-serif text-4xl">Three things. Then the desk is yours.</h1>
         <p className="mt-2 text-sm text-muted">Names, someone you’ve hired, and a site you can text.</p>
       </div>

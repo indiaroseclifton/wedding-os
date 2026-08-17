@@ -40,7 +40,7 @@ export default async function PlanningPage() {
 
       <div className="mt-8 grid gap-3 lg:grid-cols-3">
         <Link href="/planning/vision" className="rounded-2xl border border-line bg-surface p-5">
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-moss">
+          <p className="flex items-center gap-2 kicker kicker-moss">
             <Icon name="heart" className="h-3.5 w-3.5" /> Vision
           </p>
           <p className="mt-2 font-serif text-2xl">{vibe || "Not decided"}</p>
@@ -50,7 +50,7 @@ export default async function PlanningPage() {
         </Link>
 
         <Link href="/checklist" className="rounded-2xl border border-line bg-surface p-5">
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-moss">
+          <p className="flex items-center gap-2 kicker kicker-moss">
             <Icon name="check" className="h-3.5 w-3.5" /> Checklist
           </p>
           <p className="mt-2 font-serif text-2xl">{pct}%</p>
@@ -63,7 +63,7 @@ export default async function PlanningPage() {
         </Link>
 
         <Link href="/timeline" className="rounded-2xl border border-line bg-surface p-5">
-          <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-moss">
+          <p className="flex items-center gap-2 kicker kicker-moss">
             <Icon name="calendar" className="h-3.5 w-3.5" /> Next milestone
           </p>
           <p className="mt-2 font-serif text-2xl leading-tight">{nextMile?.title || "Add dates"}</p>
@@ -76,7 +76,7 @@ export default async function PlanningPage() {
       </div>
 
       <Link href="/decisions" className="mt-3 block rounded-2xl border border-line bg-surface p-5">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Decisions</p>
+        <p className="kicker kicker-moss">Decisions</p>
         <p className="mt-2 font-serif text-2xl">
           {openCalls ? `${openCalls} still open` : decisions.length ? "All called" : "What a coordinator will ask"}
         </p>

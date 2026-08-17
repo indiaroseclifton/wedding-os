@@ -27,7 +27,7 @@ export function SiteGate({ token }: { token: string }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-5 text-ink">
       <form onSubmit={submit} className="w-full max-w-sm space-y-4 text-center">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-moss">Private</p>
+        <p className="kicker kicker-moss">Private</p>
         <h1 className="font-serif text-4xl">This wedding is for invited guests.</h1>
         <input
           type="password"

@@ -59,15 +59,15 @@ export default async function DietaryPage() {
 
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-2xl border border-line bg-surface p-4">
-          <p className="text-[11px] uppercase tracking-wide text-muted">Eating</p>
+          <p className="kicker">Eating</p>
           <p className="font-serif text-3xl">{attending.length}</p>
         </div>
         <div className="rounded-2xl border border-line bg-surface p-4">
-          <p className="text-[11px] uppercase tracking-wide text-muted">Notes</p>
+          <p className="kicker">Notes</p>
           <p className="font-serif text-3xl">{withDiet.length}</p>
         </div>
         <div className="rounded-2xl border border-line bg-surface p-4">
-          <p className="text-[11px] uppercase tracking-wide text-muted">Silent</p>
+          <p className="kicker">Silent</p>
           <p className="font-serif text-3xl">{none}</p>
         </div>
       </div>

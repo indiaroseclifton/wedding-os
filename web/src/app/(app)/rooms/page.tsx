@@ -8,7 +8,7 @@ export default function RoomsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.18em] text-muted">The house</p>
+        <p className="kicker">The house</p>
         <h1 className="mt-1 font-serif text-4xl">Rooms</h1>
         <p className="mt-2 max-w-lg text-sm text-muted">Three you live in. Three you visit.</p>
       </div>

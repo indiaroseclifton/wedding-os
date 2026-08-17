@@ -47,7 +47,7 @@ export function CueSheet({
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">Cue sheet</p>
+          <p className="kicker kicker-moss">Cue sheet</p>
           <h2 className="font-serif text-3xl">What the DJ actually needs</h2>
           <p className="mt-1 text-sm text-muted">
             {filled} of {visibleCues.length} moments set. Skip the ones you’re not doing.
@@ -138,7 +138,7 @@ export function CueSheet({
                         />
                       </label>
                       <div>
-                        <p className="mb-1 text-[11px] uppercase tracking-wider text-muted">Inspiration</p>
+                        <p className="mb-1 kicker">Inspiration</p>
                         <div className="flex flex-wrap gap-1.5">
                           {def.suggestions.map((s) => {
                             const line = `${s.title} — ${s.artist}`;

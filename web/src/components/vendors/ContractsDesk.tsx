@@ -55,15 +55,15 @@ export function ContractsDesk({ rows }: { rows: ContractRow[] }) {
     <div className="space-y-6">
       <div className="grid gap-3 sm:grid-cols-3">
         <p className="glass-panel rounded-2xl p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Agreements</span>
+          <span className="block kicker">Agreements</span>
           <span className="font-serif text-3xl">{rows.length}</span>
         </p>
         <p className="glass-panel rounded-2xl p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Still a handshake</span>
+          <span className="block kicker">Still a handshake</span>
           <span className="font-serif text-3xl">{missing}</span>
         </p>
         <p className="glass-panel rounded-2xl p-4">
-          <span className="block text-[11px] uppercase tracking-wide text-muted">Flags to ask</span>
+          <span className="block kicker">Flags to ask</span>
           <span className="font-serif text-3xl">{flagged}</span>
         </p>
       </div>
@@ -105,7 +105,7 @@ export function ContractsDesk({ rows }: { rows: ContractRow[] }) {
                     {r.namedLead ? ` · ${r.namedLead}` : ""}
                   </p>
                 </div>
-                <span className="text-[11px] uppercase tracking-wide text-moss">
+                <span className="kicker kicker-moss">
                   {r.flags > 0 ? `${r.flags} flag${r.flags === 1 ? "" : "s"}` : r.reviewedAt ? "reviewed" : r.contractUrl ? "linked" : "missing"}
                 </span>
               </div>

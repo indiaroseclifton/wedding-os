@@ -12,7 +12,7 @@ export default function IntegrationsPage() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">Connect</p>
+        <p className="kicker kicker-moss">Connect</p>
         <h1 className="mt-1 text-2xl font-medium tracking-tight">Integrations</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Spotify, Apple Music, and weather are live. The rest wait on their own keys.

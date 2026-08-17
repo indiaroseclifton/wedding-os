@@ -439,7 +439,7 @@ export function SeatingClient({
         onSubmit={saveConstraint}
         className="flex flex-wrap items-end gap-2 rounded-2xl border border-line bg-surface p-4 print:hidden"
       >
-        <p className="w-full text-[11px] uppercase tracking-[0.16em] text-moss">Rules</p>
+        <p className="w-full kicker kicker-moss">Rules</p>
         <label className="text-sm">
           Kind
           <select

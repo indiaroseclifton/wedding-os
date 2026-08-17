@@ -63,7 +63,7 @@ export function ClauseStudio({
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Clause studio</p>
+        <p className="kicker kicker-moss">Clause studio</p>
         <h1 className="mt-1 font-serif text-4xl">{name}</h1>
         <p className="mt-1 text-sm text-muted">
           Mark each clause. Flagged ones write the email for you.

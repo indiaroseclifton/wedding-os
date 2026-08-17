@@ -256,7 +256,7 @@ function MusicInner() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-moss">DJ packet</p>
+        <p className="kicker kicker-moss">DJ packet</p>
         <h1 className="mt-1 text-2xl font-medium tracking-tight">Music</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Processional, first dance, last song — then a short must-play. That’s the brief DJs actually use.

@@ -212,7 +212,7 @@ export function FloralStudio() {
     <div className="space-y-5 pb-20">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-moss">DIY · Floral studio</p>
+          <p className="kicker kicker-moss">DIY · Floral studio</p>
           <h1 className="mt-1 font-serif text-4xl">Build the arrangement.</h1>
           <p className="mt-1 text-sm text-muted">
             Tap a stem. Drag it. Steal a look. The count becomes a shopping list.
@@ -280,7 +280,7 @@ export function FloralStudio() {
                     </li>
                   ))}
                 </ul>
-                <p className="mt-3 text-[11px] uppercase tracking-wide text-moss">
+                <p className="mt-3 kicker kicker-moss">
                   {fits.length} stems · lock this palette
                 </p>
               </button>
@@ -300,7 +300,7 @@ export function FloralStudio() {
               <div className="p-4">
                 <p className="font-serif text-2xl">{look.title}</p>
                 <p className="mt-1 text-sm text-muted">{look.why}</p>
-                <p className="mt-2 text-[11px] uppercase tracking-wide text-moss">Use this recipe</p>
+                <p className="mt-2 kicker kicker-moss">Use this recipe</p>
               </div>
             </button>
           ))}
@@ -581,7 +581,7 @@ export function FloralStudio() {
             {msg && <p className="text-xs text-moss">{msg}</p>}
             {saved.length > 0 && (
               <div>
-                <p className="mb-1 text-[11px] uppercase tracking-wide text-muted">Your looks</p>
+                <p className="mb-1 kicker">Your looks</p>
                 <ul className="space-y-1">
                   {saved.map((m) => (
                     <li key={m.id}>

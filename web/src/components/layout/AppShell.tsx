@@ -129,9 +129,7 @@ export function AppShell({
         }`}
       >
         <div className="min-w-0">
-          <p className={`text-[11px] font-medium uppercase tracking-[0.22em] ${home ? "text-ink/45" : "text-muted"}`}>
-            {roomLabel || "Home"}
-          </p>
+          <p className={`kicker ${home ? "kicker-soft" : ""}`}>{roomLabel || "Home"}</p>
           {!home && (
             <p className="truncate text-sm text-ink-soft lg:hidden">
               {names}
@@ -161,7 +159,7 @@ export function AppShell({
           <div className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-3xl bg-paper px-5 pb-10 pt-5 sm:inset-6 sm:rounded-3xl sm:pb-6">
             <div className="mb-5 flex items-start justify-between">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.18em] text-muted">
+                <p className="kicker">
                   {date}
                   {location ? `  ·  ${location}` : ""}
                 </p>

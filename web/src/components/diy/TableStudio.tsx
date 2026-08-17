@@ -66,7 +66,7 @@ export function TableStudio() {
   return (
     <div className="space-y-5 pb-16">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-moss">DIY · Tablescape</p>
+        <p className="kicker kicker-moss">DIY · Tablescape</p>
         <h1 className="mt-1 font-serif text-4xl">Set one table. Multiply it.</h1>
         <p className="mt-1 text-sm text-muted">
           Height, candles, talk-over line — then shopping for every table. Save the look like floral.

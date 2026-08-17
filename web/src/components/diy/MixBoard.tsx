@@ -40,7 +40,7 @@ export function MixBoard() {
 
   return (
     <section className="rounded-[1.4rem] border border-line bg-surface p-5">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-moss">The mix</p>
+      <p className="kicker kicker-moss">The mix</p>
       <h2 className="mt-1 font-serif text-3xl">Hire this. Make that.</h2>
       <p className="mt-1 text-sm text-muted">Per piece — not one slider for the whole wedding.</p>
       <ul className="mt-4 divide-y divide-line">

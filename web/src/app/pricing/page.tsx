@@ -30,7 +30,7 @@ export default async function PricingPage() {
       <div className="relative pt-24">
         <MarketingNav signedIn={Boolean(session)} tone="light" />
         <div className="mx-auto max-w-5xl px-5 pb-20 sm:px-10">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-moss">Pricing</p>
+          <p className="kicker kicker-moss">Pricing</p>
           <h1 className="mt-2 font-serif text-5xl">Simple, on purpose.</h1>
           <p className="mt-3 max-w-lg text-sm text-muted">
             You’re on Desk — free — while we finish discovery. No card.

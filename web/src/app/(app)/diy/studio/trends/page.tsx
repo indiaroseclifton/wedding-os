@@ -17,7 +17,7 @@ export default function DecorTrendsPage() {
   return (
     <div className="space-y-6 pb-16">
       <div>
-        <p className="text-[11px] uppercase tracking-[0.2em] text-moss">DIY · 2026</p>
+        <p className="kicker kicker-moss">DIY · 2026</p>
         <h1 className="mt-1 font-serif text-4xl">What’s actually in.</h1>
         <p className="mt-2 max-w-xl text-sm text-muted">
           Event decoration this year — meadow aisles, fruit on the table, lamps instead of
@@ -77,7 +77,7 @@ export default function DecorTrendsPage() {
               >
                 <img src={t.photo} alt="" className="aspect-[16/10] h-full w-full object-cover sm:aspect-auto" />
                 <span className="p-4">
-                  <span className="text-[11px] uppercase tracking-wide text-moss">{t.year}</span>
+                  <span className="kicker kicker-moss">{t.year}</span>
                   <span className="mt-1 block font-serif text-2xl">{t.name}</span>
                   <span className="mt-1 block text-sm text-muted">{t.line}</span>
                   <span className="mt-2 block text-xs">
@@ -107,15 +107,15 @@ export default function DecorTrendsPage() {
                   </p>
                   <div className="grid gap-3 sm:grid-cols-3">
                     <p>
-                      <span className="block text-[11px] uppercase tracking-wide text-moss">DIY it</span>
+                      <span className="block kicker kicker-moss">DIY it</span>
                       {t.diy}
                     </p>
                     <p>
-                      <span className="block text-[11px] uppercase tracking-wide text-muted">Hire it</span>
+                      <span className="block kicker">Hire it</span>
                       {t.hire}
                     </p>
                     <p>
-                      <span className="block text-[11px] uppercase tracking-wide text-muted">Skip</span>
+                      <span className="block kicker">Skip</span>
                       {t.skip}
                     </p>
                   </div>

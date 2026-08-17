@@ -85,7 +85,7 @@ export function SendComposer({
     <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
       <aside className="space-y-5 print:hidden lg:sticky lg:top-6 lg:self-start">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Include</p>
+          <p className="kicker kicker-moss">Include</p>
           <p className="mt-1 text-xs text-muted">
             {readyCount} of {on.length} live
           </p>
@@ -189,7 +189,7 @@ export function SendComposer({
       </aside>
 
       <div className="rounded-[1.6rem] border border-line bg-surface px-5 py-6 sm:px-8">
-        <p className="mb-4 text-[11px] uppercase tracking-[0.18em] text-moss print:hidden">
+        <p className="mb-4 kicker kicker-moss print:hidden">
           Preview · {on.map((id) => ATTACHMENTS[id].label).join(" · ")}
         </p>
         <PacketView packet={packet} attachments={on} note={note} />

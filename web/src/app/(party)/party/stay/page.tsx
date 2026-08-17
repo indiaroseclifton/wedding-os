@@ -11,7 +11,7 @@ export default async function PartyStayPage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-8">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-moss">Wedding party</p>
+      <p className="kicker kicker-moss">Wedding party</p>
       <h1 className="mt-1 font-serif text-4xl">Where you stay</h1>
       <p className="mt-1 text-sm text-muted">The couple’s hotel block and how to get there.</p>
 
