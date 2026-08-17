@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandMark } from "@/components/brand/BrandMark";
+import { Wordmark } from "@/components/brand/Wordmark";
 
 export function MarketingNav({
   signedIn,
@@ -11,13 +11,7 @@ export function MarketingNav({
   const light = tone === "light";
   return (
     <header className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 py-5 sm:px-10">
-      <Link
-        href="/"
-        className={`flex items-center gap-2 font-serif text-lg tracking-tight ${light ? "text-ink" : "text-ivory"}`}
-      >
-        <BrandMark className={light ? "text-moss" : "text-champagne"} />
-        Vowfolk
-      </Link>
+      <Wordmark href="/" className={light ? "text-ink" : "text-ivory"} />
       <nav className={`hidden items-center gap-6 text-xs font-medium sm:flex ${light ? "text-ink-soft" : "text-white/70"}`}>
         <Link href="/discover">Discover</Link>
         <Link href="/discover/vendors">Vendors</Link>

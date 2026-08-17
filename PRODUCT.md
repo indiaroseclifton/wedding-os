@@ -12,7 +12,7 @@ Most planners sell **one wedding**: 12–18 months, two venues, a processional, 
 
 Couples are not shopping. They are making and coordinating. Browse → shortlist → book is table stakes. The product is Studio (quantities, sources, boxes) plus what happens after hire: one packet, one guest list that seats, one week, a day that is not forced down an aisle, and ninety days of thank-yous.
 
-Design is part of the product. Moss, ivory, clay. Serif titles. Photograph covers. Quiet type. If a new surface looks like a SaaS checklist tab, it failed.
+Design is the product. Cream `#FAF7F2`, sage `#B7C2AE`, blush `#F6DBD6`, charcoal `#272727`. Playfair headings, Lora italic, Inter body. Settings can still change theme, type, glass, and motion. If a new surface looks like a SaaS checklist tab, it failed.
 
 ## Shape (shipped)
 

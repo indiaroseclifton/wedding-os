@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ROOM_TREE, type NavNode } from "@/lib/rooms";
 import { NAV_ITEMS } from "@/lib/visual-rooms";
 import { roomVisible } from "@/lib/shape";
@@ -24,98 +23,40 @@ export function currentRoomLabel(pathname: string) {
 
 export function DeskNav({
   shape,
-  guestCount,
-  vendorCount,
 }: {
   shape?: string;
   guestCount?: number;
   vendorCount?: number;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const current = roomForPath(pathname);
-  const [openRoom, setOpenRoom] = useState<string | null>(null);
+  const kids = current
+    ? ROOM_TREE[current]
+        .filter((n) => roomVisible(n.href, shape))
+        .map((n) => ({
+          ...n,
+          children: n.children?.filter((c) => roomVisible(c.href, shape)),
+        }))
+    : [];
 
-  useEffect(() => {
-    for (const list of Object.values(ROOM_TREE)) {
-      for (const node of list) {
-        router.prefetch(node.href);
-        node.children?.forEach((c) => router.prefetch(c.href));
-      }
-    }
-  }, [router]);
-
-  function countFor(href: string) {
-    if (href === "/guests" && guestCount != null) return String(guestCount);
-    if (href === "/vendors" && vendorCount != null) return String(vendorCount);
-    return null;
-  }
+  if (!kids.length) return null;
 
   return (
-    <nav className="space-y-0.5" aria-label="Rooms">
-      {NAV_ITEMS.map((item) => {
-        const on = tabOn(pathname, item.match);
-        const kids = item.room
-          ? ROOM_TREE[item.room]
-              .filter((n) => roomVisible(n.href, shape))
-              .map((n) => ({
-                ...n,
-                children: n.children?.filter((c) => roomVisible(c.href, shape)),
-              }))
-          : null;
-        const expanded = item.room != null && openRoom === item.room;
-        const count = countFor(item.href);
+    <nav className="space-y-0.5 px-2 py-4" aria-label="In this room">
+      {kids.map((child: NavNode) => {
+        const on = pathname === child.href || (child.href !== kids[0].href && pathname.startsWith(child.href + "/"));
         return (
-          <div key={item.href}>
-            <div className="flex items-center">
-              <Link
-                href={item.href}
-                scroll={false}
-                prefetch
-                className={`flex min-h-11 min-w-0 flex-1 items-center justify-between rounded-full px-3 text-[15px] ${
-                  on
-                    ? "bg-champagne/80 font-medium text-ink"
-                    : "text-ink-soft hover:bg-paper hover:text-ink"
-                }`}
-              >
-                <span>{item.label}</span>
-                {count ? <span className={`text-xs tabular-nums ${on ? "text-muted" : "text-ink/35"}`}>{count}</span> : null}
-              </Link>
-              {kids && (
-                <button
-                  type="button"
-                  aria-expanded={expanded}
-                  aria-label={`${expanded ? "Hide" : "Show"} ${item.label}`}
-                  onClick={() => setOpenRoom(expanded ? null : item.room)}
-                  className={`flex h-11 w-9 shrink-0 items-center justify-center text-lg ${
-                    on ? "text-muted" : "text-ink/35"
-                  }`}
-                >
-                  {expanded ? "–" : "+"}
-                </button>
-              )}
-            </div>
-            {kids && expanded && (
-              <ul className="mb-2 ml-2 mt-0.5 space-y-0.5 border-l border-line pl-2">
-                {kids.map((child: NavNode) => (
-                  <li key={child.href + child.label}>
-                    <Link
-                      href={child.href}
-                      scroll={false}
-                      prefetch
-                      className={`block rounded-md px-2 py-1.5 text-[13px] ${
-                        pathname === child.href || pathname.startsWith(child.href + "/")
-                          ? "text-ink"
-                          : "text-muted hover:text-ink"
-                      }`}
-                    >
-                      {child.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <Link
+            key={child.href + child.label}
+            href={child.href}
+            scroll={false}
+            prefetch
+            className={`flex min-h-11 items-center rounded-lg px-3 text-[14px] ${
+              on ? "bg-paper font-medium text-ink" : "text-ink-soft hover:bg-paper/70 hover:text-ink"
+            }`}
+          >
+            {child.label}
+          </Link>
         );
       })}
     </nav>

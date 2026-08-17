@@ -1,20 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f3efe6;
-  --color-surface: #fffcf7;
-  --color-ink: #12110f;
-  --color-ink-soft: #5a564f;
-  --color-muted: #5c5850;
-  --color-line: #e4e0d8;
-  --color-moss: #1c3d32;
-  --color-moss-fg: #f6f5f2;
-  --color-moss-soft: #e6eeea;
-  --color-clay: #9a4034;
-  --color-clay-soft: #f3c4bb;
-  --color-night: #0c0e0b;
-  --color-ivory: #f6f1e8;
-  --color-champagne: #eadec8;
+  --color-paper: #faf7f2;
+  --color-surface: #ffffff;
+  --color-ink: #272727;
+  --color-ink-soft: #5c5c5c;
+  --color-muted: #8a8680;
+  --color-line: #e8e6e2;
+  --color-moss: #272727;
+  --color-moss-fg: #fffbf6;
+  --color-moss-soft: #f0ece4;
+  --color-clay: #c7a6a6;
+  --color-clay-soft: #f6dbd6;
+  --color-night: #272727;
+  --color-ivory: #fffbf6;
+  --color-champagne: #dccfc3;
+  --color-sage: #b7c2ae;
+  --color-blush: #f6dbd6;
+  --color-taupe: #dccfc3;
+  --color-dusty: #c7a6a6;
 
   --color-slate-50: #f6f5f2;
   --color-slate-100: #eceae4;
@@ -39,19 +43,20 @@
   --color-amber-800: #6b4e1e;
   --color-amber-900: #4e3a16;
 
-  --font-sans: var(--font-geist), "Geist", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), "Playfair Display", ui-serif, Georgia, serif;
+  --font-display: var(--font-lora), "Lora", ui-serif, Georgia, serif;
   --radius-lg: 0.625rem;
   --radius-xl: 0.875rem;
 }
 
 :root {
-  --background: #f6f5f2;
-  --foreground: #12110f;
-  --desk-rail: 15.75rem;
+  --background: #faf7f2;
+  --foreground: #272727;
+  --desk-rail: 15rem;
   --desk-gutter: 2rem;
   --desk-gutter-sm: 1.15rem;
-  --shadow-lift: 0 28px 64px -24px rgb(28 22 14 / 0.28);
+  --shadow-lift: 0 8px 24px -4px rgb(0 0 0 / 0.08);
 }
 
 html {
@@ -529,15 +534,15 @@ html {
 }
 
 @media (min-width: 1024px) {
-  .desk {
+  .desk.has-rail {
     grid-template-columns: var(--desk-rail) minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     grid-template-areas:
-      "rail mast"
+      "mast mast"
       "rail canvas";
   }
 
-  .desk-rail {
+  .desk.has-rail .desk-rail {
     display: flex;
     min-height: 0;
     flex-direction: column;
@@ -581,11 +586,11 @@ html {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  min-height: 3.75rem;
-  padding: 0.5rem 1.25rem;
+  min-height: 4.25rem;
+  padding: 0.5rem 1.5rem;
   padding-top: max(0.5rem, env(safe-area-inset-top));
-  background: color-mix(in srgb, var(--color-paper) 78%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-line) 70%, transparent);
+  background: #fffbf6;
+  border-bottom: 1px solid var(--color-line);
 }
 
 .desk.is-home .desk-canvas {
@@ -697,12 +702,12 @@ html {
 }
 
 .home-script {
-  font-family: var(--font-serif);
-  font-size: 1.28rem;
+  font-family: var(--font-display), "Lora", ui-serif, Georgia, serif;
+  font-size: 1.15rem;
   font-style: italic;
   font-weight: 400;
   letter-spacing: 0.01em;
-  color: var(--color-ink-soft);
+  color: var(--color-dusty);
 }
 
 .home-stat {
@@ -815,8 +820,9 @@ html {
 
 .panel {
   background: var(--color-surface);
-  border-radius: 1.35rem;
-  box-shadow: 0 22px 50px -30px rgb(28 22 14 / 0.22);
+  border-radius: 1rem;
+  border: 1px solid var(--color-line);
+  box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.06);
 }
 
 .paper {
@@ -888,26 +894,37 @@ html {
   align-items: center;
   justify-content: center;
   min-height: 2.75rem;
-  padding: 0 1rem;
-  border-radius: 999px;
-  font-size: 0.875rem;
+  padding: 0 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background 180ms ease, color 180ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .btn:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 .btn-primary {
-  background: var(--color-moss);
-  color: var(--color-moss-fg);
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+
+.btn-primary:hover {
+  background: #3a3a3a;
 }
 
 .btn-ghost {
   border: 1px solid var(--color-line);
   background: var(--color-surface);
   color: var(--color-ink);
+}
+
+.btn-sage {
+  background: #5c6b52;
+  color: #fffbf6;
 }
 
 .btn-line {

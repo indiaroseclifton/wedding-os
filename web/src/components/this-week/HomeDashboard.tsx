@@ -3,17 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Icon } from "@/components/icons";
 import { money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
-
-const STRIP = [
-  { href: "/planning", label: "Plan", icon: "calendar" },
-  { href: "/guests", label: "People", icon: "users" },
-  { href: "/studio", label: "Studio", icon: "scissors" },
-  { href: "/day-of", label: "The day", icon: "plate" },
-  { href: "/after", label: "After", icon: "gift" },
-] as const;
 
 export function HomeDashboard({
   names,
@@ -47,9 +38,12 @@ export function HomeDashboard({
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(weekItems.slice(0, 4));
-  const headline = days == null ? "—" : days === 0 ? "0" : String(Math.abs(days));
+  const first = names.split(" & ")[0] || names;
+  const headline = days == null ? "—" : String(Math.abs(days));
   const sub = days == null ? "Set the date" : days === 0 ? "It’s the day" : days > 0 ? "days to go" : "days ago";
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
+  const yes = guestResponded;
+  const pending = Math.max(0, guestTotal - guestResponded);
 
   async function dismiss(id: string) {
     setOpen((rows) => rows.filter((r) => r.id !== id));
@@ -62,194 +56,90 @@ export function HomeDashboard({
   }
 
   return (
-    <div className="home-stage">
-      <img src="/brand/blossom.jpg" alt="" className="home-bloom" />
-      <div className="home-bloom-wash" />
-
-      <div className="home-grid">
-        <div className="home-hero">
-          <h1 className="font-serif text-[clamp(2.55rem,4.4vw,3.4rem)] leading-none tracking-[-0.038em] text-ink">
-            {names}
+    <div className="space-y-6 px-4 py-6 sm:px-8">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="kicker">Vowfolk</p>
+          <h1 className="mt-2 font-serif text-[clamp(2.2rem,5vw,3.2rem)] leading-none tracking-tight">
+            Welcome back, {first}
           </h1>
-          {dateLine ? <p className="kicker mt-3">{dateLine}</p> : null}
-          <p className="home-count mt-4">{headline}</p>
-          <p className="home-days mt-1">{sub}</p>
-          <p className="home-script mt-4">
-            {season === "after" ? tagline || "The three months." : tagline || "The adventure begins…"}
+          <p className="home-script mt-2">
+            {season === "after" ? tagline || "The three months." : "Let’s create a day that feels like you."}
           </p>
-          <Link
-            href={season === "after" ? "/after" : "/planning"}
-            className="mt-5 inline-flex h-10 items-center rounded-full bg-moss px-5 text-[13px] font-medium tracking-wide text-moss-fg"
-          >
-            {season === "after" ? "Today’s card" : "View our plan"}
-          </Link>
         </div>
+      </header>
 
-        <aside className="home-week panel px-5 py-5">
-          <div className="flex items-center justify-between">
-            <p className="kicker">{season === "after" ? "The three months" : "What next"}</p>
-            <Link href="/after" className="text-[12px] text-muted hover:text-ink">
-              After
-            </Link>
+      <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+        <article className="panel overflow-hidden">
+          <div className="grid sm:grid-cols-2">
+            <div className="p-6">
+              <p className="kicker">Your wedding</p>
+              {dateLine ? <p className="mt-3 font-serif text-2xl tracking-tight">{dateLine}</p> : null}
+              <p className="mt-6 font-serif text-6xl leading-none tabular-nums">{headline}</p>
+              <p className="mt-1 text-sm text-muted">{sub}</p>
+              <Link href={season === "after" ? "/after" : "/planning"} className="btn btn-primary mt-6">
+                {season === "after" ? "Today’s card" : "View our plan"}
+              </Link>
+            </div>
+            <div className="relative min-h-[14rem]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/tablescape.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+            </div>
           </div>
+        </article>
+
+        <aside className="panel p-6">
+          <p className="kicker">{season === "after" ? "The three months" : "Next up"}</p>
           {open[0] ? (
             <Link href={open[0].href} className="mt-3 block">
               <p className="font-serif text-2xl leading-tight">{open[0].title}</p>
               <p className="mt-1 text-sm text-muted">{open[0].detail}</p>
-              <p className="mt-2 text-xs text-moss">{open[0].cta}</p>
             </Link>
           ) : (
-            <p className="mt-4 flex items-center gap-2 text-sm text-muted">
-              <Icon name="sprig" className="h-5 w-5 text-moss/70" />
-              You’re clear this week.
-            </p>
+            <p className="mt-4 text-sm text-muted">You’re clear this week.</p>
           )}
-          {open.length > 1 ? (
-            <ul className="mt-3 border-t border-line">
-              {open.slice(1, 4).map((row) => (
-                <li key={row.id} className="desk-row py-[0.7rem]">
-                  <button
-                    type="button"
-                    onClick={() => dismiss(row.id)}
-                    aria-label={`Done: ${row.title}`}
-                    className="relative h-[17px] w-[17px] shrink-0 rounded-full border border-ink/18 after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 hover:border-moss"
-                  />
-                  <Link href={row.href} className="min-w-0 truncate text-[14px] text-ink">
-                    {row.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          <div className="mt-2 border-t border-line pt-4">
-            <p className="kicker">Budget overview</p>
-            <p className="mt-2 font-serif text-[2.2rem] leading-none tracking-tight">{money(spent)}</p>
-            <p className="mt-1 text-sm text-muted">of {cap ? money(cap) : "—"}</p>
-            <div className="mt-3 flex items-center gap-3">
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
-                <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
-              </div>
-              <span className="text-[12px] tabular-nums text-muted">{pct}%</span>
-            </div>
-          </div>
-        </aside>
-
-        <nav className="home-strip panel grid grid-cols-3 divide-x divide-line/80 sm:grid-cols-6">
-          {STRIP.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex min-h-[4.85rem] flex-col items-center justify-center gap-1.5 text-moss/75 hover:text-ink"
-            >
-              <Icon name={item.icon} className="h-[22px] w-[22px]" />
-              <span className="text-[12px] tracking-wide">{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-
-        <div className="home-stats grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Link href="/guests" className="home-stat panel">
-            <div className="flex items-start justify-between">
-              <p className="kicker">Guests</p>
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
-                <Icon name="users" />
-              </span>
-            </div>
-            <div>
-              <p className="font-serif text-[2.05rem] leading-none tracking-tight">{guestTotal}</p>
-              <p className="mt-1 text-sm text-muted">Invited</p>
-              <div className="mt-3 flex items-center justify-between border-t border-line pt-2.5 text-sm">
-                <span>{guestResponded} Responded</span>
-                <span className="text-muted">›</span>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/vendors" className="home-stat panel">
-            <div className="flex items-start justify-between">
-              <p className="kicker">Vendors</p>
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
-                <Icon name="leaf" />
-              </span>
-            </div>
-            <div>
-              <p className="font-serif text-[2.05rem] leading-none tracking-tight">{vendorBooked}</p>
-              <p className="mt-1 text-sm text-muted">Booked</p>
-              <div className="mt-3 flex items-center justify-between border-t border-line pt-2.5 text-sm">
-                <span>{vendorPending} Pending</span>
-                <span className="text-muted">›</span>
-              </div>
-            </div>
-          </Link>
-
-          <Link href="/budget" className="home-stat panel">
-            <div className="flex items-start justify-between">
-              <p className="kicker">Budget</p>
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
-                <Icon name="dollar" />
-              </span>
-            </div>
-            <div>
-              <p className="font-serif text-[2.05rem] leading-none tracking-tight">{money(spent)}</p>
-              <p className="mt-1 text-sm text-muted">of {cap ? money(cap) : "—"}</p>
-              <div className="mt-3 border-t border-line pt-2.5">
-                <div className="flex items-center gap-2">
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
-                    <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
-                  </div>
-                  <span className="text-[12px] tabular-nums text-muted">{pct}%</span>
-                </div>
-              </div>
-            </div>
-          </Link>
-
-          <Link href={nextUp[0]?.href || "/checklist"} className="home-stat panel">
-            <div className="flex items-start justify-between">
-              <p className="kicker">Next up</p>
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
-                <Icon name="calendar" />
-              </span>
-            </div>
-            <div className="space-y-2.5">
-              {(nextUp.length ? nextUp : [{ when: "Soon", title: "Nothing dated yet", href: "/checklist" }])
-                .slice(0, 2)
-                .map((n) => (
-                  <div key={n.title}>
-                    <p className="font-medium leading-tight text-ink">{n.when}</p>
-                    <p className="text-sm text-muted">{n.title}</p>
-                  </div>
-                ))}
-            </div>
-          </Link>
-        </div>
-
-        <section className="home-rooms panel p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="kicker">Your rooms</p>
-            <Link href="/rooms" className="text-[12px] text-muted hover:text-ink">
-              View all
-            </Link>
-          </div>
-          <Link href="/rooms" className="group block overflow-hidden rounded-xl">
-            <img
-              src="/brand/rooms/guests.jpg"
-              alt=""
-              className="aspect-[16/9] w-full object-cover transition duration-700 group-hover:scale-[1.04]"
-            />
-          </Link>
-          <div className="mt-2.5 grid grid-cols-3 gap-2">
-            {[
-              { src: "/brand/rooms/planning.jpg", href: "/planning" },
-              { src: "/brand/rooms/day.jpg", href: "/day-of" },
-              { src: "/brand/rooms/vendors.jpg", href: "/vendors" },
-            ].map((r) => (
-              <Link key={r.src} href={r.href} className="group overflow-hidden rounded-lg">
-                <img src={r.src} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
-              </Link>
+          <ul className="mt-4 space-y-2">
+            {open.slice(1, 4).map((row) => (
+              <li key={row.id} className="flex items-center gap-3 border-t border-line pt-2">
+                <button
+                  type="button"
+                  onClick={() => dismiss(row.id)}
+                  aria-label={`Done: ${row.title}`}
+                  className="h-4 w-4 shrink-0 rounded-full border border-line"
+                />
+                <Link href={row.href} className="truncate text-sm">
+                  {row.title}
+                </Link>
+              </li>
             ))}
-          </div>
-        </section>
+          </ul>
+        </aside>
+      </div>
 
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Link href="/guests" className="panel p-5">
+          <p className="kicker">Guests</p>
+          <p className="mt-2 font-serif text-4xl tabular-nums">{guestTotal}</p>
+          <p className="mt-1 text-sm text-muted">{yes} responded · {pending} pending</p>
+        </Link>
+        <Link href="/budget" className="panel p-5">
+          <p className="kicker">Budget</p>
+          <p className="mt-2 font-serif text-4xl">{money(spent)}</p>
+          <p className="mt-1 text-sm text-muted">{pct}% of {cap ? money(cap) : "—"}</p>
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-line">
+            <div className="h-full rounded-full bg-sage" style={{ width: `${pct}%` }} />
+          </div>
+        </Link>
+        <Link href="/vendors" className="panel p-5">
+          <p className="kicker">Vendors</p>
+          <p className="mt-2 font-serif text-4xl tabular-nums">{vendorBooked}</p>
+          <p className="mt-1 text-sm text-muted">{vendorPending} still open</p>
+        </Link>
+        <Link href={nextUp[0]?.href || "/studio"} className="panel p-5">
+          <p className="kicker">Studio</p>
+          <p className="mt-2 font-serif text-2xl leading-tight">Make the day</p>
+          <p className="mt-1 text-sm text-muted">Flowers, tables, signs, boxes</p>
+        </Link>
       </div>
     </div>
   );

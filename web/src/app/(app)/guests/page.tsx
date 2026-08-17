@@ -40,12 +40,10 @@ export default async function GuestsPage() {
   return (
     <div className="space-y-6">
       <RoomSubnav room="guests" />
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-serif text-4xl">Guests</h1>
-          <p className="mt-1 text-sm text-muted">
-            {guests.length} people · {plates} plates · {holding} holding a seat
-          </p>
+          <p className="kicker">People</p>
+          <h1 className="mt-2 font-serif text-4xl">Guests</h1>
         </div>
         <div className="flex flex-wrap gap-2">
           <ExportCsvButton
@@ -75,6 +73,24 @@ export default async function GuestsPage() {
           <Link href="/guests/new" className="btn btn-primary">
             Add guest
           </Link>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="panel p-4 text-center">
+          <p className="font-serif text-3xl tabular-nums">{guests.length}</p>
+          <p className="kicker mt-1">Invited</p>
+        </div>
+        <div className="panel p-4 text-center">
+          <p className="font-serif text-3xl tabular-nums">{plates}</p>
+          <p className="kicker mt-1">RSVP yes</p>
+        </div>
+        <div className="panel p-4 text-center">
+          <p className="font-serif text-3xl tabular-nums">{pending}</p>
+          <p className="kicker mt-1">Pending</p>
+        </div>
+        <div className="panel p-4 text-center">
+          <p className="font-serif text-3xl tabular-nums">{holding}</p>
+          <p className="kicker mt-1">Holding</p>
         </div>
       </div>
       <ImportContacts />
