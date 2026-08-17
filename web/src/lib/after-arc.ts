@@ -1,4 +1,4 @@
-import { daysUntil } from "@/lib/this-week";
+import { daysUntil } from "@/lib/dates";
 
 export type AfterBeat = {
   id: string;

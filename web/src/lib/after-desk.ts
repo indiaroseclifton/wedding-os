@@ -3,6 +3,7 @@ import { formatMailingAddress, hasMailingAddress } from "@/lib/data/guest-mail";
 import type { StoredGuest } from "@/lib/data/store";
 import type { ThankYou } from "@/lib/data/thanks-store";
 import type { StoredVendor } from "@/lib/data/vendors-store";
+import { cardPrompt as writeCard } from "@/lib/after-copy";
 
 export type AfterCard = ThankYou & {
   addressLine?: string;
@@ -85,7 +86,5 @@ export function buildAfterDesk(input: {
 }
 
 export function cardPrompt(card: AfterCard, names: string) {
-  const first = card.guestName.trim().split(/\s+/)[0] || card.guestName;
-  const gift = card.gift?.trim() ? ` for the ${card.gift.trim()}` : " for being there";
-  return `Dear ${first},\n\nThank you${gift}. It meant so much to have you with us.\n\nLove,\n${names}`;
+  return writeCard(card, names);
 }

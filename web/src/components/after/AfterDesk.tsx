@@ -3,8 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { cardPrompt, type AfterCard } from "@/lib/after-desk";
+import { cardPrompt } from "@/lib/after-copy";
 import { motion, fadeUp } from "@/components/motion";
+
+type AfterCard = {
+  id: string;
+  guestName: string;
+  gift?: string | null;
+  addressLine?: string;
+  missingAddress?: boolean;
+};
 
 export function AfterDesk({
   names,

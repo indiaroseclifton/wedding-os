@@ -15,6 +15,7 @@ import { getThanks } from "@/lib/data/thanks-store";
 import { cardPace } from "@/lib/after-arc";
 import { isBooked } from "@/lib/send/status";
 import type { StoredTask } from "@/lib/data/store";
+import { daysUntil } from "@/lib/dates";
 
 export type WeekUrgency = "now" | "week" | "soon";
 
@@ -27,14 +28,7 @@ export type WeekItem = {
   cta: string;
 };
 
-export function daysUntil(date?: string, today = new Date()) {
-  if (!date) return null;
-  const due = new Date(`${date}T00:00:00`);
-  if (Number.isNaN(due.getTime())) return null;
-  const start = new Date(today);
-  start.setHours(0, 0, 0, 0);
-  return Math.round((due.getTime() - start.getTime()) / 86400000);
-}
+export { daysUntil } from "@/lib/dates";
 
 function isOverdue(dueDate?: string, today = new Date()) {
   const d = daysUntil(dueDate, today);
