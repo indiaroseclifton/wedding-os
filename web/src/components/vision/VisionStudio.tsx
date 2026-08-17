@@ -21,6 +21,7 @@ import {
   visionSummary,
 } from "@/lib/vision";
 import { VisionBoard } from "./VisionBoard";
+import { ShareBoard } from "./ShareBoard";
 
 type Mode = "walk" | "board" | "brief";
 
@@ -181,6 +182,12 @@ export function VisionStudio({
           Pin and it stays. Tap a picture to change the why or the column. Drag to move.
         </p>
         <div className="mt-6">
+          <ShareBoard
+            vision={vision}
+            onToken={(boardToken) => setVision({ ...vision, boardToken })}
+          />
+        </div>
+        <div className="mt-4">
           <VisionBoard
             vision={vision}
             onChange={setVision}

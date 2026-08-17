@@ -16,6 +16,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/invite/") ||
     pathname.startsWith("/p/") ||
     pathname.startsWith("/w/") ||
+    pathname.startsWith("/v/") ||
+    pathname.startsWith("/b/") ||
     pathname.startsWith("/ros/") ||
     pathname.startsWith("/api/public/") ||
     pathname.startsWith("/api/integrations/spotify/callback") ||

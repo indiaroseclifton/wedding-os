@@ -91,6 +91,7 @@ export type AssembledPacket = {
     avoid?: string;
     hex: string[];
     cover?: string;
+    boardUrl?: string;
     nos: string[];
   };
   handoffNote?: string;
@@ -291,6 +292,7 @@ export async function assemblePacket(
       avoid: vision.avoid,
       hex: vision.palette?.hex || [],
       cover: visionCover(vision),
+      boardUrl: vision.boardToken ? `/b/${vision.boardToken}` : undefined,
       nos: vision.reject.map((p) => p.url),
     },
     handoffNote: (await findHandoffNote(workspaceId, vendor)) || undefined,

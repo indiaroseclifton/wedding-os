@@ -1,3 +1,5 @@
+import { normalizeVision } from "@/lib/vision";
+
 import {
   acceptInvite,
   createInvite,
@@ -10,6 +12,7 @@ import {
   getInviteByToken,
   getTask,
   listDecisions,
+  listStyleDecisions,
   listInvites,
   listMembers,
   listTasks,
@@ -93,6 +96,15 @@ export async function getCurrentMembership(userId: string) {
 
 export async function getWorkspaceDecisions(workspaceId: string) {
   return listDecisions(workspaceId);
+}
+
+export async function findVisionByBoardToken(token: string) {
+  if (!token) return null;
+  for (const row of await listStyleDecisions()) {
+    const vision = normalizeVision(row.payload);
+    if (vision.boardToken === token) return { workspaceId: row.workspaceId, vision };
+  }
+  return null;
 }
 
 export { createDecision, updateDecision };

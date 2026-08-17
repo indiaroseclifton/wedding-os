@@ -43,6 +43,13 @@ export function PacketView({
           {packet.vision.cover ? (
             <img src={packet.vision.cover} alt="" className="mt-3 aspect-[16/8] w-full rounded-2xl object-cover" />
           ) : null}
+          {packet.vision.boardUrl ? (
+            <p className="mt-2 text-sm">
+              <a href={packet.vision.boardUrl} className="text-moss underline">
+                Open the board
+              </a>
+            </p>
+          ) : null}
           <p className="mt-3 font-serif text-2xl">{packet.vision.vibe}</p>
           <p className="mt-1 text-sm text-muted">{[packet.vision.formal, packet.vision.story].filter(Boolean).join(" · ")}</p>
           {packet.vision.hex.length ? (

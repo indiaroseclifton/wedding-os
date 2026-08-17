@@ -40,6 +40,7 @@ export type VisionPayload = {
   story?: string;
   lockedAt?: string;
   coverUrl?: string;
+  boardToken?: string;
 };
 
 export const EMPTY_VISION: VisionPayload = {
@@ -384,6 +385,7 @@ export function normalizeVision(raw: unknown): VisionPayload {
     story: typeof p.story === "string" ? p.story : palette?.story,
     lockedAt: typeof p.lockedAt === "string" ? p.lockedAt : undefined,
     coverUrl: typeof p.coverUrl === "string" ? p.coverUrl : undefined,
+    boardToken: typeof p.boardToken === "string" ? p.boardToken : undefined,
   };
 }
 
@@ -409,6 +411,7 @@ export function mergeVision(prev: VisionPayload, next: Partial<VisionPayload>): 
     story: next.story || prev.story,
     lockedAt: next.lockedAt || prev.lockedAt,
     coverUrl: typeof next.coverUrl === "string" ? next.coverUrl : prev.coverUrl,
+    boardToken: next.boardToken || prev.boardToken,
   };
 }
 

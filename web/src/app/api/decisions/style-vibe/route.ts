@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { requireCoupleApi } from "@/lib/auth/access";
 import {
   DEMO_USERS,
@@ -9,6 +10,10 @@ import {
 } from "@/lib/data/workspace";
 import { applyVisionSteering } from "@/lib/vision-steer";
 import { mergeVision, normalizeVision, visionSummary } from "@/lib/vision";
+
+function freshToken() {
+  return randomUUID().replace(/-/g, "").slice(0, 12);
+}
 
 export async function GET() {
   const access = await requireCoupleApi();
@@ -29,6 +34,22 @@ export async function POST(request: Request) {
     const decisions = await getWorkspaceDecisions(workspace.id);
     const existing = decisions.find((d) => d.type === "STYLE_VIBE");
     const prev = normalizeVision(existing?.payload);
+
+    if (body.action === "share") {
+      const next = { ...prev, boardToken: prev.boardToken || freshToken() };
+      const decision = await saveStyleVibeDecision({
+        workspaceId: workspace.id,
+        status: existing?.status === "DECIDED" ? "DECIDED" : "EXPLORING",
+        summary: existing?.summary || visionSummary(next),
+        payload: next,
+        participantIds: [DEMO_USERS.alex.id, DEMO_USERS.jordan.id],
+      });
+      return NextResponse.json({
+        decision: { ...decision, payload: next },
+        token: next.boardToken,
+      });
+    }
+
     const next = mergeVision(prev, normalizeVision(body.payload || {}));
     if (body.status === "DECIDED") next.lockedAt = next.lockedAt || new Date().toISOString();
     const decision = await saveStyleVibeDecision({

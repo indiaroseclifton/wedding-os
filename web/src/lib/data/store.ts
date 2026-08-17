@@ -120,6 +120,11 @@ export async function listDecisions(workspaceId: string) {
   return rows.filter((r) => r.workspaceId === workspaceId).sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 }
 
+export async function listStyleDecisions() {
+  const rows = await readJson<StoredDecision>(decisionsFile);
+  return rows.filter((r) => r.type === "STYLE_VIBE");
+}
+
 export async function getDecision(id: string) {
   const rows = await readJson<StoredDecision>(decisionsFile);
   return rows.find((r) => r.id === id) ?? null;
