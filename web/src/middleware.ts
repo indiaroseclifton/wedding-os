@@ -12,6 +12,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/health") ||
+    pathname.startsWith("/api/cron/") ||
     pathname.startsWith("/invite/") ||
     pathname.startsWith("/p/") ||
     pathname.startsWith("/w/") ||

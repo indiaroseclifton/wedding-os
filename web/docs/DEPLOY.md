@@ -32,6 +32,8 @@ DATABASE_URL=postgresql://...
 
 `npm run build` runs `prisma generate` and, when `DATABASE_URL` is set, `prisma migrate deploy`.
 
+Cron (optional): set `CRON_SECRET` and `RESEND_API_KEY`. `vercel.json` hits `/api/cron/tick` daily at 13:00 UTC. Digest address lives on Guests → The chase.
+
 ## After deploy
 
 1. Open the Vercel URL

@@ -3,6 +3,7 @@ import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { hasMailingAddress, isPendingRsvp } from "@/lib/data/guest-mail";
 import { ChaseList } from "./ChaseList";
+import { ReminderArms } from "./ReminderArms";
 
 export default async function ChasePage() {
   const { workspace, meta } = await ensureDemoWorkspace();
@@ -25,6 +26,7 @@ export default async function ChasePage() {
           Waiting, incomplete yes, and — after the day — who showed up. A click is not a seat.
         </p>
       </div>
+      <ReminderArms />
       <div className="grid gap-3 sm:grid-cols-3">
         <p className="panel p-4">
           <span className="kicker">Waiting</span>

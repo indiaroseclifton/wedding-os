@@ -36,7 +36,7 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
       { id: "start", title: "First-wedding walkthrough", body: "Names, one vendor, publish. After the four questions.", href: "/start", status: "shipped" },
       { id: "decisions", title: "Coordinator decisions → tasks", body: "First look, rain, kids, bar — plus your own. Call it, make a task.", href: "/decisions", status: "shipped" },
       { id: "camera", title: "Camera into the moodboard", body: "After the Capacitor wrapper runs on your phone.", href: "/mobile", status: "later" },
-      { id: "push", title: "Push for dues and RSVPs", body: "Needs a worker and store listing. Page nudges stay until then.", href: "/mobile", status: "later" },
+      { id: "push", title: "Push for dues and RSVPs", body: "Nightly tick + digest. Guest follow-ups only if you arm them.", href: "/guests/chase", status: "shipped" },
     ],
   },
 ];
