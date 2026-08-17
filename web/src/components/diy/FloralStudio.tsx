@@ -56,6 +56,15 @@ export function FloralStudio() {
         if (d?.meta?.weddingDate) setMonth(weddingMonth(d.meta.weddingDate));
       })
       .catch(() => {});
+    if (!fromUrl) {
+      fetch("/api/decisions/style-vibe")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          const storyId = d?.decision?.payload?.story;
+          if (typeof storyId === "string" && COLOR_STORIES.some((s) => s.id === storyId)) setStory(storyId);
+        })
+        .catch(() => {});
+    }
   }, []);
 
   useEffect(() => {

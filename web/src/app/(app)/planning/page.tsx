@@ -6,6 +6,7 @@ import { getChecklist } from "@/lib/data/checklist-store";
 import { getPath, PATH_CATEGORIES } from "@/lib/data/path-store";
 import { listTimeline } from "@/lib/data/timeline-store";
 import { relativeToWedding } from "@/lib/timeline-dates";
+import { colorsLine, normalizeVision } from "@/lib/vision";
 
 export default async function PlanningPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
@@ -21,9 +22,12 @@ export default async function PlanningPage() {
   const nextCheck = list.items.find((i) => !i.done);
   const nextMile = timeline.find((t) => !t.done);
   const vision = decisions.find((d) => d.type === "STYLE_VIBE");
-  const vibe = (vision?.payload?.vibe as string) || "";
-  const colors = (vision?.payload?.colors as string) || "";
-  const formal = (vision?.payload?.formal as string) || meta.formality || "";
+  const brief = vision ? normalizeVision(vision.payload) : null;
+  const vibe = brief?.vibe || "";
+  const colors = brief ? colorsLine(brief) : "";
+  const formal = brief?.formal || meta.formality || "";
+  const swatches = brief?.palette?.hex || [];
+  const cover = brief?.feel[0]?.url;
   const decided = PATH_CATEGORIES.filter((c) => path.choices[c.id] && path.choices[c.id] !== "undecided");
   const openLanes = PATH_CATEGORIES.length - decided.length;
   const openCalls = decisions.filter((d) => d.status !== "DECIDED").length;
@@ -39,14 +43,25 @@ export default async function PlanningPage() {
       </p>
 
       <div className="mt-8 grid gap-3 lg:grid-cols-3">
-        <Link href="/planning/vision" className="rounded-2xl border border-line bg-surface p-5">
-          <p className="flex items-center gap-2 kicker kicker-moss">
-            <Icon name="heart" className="h-3.5 w-3.5" /> Vision
-          </p>
-          <p className="mt-2 font-serif text-2xl">{vibe || "Not decided"}</p>
-          <p className="mt-2 text-sm text-muted">
-            {[formal, colors].filter(Boolean).join(" · ") || "Vibe, colors, formality."}
-          </p>
+        <Link href="/planning/vision" className="panel overflow-hidden">
+          {cover ? <img src={cover} alt="" className="aspect-[16/7] w-full object-cover" /> : null}
+          <div className="p-5">
+            <p className="flex items-center gap-2 kicker kicker-moss">
+              <Icon name="sprig" className="h-3.5 w-3.5" /> Vision
+            </p>
+            <p className="mt-2 font-serif text-2xl">{vibe || "Not decided"}</p>
+            {swatches.length ? (
+              <div className="mt-3 flex gap-1.5">
+                {swatches.map((c) => (
+                  <span key={c} className="h-5 w-5 rounded-full border border-line" style={{ background: c }} />
+                ))}
+              </div>
+            ) : null}
+            <p className="mt-2 text-sm text-muted">
+              {[formal, colors && !swatches.length ? colors : null].filter(Boolean).join(" · ") ||
+                "Look first. Name it last."}
+            </p>
+          </div>
         </Link>
 
         <Link href="/checklist" className="rounded-2xl border border-line bg-surface p-5">

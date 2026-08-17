@@ -15,7 +15,7 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
         { href: "/decisions", label: "All" },
         { href: "/decisions/path", label: "Hire or make" },
         { href: "/decisions/venue", label: "Venue" },
-        { href: "/decisions/style", label: "Style" },
+        { href: "/planning/vision", label: "Style" },
         { href: "/decisions/priorities", label: "Priorities" },
       ],
     },

@@ -36,7 +36,13 @@ export default function StartPage() {
       <div>
         <p className="kicker kicker-moss">First wedding</p>
         <h1 className="mt-2 font-serif text-4xl">Three things. Then the desk is yours.</h1>
-        <p className="mt-2 text-sm text-muted">Names, someone you’ve hired, and a site you can text.</p>
+        <p className="mt-2 text-sm text-muted">
+          Names, someone you’ve hired, and a site you can text. Or{" "}
+          <a href="/planning/vision?walk=1" className="underline">
+            look first
+          </a>{" "}
+          if the words aren’t there yet.
+        </p>
       </div>
       <ol className="flex gap-2">
         {STEPS.map((s, i) => (

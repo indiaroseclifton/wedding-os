@@ -38,7 +38,7 @@ export default function OnboardPage() {
       .catch(() => {});
   }, [router]);
 
-  async function finish() {
+  async function finish(next = "/start") {
     setBusy(true);
     setMsg(null);
     const res = await fetch("/api/workspace", {
@@ -61,7 +61,7 @@ export default function OnboardPage() {
       setMsg("Could not save");
       return;
     }
-    router.push("/start");
+    router.push(next);
     router.refresh();
   }
 
@@ -226,14 +226,24 @@ export default function OnboardPage() {
             Continue
           </button>
         ) : (
+          <>
           <button
             type="button"
             disabled={busy}
-            onClick={finish}
+            onClick={() => finish("/start")}
             className="min-h-11 rounded-full bg-moss px-5 text-sm font-medium text-ivory disabled:opacity-50"
           >
             {busy ? "Building…" : "Open my desk"}
           </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => finish("/planning/vision?walk=1")}
+            className="min-h-11 rounded-full border border-line px-5 text-sm"
+          >
+            Look first
+          </button>
+          </>
         )}
         <button
           type="button"

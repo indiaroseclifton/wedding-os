@@ -41,8 +41,23 @@ export async function seedDemoIfEmpty(options?: { force?: boolean }) {
   await saveStyleVibeDecision({
     workspaceId: ws,
     status: "EXPLORING",
-    summary: "Warm modern · outdoor-friendly · not formal black-tie.",
-    payload: { vibe: "Warm modern", formality: "Semi-formal" },
+    summary: "Garden / outdoor · Garden party",
+    payload: {
+      vibe: "Garden / outdoor",
+      formal: "Garden party",
+      colors: "#f7f4ec · #e8d9a8 · #e2b07a · #5c6b4a",
+      story: "garden",
+      palette: { hex: ["#f7f4ec", "#e8d9a8", "#e2b07a", "#5c6b4a"], story: "garden" },
+      must: ["Photos first", "Guest comfort"],
+      avoid: "No mason jars. No blush-everything.",
+      notes: "Picked, not designed. Butter and olive.",
+      feel: [
+        { id: "garden-full", url: "/brand/vision/garden-full.jpg", tag: "flower", why: "Overflowing" },
+        { id: "aisle-trees", url: "/brand/vision/aisle-trees.jpg", tag: "place", why: "Under trees" },
+        { id: "linen-day", url: "/brand/vision/linen-day.jpg", tag: "light", why: "Daylight, linen" },
+      ],
+      reject: [{ id: "black-tie", url: "/brand/vision/black-tie.jpg", tag: "dress" }],
+    },
     participantIds: [DEMO_USERS.alex.id, DEMO_USERS.jordan.id],
   });
 
