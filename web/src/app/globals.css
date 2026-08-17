@@ -313,8 +313,32 @@ body {
 .rail-wash {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--color-moss) 68%, transparent) 0%,
-    color-mix(in srgb, var(--color-moss) 86%, #0c0d0b) 100%
+    color-mix(in srgb, var(--color-moss) 52%, transparent) 0%,
+    color-mix(in srgb, var(--color-moss) 78%, #0c0d0b) 55%,
+    color-mix(in srgb, var(--color-moss) 90%, #070807) 100%
+  );
+}
+
+.home-hero-wash {
+  background: linear-gradient(
+    180deg,
+    rgb(243 239 230 / 0.08) 0%,
+    rgb(243 239 230 / 0.05) 42%,
+    rgb(243 239 230 / 0.55) 72%,
+    var(--color-paper) 100%
+  );
+}
+
+[data-theme="night"] .home-hero-wash,
+[data-theme="ink"] .home-hero-wash,
+[data-theme="cocoa"] .home-hero-wash,
+[data-theme="midnight"] .home-hero-wash {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 40%,
+    color-mix(in srgb, var(--color-paper) 70%, transparent) 75%,
+    var(--color-paper) 100%
   );
 }
 

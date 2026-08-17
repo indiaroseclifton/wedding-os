@@ -87,9 +87,9 @@ export function CommandPalette({ tone = "paper" }: { tone?: "paper" | "onPhoto" 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`hidden items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs sm:inline-flex ${
+        className={`hidden items-center gap-2 rounded-full px-3 py-1.5 text-xs sm:inline-flex ${
           tone === "onPhoto"
-            ? "border border-ink/15 bg-surface/70 text-ink-soft backdrop-blur-md"
+            ? "border border-white/70 bg-surface text-ink-soft shadow-sm"
             : "border border-line text-muted"
         }`}
       >

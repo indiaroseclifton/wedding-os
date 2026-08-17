@@ -127,16 +127,12 @@ export function AppShell({
         <header
           className={`flex shrink-0 items-center justify-between gap-3 print:hidden ${
             home
-              ? "absolute inset-x-0 top-0 z-20 px-5 py-5 sm:px-8 lg:left-[15.75rem]"
+              ? "pointer-events-none absolute inset-x-0 top-0 z-20 px-6 py-6 sm:px-10 lg:left-[15.75rem]"
               : "border-b border-line/70 px-4 py-3 sm:px-8"
           }`}
         >
           <div className="min-w-0">
-            <p
-              className={`text-[11px] font-medium uppercase tracking-[0.22em] ${
-                home ? "text-ink/70" : "text-muted"
-              }`}
-            >
+            <p className={`text-[11px] font-medium uppercase tracking-[0.22em] ${home ? "text-ink/45" : "text-muted"}`}>
               {roomLabel || "Home"}
             </p>
             {!home && (
@@ -146,7 +142,7 @@ export function AppShell({
               </p>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="pointer-events-auto flex items-center gap-2">
             <CommandPalette tone={home ? "onPhoto" : "paper"} />
             <button
               type="button"
