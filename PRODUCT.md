@@ -71,7 +71,7 @@ The industry mentions “thank-yous in three months” and then sells cards. Thi
 - Thank presence, not only SKUs. Cash has no registry line.
 - Home still talks like planning until the season cut lands. Open `/after` after the date.
 
-Name change is a branch (keep / hyphen / change). Hidden if they keep the name — still a later cut.
+Name change is a branch (keep / hyphen / change). Hidden if they keep the name. Lives at `/legal`. After lists it as a beat.
 
 ## Design rules
 

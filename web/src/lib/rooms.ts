@@ -20,6 +20,7 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
     { href: "/checklist", label: "Checklist" },
     { href: "/after", label: "After" },
     { href: "/thanks", label: "Thank-yous" },
+    { href: "/legal", label: "Names" },
     { href: "/traditions", label: "Traditions" },
     { href: "/timeline", label: "Timeline" },
     { href: "/planning/party", label: "Wedding party" },

@@ -50,6 +50,15 @@ export const AFTER_BEATS: AfterBeat[] = [
     toDay: 90,
   },
   {
+    id: "names",
+    when: "When you have a minute",
+    title: "Keep, hyphen, or change",
+    detail: "If you keep the names, this is done. If not, Social Security first.",
+    href: "/legal",
+    fromDay: 7,
+    toDay: 90,
+  },
+  {
     id: "deadline",
     when: "Three months",
     title: "Thank-yous should be gone",

@@ -4,14 +4,16 @@ import { AfterDesk } from "@/components/after/AfterDesk";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { getThanks } from "@/lib/data/thanks-store";
+import { getLegal } from "@/lib/data/legal-store";
 import { buildAfterDesk } from "@/lib/after-desk";
 
 export default async function AfterPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
-  const [guests, vendors, thanks] = await Promise.all([
+  const [guests, vendors, thanks, legal] = await Promise.all([
     getWorkspaceGuests(workspace.id),
     listVendors(workspace.id),
     getThanks(workspace.id),
+    getLegal(workspace.id),
   ]);
   const desk = buildAfterDesk({
     weddingDate: meta.weddingDate,
@@ -19,6 +21,7 @@ export default async function AfterPage() {
     vendors,
     items: thanks.items || [],
     names: meta.coupleNames || meta.name,
+    namePath: legal.namePath,
   });
   const waiting = desk.daysAgo != null && desk.daysAgo < 0;
   const late = desk.daysLeft != null && desk.daysLeft <= 0 && desk.open.length > 0;

@@ -7,6 +7,8 @@ import {
   getLegal,
   patchLegalItem,
   saveLegal,
+  setNamePath,
+  type NamePath,
 } from "@/lib/data/legal-store";
 import { addTimelineItem, listTimeline } from "@/lib/data/timeline-store";
 import { requiredString, ValidationError } from "@/lib/validation";
@@ -39,6 +41,14 @@ export async function POST(request: Request) {
     }
     if (body.action === "delete") {
       const legal = await deleteLegalItem(workspace.id, String(body.id));
+      return NextResponse.json({ legal });
+    }
+    if (body.action === "path") {
+      const next = String(body.namePath || "unset") as NamePath;
+      if (!["unset", "keep", "hyphen", "change"].includes(next)) {
+        return NextResponse.json({ error: "Unknown path" }, { status: 400 });
+      }
+      const legal = await setNamePath(workspace.id, next);
       return NextResponse.json({ legal });
     }
     if (body.action === "meta") {

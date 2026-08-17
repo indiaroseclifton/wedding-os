@@ -25,6 +25,7 @@ export function buildAfterDesk(input: {
   vendors: StoredVendor[];
   items: ThankYou[];
   names?: string;
+  namePath?: "unset" | "keep" | "hyphen" | "change";
 }) {
   const { daysAgo, daysLeft, current } = afterPhase(input.weddingDate);
   const byId = new Map(input.guests.map((g) => [g.id, g]));
@@ -56,6 +57,7 @@ export function buildAfterDesk(input: {
     if (b.id === "cards" || b.id === "deadline") done = open.length === 0 && cards.length > 0;
     if (b.id === "reviews") done = unmarked.length === 0 && input.vendors.length > 0;
     if (b.id === "returns") done = daysAgo > b.toDay;
+    if (b.id === "names") done = input.namePath === "keep";
     if (done) return { ...b, state: "done" };
     if (daysAgo >= b.fromDay && daysAgo <= b.toDay) return { ...b, state: "now" };
     if (daysAgo < b.fromDay) return { ...b, state: "soon" };
