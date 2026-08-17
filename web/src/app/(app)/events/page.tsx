@@ -99,22 +99,22 @@ export default function EventsPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{rollup.count}</p>
-          <p className="text-xs text-muted">Events</p>
+      <div className="stat-strip">
+        <div>
+          <p className="font-serif text-2xl tabular-nums">{rollup.count}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Events</p>
         </div>
-        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{rollup.rsvpOpen || 0}</p>
-          <p className="text-xs text-muted">On the RSVP</p>
+        <div>
+          <p className="font-serif text-2xl tabular-nums">{rollup.rsvpOpen || 0}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">On RSVP</p>
         </div>
-        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
-          <p className="text-lg font-semibold">${rollup.budgetTotal.toLocaleString()}</p>
-          <p className="text-xs text-muted">Budget caps</p>
+        <div>
+          <p className="font-serif text-2xl tabular-nums">${rollup.budgetTotal.toLocaleString()}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Caps</p>
         </div>
-        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{rollup.guestsTotal}</p>
-          <p className="text-xs text-muted">Expected</p>
+        <div>
+          <p className="font-serif text-2xl tabular-nums">{rollup.guestsTotal}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Expected</p>
         </div>
       </div>
 
@@ -189,7 +189,7 @@ export default function EventsPage() {
                   type="button"
                   onClick={() => toggleRsvp(ev)}
                   className={`rounded-full px-2.5 py-0.5 text-[11px] ${
-                    ev.rsvpEnabled ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"
+                    ev.rsvpEnabled ? "bg-moss-soft text-moss" : "bg-surface text-ink-soft"
                   }`}
                 >
                   {ev.rsvpEnabled ? "On RSVP" : "Not on RSVP"}

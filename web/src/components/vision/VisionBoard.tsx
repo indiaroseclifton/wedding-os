@@ -213,7 +213,7 @@ export function VisionBoard({
                         <div className="flex flex-wrap gap-2 text-[11px]">
                           <button
                             type="button"
-                            className="rounded-full bg-moss px-3 py-1.5 text-ivory"
+                            className="rounded-full bg-moss px-3 py-1.5 text-moss-fg"
                             onClick={() =>
                               patchPin(item.id, { why: draftWhy, tag: draftTag.toLowerCase() })
                             }

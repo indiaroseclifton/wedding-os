@@ -163,7 +163,7 @@ export default function EventDetailPage() {
                         <button
                           type="button"
                           onClick={() => post({ action: "uninvite", guestId: g.id })}
-                          className="text-xs text-slate-400 underline"
+                          className="text-xs text-muted underline"
                         >
                           Remove
                         </button>

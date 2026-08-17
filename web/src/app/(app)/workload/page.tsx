@@ -42,7 +42,7 @@ export default async function WorkloadPage() {
                 {r.open} open · {r.done} done
               </span>
             </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface">
               <div
                 className="h-full rounded-full bg-slate-900"
                 style={{ width: `${Math.round((r.open / maxOpen) * 100)}%` }}

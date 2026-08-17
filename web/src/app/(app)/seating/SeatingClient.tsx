@@ -352,18 +352,18 @@ export function SeatingClient({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-3 gap-3 print:hidden">
-        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{tables.length}</p>
-          <p className="text-xs text-muted">Tables</p>
+      <div className="stat-strip print:hidden">
+        <div>
+          <p className="font-serif text-2xl tabular-nums">{tables.length}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Tables</p>
         </div>
-        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{seatedCount}</p>
-          <p className="text-xs text-muted">Seats filled</p>
+        <div>
+          <p className="font-serif text-2xl tabular-nums">{seatedCount}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Seated</p>
         </div>
-        <div className="glass-panel rounded-2xl px-3 py-3 text-center">
-          <p className="text-lg font-semibold">{openCount}</p>
-          <p className="text-xs text-muted">Still open</p>
+        <div>
+          <p className="font-serif text-2xl tabular-nums">{openCount}</p>
+          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Open</p>
         </div>
       </div>
 
@@ -634,7 +634,7 @@ export function SeatingClient({
         <button
           type="submit"
           disabled={busy || !pickA || (kind !== "lock" && !pickB) || (kind === "lock" && !lockTable)}
-          className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory disabled:opacity-50"
+          className="min-h-11 rounded-full bg-moss px-4 text-sm text-moss-fg disabled:opacity-50"
         >
           Add rule
         </button>
@@ -744,7 +744,7 @@ export function SeatingClient({
                           onClick={() => toggle(g.id)}
                           className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-xs ${
                             selected.includes(g.id)
-                              ? "bg-slate-900 text-white"
+                              ? "bg-moss text-moss-fg"
                               : "bg-surface text-amber-950"
                           }`}
                         >
@@ -822,7 +822,7 @@ export function SeatingClient({
                       </p>
                     </div>
                   )}
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface">
                     <div
                       className={`h-full ${over ? "bg-rose-500" : "bg-slate-800"}`}
                       style={{ width: `${Math.min(100, (fill / t.capacity) * 100)}%` }}
@@ -857,13 +857,13 @@ export function SeatingClient({
                             e.stopPropagation();
                             assign([g.id], null);
                           }}
-                          className="text-slate-400 underline print:hidden"
+                          className="text-muted underline print:hidden"
                         >
                           Unseat
                         </button>
                       </li>
                     ))}
-                    {at.length === 0 && <li className="text-xs text-slate-400">Drop people here</li>}
+                    {at.length === 0 && <li className="text-xs text-muted">Drop people here</li>}
                   </ul>
                   <div className="mt-3 flex gap-2 print:hidden" onClick={(e) => e.stopPropagation()}>
                     <button
@@ -880,7 +880,7 @@ export function SeatingClient({
                     <button
                       type="button"
                       onClick={() => removeTable(t.id)}
-                      className="text-[11px] text-slate-400 underline"
+                      className="text-[11px] text-muted underline"
                     >
                       Remove
                     </button>

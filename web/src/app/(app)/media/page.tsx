@@ -101,7 +101,7 @@ export default function MediaPage() {
                 </a>
                 {item.notes && <p className="mt-2 text-xs text-muted">{item.notes}</p>}
               </div>
-              <button type="button" onClick={() => remove(item.id)} className="text-xs text-slate-400 underline">
+              <button type="button" onClick={() => remove(item.id)} className="text-xs text-muted underline">
                 Remove
               </button>
             </div>

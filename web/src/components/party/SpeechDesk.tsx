@@ -64,7 +64,7 @@ export function SpeechDesk({ initial }: { initial: SpeechRow }) {
           placeholder="Keep it under four minutes. One story. One toast."
         />
       </label>
-      <button type="submit" className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory">
+      <button type="submit" className="min-h-11 rounded-full bg-moss px-4 text-sm text-moss-fg">
         Save
       </button>
       {msg && (

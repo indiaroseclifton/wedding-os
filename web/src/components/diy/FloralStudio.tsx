@@ -362,7 +362,7 @@ export function FloralStudio() {
                   type="button"
                   onClick={() => setKind(k)}
                   className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wide ${
-                    kind === k ? "bg-ink text-ivory" : "border border-line text-muted"
+                    kind === k ? "bg-moss text-moss-fg" : "border border-line text-muted"
                   }`}
                 >
                   {k}

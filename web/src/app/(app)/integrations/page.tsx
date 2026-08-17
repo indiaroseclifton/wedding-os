@@ -33,7 +33,7 @@ export default function IntegrationsPage() {
                   item.status === "live"
                     ? "bg-moss-soft text-moss"
                     : item.status === "link-only"
-                      ? "bg-slate-100 text-slate-600"
+                      ? "bg-surface text-ink-soft"
                       : "bg-amber-50 text-amber-900"
                 }`}
               >

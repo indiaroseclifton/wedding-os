@@ -372,7 +372,7 @@ export default function VendorBrowsePage() {
               placeholder="Or type a search"
               className="min-w-[12rem] flex-1 rounded-lg border border-line px-3 py-2 text-sm"
             />
-            <button type="submit" className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory">
+            <button type="submit" className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-moss-fg">
               Search
             </button>
           </form>

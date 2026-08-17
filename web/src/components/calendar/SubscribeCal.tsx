@@ -34,7 +34,7 @@ export function SubscribeCal() {
         The day, extra events, run of show, hotel cutoffs, payment dues. Add once — it updates.
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <a href={webcal} className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm text-ivory">
+        <a href={webcal} className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm text-moss-fg">
           Add to calendar
         </a>
         <a href={href} className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm">

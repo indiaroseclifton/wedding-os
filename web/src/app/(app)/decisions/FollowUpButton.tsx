@@ -20,7 +20,7 @@ export function FollowUpButton({ decisionId }: { decisionId: string }) {
     }
   }
 
-  if (done) return <span className="text-xs text-emerald-700">Task created</span>;
+  if (done) return <span className="text-xs text-moss">Task created</span>;
 
   return (
     <button

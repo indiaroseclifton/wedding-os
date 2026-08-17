@@ -307,7 +307,7 @@ function MusicInner() {
           <button
             type="button"
             onClick={save}
-            className="rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory"
+            className="rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-moss-fg"
           >
             Save cue sheet
           </button>

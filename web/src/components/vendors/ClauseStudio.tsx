@@ -106,7 +106,7 @@ export function ClauseStudio({
       </ul>
 
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={save} className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory">
+        <button type="button" onClick={save} className="min-h-11 rounded-full bg-moss px-4 text-sm text-moss-fg">
           Save review
         </button>
         <Link href="/vendors/contracts" scroll={false} className="inline-flex min-h-11 items-center text-sm underline">
@@ -124,7 +124,7 @@ export function ClauseStudio({
             rows={12}
             className="w-full rounded-xl border border-line bg-surface/70 p-3 text-sm"
           />
-          <button type="button" onClick={sendAsk} className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory">
+          <button type="button" onClick={sendAsk} className="min-h-11 rounded-full bg-moss px-4 text-sm text-moss-fg">
             Send the ask
           </button>
         </section>

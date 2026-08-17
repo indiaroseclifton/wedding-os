@@ -226,7 +226,7 @@ export default function HandoffDetailPage() {
       </div>
 
       {error && <p className="text-xs text-rose-600 print:hidden">{error}</p>}
-      {info && <p className="text-xs text-emerald-700 print:hidden">{info}</p>}
+      {info && <p className="text-xs text-moss print:hidden">{info}</p>}
 
       <div className="flex flex-wrap gap-2 print:hidden">
         <button

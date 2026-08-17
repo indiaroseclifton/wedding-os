@@ -148,7 +148,7 @@ export function ContractsDesk({ rows }: { rows: ContractRow[] }) {
                 <Link
                   href={`/vendors/contracts/${r.id}`}
                   scroll={false}
-                  className="inline-flex min-h-11 items-center rounded-full bg-moss px-3 text-xs text-ivory"
+                  className="inline-flex min-h-11 items-center rounded-full bg-moss px-3 text-xs text-moss-fg"
                 >
                   {r.flags > 0 ? `Ask about ${r.flags} flags` : "Review clauses"}
                 </Link>

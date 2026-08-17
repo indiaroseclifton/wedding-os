@@ -162,7 +162,7 @@ export function TableStudio() {
         </ul>
         <div className="mt-3 flex flex-wrap gap-2">
           <input value={title} onChange={(e) => setTitle(e.target.value)} className="min-h-11 rounded-xl border border-line px-3 text-sm" />
-          <button type="button" onClick={saveLook} className="min-h-11 rounded-full bg-moss px-4 text-xs text-ivory">Save look</button>
+          <button type="button" onClick={saveLook} className="min-h-11 rounded-full bg-moss px-4 text-xs text-moss-fg">Save look</button>
           <button type="button" onClick={pushShop} className="min-h-11 rounded-full border border-line px-4 text-xs">Add to shop</button>
           {look.bowl && (
             <Link href="/diy/studio/floral" scroll={false} className="inline-flex min-h-11 items-center text-xs underline">

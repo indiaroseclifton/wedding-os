@@ -128,11 +128,11 @@ export default function DiyPlaybookPage() {
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="glass-panel rounded-2xl p-4 text-sm">
           <p className="font-medium">DIY this if</p>
-          <p className="mt-1 text-slate-600">{book.whenDiy}</p>
+          <p className="mt-1 text-ink-soft">{book.whenDiy}</p>
         </div>
         <div className="glass-panel rounded-2xl p-4 text-sm">
           <p className="font-medium">Hire it if</p>
-          <p className="mt-1 text-slate-600">{book.whenHire}</p>
+          <p className="mt-1 text-ink-soft">{book.whenHire}</p>
         </div>
       </div>
 
@@ -142,8 +142,8 @@ export default function DiyPlaybookPage() {
           <ol className="mt-3 grid gap-3 sm:grid-cols-3">
             {book.steps.map((s, i) => (
               <li key={s.title} className="glass-panel rounded-2xl p-4">
-                <div className="mb-2 flex h-16 items-center justify-center rounded-lg bg-slate-100">
-                  <span className="text-2xl text-slate-400">{i + 1}</span>
+                <div className="mb-2 flex h-16 items-center justify-center rounded-lg bg-surface">
+                  <span className="text-2xl text-muted">{i + 1}</span>
                 </div>
                 <p className="text-sm font-medium">{s.title}</p>
                 <p className="mt-1 text-xs text-muted">{s.detail}</p>
@@ -228,7 +228,7 @@ export default function DiyPlaybookPage() {
                       post({ action: "toggle_item", projectId: project.id, itemId: s.id })
                     }
                   />
-                  <span className={s.bought ? "text-slate-400 line-through" : ""}>
+                  <span className={s.bought ? "text-muted line-through" : ""}>
                     {s.label}
                     <span className="text-xs text-muted">
                       {" "}
@@ -273,7 +273,7 @@ export default function DiyPlaybookPage() {
                     </button>
                   )}
                 </div>
-                <p className="mt-2 text-slate-600">{s.bestFor}</p>
+                <p className="mt-2 text-ink-soft">{s.bestFor}</p>
                 <p className="mt-1 text-xs text-muted">Watch: {s.watch}</p>
               </li>
             );
@@ -288,7 +288,7 @@ export default function DiyPlaybookPage() {
             <div key={r.id} className="glass-panel rounded-2xl p-4 text-sm">
               <p className="font-medium">{r.name}</p>
               <p className="text-xs text-muted">{r.forWhat}</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-ink-soft">
                 {r.pieces.map((p) => (
                   <li key={p}>{p}</li>
                 ))}
@@ -304,7 +304,7 @@ export default function DiyPlaybookPage() {
           {book.timeline.map((t) => (
             <li key={t.when} className="px-4 py-3 text-sm">
               <p className="font-medium">{t.when}</p>
-              <p className="text-slate-600">{t.what}</p>
+              <p className="text-ink-soft">{t.what}</p>
             </li>
           ))}
         </ul>

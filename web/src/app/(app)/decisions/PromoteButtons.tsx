@@ -46,7 +46,7 @@ export function PromoteButtons({ decisionId }: { decisionId: string }) {
       >
         Task only
       </button>
-      {msg && <span className="text-xs text-emerald-700">{msg}</span>}
+      {msg && <span className="text-xs text-moss">{msg}</span>}
     </div>
   );
 }

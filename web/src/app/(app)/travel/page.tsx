@@ -128,7 +128,7 @@ export default function TravelPage() {
         <button type="submit" className="btn btn-primary">
           Save notes
         </button>
-        {msg && <p className="text-xs text-emerald-700">{msg}</p>}
+        {msg && <p className="text-xs text-moss">{msg}</p>}
       </form>
 
       <form
@@ -236,7 +236,7 @@ export default function TravelPage() {
               <button
                 type="button"
                 onClick={() => post({ action: "delete_hotel", id: h.id })}
-                className="text-xs text-slate-400 underline"
+                className="text-xs text-muted underline"
               >
                 Remove
               </button>

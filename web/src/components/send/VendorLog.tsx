@@ -69,7 +69,7 @@ export function VendorLog({
           <p className="text-sm font-semibold">Log</p>
           <p className="text-xs text-muted">{line || "Nothing sent yet — this fills when they use their page."}</p>
         </div>
-        <Link href={sendHref} className="min-h-11 rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory">
+        <Link href={sendHref} className="min-h-11 rounded-full bg-moss px-4 py-2 text-xs font-medium text-moss-fg">
           Their page
         </Link>
       </div>

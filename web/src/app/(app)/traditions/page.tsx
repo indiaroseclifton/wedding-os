@@ -111,7 +111,7 @@ export default function TraditionsPage() {
         )}
       </div>
 
-      {msg && <p className="text-xs text-emerald-700">{msg}</p>}
+      {msg && <p className="text-xs text-moss">{msg}</p>}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {packs.map((p) => {
@@ -124,7 +124,7 @@ export default function TraditionsPage() {
                 type="button"
                 disabled={active}
                 onClick={() => apply(p.id)}
-                className="mt-3 text-xs font-medium underline disabled:text-slate-400"
+                className="mt-3 text-xs font-medium underline disabled:text-muted"
               >
                 {active ? "Added" : "Add checklist"}
               </button>
@@ -150,7 +150,7 @@ export default function TraditionsPage() {
         {items.map((item) => (
           <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div>
-              <p className={`text-sm font-medium ${item.done ? "line-through text-slate-400" : ""}`}>
+              <p className={`text-sm font-medium ${item.done ? "line-through text-muted" : ""}`}>
                 {item.title}
               </p>
               {item.timing && <p className="text-xs text-muted">{item.timing}</p>}

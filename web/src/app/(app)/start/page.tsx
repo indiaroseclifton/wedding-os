@@ -102,7 +102,7 @@ export default function StartPage() {
               const ok = await post({ action: "guests", names });
               if (ok) setStep(1);
             }}
-            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-ivory disabled:opacity-50"
+            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-moss-fg disabled:opacity-50"
           >
             {busy ? "Saving…" : "Save names"}
           </button>
@@ -115,7 +115,7 @@ export default function StartPage() {
               const ok = await post({ action: "vendor", name: vendor, category });
               if (ok) setStep(2);
             }}
-            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-ivory disabled:opacity-50"
+            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-moss-fg disabled:opacity-50"
           >
             {busy ? "Saving…" : "Add vendor"}
           </button>
@@ -129,7 +129,7 @@ export default function StartPage() {
               if (data?.token) router.push(`/w/${data.token}`);
               else if (data) router.push("/dashboard");
             }}
-            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-ivory disabled:opacity-50"
+            className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-moss-fg disabled:opacity-50"
           >
             {busy ? "Publishing…" : "Publish the site"}
           </button>

@@ -395,7 +395,7 @@ export default function SettingsPage() {
         <button
           type="button"
           onClick={() => save()}
-          className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory"
+          className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-moss-fg"
         >
           {saving ? "Saving…" : "Save look"}
         </button>
@@ -513,7 +513,7 @@ export default function SettingsPage() {
         type="button"
         onClick={() => save()}
         disabled={saving}
-        className="rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory disabled:opacity-50"
+        className="rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-moss-fg disabled:opacity-50"
       >
         {saving ? "Saving…" : "Save settings"}
       </button>

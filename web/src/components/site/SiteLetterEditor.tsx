@@ -39,9 +39,9 @@ type Look = {
 };
 
 const LOOKS: { id: Site["template"]; label: string; hint: string; swatch: string }[] = [
-  { id: "letter", label: "Letter", hint: "Quiet column", swatch: "bg-[#f6f1e8]" },
-  { id: "garden", label: "Garden", hint: "More photo", swatch: "bg-[#dce6d4]" },
-  { id: "midnight", label: "Midnight", hint: "Dark, champagne", swatch: "bg-[#1c1a16]" },
+  { id: "letter", label: "Letter", hint: "Quiet column", swatch: "bg-ivory" },
+  { id: "garden", label: "Garden", hint: "More photo", swatch: "bg-moss-soft" },
+  { id: "midnight", label: "Midnight", hint: "Dark, champagne", swatch: "bg-night" },
 ];
 
 export function SiteLetterEditor() {
@@ -51,6 +51,7 @@ export function SiteLetterEditor() {
   const [origin, setOrigin] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [galleryAdd, setGalleryAdd] = useState("");
+  const [sheet, setSheet] = useState(false);
   const dirty = useRef(false);
   const siteRef = useRef<Site | null>(null);
 
@@ -157,6 +158,9 @@ export function SiteLetterEditor() {
           <Link href="/site/preview" className="btn btn-ghost" target="_blank">
             {site.published ? "Open live page" : "See as a guest"}
           </Link>
+          <button type="button" onClick={() => setSheet(true)} className="btn btn-ghost lg:hidden">
+            Look and RSVP
+          </button>
         </div>
       </div>
 
@@ -169,6 +173,14 @@ export function SiteLetterEditor() {
       )}
 
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_19rem]">
+        {sheet ? (
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={() => setSheet(false)}
+            className="fixed inset-0 z-30 bg-ink/20 lg:hidden"
+          />
+        ) : null}
         <article
           className={`overflow-hidden rounded-[1.8rem] border border-line shadow-[0_18px_50px_-28px_rgba(40,36,28,0.45)] ${
             night ? "bg-[#141311] text-[#f3efe6]" : "bg-paper text-ink"
@@ -285,7 +297,19 @@ export function SiteLetterEditor() {
           </div>
         </article>
 
-        <aside className="space-y-4 lg:sticky lg:top-20">
+        <aside
+          className={`space-y-4 ${
+            sheet
+              ? "fixed inset-x-0 bottom-0 z-40 max-h-[80vh] overflow-y-auto rounded-t-[1.6rem] border border-line bg-surface p-5 shadow-[0_-18px_48px_-28px_rgba(18,17,15,0.28)] lg:static lg:z-auto lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none"
+              : "hidden lg:sticky lg:top-20 lg:block"
+          }`}
+        >
+          <div className="mb-2 flex items-center justify-between lg:hidden">
+            <p className="kicker kicker-moss">Look and RSVP</p>
+            <button type="button" onClick={() => setSheet(false)} className="btn btn-ghost">
+              Done
+            </button>
+          </div>
           <section className="glass-panel space-y-3 rounded-2xl p-4">
             <p className="kicker">Look</p>
             <div className="grid grid-cols-3 gap-2">

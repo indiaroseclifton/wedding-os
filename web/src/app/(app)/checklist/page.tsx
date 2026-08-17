@@ -116,7 +116,7 @@ export default function ChecklistPage() {
           type="button"
           onClick={() => setFilter("all")}
           className={`rounded-full px-3 py-1 text-xs font-medium ${
-            filter === "all" ? "bg-ink text-ivory" : "border border-line bg-surface"
+            filter === "all" ? "bg-moss text-moss-fg" : "border border-line bg-surface"
           }`}
         >
           All phases
@@ -127,7 +127,7 @@ export default function ChecklistPage() {
             type="button"
             onClick={() => setFilter(p.id)}
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              filter === p.id ? "bg-ink text-ivory" : "border border-line bg-surface"
+              filter === p.id ? "bg-moss text-moss-fg" : "border border-line bg-surface"
             }`}
           >
             {p.label}
@@ -192,7 +192,7 @@ export default function ChecklistPage() {
                     </label>
                     <div className="flex items-center gap-3">
                       {action && !item.done && (
-                        <Link href={action.href} className="rounded-full bg-moss px-3 py-1 text-[11px] font-medium text-ivory">
+                        <Link href={action.href} className="rounded-full bg-moss px-3 py-1 text-[11px] font-medium text-moss-fg">
                           {action.cta}
                         </Link>
                       )}

@@ -96,7 +96,7 @@ export function RsvpWidget() {
         type="button"
         disabled={busy || !count}
         onClick={send}
-        className="mt-4 rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory disabled:opacity-40"
+        className="mt-4 rounded-full bg-moss px-4 py-2 text-xs font-medium text-moss-fg disabled:opacity-40"
       >
         {busy ? "Sending…" : "Nudge them"}
       </button>
@@ -214,7 +214,7 @@ export function PayWidget() {
         <button
           type="submit"
           disabled={busy}
-          className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-ivory disabled:opacity-40"
+          className="rounded-full bg-moss px-4 py-2 text-xs font-medium text-moss-fg disabled:opacity-40"
         >
           {busy ? "Saving…" : "Log it"}
         </button>

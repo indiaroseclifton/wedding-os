@@ -27,7 +27,8 @@ export function RoomTile({
       <img
         src={photo}
         alt=""
-        className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.06] group-active:scale-[1.02]"
+        loading="lazy"
+        className="h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out [@media(hover:hover)_and_(pointer:fine)]:group-hover:scale-[1.04]"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-ink/15 to-transparent transition duration-500 group-hover:from-ink/70" />
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">

@@ -67,7 +67,7 @@ export default function NotesPage() {
         {entries.map((e) => (
           <li key={e.id} className="glass-panel rounded-2xl p-3 text-sm">
             <p className="whitespace-pre-wrap">{e.body}</p>
-            <p className="mt-2 text-xs text-slate-400">
+            <p className="mt-2 text-xs text-muted">
               {e.authorName || "Someone"} · {new Date(e.createdAt).toLocaleString()}
             </p>
           </li>

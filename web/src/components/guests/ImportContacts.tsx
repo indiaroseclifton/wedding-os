@@ -87,7 +87,7 @@ export function ImportContacts({ onImported }: { onImported?: () => void }) {
       </p>
       <div className="flex flex-wrap gap-2">
         {picker && (
-          <button type="button" disabled={busy} onClick={fromPhone} className="rounded-full bg-moss px-3 py-1.5 text-xs font-medium text-ivory">
+          <button type="button" disabled={busy} onClick={fromPhone} className="rounded-full bg-moss px-3 py-1.5 text-xs font-medium text-moss-fg">
             From this phone
           </button>
         )}

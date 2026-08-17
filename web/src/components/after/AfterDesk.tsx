@@ -93,7 +93,7 @@ export function AfterDesk({
           variants={fadeUp}
           initial="hidden"
           animate="show"
-          className="glass-panel rounded-[1.8rem] p-5 sm:p-7"
+          className="glass-hero rounded-[1.8rem] p-5 sm:p-7"
         >
           <p className="kicker kicker-moss">Tonight</p>
           <h2 className="mt-2 font-serif text-[clamp(2rem,6vw,3rem)] leading-none tracking-tight text-balance">

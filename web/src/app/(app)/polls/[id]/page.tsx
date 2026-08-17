@@ -116,7 +116,7 @@ export default function PollDetailPage() {
                     {n} ({pct}%)
                   </span>
                 </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
                   <div className="h-full bg-slate-900" style={{ width: `${pct}%` }} />
                 </div>
                 {poll.status === "OPEN" && (
@@ -140,7 +140,7 @@ export default function PollDetailPage() {
                   const opt = poll.options.find((o) => o.id === optionId);
                   return (
                     <li key={optionId} className="flex items-center gap-2 text-sm">
-                      <span className="w-5 text-xs text-slate-400">{index + 1}</span>
+                      <span className="w-5 text-xs text-muted">{index + 1}</span>
                       <span className="flex-1">{opt?.label}</span>
                       <button type="button" onClick={() => move(optionId, -1)} className="text-xs">↑</button>
                       <button type="button" onClick={() => move(optionId, 1)} className="text-xs">↓</button>
@@ -169,7 +169,7 @@ export default function PollDetailPage() {
                       <span className="font-medium">{opt?.label}</span>
                       <span className="text-xs text-muted">{row.points} pts</span>
                     </div>
-                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-surface">
                       <div className="h-full bg-slate-900" style={{ width: `${pct}%` }} />
                     </div>
                   </li>

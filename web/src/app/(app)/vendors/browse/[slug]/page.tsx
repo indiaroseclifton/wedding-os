@@ -149,7 +149,7 @@ export default function DirectoryProfilePage() {
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="glass-panel rounded-2xl p-4 text-sm">
           <p className="font-medium">Good for</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-ink-soft">
             {listing.goodFor.map((g) => (
               <li key={g}>{g}</li>
             ))}
@@ -157,7 +157,7 @@ export default function DirectoryProfilePage() {
         </div>
         <div className="glass-panel rounded-2xl p-4 text-sm">
           <p className="font-medium">Skip if</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-ink-soft">
             {listing.notFor.map((g) => (
               <li key={g}>{g}</li>
             ))}
@@ -172,7 +172,7 @@ export default function DirectoryProfilePage() {
             <li key={p.name} className="px-4 py-3 text-sm">
               <div className="flex justify-between gap-2">
                 <p className="font-medium">{p.name}</p>
-                <p className="text-slate-600">{p.from}</p>
+                <p className="text-ink-soft">{p.from}</p>
               </div>
               <p className="text-xs text-muted">{p.includes}</p>
             </li>
@@ -185,7 +185,7 @@ export default function DirectoryProfilePage() {
 
       <div className="glass-panel rounded-2xl p-4 text-sm">
         <p className="font-medium">After you book</p>
-        <p className="mt-1 text-slate-600">{listing.afterBook}</p>
+        <p className="mt-1 text-ink-soft">{listing.afterBook}</p>
         <p className="mt-2 text-xs text-muted">
           Coordination is the point — payments, handoffs, and day-of live in this app, not in their inbox.
         </p>

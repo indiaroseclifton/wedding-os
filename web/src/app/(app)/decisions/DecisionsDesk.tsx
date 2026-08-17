@@ -304,7 +304,7 @@ function DecisionCard({
             <button
               type="button"
               onClick={() => onSave("DECIDED", true)}
-              className="rounded-full bg-moss px-3 py-1.5 text-xs font-medium text-ivory"
+              className="rounded-full bg-moss px-3 py-1.5 text-xs font-medium text-moss-fg"
             >
               Call it + make a task
             </button>

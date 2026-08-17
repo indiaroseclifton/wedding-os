@@ -73,7 +73,7 @@ export default function DemoPage() {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-medium text-slate-400">Step {s.n}</p>
+                <p className="text-xs font-medium text-muted">Step {s.n}</p>
                 <p className="mt-1 text-sm font-semibold text-ink">{s.title}</p>
                 <p className="mt-2 text-sm text-muted">{s.body}</p>
               </div>

@@ -74,37 +74,61 @@ export default function DayOfPage() {
   if (!dayOf) return <p className="text-sm text-muted">Loading…</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <RoomSubnav room="day" />
-      <div className="flex flex-wrap items-start justify-between gap-3">
+
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="title">Day-of board</h1>
-          <p className="mt-1 text-sm text-muted">
-            Live check-ins and notes. The timeline lives on Run of show.
-          </p>
+          <p className="kicker kicker-moss">The day</p>
+          <h1 className="mt-2 font-serif text-[clamp(2.4rem,7vw,4rem)] leading-none tracking-tight">
+            Call sheet
+          </h1>
         </div>
-        <Link
-          href="/run-of-show"
-          className="btn btn-primary"
-        >
-          Edit run of show
+        <Link href="/run-of-show" className="btn btn-ghost">
+          Edit the times
         </Link>
-      </div>
+      </header>
 
-      <div className="glass-panel rounded-2xl p-4">
+      <section>
         <ScheduleView slots={dayOf.schedule || []} view="all" showNotes={false} />
-      </div>
+      </section>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block glass-panel rounded-2xl p-4 text-sm">
-          <span className="font-medium">Weather</span>
-          <textarea
-            value={weather}
-            onChange={(e) => setWeather(e.target.value)}
-            rows={3}
-            className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm"
-          />
-          <div className="mt-2 flex flex-wrap gap-2">
+      <div className="grid gap-6 border-t border-line pt-8 lg:grid-cols-[minmax(0,1fr)_17rem]">
+        <div>
+          <p className="kicker">Crew</p>
+          <ul className="mt-3 divide-y divide-line">
+            {dayOf.checkIns.map((c) => (
+              <li key={c.id} className="flex min-h-14 flex-wrap items-center justify-between gap-2 py-2">
+                <span>
+                  <span className="font-serif text-xl leading-tight">{c.name}</span>
+                  <span className="ml-2 text-xs text-muted">{c.role}</span>
+                </span>
+                <select
+                  value={c.status}
+                  onChange={(e) => setStatus(c.id, e.target.value)}
+                  className="field max-w-[10rem] text-xs"
+                  aria-label={`${c.name} status`}
+                >
+                  {STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {s.replaceAll("_", " ")}
+                    </option>
+                  ))}
+                </select>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <aside className="space-y-4">
+          <label className="block">
+            <span className="kicker">Weather</span>
+            <textarea
+              value={weather}
+              onChange={(e) => setWeather(e.target.value)}
+              rows={3}
+              className="field mt-2"
+            />
             <button
               type="button"
               onClick={async () => {
@@ -118,76 +142,53 @@ export default function DayOfPage() {
                 setWeather(data.note || "");
                 setWeatherMsg("Pulled from NWS");
               }}
-              className="text-xs font-medium underline"
+              className="mt-2 text-xs underline"
             >
-              Pull forecast for our city
+              Pull forecast
             </button>
-            {weatherMsg && <span className="text-xs text-muted">{weatherMsg}</span>}
-          </div>
-        </label>
-        <label className="block glass-panel rounded-2xl p-4 text-sm">
-          <span className="font-medium">Emergency contact</span>
-          <textarea
-            value={emergency}
-            onChange={(e) => setEmergency(e.target.value)}
-            rows={2}
-            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
-          />
-        </label>
+            {weatherMsg ? <p className="mt-1 text-xs text-muted">{weatherMsg}</p> : null}
+          </label>
+          <label className="block">
+            <span className="kicker">Emergency</span>
+            <textarea
+              value={emergency}
+              onChange={(e) => setEmergency(e.target.value)}
+              rows={2}
+              className="field mt-2"
+            />
+          </label>
+          <button type="button" onClick={saveMeta} className="btn btn-primary w-full">
+            Save
+          </button>
+        </aside>
       </div>
-      <button
-        type="button"
-        onClick={saveMeta}
-        className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-medium"
-      >
-        Save weather & emergency
-      </button>
-
-      <ul className="space-y-2">
-        {dayOf.checkIns.map((c) => (
-          <li
-            key={c.id}
-            className="flex flex-wrap items-center justify-between gap-2 glass-panel rounded-2xl px-4 py-3 text-sm"
-          >
-            <span>
-              {c.name}
-              <span className="text-xs text-muted"> · {c.role}</span>
-            </span>
-            <select
-              value={c.status}
-              onChange={(e) => setStatus(c.id, e.target.value)}
-              className="rounded-lg border border-line px-2 py-1.5 text-xs"
-            >
-              {STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s.replaceAll("_", " ")}
-                </option>
-              ))}
-            </select>
-          </li>
-        ))}
-      </ul>
 
       <form onSubmit={postUpdate} className="flex gap-2">
+        <label className="sr-only" htmlFor="live-update">
+          Live update
+        </label>
         <input
+          id="live-update"
           value={update}
           onChange={(e) => setUpdate(e.target.value)}
           placeholder="Live update…"
-          className="flex-1 rounded-lg border border-line px-3 py-2 text-sm"
+          className="field flex-1"
         />
         <button type="submit" className="btn btn-primary">
           Post
         </button>
       </form>
 
-      <ul className="space-y-2">
-        {dayOf.updates.map((u) => (
-          <li key={u.id} className="glass-panel rounded-2xl p-3 text-sm">
-            {u.body}
-            <p className="mt-1 text-[10px] text-slate-400">{u.createdAt}</p>
-          </li>
-        ))}
-      </ul>
+      {dayOf.updates.length > 0 && (
+        <ul className="divide-y divide-line">
+          {dayOf.updates.map((u) => (
+            <li key={u.id} className="py-3 text-sm">
+              {u.body}
+              <p className="mt-1 text-[11px] tabular-nums text-muted">{u.createdAt}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

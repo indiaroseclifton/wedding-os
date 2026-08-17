@@ -5,6 +5,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { ScheduleView } from "@/components/run-of-show/ScheduleView";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import {
   AUDIENCES,
   type Audience,
@@ -114,13 +115,15 @@ export default function RunOfShowPage() {
   if (!dayOf) return <p className="text-sm text-muted">Loading…</p>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      <RoomSubnav room="day" />
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
-          <h1 className="title">Run of show</h1>
-          <p className="mt-1 text-sm text-muted">
-            One timeline. Each beat has a time, a place, a lead, and who is allowed to see it.
-          </p>
+          <p className="kicker kicker-moss">The day</p>
+          <h1 className="mt-2 font-serif text-[clamp(2.4rem,7vw,4rem)] leading-none tracking-tight">
+            Call sheet
+          </h1>
+          <p className="deck mt-3 max-w-xl">One timeline. Time, place, lead, who sees it.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <PrintButton label="Print" />
@@ -144,8 +147,8 @@ export default function RunOfShowPage() {
       </div>
 
       {shareUrl && (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm print:hidden">
-          <span className="text-emerald-900">{shareUrl}</span>
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-moss-soft px-4 py-3 text-sm print:hidden">
+          <span className="break-all text-moss">{shareUrl}</span>
           <CopyButton value={shareUrl} />
           <CopyButton value={`${shareUrl}?for=party`} label="Party link" />
           <CopyButton value={`${shareUrl}?for=vendor`} label="Vendor link" />
@@ -157,7 +160,7 @@ export default function RunOfShowPage() {
           type="button"
           onClick={() => post({ action: "plan", plan: "main" })}
           className={`rounded-full px-3 py-1 text-xs ${
-            (dayOf.activePlan || "main") === "main" ? "bg-slate-900 text-white" : "border border-line"
+            (dayOf.activePlan || "main") === "main" ? "bg-moss text-moss-fg" : "border border-line"
           }`}
         >
           Fair weather
@@ -166,7 +169,7 @@ export default function RunOfShowPage() {
           type="button"
           onClick={() => post({ action: "plan", plan: "rain" })}
           className={`rounded-full px-3 py-1 text-xs ${
-            dayOf.activePlan === "rain" ? "bg-slate-900 text-white" : "border border-line"
+            dayOf.activePlan === "rain" ? "bg-moss text-moss-fg" : "border border-line"
           }`}
         >
           Rain plan
@@ -187,7 +190,7 @@ export default function RunOfShowPage() {
             type="button"
             onClick={() => setView(v.id)}
             className={`rounded-full px-3 py-1 text-xs ${
-              view === v.id ? "bg-slate-900 text-white" : "border border-line"
+              view === v.id ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
             {v.label}
@@ -209,7 +212,7 @@ export default function RunOfShowPage() {
           />
         </div>
       ) : (
-        <ul className="divide-y divide-line glass-panel rounded-2xl">
+        <ul className="divide-y divide-line">
           {dayOf.schedule.map((s) => (
             <li key={s.id} className="px-4 py-3">
               {editing === s.id ? (
@@ -235,7 +238,7 @@ export default function RunOfShowPage() {
                         .join(" · ")}
                     </p>
                     {s.notes && <p className="mt-1 text-xs text-muted">{s.notes}</p>}
-                    <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">
+                    <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">
                       {audiencesOf(s).map(audienceLabel).join(" · ")}
                     </p>
                   </div>
@@ -246,7 +249,7 @@ export default function RunOfShowPage() {
                     <button
                       type="button"
                       onClick={() => post({ action: "schedule_remove", id: s.id })}
-                      className="text-xs text-slate-400 underline"
+                      className="text-xs text-muted underline"
                     >
                       Remove
                     </button>
@@ -384,7 +387,7 @@ function SlotForm({
               onClick={() => toggleAud(a)}
               className={`rounded-full px-2.5 py-0.5 text-xs ${
                 draft.audiences.includes(a)
-                  ? "bg-slate-900 text-white"
+                  ? "bg-moss text-moss-fg"
                   : "border border-line"
               }`}
             >

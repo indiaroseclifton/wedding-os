@@ -46,7 +46,7 @@ export function LeftoverPlan({ initial }: { initial: StoredDietary }) {
         Notes for the kitchen
         <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="mt-1 block w-full rounded-xl border border-line px-3 py-2" />
       </label>
-      <button type="submit" className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory print:hidden">
+      <button type="submit" className="min-h-11 rounded-full bg-moss px-4 text-sm text-moss-fg print:hidden">
         Save leftover plan
       </button>
       {msg && <p role="status" className="text-xs text-moss">{msg}</p>}

@@ -52,7 +52,7 @@ export function PortalActions({
           </button>
         </div>
       ) : (
-        <p className="text-xs text-emerald-700">{msg}</p>
+        <p className="text-xs text-moss">{msg}</p>
       )}
       <ul className="space-y-2">
         {slots.map((s) => (

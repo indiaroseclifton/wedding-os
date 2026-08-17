@@ -466,7 +466,7 @@ export default function VendorDetailPage() {
                             ? "bg-rose-700 text-white"
                             : m === "good"
                               ? "bg-emerald-800 text-white"
-                              : "bg-slate-900 text-white"
+                              : "bg-moss text-moss-fg"
                           : "border border-line"
                       }`}
                     >
@@ -547,7 +547,7 @@ export default function VendorDetailPage() {
 
       <div className="rounded-[1.4rem] border border-line bg-surface p-5 text-sm">
         <p className="font-medium">Coordination next</p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-ink-soft">
           <li>
             <Link href={vendor ? `/send/${vendor.id}` : "/send"} className="underline">
               Send their live page

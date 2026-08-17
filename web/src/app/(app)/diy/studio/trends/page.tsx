@@ -131,7 +131,7 @@ export default function DecorTrendsPage() {
                     ))}
                     <Link
                       href={`/diy/studio/floral?story=${t.palette}`}
-                      className="rounded-full bg-moss px-3 py-1.5 text-xs text-ivory"
+                      className="rounded-full bg-moss px-3 py-1.5 text-xs text-moss-fg"
                     >
                       Open {t.palette} palette
                     </Link>

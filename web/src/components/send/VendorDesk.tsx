@@ -259,7 +259,7 @@ export function VendorDesk({
                 setBusy(false);
               }
             }}
-            className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory disabled:opacity-50"
+            className="min-h-11 rounded-full bg-moss px-4 text-sm text-moss-fg disabled:opacity-50"
           >
             Ask
           </button>

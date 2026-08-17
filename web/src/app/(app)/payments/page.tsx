@@ -186,25 +186,24 @@ export default function PaymentsPage() {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-4">
-        <p className="glass-panel rounded-2xl p-4">
-          <span className="block kicker">Paid</span>
-          <span className="font-serif text-3xl">{money(paid)}</span>
+      <div className="stat-strip">
+        <p>
+          <span className="block font-serif text-2xl tabular-nums">{money(paid)}</span>
+          <span className="mt-1 block text-[11px] uppercase tracking-wide text-muted">Paid</span>
         </p>
-        <p className="glass-panel rounded-2xl p-4">
-          <span className="block kicker">Still open</span>
-          <span className="font-serif text-3xl">{money(open)}</span>
+        <p>
+          <span className="block font-serif text-2xl tabular-nums">{money(open)}</span>
+          <span className="mt-1 block text-[11px] uppercase tracking-wide text-muted">Still open</span>
         </p>
-        <p className="glass-panel rounded-2xl p-4">
-          <span className="block kicker">Overdue</span>
-          <span className={`font-serif text-3xl ${overdue ? "text-clay" : ""}`}>{money(overdue)}</span>
+        <p>
+          <span className={`block font-serif text-2xl tabular-nums ${overdue ? "text-clay" : ""}`}>{money(overdue)}</span>
+          <span className="mt-1 block text-[11px] uppercase tracking-wide text-muted">Overdue</span>
         </p>
-        <p className="glass-panel rounded-2xl p-4">
-          <span className="block kicker">Next due</span>
-          <span className="font-serif text-2xl leading-tight">
-            {next ? next.dueDate : "—"}
+        <p>
+          <span className="block font-serif text-xl leading-tight">{next ? next.dueDate : "—"}</span>
+          <span className="mt-1 block text-[11px] uppercase tracking-wide text-muted">
+            {next ? `${next.label}` : "Next due"}
           </span>
-          {next && <span className="mt-1 block text-xs text-muted">{next.label} · {vendorLabel(next, vendors)}</span>}
         </p>
       </div>
 
@@ -273,7 +272,7 @@ export default function PaymentsPage() {
           type="date"
           className="min-h-11 rounded-xl border border-line px-3 text-sm"
         />
-        <button type="submit" className="min-h-11 rounded-full bg-moss px-4 text-sm text-ivory sm:col-span-2">
+        <button type="submit" className="min-h-11 rounded-full bg-moss px-4 text-sm text-moss-fg sm:col-span-2">
           Add to ledger
         </button>
         {msg && (
@@ -369,7 +368,7 @@ export default function PaymentsPage() {
                           <button
                             type="button"
                             onClick={() => saveEdit(p.id)}
-                            className="min-h-11 rounded-full bg-moss px-3 text-xs text-ivory"
+                            className="min-h-11 rounded-full bg-moss px-3 text-xs text-moss-fg"
                           >
                             Save
                           </button>
@@ -394,7 +393,7 @@ export default function PaymentsPage() {
                             <button
                               type="button"
                               onClick={() => setStatus(p.id, "PAID")}
-                              className="min-h-11 rounded-full bg-moss px-3 text-xs text-ivory"
+                              className="min-h-11 rounded-full bg-moss px-3 text-xs text-moss-fg"
                             >
                               Mark paid
                             </button>

@@ -26,31 +26,27 @@ export function ScheduleView({
   return (
     <ol className="space-y-0">
       {rows.map((s, i) => (
-        <li key={s.id} className="flex gap-3 print:break-inside-avoid">
-          <div className="flex w-[4.5rem] flex-col items-start">
-            <span className="text-xs font-semibold tabular-nums text-ink">
+        <li key={s.id} className="flex gap-4 print:break-inside-avoid">
+          <div className="flex w-[4.75rem] shrink-0 flex-col items-start">
+            <span className="font-serif text-sm tabular-nums leading-none text-ink">
               {formatRange(s.time, s.endTime)}
             </span>
-            {i < rows.length - 1 && (
-              <span className="mt-1 ml-2 h-full min-h-[1.25rem] w-px flex-1 bg-slate-200" />
-            )}
+            {i < rows.length - 1 && <span className="ml-2 mt-2 h-full min-h-6 w-px flex-1 bg-line" />}
           </div>
-          <div className="flex-1 pb-4">
-            <p className="text-sm font-medium text-ink">{slotTitle(s, view)}</p>
-            <p className="text-xs text-muted">
-              {[s.location, s.lead, s.assignee ? `assigned: ${s.assignee}` : ""].filter(Boolean).join(" · ")}
+          <div className="min-w-0 flex-1 pb-6">
+            <p className="font-serif text-2xl leading-tight tracking-tight text-balance">{slotTitle(s, view)}</p>
+            <p className="mt-1 text-sm text-muted">
+              {[s.location, s.lead, s.assignee ? s.assignee : ""].filter(Boolean).join(" · ")}
             </p>
             {showNotes && view !== "guests" && s.notes && (
-              <p className="mt-1 text-xs text-muted">{s.notes}</p>
+              <p className="mt-1 text-sm text-ink-soft text-pretty">{s.notes}</p>
             )}
-            {s.diySlug && (
-              <p className="mt-1 text-[11px] text-emerald-700">DIY · {s.diySlug}</p>
-            )}
+            {s.diySlug && <p className="mt-1 text-xs text-moss">DIY · {s.diySlug}</p>}
             {s.confirmedBy && s.confirmedBy.length > 0 && (
-              <p className="mt-1 text-[11px] text-emerald-700">Confirmed: {s.confirmedBy.join(", ")}</p>
+              <p className="mt-1 text-xs text-moss">Confirmed: {s.confirmedBy.join(", ")}</p>
             )}
             {s.comments && s.comments.length > 0 && view !== "guests" && (
-              <ul className="mt-1 space-y-0.5 text-[11px] text-slate-600">
+              <ul className="mt-1 space-y-0.5 text-xs text-ink-soft">
                 {s.comments.map((c) => (
                   <li key={c.id}>
                     <span className="font-medium">{c.author}:</span> {c.body}
@@ -59,7 +55,7 @@ export function ScheduleView({
               </ul>
             )}
             {showAudience && (
-              <p className="mt-1 text-[11px] uppercase tracking-wide text-slate-400">
+              <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">
                 {audiencesOf(s).map(audienceLabel).join(" · ")}
               </p>
             )}

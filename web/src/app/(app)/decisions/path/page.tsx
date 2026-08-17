@@ -63,7 +63,7 @@ export default function PathPage() {
                       onClick={() => setChoice(c.id, o.id)}
                       className={`rounded-full px-3 py-1 text-xs ${
                         choice === o.id
-                          ? "bg-slate-900 text-white"
+                          ? "bg-moss text-moss-fg"
                           : "border border-line text-ink-soft"
                       }`}
                     >

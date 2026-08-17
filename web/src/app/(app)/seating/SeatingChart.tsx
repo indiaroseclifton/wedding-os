@@ -33,13 +33,13 @@ function TableShape({
           {name}
         </span>
         {guests.length === 0 ? (
-          <span className="text-[10px] text-slate-400">Empty</span>
+          <span className="text-[10px] text-muted">Empty</span>
         ) : (
           guests.map((g) => (
             <span
               key={g.id}
               title={g.dietary || g.name}
-              className="max-w-[4.5rem] truncate rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] text-ink-soft"
+              className="max-w-[4.5rem] truncate rounded-full bg-surface px-1.5 py-0.5 text-[9px] text-ink-soft"
             >
               {g.name.split(" ")[0]}
             </span>

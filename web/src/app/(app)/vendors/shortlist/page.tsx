@@ -99,7 +99,7 @@ export default function ShortlistPage() {
                   Open
                 </Link>
                 {hired.includes(v.slug) ? (
-                  <span className="text-xs text-emerald-700">On your list</span>
+                  <span className="text-xs text-moss">On your list</span>
                 ) : (
                   <button type="button" onClick={() => hire(v.slug)} className="text-xs underline">
                     Add to wedding
@@ -125,7 +125,7 @@ export default function ShortlistPage() {
                 ))}
               </tr>
             </thead>
-            <tbody className="text-slate-600">
+            <tbody className="text-ink-soft">
               <tr className="border-b border-slate-100">
                 <td className="py-2 pr-3 text-xs font-medium text-muted">Category</td>
                 {compared.map((v) => (

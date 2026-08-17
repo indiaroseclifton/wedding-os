@@ -40,7 +40,7 @@ export default async function DiscoverVendorProfile({
           </p>
           <Link
             href={session ? `/vendors/browse/${v.slug}` : "/login"}
-            className="mt-8 inline-block rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-ivory"
+            className="mt-8 inline-block rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-moss-fg"
           >
             {session ? "Add to my wedding" : "Sign in to inquire"}
           </Link>
