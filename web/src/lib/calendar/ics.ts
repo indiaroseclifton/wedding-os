@@ -28,7 +28,7 @@ export function toIcs(name: string, events: CalEvent[]) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Wedding OS//EN",
+    "PRODID:-//Vowfolk//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     `X-WR-CALNAME:${esc(name)}`,

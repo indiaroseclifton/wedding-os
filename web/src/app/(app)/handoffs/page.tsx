@@ -11,7 +11,7 @@ export default async function HandoffsPage() {
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="kicker kicker-moss">Vendors</p>

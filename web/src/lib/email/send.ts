@@ -21,7 +21,7 @@ export async function sendAppEmail(input: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.EMAIL_FROM || "Wedding OS <onboarding@resend.dev>",
+      from: process.env.EMAIL_FROM || "Vowfolk <onboarding@resend.dev>",
       to: [input.to],
       subject: input.subject,
       html: input.html,

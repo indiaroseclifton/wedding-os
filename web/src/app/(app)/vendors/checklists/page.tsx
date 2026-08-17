@@ -5,7 +5,7 @@ import { VENDOR_CHECKLIST_TEMPLATES } from "@/lib/vendor-checklists";
 export default function VendorChecklistsPage() {
   return (
     <div className="space-y-6 pb-16">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div>
         <h1 className="font-serif text-4xl">Vendor checklists</h1>
         <p className="mt-1 text-sm text-muted">

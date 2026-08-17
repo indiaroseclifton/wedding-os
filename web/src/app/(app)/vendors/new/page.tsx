@@ -56,7 +56,7 @@ export default function NewVendorPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div>
         <p className="kicker kicker-moss">Vendors</p>
         <h1 className="title mt-2">Add vendor</h1>

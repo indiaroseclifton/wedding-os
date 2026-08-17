@@ -164,7 +164,7 @@ export default function PaymentsPage() {
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-end justify-between gap-3 print:hidden">
         <div>
           <p className="kicker kicker-moss">Vendor ledger</p>

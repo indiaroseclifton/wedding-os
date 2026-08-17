@@ -1,4 +1,4 @@
-# Wedding OS
+# Vowfolk
 
 One desk for one wedding. Coordination after hire — and a day that is not forced down an aisle.
 

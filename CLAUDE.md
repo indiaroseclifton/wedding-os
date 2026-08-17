@@ -1,6 +1,6 @@
-# Claude / agents — Wedding OS
+# Claude / agents — Vowfolk
 
-You are working on **Wedding OS** (`indiaroseclifton/wedding-os`). Read **`PRODUCT.md` first**, then this file. Ignore the README module table; it is stale.
+You are working on **Vowfolk** (`indiaroseclifton/wedding-os`). Read **`PRODUCT.md` first**, then this file. Ignore the README module table; it is stale.
 
 Owner builds in conversation and ships to `main`. The live product is a Next.js desk, not a docs site.
 

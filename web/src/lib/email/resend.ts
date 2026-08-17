@@ -14,7 +14,7 @@ export async function sendEmail(input: {
   text?: string;
 }) {
   const resend = getResend();
-  const from = process.env.EMAIL_FROM || "Wedding OS <onboarding@resend.dev>";
+  const from = process.env.EMAIL_FROM || "Vowfolk <onboarding@resend.dev>";
   if (!resend) {
     console.info("[email:dev]", input.to, input.subject, input.text || input.html);
     return { ok: true as const, dev: true };
@@ -49,9 +49,9 @@ export async function sendInviteEmail(input: {
 export async function sendMagicLinkEmail(input: { to: string; url: string }) {
   return sendEmail({
     to: input.to,
-    subject: "Your Wedding OS sign-in link",
+    subject: "Your Vowfolk sign-in link",
     text: `Sign in: ${input.url}`,
-    html: `<p><a href="${input.url}">Sign in to Wedding OS</a></p>
+    html: `<p><a href="${input.url}">Sign in to Vowfolk</a></p>
            <p style="color:#666;font-size:12px">This link expires soon. If you did not request it, ignore this email.</p>`,
   });
 }

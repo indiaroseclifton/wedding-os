@@ -40,7 +40,7 @@ export async function POST() {
     const playlist = await createApplePlaylist({
       userToken: music.appleMusic.userToken,
       name: `${meta.name || workspace.name} — Must play`,
-      description: "Exported from Wedding OS for the DJ.",
+      description: "Exported from Vowfolk for the DJ.",
       songIds: ids,
     });
     await saveMusic(workspace.id, {

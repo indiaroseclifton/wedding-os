@@ -22,7 +22,7 @@ export default async function SendVendorPage({
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
           <Link href="/send" className="text-xs underline">

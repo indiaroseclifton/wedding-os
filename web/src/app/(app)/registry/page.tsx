@@ -63,7 +63,7 @@ export default function RegistryPage() {
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="budget" />
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Registry</h1>

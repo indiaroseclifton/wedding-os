@@ -45,7 +45,7 @@ export async function POST() {
       accessToken: tokens.access_token,
       userId: profile.id,
       name: `${meta.name || workspace.name} — Must play`,
-      description: "Exported from Wedding OS for the DJ.",
+      description: "Exported from Vowfolk for the DJ.",
       uris,
       playlistId: music.spotify.playlistId,
     });

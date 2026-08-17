@@ -11,7 +11,7 @@ Demo buttons (Alex / Jordan) stay on the sign-in page.
 RESEND_API_KEY=re_...
 AUTH_SECRET=generate-a-long-random-string
 AUTH_URL=https://wedding-os-taupe.vercel.app
-EMAIL_FROM="Wedding OS <onboarding@resend.dev>"
+EMAIL_FROM="Vowfolk <onboarding@resend.dev>"
 ```
 
 3. Redeploy (or push any commit). Until a custom domain is verified in Resend, mail only delivers to the email on the Resend account.

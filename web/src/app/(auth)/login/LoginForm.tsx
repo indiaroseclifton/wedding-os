@@ -60,7 +60,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
       <img src="/brand/tablescape.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-[center_35%]" />
       <div className="absolute inset-0 bg-black/55" />
       <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
-        <p className="font-serif text-2xl tracking-tight">Wedding OS</p>
+        <p className="font-serif text-2xl tracking-tight">Vowfolk</p>
         <h1 className="mt-4 max-w-lg text-center font-serif text-4xl leading-[1.05] tracking-tight sm:text-5xl">
           The wedding you’re actually throwing
         </h1>

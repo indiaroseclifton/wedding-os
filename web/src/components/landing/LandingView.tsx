@@ -7,10 +7,10 @@ import { motion, fadeUp, stagger, MotionRoot } from "@/components/motion";
 import { DIRECTORY_CATEGORIES } from "@/lib/data/vendor-directory";
 
 const ROOMS = [
-  { src: "/brand/setting.jpg", k: "Guests", t: "The list, not a spreadsheet", d: "RSVPs, plus-ones, seating, phone import." },
-  { src: "/brand/rooms/vendors.jpg", k: "Vendors", t: "Find them. Then run them.", d: "Places search, contracts, deposits, one packet each." },
-  { src: "/brand/flowers.jpg", k: "DIY", t: "YouTube, but it stays here", d: "Flowers, tables, lists sized to your room." },
-  { src: "/brand/candles.jpg", k: "The day", t: "A cue sheet the DJ can open", d: "Processional to last dance. Run of show." },
+  { src: "/brand/rooms/planning.jpg", k: "Plan", t: "The week, not a checklist tab", d: "Vision, vendors, packets, budget." },
+  { src: "/brand/rooms/guests.jpg", k: "People", t: "The list and the letter", d: "RSVP, seating, what they actually open." },
+  { src: "/brand/flowers.jpg", k: "Studio", t: "Let’s make the centerpiece", d: "Stems, tables, signs, boxes. Quantities, not inspiration." },
+  { src: "/brand/rooms/day.jpg", k: "The day", t: "A call sheet they can hold", d: "Then ninety days of thank-yous." },
 ];
 
 export function LandingView({ signedIn }: { signedIn?: boolean }) {
@@ -33,21 +33,21 @@ export function LandingView({ signedIn }: { signedIn?: boolean }) {
           <div className="relative mx-auto grid min-h-screen max-w-6xl items-end gap-10 px-5 pb-12 pt-28 sm:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-16">
             <motion.div variants={stagger} initial="hidden" animate="show">
               <motion.p variants={fadeUp} className="text-[11px] font-medium uppercase tracking-[0.34em] text-champagne">
-                Coordination + discovery
+                Plan it. Make it. Celebrate it.
               </motion.p>
               <motion.h1
                 variants={fadeUp}
                 className="mt-5 font-serif text-[clamp(3.2rem,8vw,6.4rem)] leading-[0.92] tracking-[-0.04em]"
               >
-                The wedding
+                Not another
                 <br />
-                you’re actually
+                wedding planner.
                 <br />
-                throwing.
+                Make the day.
               </motion.h1>
               <motion.p variants={fadeUp} className="mt-6 max-w-md text-base leading-7 text-white/70">
-                Find the florist. Or make the flowers. Either way the week, the budget, and the DJ
-                cue sheet live in one desk.
+                Vowfolk is for couples who design the flowers, the table, the signs — and still
+                need the list, the packets, and the ninety days after.
               </motion.p>
               <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
                 <Link
@@ -76,9 +76,9 @@ export function LandingView({ signedIn }: { signedIn?: boolean }) {
 
         <section className="border-t border-white/10 bg-[#0c0e0b] px-5 py-16 sm:px-10">
           <div className="mx-auto max-w-6xl">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-champagne">The desk</p>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-champagne">The rooms</p>
             <h2 className="mt-3 max-w-xl font-serif text-4xl leading-tight sm:text-5xl">
-              Everything The Knot is missing after you pick a vendor.
+              Plan. People. Studio. The day.
             </h2>
             <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {ROOMS.map((c) => (
@@ -126,14 +126,14 @@ export function LandingView({ signedIn }: { signedIn?: boolean }) {
             <img src="/brand/flowers.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
           </div>
           <div className="flex flex-col justify-center px-6 py-16 sm:px-12">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-champagne">DIY</p>
-            <h2 className="mt-3 font-serif text-4xl">You did the flowers. So can they.</h2>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-champagne">Studio</p>
+            <h2 className="mt-3 font-serif text-4xl">Let’s make the centerpiece.</h2>
             <p className="mt-4 max-w-md text-sm leading-7 text-white/65">
-              Playbooks for stems, tables, lighting — not another 40-minute YouTube tab. Hire or make,
-              per category, then the checklist follows.
+              Upload the feeling later. Today: stems per bowl, tables × 15%, where to buy, when to
+              build, who holds the box. Inspiration is Pinterest. This is execution.
             </p>
-            <Link href={signedIn ? "/diy" : "/login"} className="mt-6 text-sm text-champagne underline">
-              Open the studio
+            <Link href={signedIn ? "/studio" : "/login"} className="mt-6 text-sm text-champagne underline">
+              Open Studio
             </Link>
           </div>
         </section>

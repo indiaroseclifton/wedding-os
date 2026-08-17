@@ -32,7 +32,7 @@ export default async function SendDeskPage() {
 
   return (
     <div className="space-y-8">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="kicker kicker-moss">Vendors</p>

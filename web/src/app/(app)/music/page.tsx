@@ -198,7 +198,7 @@ function MusicInner() {
       if (!window.MusicKit) throw new Error("Apple Music didn’t load in this browser");
       await window.MusicKit.configure({
         developerToken: tokenData.token,
-        app: { name: "Wedding OS", build: "1" },
+        app: { name: "Vowfolk", build: "1" },
       });
       const userToken = await window.MusicKit.getInstance().authorize();
       const res = await fetch("/api/integrations/apple-music/connect", {

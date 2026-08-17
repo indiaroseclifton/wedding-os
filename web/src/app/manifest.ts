@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Wedding OS",
-    short_name: "Wedding OS",
+    name: "Vowfolk",
+    short_name: "Vowfolk",
     description: "The coordination hub for the wedding you’re actually throwing.",
     start_url: "/dashboard",
     scope: "/",

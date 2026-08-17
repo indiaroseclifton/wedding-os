@@ -1,5 +1,11 @@
 import { TableStudio } from "@/components/diy/TableStudio";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 export default function TableStudioPage() {
-  return <TableStudio />;
+  return (
+    <div>
+      <RoomSubnav room="studio" />
+      <TableStudio />
+    </div>
+  );
 }

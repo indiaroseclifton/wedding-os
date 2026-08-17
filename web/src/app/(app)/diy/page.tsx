@@ -7,6 +7,7 @@ import { motion, fadeUp, stagger } from "@/components/motion";
 import { playbookFitsVibe } from "@/lib/vision-match";
 import { Icon } from "@/components/icons";
 import { MixBoard } from "@/components/diy/MixBoard";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 type Project = {
   id: string;
@@ -53,14 +54,16 @@ export default function DiyHubPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="studio" />
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
       >
-        <h1 className="text-2xl font-medium tracking-tight">DIY studio</h1>
-        <p className="mt-1 text-sm text-ink-soft">
-          Lock the mix first. Then mock a look and take a list to the store.
+        <p className="kicker kicker-moss">Studio</p>
+        <h1 className="mt-2 font-serif text-[clamp(2.4rem,7vw,4rem)] leading-none tracking-tight">Projects</h1>
+        <p className="deck mt-3 max-w-xl">
+          Hire or make. Lock the mix, mock a look, take a list. The flagship is Studio — this is every playbook.
         </p>
       </motion.div>
 

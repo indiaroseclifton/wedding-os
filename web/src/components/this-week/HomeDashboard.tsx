@@ -8,12 +8,11 @@ import { money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
 
 const STRIP = [
-  { href: "/guests", label: "Guests", icon: "users" },
-  { href: "/vendors", label: "Vendors", icon: "bag" },
-  { href: "/planning", label: "Planning", icon: "calendar" },
-  { href: "/day-of", label: "The Day", icon: "plate" },
-  { href: "/budget", label: "Budget", icon: "dollar" },
-  { href: "/registry", label: "Registry", icon: "gift" },
+  { href: "/planning", label: "Plan", icon: "calendar" },
+  { href: "/guests", label: "People", icon: "users" },
+  { href: "/studio", label: "Studio", icon: "scissors" },
+  { href: "/day-of", label: "The day", icon: "plate" },
+  { href: "/after", label: "After", icon: "gift" },
 ] as const;
 
 export function HomeDashboard({

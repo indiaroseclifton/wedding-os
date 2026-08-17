@@ -16,7 +16,7 @@ export function MarketingNav({
         className={`flex items-center gap-2 font-serif text-lg tracking-tight ${light ? "text-ink" : "text-ivory"}`}
       >
         <BrandMark className={light ? "text-moss" : "text-champagne"} />
-        Wedding OS
+        Vowfolk
       </Link>
       <nav className={`hidden items-center gap-6 text-xs font-medium sm:flex ${light ? "text-ink-soft" : "text-white/70"}`}>
         <Link href="/discover">Discover</Link>

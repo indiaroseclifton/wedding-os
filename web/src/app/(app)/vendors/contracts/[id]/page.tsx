@@ -11,7 +11,7 @@ export default async function ClauseStudioPage({ params }: { params: Promise<{ i
   if (!vendor) notFound();
   return (
     <div className="space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <ClauseStudio
         vendorId={vendor.id}
         name={vendor.name}

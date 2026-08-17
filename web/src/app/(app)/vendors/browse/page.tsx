@@ -261,7 +261,7 @@ export default function VendorBrowsePage() {
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div>
         <h1 className="font-serif text-4xl">Find vendors</h1>
         <p className="mt-1 text-sm text-muted">

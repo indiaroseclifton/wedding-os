@@ -18,7 +18,7 @@ export default async function AskPage() {
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div>
         <p className="kicker kicker-moss">First letter</p>
         <h1 className="headline mt-2">Ask before the packet</h1>

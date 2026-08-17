@@ -51,7 +51,7 @@ export default function NewHandoffPage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div>
         <p className="kicker kicker-moss">Send</p>
         <h1 className="title mt-2">A note for their packet</h1>

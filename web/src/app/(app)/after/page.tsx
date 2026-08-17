@@ -5,15 +5,17 @@ import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { getThanks } from "@/lib/data/thanks-store";
 import { getLegal } from "@/lib/data/legal-store";
+import { getInventory } from "@/lib/data/inventory-store";
 import { buildAfterDesk } from "@/lib/after-desk";
 
 export default async function AfterPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
-  const [guests, vendors, thanks, legal] = await Promise.all([
+  const [guests, vendors, thanks, legal, inventory] = await Promise.all([
     getWorkspaceGuests(workspace.id),
     listVendors(workspace.id),
     getThanks(workspace.id),
     getLegal(workspace.id),
+    getInventory(workspace.id),
   ]);
   const desk = buildAfterDesk({
     weddingDate: meta.weddingDate,
@@ -125,8 +127,10 @@ export default async function AfterPage() {
             ))}
           </ol>
 
-          <Link href="/thanks" className="text-xs text-moss underline">
-            Full thank-you list
+          <Link href="/studio/inventory" className="block text-xs text-moss underline">
+            {inventory.boxes.length
+              ? `${inventory.boxes.length} boxes · keep, sell, donate`
+              : "What we made — pack the boxes"}
           </Link>
         </aside>
       </div>

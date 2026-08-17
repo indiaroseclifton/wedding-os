@@ -548,21 +548,44 @@ export function FloralStudio() {
                 />
               </label>
             )}
+            {vessel !== "bouquet" && vessel !== "bout" && (
+              <p className="text-xs text-muted">
+                {tables} tables + 15% extra: ~${(math.est * tables * 1.15).toFixed(0)}
+              </p>
+            )}
             <ul className="space-y-1.5 text-sm">
               {math.lines.map((l) => (
                 <li key={l.stemId} className="flex justify-between gap-2">
                   <span>
-                    {l.count} {l.name}
+                    {vessel !== "bouquet" && vessel !== "bout"
+                      ? `${Math.ceil(l.count * tables * 1.15)} ${l.name}`
+                      : `${l.count} ${l.name}`}
+                    {vessel !== "bouquet" && vessel !== "bout" ? (
+                      <span className="text-muted"> · {l.count} each</span>
+                    ) : null}
                   </span>
-                  <span className="text-muted">${l.est.toFixed(0)}</span>
+                  <span className="text-muted">
+                    $
+                    {(vessel !== "bouquet" && vessel !== "bout"
+                      ? l.est * tables * 1.15
+                      : l.est
+                    ).toFixed(0)}
+                  </span>
                 </li>
               ))}
             </ul>
-            {vessel !== "bouquet" && vessel !== "bout" && (
-              <p className="text-xs text-muted">
-                For {tables} tables: ~${(math.est * tables).toFixed(0)}
-              </p>
-            )}
+            {vessel !== "bouquet" && vessel !== "bout" ? (
+              <div>
+                <p className="kicker">Where to buy</p>
+                <ul className="mt-2 space-y-1 text-xs text-muted">
+                  <li>Wholesale florist — best price if you meet a minimum</li>
+                  <li>Flower Moxie — recipes and bunches shipped</li>
+                  <li>Trader Joe’s — Tuesday / Thursday, go early</li>
+                  <li>Costco — hydrangea and rose boxes</li>
+                  <li>Local flower market — the day before, if you have one</li>
+                </ul>
+              </div>
+            ) : null}
             <div className="flex flex-col gap-2">
               <button
                 type="button"

@@ -23,6 +23,15 @@ export const AFTER_BEATS: AfterBeat[] = [
     toDay: 7,
   },
   {
+    id: "boxes",
+    when: "This week",
+    title: "What we made",
+    detail: "Keep, return, sell, or donate. The boxes already know what’s in them.",
+    href: "/studio/inventory",
+    fromDay: 1,
+    toDay: 21,
+  },
+  {
     id: "cards",
     when: "Weeks 2–4",
     title: "Start the thank-you cards",

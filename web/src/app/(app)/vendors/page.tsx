@@ -21,7 +21,7 @@ export default async function VendorsPage() {
   return (
     <div className="paper">
       <div className="span-12">
-        <RoomSubnav room="vendors" />
+        <RoomSubnav room="planning" />
       </div>
       <header className="span-8">
         <h1 className="title">Vendors</h1>

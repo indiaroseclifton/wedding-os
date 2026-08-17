@@ -16,12 +16,12 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Wedding OS",
-  description: "The coordination hub for the wedding you’re actually throwing — hire or DIY.",
-  applicationName: "Wedding OS",
+  title: "Vowfolk",
+  description: "Plan it. Make it. Celebrate it. Vowfolk is for couples who make the day their own.",
+  applicationName: "Vowfolk",
   appleWebApp: {
     capable: true,
-    title: "Wedding OS",
+    title: "Vowfolk",
     statusBarStyle: "default",
   },
   icons: {

@@ -4,7 +4,7 @@ const LIVE = "https://wedding-os-taupe.vercel.app";
 
 const config: CapacitorConfig = {
   appId: "app.weddingos.desk",
-  appName: "Wedding OS",
+  appName: "Vowfolk",
   webDir: "www",
   server: {
     url: LIVE,
@@ -15,7 +15,7 @@ const config: CapacitorConfig = {
     contentInset: "automatic",
     preferredContentMode: "mobile",
     backgroundColor: "#f6f5f2",
-    scheme: "Wedding OS",
+    scheme: "Vowfolk",
   },
   android: {
     backgroundColor: "#f6f5f2",

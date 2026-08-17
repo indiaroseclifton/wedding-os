@@ -29,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Resend({
       apiKey: process.env.RESEND_API_KEY || "re_demo_unused",
-      from: process.env.EMAIL_FROM || "Wedding OS <onboarding@resend.dev>",
+      from: process.env.EMAIL_FROM || "Vowfolk <onboarding@resend.dev>",
     }),
   ],
   secret: process.env.AUTH_SECRET || "wedding-os-demo-secret-not-for-prod-32",

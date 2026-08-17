@@ -134,7 +134,7 @@ export default function BudgetPage() {
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="budget" />
+      <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Budget</h1>

@@ -32,7 +32,7 @@ export default async function VendorContractsPage() {
 
   return (
     <div className="space-y-6">
-      <RoomSubnav room="vendors" />
+      <RoomSubnav room="planning" />
       <div>
         <p className="kicker kicker-moss">Vendors</p>
         <h1 className="mt-1 font-serif text-4xl">Contracts</h1>

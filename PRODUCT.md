@@ -1,14 +1,16 @@
-# Wedding OS — product brief
+# Vowfolk — product brief
 
 Read this before the README. The README route list is stale.
 
-One desk for one wedding. Not four apps. Not The Knot with nicer type.
+Plan it. Make it. Celebrate it. Not another all-in-one planner with AI.
 
-Most planners sell **one wedding**: 12–18 months, two venues, a processional, 80 chairs, a last dance, then a blog post about thank-yous. This desk follows the *shape* of the day, does the coordination after hire, and stays useful after the date.
+The wedding-*planning* market is saturated. The wedding-*making* market is not. Studio is the flagship — flowers, tables, décor, signs, boxes — then Plan, People, and the day still run the rest.
+
+Most planners sell **one wedding**: 12–18 months, two venues, a processional, 80 chairs, a last dance, then a blog post about thank-yous. This desk follows the *shape* of the day, helps you *make* what you want, and stays useful after the date.
 
 ## Thesis
 
-Couples are not shopping. They are coordinating. Browse → shortlist → book is table stakes. The product is what happens after: one packet per vendor, one guest list that seats and feeds, one week view that says what to do, DIY that scales to headcount, a day that is not forced down an aisle.
+Couples are not shopping. They are making and coordinating. Browse → shortlist → book is table stakes. The product is Studio (quantities, sources, boxes) plus what happens after hire: one packet, one guest list that seats, one week, a day that is not forced down an aisle, and ninety days of thank-yous.
 
 Design is part of the product. Moss, ivory, clay. Serif titles. Photograph covers. Quiet type. If a new surface looks like a SaaS checklist tab, it failed.
 
@@ -33,20 +35,12 @@ One couple workspace. File JSON under `web/.data/` is the source of truth (`DATA
 
 | Room | Job | Kernel |
 |---|---|---|
-| Home `/dashboard` | One next action. Days to the next date. | `this-week.ts`, `smart-home.ts` |
-| Planning | Vision, 37 coordinator decisions, checklist, traditions, DIY | Shape re-seeds checklist |
-| DIY studio | Hire vs make, floral canvas, tablescape, playbooks, week-of | Stem model + shopping rules |
-| Guests | List, RSVP, dietary, travel | Households, plus-ones |
-| Seating + floor | Tables, `seatIndex`, room fixtures | Hidden for `us` |
-| Vendors | Card with category *face* (cover + fields), ledger, checklists | `lib/vendor-face.ts` |
-| Send | One living packet per vendor. Public `/v/[token]` | `/p` is archive. Extra notes land on Send. |
-| Budget / payments | Envelopes, deposit/progress/final, print statement | No Stripe. Shape reweights envelopes. |
-| The day | Run of show, cue book, day-of board | Templates follow shape + enter |
-| Guest site `/w/[token]` | Invite **or** announcement | `siteMode` / `us` → announce, no RSVP |
-| Florist board `/b/[token]` | The pictures, not the brief | Same board they edit. Print is that page. |
-| Calendar `/c/[token]` | ICS subscribe | Dues + day |
-| After `/after` | The 90 days | Clock, today’s card, seed from guests |
-| Thank-yous `/thanks` | The list After walks | Same stack |
+| Home `/dashboard` | One next action. Days to the next date. | `this-week.ts` |
+| Plan `/planning` | Vision, decisions, vendors, packets, budget, after | Shape re-seeds checklist |
+| People `/guests` | List, RSVP, letter, seating | Households, plus-ones |
+| Studio `/studio` | Make it: flowers, tables, décor, signs, boxes | Scale + 15%, sources, inventory |
+| The day `/day-of` | Call sheet | Shape + enter |
+| After `/after` | 90 days + what we made | Thanks + box fate |
 
 Public, unguessable tokens: `/v` vendor packet, `/w` guest site, `/b` florist board, `/c` calendar, `/ros` run of show. Couple tools use `requireCoupleApi`.
 

@@ -9,11 +9,11 @@ import { RoomTile } from "@/components/layout/RoomTile";
 import { MORE_ROOMS, VISUAL_ROOMS, firstNames, prettyWeddingDate } from "@/lib/visual-rooms";
 
 const TABS: { href: string; label: string; match: string[]; icon: string }[] = [
-  { href: "/dashboard", label: "Week", match: ["/dashboard"], icon: "week" },
-  { href: "/guests", label: "Guests", match: ["/guests", "/site", "/seating", "/floorplan", "/dietary", "/travel"], icon: "guests" },
-  { href: "/vendors", label: "Vendors", match: ["/vendors", "/payments", "/handoffs", "/music", "/send"], icon: "vendors" },
-  { href: "/diy", label: "Make", match: ["/diy"], icon: "diy" },
-  { href: "/day-of", label: "Day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire"], icon: "day" },
+  { href: "/dashboard", label: "Home", match: ["/dashboard"], icon: "week" },
+  { href: "/planning", label: "Plan", match: ["/planning", "/checklist", "/vendors", "/send", "/budget", "/after", "/thanks"], icon: "vendors" },
+  { href: "/guests", label: "People", match: ["/guests", "/site", "/seating", "/floorplan", "/dietary", "/travel"], icon: "guests" },
+  { href: "/studio", label: "Studio", match: ["/studio", "/diy"], icon: "diy" },
+  { href: "/day-of", label: "Day", match: ["/day-of", "/run-of-show", "/packet", "/people", "/party", "/attire", "/music"], icon: "day" },
 ];
 
 function tabActive(pathname: string, match: string[]) {
@@ -74,7 +74,7 @@ export function AppNav({
 }) {
   const pathname = usePathname();
   const [rooms, setRooms] = useState(false);
-  const names = firstNames(coupleNames, weddingName || "Wedding OS");
+  const names = firstNames(coupleNames, weddingName || "Vowfolk");
   const date = prettyWeddingDate(weddingDate);
 
   useEffect(() => {
