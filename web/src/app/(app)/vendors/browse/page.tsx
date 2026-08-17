@@ -5,8 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { DIRECTORY_CATEGORIES } from "@/lib/data/vendor-directory";
 import { TEAM_ROLES } from "@/lib/rooms";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
-import { vibeMatchesStyles } from "@/lib/vision-match";
 import { vendorCatsFor } from "@/lib/shape";
+import { envelopeForVendor } from "@/lib/budget-envelopes";
+import { pathIdForCategory, scoreVendor } from "@/lib/vendor-score";
 
 type Listing = {
   slug: string;
@@ -19,6 +20,8 @@ type Listing = {
   styles: string[];
   blurb: string;
   leadWeeks?: string;
+  goodFor?: string[];
+  notFor?: string[];
 };
 
 type Place = {
@@ -63,7 +66,7 @@ export default function VendorBrowsePage() {
   const [city, setCity] = useState("All");
   const [style, setStyle] = useState("All");
   const [q, setQ] = useState("");
-  const [source, setSource] = useState<"curated" | "near">("near");
+  const [source, setSource] = useState<"curated" | "near">("curated");
   const [places, setPlaces] = useState<Place[]>([]);
   const [placesOn, setPlacesOn] = useState(false);
   const [placesMsg, setPlacesMsg] = useState<string | null>(null);
@@ -71,6 +74,13 @@ export default function VendorBrowsePage() {
   const [hiring, setHiring] = useState<string | null>(null);
   const [vibe, setVibe] = useState("");
   const [venueType, setVenueType] = useState("");
+  const [story, setStory] = useState("");
+  const [formal, setFormal] = useState("");
+  const [avoid, setAvoid] = useState("");
+  const [pathChoices, setPathChoices] = useState<Record<string, string>>({});
+  const [homeCity, setHomeCity] = useState("");
+  const [weddingDate, setWeddingDate] = useState("");
+  const [plannedByEnv, setPlannedByEnv] = useState<Record<string, number>>({});
   const [followVision, setFollowVision] = useState(true);
   const [allowedCats, setAllowedCats] = useState<string[] | null>(null);
 
@@ -94,15 +104,36 @@ export default function VendorBrowsePage() {
     load();
     fetch("/api/workspace")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setAllowedCats(vendorCatsFor(d?.meta?.shape)))
+      .then((d) => {
+        setAllowedCats(vendorCatsFor(d?.meta?.shape));
+        if (d?.meta?.location) setHomeCity(d.meta.location);
+        if (d?.meta?.weddingDate) setWeddingDate(d.meta.weddingDate);
+      })
       .catch(() => {});
     fetch("/api/decisions/style-vibe")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        const v = d?.decision?.payload?.vibe;
-        if (typeof v === "string") setVibe(v);
-        const place = d?.decision?.payload?.venueType;
-        if (typeof place === "string") setVenueType(place);
+        const p = d?.decision?.payload || {};
+        if (typeof p.vibe === "string") setVibe(p.vibe);
+        if (typeof p.venueType === "string") setVenueType(p.venueType);
+        if (typeof p.story === "string") setStory(p.story);
+        if (typeof p.formal === "string") setFormal(p.formal);
+        if (typeof p.avoid === "string") setAvoid(p.avoid);
+      })
+      .catch(() => {});
+    fetch("/api/path")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setPathChoices(d?.path?.choices || {}))
+      .catch(() => {});
+    fetch("/api/budget")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const map: Record<string, number> = {};
+        for (const line of d?.budget?.lines || []) {
+          const key = line.category || "";
+          map[key] = (map[key] || 0) + (line.planned || 0);
+        }
+        setPlannedByEnv(map);
       })
       .catch(() => {});
   }, []);
@@ -168,19 +199,57 @@ export default function VendorBrowsePage() {
   );
 
   const rows = useMemo(() => {
-    return listings.filter((v) => {
+    const filtered = listings.filter((v) => {
       if (category !== "All" && v.category !== category) return false;
       if (band !== "All" && v.priceBand !== band) return false;
       if (city !== "All" && v.city !== city) return false;
       if (style !== "All" && !v.styles.includes(style)) return false;
-      if (followVision && (vibe || venueType) && !vibeMatchesStyles(vibe, v.styles, venueType)) return false;
       if (q.trim()) {
         const hay = `${v.name} ${v.city} ${v.blurb} ${v.styles.join(" ")}`.toLowerCase();
         if (!hay.includes(q.trim().toLowerCase())) return false;
       }
       return true;
     });
-  }, [listings, category, band, city, style, q, followVision, vibe, venueType]);
+    const hasVision = Boolean(vibe || venueType || story || formal);
+    return filtered
+      .map((v) => {
+        const pathId = pathIdForCategory(v.category);
+        const env = envelopeForVendor(v.name, v.category);
+        const match = scoreVendor(v, {
+          vibe,
+          venueType,
+          story,
+          formal,
+          avoid,
+          pathChoice: pathId ? pathChoices[pathId] : undefined,
+          city: homeCity,
+          weddingDate,
+          envelopePlanned: plannedByEnv[env],
+        });
+        return { v, match };
+      })
+      .sort((a, b) => {
+        if (followVision && hasVision) return b.match.score - a.match.score;
+        return a.v.name.localeCompare(b.v.name);
+      });
+  }, [
+    listings,
+    category,
+    band,
+    city,
+    style,
+    q,
+    followVision,
+    vibe,
+    venueType,
+    story,
+    formal,
+    avoid,
+    pathChoices,
+    homeCity,
+    weddingDate,
+    plannedByEnv,
+  ]);
 
   function roleFilled(cat: string) {
     return hiredCats.some((c) => c.toLowerCase().includes(cat.split(" ")[0].toLowerCase())) ||
@@ -197,14 +266,14 @@ export default function VendorBrowsePage() {
         <p className="mt-1 text-sm text-muted">
           Every seat on a typical team — then shortlist and run them here. Not a link farm.
         </p>
-        {(vibe || venueType) && (
+        {(vibe || venueType || story) && (
           <label className="mt-3 flex items-center gap-2 text-xs">
             <input
               type="checkbox"
               checked={followVision}
               onChange={(e) => setFollowVision(e.target.checked)}
             />
-            Match my vision ({[vibe, venueType].filter(Boolean).join(" · ")})
+            Sort curated by my vision
           </label>
         )}
       </div>
@@ -316,6 +385,7 @@ export default function VendorBrowsePage() {
               )}
             </p>
           )}
+          <p className="text-xs text-muted">Near you — we don’t know their look yet. Category, city, rating only.</p>
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {places.map((p) => (
               <li key={p.placeId} className="rounded-2xl border border-line bg-surface p-4">
@@ -384,9 +454,9 @@ export default function VendorBrowsePage() {
         </Link>
       </div>
 
-      <p className="text-xs text-muted">{rows.length} listings</p>
+      <p className="text-xs text-muted">{rows.length} listings{followVision && (vibe || venueType) ? " · sorted by match" : ""}</p>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {rows.map((v) => {
+        {rows.map(({ v, match }) => {
           const saved = shortlist.includes(v.slug);
           const onTeam = hired.includes(v.slug);
           return (
@@ -400,8 +470,17 @@ export default function VendorBrowsePage() {
                       {v.category} · {v.city} · {v.priceBand}
                     </p>
                   </div>
-                  {onTeam && <span className="text-[10px] font-medium text-moss">Hired</span>}
+                  <div className="text-right">
+                    {onTeam && <p className="text-[10px] font-medium text-moss">Hired</p>}
+                    <p className="font-serif text-xl leading-none">{match.score}</p>
+                  </div>
                 </div>
+                {match.why.length ? (
+                  <p className="mt-2 text-[12px] text-moss">{match.why.join(" · ")}</p>
+                ) : null}
+                {match.no.length ? (
+                  <p className="mt-1 text-[12px] text-muted">{match.no.join(" · ")}</p>
+                ) : null}
                 <p className="mt-2 text-sm text-ink-soft">{v.blurb}</p>
                 <p className="mt-1 text-[11px] text-muted">
                   from {v.startingFrom}
