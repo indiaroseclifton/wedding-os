@@ -10,7 +10,7 @@ import { eventRsvpMap } from "@/lib/data/event-rsvp-store";
 import { ExportCsvButton } from "./ExportCsvButton";
 import { GuestFilters } from "./GuestFilters";
 import { NudgePanel } from "./NudgePanel";
-import { hasMailingAddress } from "@/lib/data/guest-mail";
+import { hasMailingAddress, holdingHeads, plateHeads } from "@/lib/data/guest-mail";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { ImportContacts } from "@/components/guests/ImportContacts";
 
@@ -24,11 +24,8 @@ export default async function GuestsPage() {
   ]);
   const rsvpEvents = events.filter((e) => e.rsvpEnabled);
 
-  const headcount = guests.reduce((sum, g) => {
-    if (g.rsvp === "NO") return sum;
-    return sum + 1 + (g.plusOnes || 0);
-  }, 0);
-  const yes = guests.filter((g) => g.rsvp === "YES").length;
+  const holding = guests.reduce((sum, g) => sum + holdingHeads(g), 0);
+  const plates = guests.reduce((sum, g) => sum + plateHeads(g), 0);
   const pending = guests.filter((g) =>
     ["UNKNOWN", "INVITED", "MAYBE"].includes(g.rsvp)
   ).length;
@@ -47,7 +44,7 @@ export default async function GuestsPage() {
         <div>
           <h1 className="font-serif text-4xl">Guests</h1>
           <p className="mt-1 text-sm text-muted">
-            {guests.length} people · {yes} attending · {pending} waiting
+            {guests.length} people · {plates} plates · {holding} holding a seat
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -58,13 +55,18 @@ export default async function GuestsPage() {
               side: g.side,
               rsvp: g.rsvp,
               plusOnes: g.plusOnes,
+              plusOneNames: g.plusOneNames,
               dietary: g.dietary,
+              meal: g.meal,
               tableLabel: g.tableLabel,
               notes: g.notes,
               address: g.address,
               city: g.city,
               region: g.region,
               postal: g.postal,
+              phone: g.phone,
+              partyName: g.partyName,
+              listTier: g.listTier,
             }))}
           />
           <Link
@@ -87,16 +89,17 @@ export default async function GuestsPage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
             { label: "People", value: String(guests.length) },
-            { label: "Yes", value: String(yes) },
-            { label: "Pending", value: String(pending) },
-            { label: "Headcount", value: String(headcount) },
+            { label: "Waiting", value: String(pending) },
+            { label: "Holding", value: String(holding), hint: "Everyone but no" },
+            { label: "Plates", value: String(plates), hint: "Yes + extras" },
           ].map((s) => (
             <div
               key={s.label}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center"
+              className="rounded-xl border border-line bg-surface px-3 py-3 text-center"
             >
-              <p className="text-lg font-semibold text-slate-900">{s.value}</p>
-              <p className="text-xs text-slate-500">{s.label}</p>
+              <p className="font-serif text-2xl text-ink">{s.value}</p>
+              <p className="text-xs text-muted">{s.label}</p>
+              {"hint" in s && s.hint ? <p className="text-[10px] text-muted">{s.hint}</p> : null}
             </div>
           ))}
         </div>
@@ -127,6 +130,8 @@ export default async function GuestsPage() {
             plusOnes: g.plusOnes,
             plusOneNames: g.plusOneNames,
             partyName: g.partyName,
+            meal: g.meal,
+            listTier: g.listTier || "A",
             dietary: g.dietary,
             tableLabel: g.tableLabel,
             side: g.side,

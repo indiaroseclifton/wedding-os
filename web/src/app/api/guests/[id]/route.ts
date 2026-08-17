@@ -41,6 +41,8 @@ export async function PATCH(
     "notes",
     "plusPolicy",
     "showed",
+    "listTier",
+    "answers",
   ] as const;
   const patch: Record<string, unknown> = {};
   for (const key of allowed) {
@@ -60,6 +62,16 @@ export async function PATCH(
   if (body.plusPolicy === "none") {
     patch.plusOnes = 0;
     patch.plusOneNames = [];
+  }
+  if (body.listTier === "A" || body.listTier === "B") {
+    patch.listTier = body.listTier;
+  }
+  if (body.answers && typeof body.answers === "object" && !Array.isArray(body.answers)) {
+    const answers: Record<string, string> = {};
+    for (const [k, v] of Object.entries(body.answers as Record<string, unknown>)) {
+      if (typeof v === "string" && v.trim()) answers[k.slice(0, 80)] = v.trim().slice(0, 400);
+    }
+    patch.answers = answers;
   }
   const guest = await patchGuest(id, patch);
   if (!guest) return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -59,6 +59,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true, updated, action: "side" });
     }
 
+    if (action === "list") {
+      const listTier = body.listTier === "B" ? "B" : "A";
+      let updated = 0;
+      for (const id of ids) {
+        const g = await patchGuest(id, { listTier });
+        if (g) updated += 1;
+      }
+      return NextResponse.json({ ok: true, updated, action: "list" });
+    }
+
     if (action === "delete") {
       let deleted = 0;
       for (const id of ids) {

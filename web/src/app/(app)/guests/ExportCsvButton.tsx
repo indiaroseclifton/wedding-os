@@ -6,13 +6,18 @@ type Guest = {
   side?: string;
   rsvp: string;
   plusOnes: number;
+  plusOneNames?: string[];
   dietary?: string;
+  meal?: string;
   tableLabel?: string;
   notes?: string;
   address?: string;
   city?: string;
   region?: string;
   postal?: string;
+  phone?: string;
+  partyName?: string;
+  listTier?: string;
 };
 
 function escapeCell(value: string) {
@@ -28,12 +33,17 @@ export function ExportCsvButton({ guests }: { guests: Guest[] }) {
       "side",
       "rsvp",
       "plusOnes",
+      "plusOneNames",
       "dietary",
+      "meal",
       "tableLabel",
       "address",
       "city",
       "region",
       "postal",
+      "phone",
+      "partyName",
+      "list",
       "notes",
     ];
     const lines = [
@@ -45,12 +55,17 @@ export function ExportCsvButton({ guests }: { guests: Guest[] }) {
           g.side || "",
           g.rsvp,
           String(g.plusOnes || 0),
+          (g.plusOneNames || []).join("; "),
           g.dietary || "",
+          g.meal || "",
           g.tableLabel || "",
           g.address || "",
           g.city || "",
           g.region || "",
           g.postal || "",
+          g.phone || "",
+          g.partyName || "",
+          g.listTier || "A",
           g.notes || "",
         ]
           .map((c) => escapeCell(String(c)))

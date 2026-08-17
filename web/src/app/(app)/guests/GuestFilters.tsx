@@ -14,11 +14,13 @@ type Guest = {
   plusOnes?: number;
   plusOneNames?: string[];
   partyName?: string;
+  meal?: string;
+  listTier?: "A" | "B";
   missingAddress?: boolean;
   eventStatus?: Record<string, string>;
 };
 
-const FILTERS = ["ALL", "YES", "NO", "MAYBE", "INVITED", "UNKNOWN", "NO_ADDRESS"] as const;
+const FILTERS = ["ALL", "YES", "NO", "MAYBE", "INVITED", "UNKNOWN", "NO_ADDRESS", "A", "B"] as const;
 const RSVPS = ["UNKNOWN", "INVITED", "YES", "NO", "MAYBE"] as const;
 
 export function GuestFilters({
@@ -45,7 +47,9 @@ export function GuestFilters({
     const needle = q.trim().toLowerCase();
     return rows.filter((g) => {
       if (filter === "NO_ADDRESS" && !g.missingAddress) return false;
-      if (filter !== "ALL" && filter !== "NO_ADDRESS" && g.rsvp !== filter) return false;
+      if (filter === "A" && (g.listTier || "A") !== "A") return false;
+      if (filter === "B" && g.listTier !== "B") return false;
+      if (filter !== "ALL" && filter !== "NO_ADDRESS" && filter !== "A" && filter !== "B" && g.rsvp !== filter) return false;
       if (!needle) return true;
       const hay = `${g.name} ${g.plusOneNames?.join(" ") || ""} ${g.partyName || ""}`.toLowerCase();
       return hay.includes(needle);
@@ -117,6 +121,11 @@ export function GuestFilters({
         setRows((prev) =>
           prev.map((g) => (selected.has(g.id) ? { ...g, side } : g))
         );
+      } else if (body.action === "list") {
+        const listTier = body.listTier === "B" ? "B" : "A";
+        setRows((prev) =>
+          prev.map((g) => (selected.has(g.id) ? { ...g, listTier } : g))
+        );
       }
       router.refresh();
     } catch (e) {
@@ -175,7 +184,11 @@ export function GuestFilters({
                       ? "No address"
                       : f === "MAYBE"
                         ? "Maybe"
-                        : f}
+                        : f === "A"
+                          ? "A-list"
+                          : f === "B"
+                            ? "B-list"
+                            : f}
           </button>
         ))}
       </div>
@@ -284,6 +297,25 @@ export function GuestFilters({
             </button>
           </div>
 
+          <div className="flex flex-wrap items-end gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => runBulk({ action: "list", listTier: "A" })}
+              className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+            >
+              Move to A
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => runBulk({ action: "list", listTier: "B" })}
+              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+            >
+              Move to B
+            </button>
+          </div>
+
           <button
             type="button"
             disabled={busy}
@@ -352,6 +384,12 @@ export function GuestFilters({
                     : g.plusOnes
                       ? ` +${g.plusOnes}`
                       : ""}
+                  {g.listTier === "B" ? (
+                    <span className="ml-1 text-[10px] font-medium uppercase tracking-wide text-muted">B</span>
+                  ) : null}
+                  {g.partyName ? (
+                    <span className="mt-0.5 block truncate text-[11px] font-normal text-muted">{g.partyName}</span>
+                  ) : null}
                 </Link>
               </div>
               <p className="text-sm text-ink-soft">

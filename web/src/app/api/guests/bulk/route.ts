@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { bulkAddGuests, ensureDemoWorkspace } from "@/lib/data/workspace";
+import { normalizeListTier } from "@/lib/data/guest-mail";
+import { parsePlusOneNames, withPlusOnes } from "@/lib/households";
 
 const RSVP = new Set(["UNKNOWN", "INVITED", "YES", "NO", "MAYBE"]);
 
@@ -31,7 +33,15 @@ export async function POST(request: Request) {
           postal?: string;
           phone?: string;
           partyName?: string;
-        }) => ({
+          meal?: string;
+          listTier?: string;
+          plusOneNames?: string;
+        }) => {
+          const extras = withPlusOnes(
+            Math.max(0, Number(g.plusOnes) || 0),
+            parsePlusOneNames(g.plusOneNames)
+          );
+          return {
           workspaceId: workspace.id,
           name: String(g.name).trim(),
           email: g.email,
@@ -39,8 +49,10 @@ export async function POST(request: Request) {
           rsvp: RSVP.has(String(g.rsvp || "").toUpperCase())
             ? String(g.rsvp).toUpperCase()
             : "UNKNOWN",
-          plusOnes: Math.max(0, Number(g.plusOnes) || 0),
+          plusOnes: extras.plusOnes,
+          plusOneNames: extras.plusOneNames,
           dietary: g.dietary,
+          meal: g.meal,
           notes: g.notes,
           address: g.address,
           city: g.city,
@@ -48,7 +60,14 @@ export async function POST(request: Request) {
           postal: g.postal,
           phone: g.phone,
           partyName: g.partyName,
-        }))
+          listTier: normalizeListTier(g.listTier),
+          rsvpAt: ["YES", "NO", "MAYBE"].includes(
+            RSVP.has(String(g.rsvp || "").toUpperCase()) ? String(g.rsvp).toUpperCase() : ""
+          )
+            ? new Date().toISOString()
+            : undefined,
+        };
+        })
     );
     return NextResponse.json({ count: created.length, guests: created });
   } catch (error) {

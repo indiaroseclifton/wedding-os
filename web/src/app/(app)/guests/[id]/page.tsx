@@ -21,22 +21,34 @@ type Guest = {
   postal?: string;
   phone?: string;
   partyName?: string;
+  meal?: string;
+  listTier?: "A" | "B";
+  answers?: Record<string, string>;
 };
+
+type Question = { id: string; prompt: string };
 
 export default function EditGuestPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [guest, setGuest] = useState<Guest | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/guests/${id}`)
-      .then(async (res) => {
+    Promise.all([
+      fetch(`/api/guests/${id}`).then(async (res) => {
         if (!res.ok) throw new Error("Guest not found");
-        const data = await res.json();
+        return res.json();
+      }),
+      fetch("/api/site").then((r) => (r.ok ? r.json() : null)),
+    ])
+      .then(([data, site]) => {
         setGuest(data.guest);
+        const qs: Question[] = site?.site?.rsvpQuestions || [];
+        setQuestions(qs);
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -68,7 +80,14 @@ export default function EditGuestPage() {
           postal: form.get("postal") || undefined,
           phone: form.get("phone") || undefined,
           partyName: form.get("partyName") || undefined,
+          meal: form.get("meal") || undefined,
+          listTier: form.get("listTier") || "A",
           notes: form.get("notes") || undefined,
+          answers: Object.fromEntries(
+            [...form.entries()]
+              .filter(([k]) => k.startsWith("answer:"))
+              .map(([k, v]) => [k.slice(7), String(v || "")])
+          ),
         }),
       });
       if (!res.ok) {
@@ -181,13 +200,51 @@ export default function EditGuestPage() {
           </label>
         </div>
         <label className="block text-sm">
+          <span className="font-medium">List</span>
+          <select name="listTier" defaultValue={guest.listTier || "A"} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <option value="A">A — invited first</option>
+            <option value="B">B — if space opens. No save-the-date.</option>
+          </select>
+        </label>
+        <label className="block text-sm">
           <span className="font-medium">Household</span>
           <input name="partyName" defaultValue={guest.partyName || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium">Meal</span>
+          <input name="meal" defaultValue={guest.meal || ""} placeholder="Chicken, fish, veg" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
         <label className="block text-sm">
           <span className="font-medium">Dietary</span>
           <input name="dietary" defaultValue={guest.dietary || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
+        {(questions.length > 0 || Object.keys(guest.answers || {}).length > 0) && (
+          <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">What they answered</p>
+            {questions.map((q) => (
+              <label key={q.id} className="block text-sm">
+                <span className="font-medium">{q.prompt}</span>
+                <input
+                  name={`answer:${q.id}`}
+                  defaultValue={guest.answers?.[q.id] || ""}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+              </label>
+            ))}
+            {Object.entries(guest.answers || {})
+              .filter(([id]) => !questions.some((q) => q.id === id))
+              .map(([id, val]) => (
+                <label key={id} className="block text-sm">
+                  <span className="font-medium">{id}</span>
+                  <input
+                    name={`answer:${id}`}
+                    defaultValue={val}
+                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                  />
+                </label>
+              ))}
+          </div>
+        )}
         <label className="block text-sm">
           <span className="font-medium">Notes</span>
           <textarea name="notes" rows={3} defaultValue={guest.notes || ""} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />

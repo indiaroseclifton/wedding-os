@@ -98,6 +98,7 @@ export type StoredGuest = {
   plusPolicy?: "ok" | "none" | "named";
   showed?: boolean;
   rsvpAt?: string;
+  listTier?: "A" | "B";
   createdAt: string;
   updatedAt: string;
 };

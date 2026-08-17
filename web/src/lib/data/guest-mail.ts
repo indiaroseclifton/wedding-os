@@ -49,8 +49,27 @@ export function canAddressNudge(g: StoredGuest, now = Date.now()) {
 
 export function canInviteEmail(g: StoredGuest, kind: "save_the_date" | "invited") {
   if (!hasRealEmail(g) || !g.rsvpToken) return false;
-  if (kind === "save_the_date") return !g.saveTheDateAt;
+  if (kind === "save_the_date") return !g.saveTheDateAt && g.listTier !== "B";
   return !g.inviteEmailedAt;
+}
+
+export function normalizeListTier(v: unknown): "A" | "B" {
+  const s = String(v || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[\s_-]/g, "");
+  if (s === "B" || s === "BLIST" || s === "BACKUP") return "B";
+  return "A";
+}
+
+export function holdingHeads(g: Pick<StoredGuest, "rsvp" | "plusOnes">) {
+  if (g.rsvp === "NO") return 0;
+  return 1 + (g.plusOnes || 0);
+}
+
+export function plateHeads(g: Pick<StoredGuest, "rsvp" | "plusOnes">) {
+  if (g.rsvp !== "YES") return 0;
+  return 1 + (g.plusOnes || 0);
 }
 
 export function nudgeBlockReason(g: StoredGuest, now = Date.now()) {

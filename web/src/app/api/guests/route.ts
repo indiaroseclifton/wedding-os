@@ -6,6 +6,7 @@ import {
   getWorkspaceGuests,
 } from "@/lib/data/workspace";
 import { parsePlusOneNames, withPlusOnes } from "@/lib/households";
+import { holdingHeads, normalizeListTier, plateHeads } from "@/lib/data/guest-mail";
 import { requiredString, optionalString, ValidationError } from "@/lib/validation";
 
 const RSVP = new Set(["UNKNOWN", "INVITED", "YES", "NO", "MAYBE"]);
@@ -16,12 +17,10 @@ export async function GET() {
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
   const guests = await getWorkspaceGuests(workspace.id);
-  const headcount = guests.reduce((sum, g) => {
-    if (g.rsvp === "NO") return sum;
-    return sum + 1 + (g.plusOnes || 0);
-  }, 0);
+  const holding = guests.reduce((sum, g) => sum + holdingHeads(g), 0);
+  const plates = guests.reduce((sum, g) => sum + plateHeads(g), 0);
   const yes = guests.filter((g) => g.rsvp === "YES").length;
-  return NextResponse.json({ guests, stats: { total: guests.length, yes, headcount } });
+  return NextResponse.json({ guests, stats: { total: guests.length, yes, holding, plates, headcount: holding } });
 }
 
 export async function POST(request: Request) {
@@ -50,6 +49,8 @@ export async function POST(request: Request) {
       plusOnes: extras.plusOnes,
       plusOneNames: extras.plusOneNames,
       dietary: optionalString(body.dietary, 500),
+      meal: optionalString(body.meal, 80),
+      listTier: normalizeListTier(body.listTier),
       notes: optionalString(body.notes, 2000),
     });
     return NextResponse.json({ guest });

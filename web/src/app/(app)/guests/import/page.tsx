@@ -29,19 +29,24 @@ function parseCsv(text: string): string[][] {
 
 function mapHeader(h: string): string | null {
   const x = h.toLowerCase().replace(/[^a-z0-9]/g, "");
-  if (["name", "guest", "fullname"].some((k) => x.includes(k))) return "name";
+  if (x === "name" || x === "fullname" || x === "guest" || x === "guestname") return "name";
   if (x.includes("email")) return "email";
   if (x.includes("rsvp")) return "rsvp";
-  if (x.includes("side") || x.includes("party")) return "side";
+  if (x.includes("household") || x === "partyname" || x === "party" || x === "householdname") return "partyName";
+  if (x === "side" || x === "sidea" || x === "whoside") return "side";
   if (x.includes("diet") || x.includes("allerg")) return "dietary";
-  if (x.includes("plus") || x.includes("guestcount")) return "plusOnes";
+  if (x.includes("plusonename") || x.includes("plusnames")) return "plusOneNames";
+  if (x.includes("plus") || x === "guestcount" || x === "extras") return "plusOnes";
   if (x.includes("note")) return "notes";
   if (x.includes("address") || x.includes("street")) return "address";
   if (x === "city") return "city";
   if (x.includes("state") || x.includes("region")) return "region";
   if (x.includes("zip") || x.includes("postal")) return "postal";
-  if (x.includes("phone")) return "phone";
-  if (x.includes("household") || x === "party" || x.includes("partyname")) return "partyName";
+  if (x.includes("phone") || x === "tel" || x === "mobile") return "phone";
+  if (x === "meal" || x.includes("entree") || x.includes("dinner")) return "meal";
+  if (x === "list" || x === "tier" || x === "ab" || x === "listtier" || x === "alist" || x === "blist") {
+    return "listTier";
+  }
   return null;
 }
 
@@ -93,8 +98,17 @@ export default function ImportGuestsPage() {
             side: r.side || "OTHER",
             rsvp: (r.rsvp || "UNKNOWN").toUpperCase(),
             plusOnes: Number(r.plusOnes || 0) || 0,
+            plusOneNames: r.plusOneNames,
             dietary: r.dietary,
+            meal: r.meal,
             notes: r.notes,
+            address: r.address,
+            city: r.city,
+            region: r.region,
+            postal: r.postal,
+            phone: r.phone,
+            partyName: r.partyName,
+            listTier: r.listTier,
           })),
         }),
       });
@@ -115,7 +129,7 @@ export default function ImportGuestsPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Import guests</h1>
         <p className="mt-1 text-sm text-slate-600">
-          CSV with a Name column. Email, RSVP, Side, Dietary, Plus-ones optional.
+          Name is required. Household, street, city, meal, and A/B list come through if the columns exist.
         </p>
       </div>
       <input
@@ -129,7 +143,12 @@ export default function ImportGuestsPage() {
           <p className="font-medium">{preview.length} guests ready</p>
           <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-xs text-slate-600">
             {preview.slice(0, 20).map((r, i) => (
-              <li key={i}>{r.name}</li>
+              <li key={i}>
+                {r.name}
+                {r.partyName ? ` · ${r.partyName}` : ""}
+                {r.city ? ` · ${r.city}` : r.address ? ` · ${r.address}` : ""}
+                {r.listTier ? ` · ${r.listTier}` : ""}
+              </li>
             ))}
             {preview.length > 20 && <li>…and {preview.length - 20} more</li>}
           </ul>

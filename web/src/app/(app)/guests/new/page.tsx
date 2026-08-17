@@ -31,6 +31,8 @@ export default function NewGuestPage() {
           postal: form.get("postal") || undefined,
           phone: form.get("phone") || undefined,
           partyName: form.get("partyName") || undefined,
+          listTier: form.get("listTier") || "A",
+          meal: form.get("meal") || undefined,
           notes: form.get("notes") || undefined,
         }),
       });
@@ -117,8 +119,19 @@ export default function NewGuestPage() {
           </label>
         </div>
         <label className="block text-sm">
+          <span className="font-medium text-slate-800">List</span>
+          <select name="listTier" defaultValue="A" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <option value="A">A — invited first</option>
+            <option value="B">B — if space opens. No save-the-date.</option>
+          </select>
+        </label>
+        <label className="block text-sm">
           <span className="font-medium text-slate-800">Household / party name</span>
           <input name="partyName" placeholder="The Garcias" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+        </label>
+        <label className="block text-sm">
+          <span className="font-medium text-slate-800">Meal</span>
+          <input name="meal" placeholder="Chicken, fish, veg" className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
         </label>
         <label className="block text-sm">
           <span className="font-medium text-slate-800">Dietary</span>
