@@ -42,7 +42,9 @@ export async function upsertSign(
   const current = await getSignage(workspaceId);
   const now = new Date().toISOString();
   if (input.id) {
-    const signs = current.signs.map((s) => (s.id === input.id ? { ...s, ...input, updatedAt: now } : s));
+    const signs = current.signs.map((s) =>
+      s.id === input.id ? { ...s, copies: s.copies || 1, ...input, updatedAt: now } : s
+    );
     const next = { ...current, signs, updatedAt: now };
     const all = await readAll();
     all[workspaceId] = next;

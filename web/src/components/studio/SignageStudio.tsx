@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  GROUPS,
   PALETTES,
   SIGN_KINDS,
   buildSignSvg,
@@ -9,7 +10,9 @@ import {
   defaultSign,
   fileName,
   materialsFor,
+  specOf,
   type SignDesign,
+  type SignGroup,
   type SignKind,
   type SignPalette,
 } from "@/lib/signage";
@@ -36,6 +39,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
     token: "",
     updatedAt: "",
   }));
+  const [group, setGroup] = useState<SignGroup>("signs");
   const [msg, setMsg] = useState<string | null>(null);
   const [tab, setTab] = useState<"design" | "cricut" | "send">("design");
 
@@ -45,7 +49,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
     const data = await res.json();
     const list: SignDesign[] = data.signage?.signs || [];
     setSigns(list);
-    if (list[0] && !sign.id) setSign(list[0]);
+    if (list[0] && !sign.id) setSign({ ...list[0], copies: list[0].copies || 1 });
   }
 
   useEffect(() => {
@@ -62,12 +66,14 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
   }
 
   function newKind(kind: SignKind) {
-    setSign({
+    const next = {
       ...defaultSign(kind, names, prettyDate),
       id: "",
       token: "",
       updatedAt: "",
-    });
+    };
+    setSign(next);
+    setGroup(specOf(kind).group);
     setTab("design");
   }
 
@@ -92,7 +98,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
     const add = await fetch("/api/inventory", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "add", name: `${SIGN_KINDS.find((k) => k.id === sign.kind)?.label} signs`, zone: "Signage", takeTo: "Venue" }),
+      body: JSON.stringify({ action: "add", name: specOf(sign.kind).label, zone: "Cricut", takeTo: "Venue" }),
     });
     if (!add.ok) return;
     const data = await add.json();
@@ -133,11 +139,11 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
         <div>
           <p className="kicker">Studio</p>
           <h1 className="mt-2 font-serif text-[clamp(2.2rem,6vw,3.6rem)] leading-none tracking-tight">
-            Signage & Cricut
+            Cricut
           </h1>
-          <p className="home-script mt-2">Design it here. Cut it yourself.</p>
+          <p className="home-script mt-2">Every cut for the day.</p>
           <p className="mt-2 max-w-xl text-sm text-muted">
-            Cricut does not let apps send a file straight to the machine. You design here, download a cut-ready SVG, then Upload in Design Space. Same file you can send to whoever has the Cricut.
+            Signs, place cards, menus, toppers, napkin monograms, favor tags. Design here. Download the SVG. Upload in Design Space. Send the same file to whoever has the machine.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -151,13 +157,28 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
       </header>
 
       <div className="flex flex-wrap gap-2">
-        {SIGN_KINDS.map((k) => (
+        {GROUPS.map((g) => (
+          <button
+            key={g.id}
+            type="button"
+            onClick={() => setGroup(g.id)}
+            className={`min-h-11 rounded-full px-4 text-sm ${
+              group === g.id ? "bg-ink text-ivory" : "border border-line"
+            }`}
+          >
+            {g.label}
+          </button>
+        ))}
+      </div>
+      <p className="text-sm text-muted">{GROUPS.find((g) => g.id === group)?.line}</p>
+      <div className="flex flex-wrap gap-2">
+        {SIGN_KINDS.filter((k) => k.group === group).map((k) => (
           <button
             key={k.id}
             type="button"
             onClick={() => newKind(k.id)}
-            className={`min-h-11 rounded-full px-4 text-sm ${
-              sign.kind === k.id ? "bg-ink text-ivory" : "border border-line"
+            className={`min-h-11 rounded-full border px-4 text-sm ${
+              sign.kind === k.id ? "border-ink bg-paper" : "border-line"
             }`}
           >
             {k.label}
@@ -171,7 +192,10 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
             <button
               key={s.id}
               type="button"
-              onClick={() => setSign(s)}
+              onClick={() => {
+                setSign({ ...s, copies: s.copies || 1 });
+                setGroup(specOf(s.kind).group);
+              }}
               className={`min-h-9 rounded-full px-3 text-xs ${
                 sign.id === s.id ? "bg-paper" : "text-muted underline"
               }`}
@@ -215,30 +239,55 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
                 <span className="kicker">Line under</span>
                 <input className="field mt-1" value={sign.sub} onChange={(e) => patch({ sub: e.target.value })} />
               </label>
-              {sign.kind === "welcome" ? (
+              {sign.kind === "welcome" || sign.kind === "topper" || sign.kind === "napkin" || sign.kind === "flute" || sign.kind === "favor" || sign.kind === "bag" ? (
                 <>
                   <label className="block text-sm">
                     <span className="kicker">Names</span>
                     <input className="field mt-1" value={sign.names} onChange={(e) => patch({ names: e.target.value })} />
                   </label>
-                  <label className="block text-sm">
-                    <span className="kicker">Date</span>
-                    <input className="field mt-1" value={sign.date} onChange={(e) => patch({ date: e.target.value })} />
-                  </label>
+                  {sign.kind === "welcome" || sign.kind === "flute" ? (
+                    <label className="block text-sm">
+                      <span className="kicker">Date</span>
+                      <input className="field mt-1" value={sign.date} onChange={(e) => patch({ date: e.target.value })} />
+                    </label>
+                  ) : null}
                 </>
               ) : null}
-              {sign.kind === "table" ? (
+              {sign.kind === "table" || sign.kind === "place" ? (
                 <label className="block text-sm">
-                  <span className="kicker">Table number</span>
+                  <span className="kicker">{sign.kind === "place" ? "Guest name" : "Table number"}</span>
+                  <input
+                    className="field mt-1"
+                    value={sign.kind === "place" ? sign.heading : sign.tableNo}
+                    onChange={(e) =>
+                      sign.kind === "place" ? patch({ heading: e.target.value }) : patch({ tableNo: e.target.value })
+                    }
+                  />
+                </label>
+              ) : null}
+              {sign.kind === "place" ? (
+                <label className="block text-sm">
+                  <span className="kicker">Table</span>
                   <input className="field mt-1" value={sign.tableNo} onChange={(e) => patch({ tableNo: e.target.value })} />
                 </label>
               ) : null}
-              {sign.kind === "bar" ? (
+              {sign.kind === "bar" || sign.kind === "menu" || sign.kind === "program" ? (
                 <label className="block text-sm">
-                  <span className="kicker">Drinks, one per line</span>
+                  <span className="kicker">{sign.kind === "bar" ? "Drinks, one per line" : "Lines"}</span>
                   <textarea className="field mt-1 min-h-28" value={sign.extra} onChange={(e) => patch({ extra: e.target.value })} />
                 </label>
               ) : null}
+              <label className="block text-sm">
+                <span className="kicker">Copies</span>
+                <input
+                  type="number"
+                  min={1}
+                  className="field mt-1"
+                  value={sign.copies || 1}
+                  onChange={(e) => patch({ copies: Number(e.target.value) || 1 })}
+                />
+                <span className="mt-1 block text-xs text-muted">{specOf(sign.kind).copiesHint}</span>
+              </label>
               <div>
                 <p className="kicker">Color</p>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -270,6 +319,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
                 <div className="flex justify-between gap-3"><dt className="text-muted">Machine</dt><dd className="text-right">{prep.machine}</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted">Material</dt><dd className="text-right">{prep.material}</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted">Layers</dt><dd className="text-right">{prep.layers}</dd></div>
+                <div className="flex justify-between gap-3"><dt className="text-muted">How many</dt><dd className="text-right">{prep.copiesHint}</dd></div>
               </dl>
               <ol className="list-decimal space-y-1 pl-4 text-muted">
                 {prep.steps.map((s) => (
