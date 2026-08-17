@@ -1,13 +1,19 @@
 import { Suspense } from "react";
+import { FlowerDesk } from "@/components/diy/FlowerDesk";
 import { FloralStudio } from "@/components/diy/FloralStudio";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
-export default function FloralStudioPage() {
+export default async function FloralStudioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ canvas?: string }>;
+}) {
+  const q = await searchParams;
   return (
     <div>
       <RoomSubnav room="studio" />
       <Suspense fallback={<p className="text-sm text-muted">Opening the studio…</p>}>
-        <FloralStudio />
+        {q.canvas === "1" ? <FloralStudio /> : <FlowerDesk />}
       </Suspense>
     </div>
   );

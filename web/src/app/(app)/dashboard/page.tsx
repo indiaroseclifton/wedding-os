@@ -73,6 +73,7 @@ export default async function DashboardPage() {
       vendorPending={pending}
       nextUp={nextUp}
       season={after ? "after" : "planning"}
+      coverUrl={meta.coverUrl || "/brand/tablescape.jpg"}
     />
   );
 }

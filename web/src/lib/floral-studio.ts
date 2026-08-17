@@ -143,6 +143,20 @@ export const STEMS: Stem[] = [
     tint: "",
   },
   {
+    id: "hydrangea",
+    name: "Hydrangea",
+    latin: "Hydrangea",
+    kind: "face",
+    material: "fresh",
+    stories: ["linen", "garden", "coast"],
+    hardy: "careful",
+    season: "Summer",
+    estEach: 3,
+    note: "One head fills a bowl. Drinks hard — recut in water.",
+    photo: "/brand/garden.jpg",
+    tint: "",
+  },
+  {
     id: "ranunculus",
     name: "Ranunculus",
     latin: "Ranunculus asiaticus",
@@ -419,6 +433,22 @@ export const VESSELS: Vessel[] = [
 
 export const LOOKS: FloralLook[] = [
   {
+    id: "romantic-garden",
+    title: "Romantic Garden Centerpiece",
+    vessel: "bowl",
+    story: "garden",
+    photo: "/brand/flowers.jpg",
+    why: "Garden roses, hydrangea, spray roses — the bowl you can talk over.",
+    recipe: [
+      { stemId: "garden-rose", count: 4 },
+      { stemId: "hydrangea", count: 3 },
+      { stemId: "spray-rose", count: 5 },
+      { stemId: "lisianthus", count: 4 },
+      { stemId: "eucalyptus", count: 2 },
+      { stemId: "ruscus", count: 2 },
+    ],
+  },
+  {
     id: "linen-hand",
     title: "Linen hand-tie",
     vessel: "bouquet",
@@ -551,3 +581,59 @@ export function rollup(pieces: PlacedStem[]) {
     est: lines.reduce((s, l) => s + l.est, 0),
   };
 }
+
+export function scaleRecipe(
+  recipe: { stemId: string; count: number }[],
+  qty: number,
+  contingency: number
+) {
+  const rows = recipe.map((r) => {
+    const stem = stemById(r.stemId);
+    const total = Math.ceil(r.count * Math.max(1, qty) * (1 + Math.max(0, contingency)));
+    const each = stem?.estEach || 0;
+    return {
+      stemId: r.stemId,
+      name: stem?.name || r.stemId,
+      photo: stem?.photo || "/diy/floral/rose.jpg",
+      per: r.count,
+      total,
+      each,
+      cost: total * each,
+    };
+  });
+  return { rows, cost: rows.reduce((s, r) => s + r.cost, 0), stems: rows.reduce((s, r) => s + r.total, 0) };
+}
+
+export const FLOWER_SHOPS = [
+  { id: "moxie", name: "Flower Moxie", line: "Local pickup · 4–5 days", factor: 1 },
+  { id: "tj", name: "Trader Joe’s Flowers", line: "In-store pickup · 1–2 days", factor: 0.89 },
+  { id: "central", name: "Central Market", line: "In-store pickup · 2–3 days", factor: 1.03 },
+  { id: "market", name: "Local flower market", line: "Call to confirm", factor: 0.97 },
+];
+
+export function buildDays(weddingIso?: string) {
+  const end = weddingIso ? new Date(`${weddingIso}T12:00:00`) : new Date();
+  if (Number.isNaN(end.getTime())) end.setTime(Date.now());
+  const day = (offset: number) => {
+    const d = new Date(end);
+    d.setDate(d.getDate() + offset);
+    return {
+      key: d.toISOString().slice(0, 10),
+      dow: d.toLocaleDateString(undefined, { weekday: "short" }).toUpperCase(),
+      label: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+      wedding: offset === 0,
+    };
+  };
+  return [day(-3), day(-2), day(-1), day(0)];
+}
+
+export const BUILD_STEPS = [
+  { offset: -3, time: "6:00 PM", what: "Pick up vessels and supplies" },
+  { offset: -2, time: "9:00 AM", what: "Flowers arrive — process and hydrate" },
+  { offset: -2, time: "10:00 AM", what: "Prep greenery and hydrangeas" },
+  { offset: -1, time: "9:00 AM", what: "Build base arrangements" },
+  { offset: -1, time: "5:00 PM", what: "Store in a cool area" },
+  { offset: 0, time: "9:00 AM", what: "Add roses and delicate flowers" },
+  { offset: 0, time: "2:00 PM", what: "Transport to venue" },
+];
+
