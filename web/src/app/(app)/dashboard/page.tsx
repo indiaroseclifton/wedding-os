@@ -8,16 +8,19 @@ import { nextShapeDate } from "@/lib/shape";
 import { firstNames, prettyWeddingDate } from "@/lib/visual-rooms";
 import { isPendingRsvp } from "@/lib/data/guest-mail";
 import { isBooked } from "@/lib/send/status";
+import { getThanks } from "@/lib/data/thanks-store";
+import { buildAfterDesk } from "@/lib/after-desk";
 
 export default async function DashboardPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
   const countDate = nextShapeDate(meta.weddingDate, meta.gatheringDate) || meta.weddingDate;
-  const [week, budget, payments, guests, vendors] = await Promise.all([
+  const [week, budget, payments, guests, vendors, thanks] = await Promise.all([
     loadThisWeek(workspace.id, countDate),
     getBudget(workspace.id),
     listPayments(workspace.id),
     getWorkspaceGuests(workspace.id),
     listVendors(workspace.id),
+    getThanks(workspace.id),
   ]);
 
   const spent =
@@ -34,13 +37,34 @@ export default async function DashboardPage() {
     href: item.href,
   }));
 
+  const after = week.days != null && week.days < 0;
+  const desk = after
+    ? buildAfterDesk({
+        weddingDate: meta.weddingDate,
+        guests,
+        vendors,
+        items: thanks.items || [],
+        names: meta.coupleNames || meta.name,
+      })
+    : null;
+  const afterItems = desk
+    ? desk.nextWrite.map((c) => ({
+        id: c.id,
+        urgency: "now" as const,
+        title: `Write ${c.guestName}`,
+        detail: c.missingAddress ? "Need an address" : c.gift || "Thank them",
+        href: "/after",
+        cta: "Open After",
+      }))
+    : [];
+
   return (
     <HomeDashboard
       days={week.days}
       names={firstNames(meta.coupleNames, "Alex & Jordan")}
       dateLine={dateLine}
-      tagline="The adventure begins…"
-      weekItems={week.items}
+      tagline={after ? desk?.pace || "The three months." : "The adventure begins…"}
+      weekItems={after && afterItems.length ? afterItems : week.items}
       spent={spent}
       cap={cap}
       guestTotal={guests.length}
@@ -48,6 +72,7 @@ export default async function DashboardPage() {
       vendorBooked={booked}
       vendorPending={pending}
       nextUp={nextUp}
+      season={after ? "after" : "planning"}
     />
   );
 }

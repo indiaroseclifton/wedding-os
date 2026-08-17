@@ -39,7 +39,7 @@ export default async function SeatingPage() {
       {tables.length === 0 && activeGuests.length === 0 ? (
         <EmptyState
           title="No seating data yet"
-          body="Add guests first, then create tables and assign people."
+          body="No chairs to place until someone might come."
           primaryHref="/guests/new"
           primaryLabel="Add guest"
         />

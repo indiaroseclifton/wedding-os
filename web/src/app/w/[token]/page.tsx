@@ -13,7 +13,7 @@ import { GuestHero } from "@/components/site/GuestHero";
 import { SiteGate } from "@/components/site/SiteGate";
 import { Icon } from "@/components/icons";
 import { getSessionUser } from "@/lib/auth/session";
-import { DEMO_WORKSPACE, getWorkspaceDecisions } from "@/lib/data/workspace";
+import { DEMO_WORKSPACE, getWorkspaceDecisions, getWorkspaceGuests } from "@/lib/data/workspace";
 import { siteModeFor } from "@/lib/shape";
 import { normalizeVision, siteTemplateFor, visionAccent, visionHero } from "@/lib/vision";
 
@@ -60,6 +60,8 @@ export default async function WeddingSitePage({
   const extraEvents = (await listEvents(site.workspaceId)).filter(
     (e) => e.type !== "Wedding day" && (e.date || e.location)
   );
+  const guests = await getWorkspaceGuests(site.workspaceId);
+  const seated = guests.some((g) => Boolean(g.tableLabel));
   const guestSlots = (dayOf.schedule || []).filter((s) => slotVisible(s, "guests"));
   const names = meta.coupleNames || meta.name;
   const date = prettyDate(meta.weddingDate);
@@ -80,7 +82,40 @@ export default async function WeddingSitePage({
         date={date}
         location={meta.location}
         coverUrl={cover || undefined}
-      />
+        mode={announce ? "announce" : "invite"}
+        night={night}
+      >
+        <div className="flex flex-col items-center gap-3">
+          {open && !announce && (
+            <Link
+              href={`/w/${token}/rsvp`}
+              className="inline-flex min-h-11 items-center rounded-full bg-moss px-7 text-sm font-medium text-moss-fg"
+            >
+              RSVP
+            </Link>
+          )}
+          {!open && !announce && (
+            <p className="text-sm text-muted">
+              RSVP is closed{site.rsvpClose ? ` (was ${site.rsvpClose})` : ""}.
+            </p>
+          )}
+          {site.rsvpNote && open && !announce ? (
+            <p className="text-xs text-muted">{site.rsvpNote}</p>
+          ) : null}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+            {seated ? (
+              <Link href={`/w/${token}/table`} className="min-h-11 inline-flex items-center text-moss underline">
+                Find your table
+              </Link>
+            ) : null}
+            {date ? (
+              <a href={`/c/${token}`} className="min-h-11 inline-flex items-center text-moss underline">
+                Add to calendar
+              </a>
+            ) : null}
+          </div>
+        </div>
+      </GuestHero>
       <main className={`mx-auto max-w-xl px-5 py-10 sm:py-12 ${garden ? "max-w-2xl" : ""}`}>
 
         {site.headline && (
@@ -101,31 +136,6 @@ export default async function WeddingSitePage({
         {announce && !site.headline?.trim() && (
           <p className="mt-10 text-center font-serif text-3xl leading-snug">We got married.</p>
         )}
-
-        {open && !announce && (
-          <div className="mt-10 text-center">
-            <Link
-              href={`/w/${token}/rsvp`}
-              className="inline-block rounded-full bg-moss px-7 py-2.5 text-sm font-medium text-moss-fg"
-            >
-              RSVP
-            </Link>
-            {site.rsvpNote && (
-              <p className="mt-3 text-xs text-muted">{site.rsvpNote}</p>
-            )}
-          </div>
-        )}
-        {!open && !announce && (
-          <p className="mt-10 text-center text-sm text-muted">
-            RSVP is closed{site.rsvpClose ? ` (was ${site.rsvpClose})` : ""}.
-          </p>
-        )}
-
-        <div className="mt-6 text-center">
-          <Link href={`/w/${token}/table`} className="text-sm text-moss underline">
-            Find your table
-          </Link>
-        </div>
 
         {site.scheduleNote && (
           <section className="mt-12">
@@ -218,7 +228,12 @@ export default async function WeddingSitePage({
                       .join(" · ")}
                   </p>
                   {h.bookingUrl && (
-                    <a href={h.bookingUrl} className="text-xs underline" target="_blank" rel="noreferrer">
+                    <a
+                      href={h.bookingUrl}
+                      className="btn btn-primary mt-3 inline-flex min-h-11"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Book
                     </a>
                   )}
@@ -228,31 +243,20 @@ export default async function WeddingSitePage({
           </section>
         )}
 
-        {registry && (registry.links.length > 0 || (registry.items || []).length > 0) && (
+        {registry && registry.links.length > 0 && (
           <section className="mt-8">
             <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
               <Icon name="gift" className="h-3.5 w-3.5" /> Registry
             </h2>
             <ul className="mt-3 space-y-2 text-sm">
-              {(registry.items || []).map((item) => (
-                <li key={item.id} className="flex justify-between gap-2">
-                  <span>
-                    {item.url ? (
-                      <a href={item.url} className="underline" target="_blank" rel="noreferrer">
-                        {item.name}
-                      </a>
-                    ) : (
-                      item.name
-                    )}
-                  </span>
-                  <span className="text-xs text-muted">
-                    {item.status === "PURCHASED" ? "Purchased" : item.status === "CLAIMED" ? "Claimed" : "Open"}
-                  </span>
-                </li>
-              ))}
               {registry.links.map((l) => (
                 <li key={l.url}>
-                  <a href={l.url} className="underline" target="_blank" rel="noreferrer">
+                  <a
+                    href={l.url}
+                    className="inline-flex min-h-11 items-center underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     {l.store}
                   </a>
                 </li>

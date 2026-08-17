@@ -35,13 +35,13 @@ export function SiteGate({ token }: { token: string }) {
           onChange={(e) => setPassword(e.target.value)}
           required
           placeholder="Password from the couple"
-          className="w-full rounded-xl border border-line bg-surface px-3 py-3 text-sm"
+          className="field min-h-11 w-full"
         />
         {error && <p className="text-xs text-clay">{error}</p>}
         <button
           type="submit"
           disabled={busy}
-          className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-ivory"
+          className="rounded-full bg-moss px-5 py-2.5 text-sm font-medium text-moss-fg"
         >
           {busy ? "Checking…" : "Open"}
         </button>

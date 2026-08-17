@@ -34,7 +34,7 @@ export function SeatingClient({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showChart, setShowChart] = useState(false);
-  const [view, setView] = useState<"room" | "chairs">("room");
+  const [view, setView] = useState<"list" | "room" | "chairs">("list");
   const [seatMode, setSeatMode] = useState<"holding" | "plates">("holding");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
@@ -57,6 +57,7 @@ export function SeatingClient({
         applyPayload(d);
       })
       .catch(() => {});
+    if (typeof window !== "undefined" && window.innerWidth >= 768) setView("room");
   }, []);
 
   const pool = guests.filter((g) => inSeatingPool(g, seatMode));
@@ -367,7 +368,7 @@ export function SeatingClient({
       </div>
 
       <div className="flex flex-wrap gap-2 print:hidden">
-        {(["room", "chairs"] as const).map((v) => (
+        {(["list", "room", "chairs"] as const).map((v) => (
           <button
             key={v}
             type="button"
@@ -376,7 +377,7 @@ export function SeatingClient({
               view === v ? "bg-moss text-moss-fg" : "border border-line"
             }`}
           >
-            {v === "room" ? "Room" : "Chairs"}
+            {v === "list" ? "List" : v === "room" ? "Room" : "Chairs"}
           </button>
         ))}
         {(["holding", "plates"] as const).map((m) => (
@@ -393,7 +394,86 @@ export function SeatingClient({
         ))}
       </div>
 
-      {view === "room" ? (
+      {view === "list" ? (
+        <div className="space-y-3 print:hidden">
+          {selected.length > 0 && (
+            <p className="text-sm text-ink-soft">
+              {selected.length} selected. Tap a table to move them, or unseat.
+            </p>
+          )}
+          {filteredUnseated.length > 0 && (
+            <section className="glass-panel rounded-2xl p-4">
+              <p className="kicker">Not seated</p>
+              <ul className="mt-3 divide-y divide-line">
+                {filteredUnseated.map((g) => (
+                  <li key={g.id}>
+                    <button
+                      type="button"
+                      onClick={() => toggle(g.id)}
+                      className={`flex min-h-11 w-full items-center justify-between py-2 text-left text-sm ${
+                        selected.includes(g.id) ? "font-medium text-moss" : ""
+                      }`}
+                    >
+                      <span>{g.name}</span>
+                      <span className="text-xs text-muted">{g.partyName || g.rsvp}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {tables.map((t) => {
+            const seatedHere = guests.filter((g) => g.tableLabel === t.name);
+            return (
+              <section key={t.id} className="glass-panel rounded-2xl p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="font-serif text-2xl">{t.name}</p>
+                    <p className="text-xs text-muted">
+                      {tableFill(t.name, guests)} / {t.capacity}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!selected.length || busy}
+                    onClick={() => assign(selected, t.name)}
+                    className="btn btn-primary !min-h-11 px-4 text-xs disabled:opacity-50"
+                  >
+                    Move here
+                  </button>
+                </div>
+                <ul className="mt-3 divide-y divide-line">
+                  {seatedHere.length === 0 && (
+                    <li className="py-2 text-sm text-muted">Empty</li>
+                  )}
+                  {seatedHere.map((g) => (
+                    <li key={g.id} className="flex min-h-11 items-center justify-between gap-2 py-1">
+                      <button
+                        type="button"
+                        onClick={() => toggle(g.id)}
+                        className={`text-left text-sm ${selected.includes(g.id) ? "font-medium text-moss" : ""}`}
+                      >
+                        {g.name}
+                        {g.seatIndex != null ? (
+                          <span className="text-xs text-muted"> · seat {g.seatIndex + 1}</span>
+                        ) : null}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => assign([g.id], null)}
+                        className="text-xs text-muted underline"
+                      >
+                        Unseat
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
+      ) : view === "room" ? (
         <RoomCanvas tables={tables} guests={guests} selected={selected} onAssign={(ids, name) => assign(ids, name)} />
       ) : (
       <section className="grid gap-6 rounded-2xl border border-line bg-surface/60 p-4 sm:grid-cols-2">

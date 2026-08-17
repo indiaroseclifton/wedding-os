@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { GuestLetter } from "@/components/site/GuestLetter";
 
 type Match = { name: string; rsvpToken: string; rsvp: string };
 type ExtraEvent = {
@@ -156,13 +156,7 @@ function PublicRsvpInner() {
   }
 
   return (
-    <div className="min-h-screen bg-paper px-5 py-12 text-ink">
-      <div className="mx-auto max-w-md">
-        <Link href={`/w/${token}`} className="text-xs text-moss underline">
-          Back to the wedding
-        </Link>
-        <h1 className="mt-4 font-serif text-4xl tracking-tight">RSVP</h1>
-
+    <GuestLetter token={token} title="RSVP">
         {done ? (
           <div className="mt-6 space-y-3">
             <p className="text-sm text-ink-soft">
@@ -198,13 +192,15 @@ function PublicRsvpInner() {
               required
               minLength={3}
               placeholder="Your name"
-              className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
+              autoComplete="name"
+              autoCapitalize="words"
+              className="field min-h-11 w-full"
             />
             {error && <p className="text-xs text-rose-700">{error}</p>}
             <button
               type="submit"
               disabled={busy}
-              className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-moss-fg"
+              className="btn btn-primary"
             >
               {busy ? "Looking…" : "Find me"}
             </button>
@@ -252,24 +248,27 @@ function PublicRsvpInner() {
                 Same answer for {household.map((h) => h.name).join(", ")}
               </label>
             )}
-            <fieldset className="space-y-2">
-              <legend className="text-sm font-medium">Wedding day</legend>
-              {[
-                ["YES", "Yes"],
-                ["NO", "No"],
-                ["MAYBE", "Maybe"],
-              ].map(([value, label]) => (
-                <label key={value} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="radio"
-                    name="rsvp"
-                    checked={rsvp === value}
-                    onChange={() => setRsvp(value)}
-                  />
-                  {label}
-                </label>
-              ))}
-            </fieldset>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Wedding day</p>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  ["YES", "Yes"],
+                  ["NO", "No"],
+                  ["MAYBE", "Maybe"],
+                ].map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setRsvp(value)}
+                    className={`min-h-11 rounded-full text-sm ${
+                      rsvp === value ? "bg-moss text-moss-fg" : "border border-line bg-surface"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
             {rsvp !== "NO" && plusPolicy === "none" && (
               <p className="rounded-xl border border-line bg-paper px-3 py-2 text-sm text-muted">
                 You’re invited — just you. The room is full for extra guests.
@@ -368,7 +367,8 @@ function PublicRsvpInner() {
                   onChange={(e) => setAddress(e.target.value)}
                   required={requireAddress && rsvp !== "NO"}
                   placeholder="Street"
-                  className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
+                  autoComplete="street-address"
+                  className="field min-h-11 w-full"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -376,13 +376,15 @@ function PublicRsvpInner() {
                     onChange={(e) => setCity(e.target.value)}
                     required={requireAddress && rsvp !== "NO"}
                     placeholder="City"
-                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
+                    autoComplete="address-level2"
+                    className="field min-h-11"
                   />
                   <input
                     value={region}
                     onChange={(e) => setRegion(e.target.value)}
                     placeholder="State"
-                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
+                    autoComplete="address-level1"
+                    className="field min-h-11"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -390,13 +392,17 @@ function PublicRsvpInner() {
                     value={postal}
                     onChange={(e) => setPostal(e.target.value)}
                     placeholder="ZIP"
-                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
+                    autoComplete="postal-code"
+                    inputMode="numeric"
+                    className="field min-h-11"
                   />
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Phone"
-                    className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
+                    autoComplete="tel"
+                    inputMode="tel"
+                    className="field min-h-11"
                   />
                 </div>
               </div>
@@ -482,16 +488,13 @@ function PublicRsvpInner() {
               />
             </label>
             {error && <p className="text-xs text-rose-700">{error}</p>}
-            <button
-              type="submit"
-              disabled={busy}
-              className="rounded-full bg-moss px-5 py-2 text-sm font-medium text-moss-fg"
-            >
-              {busy ? "Saving…" : "Send RSVP"}
-            </button>
+            <div className="sticky bottom-0 -mx-5 mt-4 border-t border-line bg-paper/95 px-5 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button type="submit" disabled={busy} className="btn btn-primary w-full">
+                {busy ? "Saving…" : "Send RSVP"}
+              </button>
+            </div>
           </form>
         )}
-      </div>
-    </div>
+    </GuestLetter>
   );
 }

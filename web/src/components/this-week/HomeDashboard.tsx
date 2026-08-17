@@ -29,6 +29,7 @@ export function HomeDashboard({
   vendorBooked,
   vendorPending,
   nextUp,
+  season = "planning",
 }: {
   days: number | null;
   coverUrl?: string;
@@ -43,6 +44,7 @@ export function HomeDashboard({
   vendorBooked: number;
   vendorPending: number;
   nextUp: { when: string; title: string; href: string }[];
+  season?: "planning" | "after";
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(weekItems.slice(0, 4));
@@ -73,18 +75,20 @@ export function HomeDashboard({
           {dateLine ? <p className="kicker mt-3">{dateLine}</p> : null}
           <p className="home-count mt-4">{headline}</p>
           <p className="home-days mt-1">{sub}</p>
-          <p className="home-script mt-4">{tagline || "The adventure begins…"}</p>
+          <p className="home-script mt-4">
+            {season === "after" ? tagline || "The three months." : tagline || "The adventure begins…"}
+          </p>
           <Link
-            href="/planning"
+            href={season === "after" ? "/after" : "/planning"}
             className="mt-5 inline-flex h-10 items-center rounded-full bg-moss px-5 text-[13px] font-medium tracking-wide text-moss-fg"
           >
-            View our plan
+            {season === "after" ? "Today’s card" : "View our plan"}
           </Link>
         </div>
 
         <aside className="home-week panel px-5 py-5">
           <div className="flex items-center justify-between">
-            <p className="kicker">What next</p>
+            <p className="kicker">{season === "after" ? "The three months" : "What next"}</p>
             <Link href="/after" className="text-[12px] text-muted hover:text-ink">
               After
             </Link>
