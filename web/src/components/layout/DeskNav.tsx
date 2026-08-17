@@ -72,14 +72,14 @@ export function DeskNav({
                 href={item.href}
                 scroll={false}
                 prefetch
-                className={`flex min-h-11 min-w-0 flex-1 items-center justify-between rounded-lg px-3 text-[15px] ${
+                className={`flex min-h-11 min-w-0 flex-1 items-center justify-between rounded-full px-3 text-[15px] ${
                   on
-                    ? "bg-surface font-medium text-ink shadow-sm"
-                    : "text-moss-fg/80 hover:bg-white/10 hover:text-moss-fg"
+                    ? "bg-champagne/80 font-medium text-ink"
+                    : "text-ink-soft hover:bg-paper hover:text-ink"
                 }`}
               >
                 <span>{item.label}</span>
-                {count ? <span className={`text-xs tabular-nums ${on ? "text-muted" : "text-moss-fg/45"}`}>{count}</span> : null}
+                {count ? <span className={`text-xs tabular-nums ${on ? "text-muted" : "text-ink/35"}`}>{count}</span> : null}
               </Link>
               {kids && (
                 <button
@@ -88,7 +88,7 @@ export function DeskNav({
                   aria-label={`${expanded ? "Hide" : "Show"} ${item.label}`}
                   onClick={() => setOpenRoom(expanded ? null : item.room)}
                   className={`flex h-11 w-9 shrink-0 items-center justify-center text-lg ${
-                    on ? "text-muted" : "text-moss-fg/45"
+                    on ? "text-muted" : "text-ink/35"
                   }`}
                 >
                   {expanded ? "–" : "+"}
@@ -96,7 +96,7 @@ export function DeskNav({
               )}
             </div>
             {kids && expanded && (
-              <ul className="mb-2 ml-2 mt-0.5 space-y-0.5 border-l border-white/15 pl-2">
+              <ul className="mb-2 ml-2 mt-0.5 space-y-0.5 border-l border-line pl-2">
                 {kids.map((child: NavNode) => (
                   <li key={child.href + child.label}>
                     <Link
@@ -105,8 +105,8 @@ export function DeskNav({
                       prefetch
                       className={`block rounded-md px-2 py-1.5 text-[13px] ${
                         pathname === child.href || pathname.startsWith(child.href + "/")
-                          ? "text-moss-fg"
-                          : "text-moss-fg/55 hover:text-moss-fg"
+                          ? "text-ink"
+                          : "text-muted hover:text-ink"
                       }`}
                     >
                       {child.label}
