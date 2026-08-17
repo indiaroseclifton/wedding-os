@@ -21,6 +21,7 @@ export type InventoryBox = {
   setupBy: string;
   fate: InventoryFate;
   items: BoxItem[];
+  scanToken?: string;
 };
 
 export type StoredInventory = {
@@ -42,12 +43,23 @@ async function writeAll(all: Record<string, StoredInventory>) {
   await writeText(inventoryFile, JSON.stringify(all, null, 2));
 }
 
+function token() {
+  return randomUUID().replace(/-/g, "").slice(0, 12);
+}
+
 export async function getInventory(workspaceId: string): Promise<StoredInventory> {
   const all = await readAll();
   if (!all[workspaceId]) {
     all[workspaceId] = { workspaceId, boxes: [], updatedAt: new Date().toISOString() };
     await writeAll(all);
   }
+  let dirty = false;
+  all[workspaceId].boxes = all[workspaceId].boxes.map((b) => {
+    if (b.scanToken) return b;
+    dirty = true;
+    return { ...b, scanToken: token() };
+  });
+  if (dirty) await writeAll(all);
   return all[workspaceId];
 }
 
@@ -72,6 +84,7 @@ export async function addBox(
     owner: input.owner || "",
     setupBy: input.setupBy || "",
     fate: "unset",
+    scanToken: token(),
     items: [],
   };
   return saveInventory(workspaceId, { boxes: [...current.boxes, box] });
@@ -109,4 +122,13 @@ export async function toggleBoxItem(workspaceId: string, boxId: string, itemId: 
         : b
     ),
   });
+}
+
+export async function findBoxByToken(scan: string) {
+  const all = await readAll();
+  for (const inv of Object.values(all)) {
+    const box = inv.boxes.find((b) => b.scanToken === scan);
+    if (box) return { workspaceId: inv.workspaceId, box };
+  }
+  return null;
 }

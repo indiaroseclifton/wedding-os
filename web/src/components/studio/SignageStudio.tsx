@@ -355,6 +355,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
               <dl className="space-y-2">
                 <div className="flex justify-between gap-3"><dt className="text-muted">File</dt><dd>{prep.file}</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted">Cut size</dt><dd>{prep.cut}</dd></div>
+                <div className="flex justify-between gap-3"><dt className="text-muted">Vinyl</dt><dd className="text-right">{prep.vinyl.sqFt} sq ft · {prep.vinyl.linear12}" of 12" roll</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted">Mat</dt><dd>{prep.mat}</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted">Machine</dt><dd className="text-right">{prep.machine}</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted">Material</dt><dd className="text-right">{prep.material}</dd></div>

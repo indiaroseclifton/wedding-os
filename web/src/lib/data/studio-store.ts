@@ -111,3 +111,62 @@ export async function deleteProject(workspaceId: string, id: string) {
   const current = await getStudio(workspaceId);
   return save(workspaceId, current.projects.filter((p) => p.id !== id));
 }
+
+export async function upsertKindProject(
+  workspaceId: string,
+  input: {
+    kind: StudioProject["kind"];
+    title: string;
+    qty: number;
+    materials: { label: string; qty: number; unit?: string; estEach: number }[];
+    vendorEst?: number;
+    note?: string;
+  }
+) {
+  const current = await getStudio(workspaceId);
+  const existing = current.projects.find((p) => p.kind === input.kind && p.title === input.title);
+  const incoming = input.materials.map((m) => ({
+    id: randomUUID(),
+    label: m.label,
+    qty: m.qty,
+    unit: m.unit || "stems",
+    estEach: m.estEach,
+    fate: "buy" as const,
+    bought: false,
+    source: "Studio",
+  }));
+  if (existing) {
+    const kept = existing.materials.map((old) => {
+      const hit = incoming.find((m) => m.label === old.label);
+      return hit ? { ...old, qty: hit.qty, estEach: hit.estEach } : old;
+    });
+    const added = incoming.filter((m) => !existing.materials.some((o) => o.label === m.label));
+    return patchProject(workspaceId, existing.id, {
+      qty: input.qty,
+      vendorEst: input.vendorEst ?? existing.vendorEst,
+      note: input.note ?? existing.note,
+      materials: [...kept, ...added],
+    });
+  }
+  const now = new Date().toISOString();
+  const project: StudioProject = {
+    id: randomUUID(),
+    title: input.title,
+    kind: input.kind,
+    intent: "recreate",
+    stage: "spec",
+    inspiration: "",
+    note: input.note || "",
+    qty: input.qty,
+    budget: 0,
+    vendorEst: input.vendorEst || 0,
+    owner: "",
+    zone: input.kind === "floral" ? "Tables" : "",
+    afterFate: "unset",
+    materials: incoming,
+    steps: [],
+    createdAt: now,
+    updatedAt: now,
+  };
+  return save(workspaceId, [...current.projects, project]);
+}

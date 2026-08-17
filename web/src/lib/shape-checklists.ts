@@ -19,6 +19,7 @@ export const SHAPE_STARTERS: Record<WeddingShape, ShapeItem[]> = {
     { phase: "after", title: "Write the announcement for everyone else" },
     { phase: "after", title: "Thank the witness and the photographer" },
     { phase: "after", title: "Thank-you notes for gifts that arrive (90 days)" },
+    { phase: "week", title: "Pack what you’re taking — even if it’s one bag" },
   ],
   small: [
     { phase: "12-18", title: "Set a total budget and who contributes" },
@@ -43,6 +44,8 @@ export const SHAPE_STARTERS: Record<WeddingShape, ShapeItem[]> = {
     { phase: "after", title: "Send thank-you notes (aim for 3 months)" },
     { phase: "after", title: "Review and choose photos" },
     { phase: "after", title: "Leave vendor reviews" },
+    { phase: "1", title: "Print escort / place cards from Cards" },
+    { phase: "week", title: "Pack Studio boxes and print labels" },
   ],
   weekend: [],
   two: [

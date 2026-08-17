@@ -32,6 +32,7 @@ type Rollup = {
   vendorOpen: number;
   vendorAll: number;
   diyEst: number;
+  studioSpend: number;
   linesPlanned: number;
   linesActual: number;
   spent: number;
@@ -192,6 +193,7 @@ export default function BudgetPage() {
         </div>
         <p className="mt-2 text-xs text-muted">
           Spent {money(spent)} · vendors {money(rollup?.vendorAll || 0)} · DIY {money(rollup?.diyEst || 0)}
+          {(rollup?.studioSpend || 0) > 0 ? ` · Studio ${money(rollup!.studioSpend)}` : ""}
         </p>
         {over > 0 && (
           <p className="mt-3 rounded-xl bg-clay/10 px-3 py-2 text-sm text-clay">

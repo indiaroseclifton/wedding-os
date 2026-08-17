@@ -18,6 +18,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/w/") ||
     pathname.startsWith("/v/") ||
     pathname.startsWith("/b/") ||
+    pathname.startsWith("/s/") ||
+    pathname.startsWith("/box/") ||
     pathname.startsWith("/ros/") ||
     pathname.startsWith("/api/public/") ||
     pathname.startsWith("/api/integrations/spotify/callback") ||

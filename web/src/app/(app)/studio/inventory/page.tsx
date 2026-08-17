@@ -92,15 +92,31 @@ export default function InventoryPage() {
         <EmptyState title="No boxes yet" body="Pack a décor build, or add a box for ceremony, cocktail, tables." />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {boxes.map((box, i) => (
+          {boxes.map((box, i) => {
+            const href = typeof window === "undefined" ? `/box/${box.scanToken}` : `${window.location.origin}/box/${box.scanToken}`;
+            const qr = box.scanToken
+              ? `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                  typeof window === "undefined" ? `/box/${box.scanToken}` : `${window.location.origin}/box/${box.scanToken}`
+                )}`
+              : "";
+            return (
             <article key={box.id} className="rounded-[1.4rem] border border-line bg-surface p-5 print:break-inside-avoid">
-              <p className="kicker">Box {String(i + 1).padStart(2, "0")}</p>
-              <h2 className="mt-1 font-serif text-3xl tracking-tight">{box.name}</h2>
-              <p className="mt-2 text-sm text-muted">
-                {[box.takeTo && `Take to ${box.takeTo}`, box.owner && `Owner ${box.owner}`, box.setupBy && `By ${box.setupBy}`]
-                  .filter(Boolean)
-                  .join(" · ") || "No destination yet"}
-              </p>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="kicker">Box {String(i + 1).padStart(2, "0")}</p>
+                  <h2 className="mt-1 font-serif text-3xl tracking-tight">{box.name}</h2>
+                  <p className="mt-2 text-sm text-muted">
+                    {[box.takeTo && `Take to ${box.takeTo}`, box.owner && `Owner ${box.owner}`, box.setupBy && `By ${box.setupBy}`]
+                      .filter(Boolean)
+                      .join(" · ") || "No destination yet"}
+                  </p>
+                </div>
+                {qr ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={qr} alt="" className="h-20 w-20 shrink-0 bg-white p-1" />
+                ) : null}
+              </div>
+              <p className="mt-2 hidden font-mono text-[10px] text-muted print:block">{href}</p>
               <ul className="mt-4 divide-y divide-line">
                 {box.items.map((item) => (
                   <li key={item.id}>
@@ -158,7 +174,8 @@ export default function InventoryPage() {
                 </button>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

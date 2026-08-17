@@ -13,7 +13,7 @@ export const CHECKLIST_ACTIONS: Record<string, ChecklistAction> = {
   "Book DJ or band": { href: "/vendors/browse?category=DJ / Band", cta: "Find music", lane: "couple" },
   "Book florist": { href: "/vendors/browse?category=Florist", cta: "Find florists", lane: "couple" },
   "Book officiant": { href: "/vendors/browse?category=Officiant", cta: "Find officiants", lane: "couple" },
-  "Reserve hotel blocks for guests": { href: "/vendors/browse?category=Hotel block", cta: "Hotel blocks", lane: "couple" },
+  "Reserve hotel blocks for guests": { href: "/travel", cta: "Hotel blocks", lane: "couple" },
   "Send save-the-dates": { href: "/guests", cta: "Nudge / send", lane: "couple" },
   "Start dress shopping": { href: "/vendors/browse?category=Bridal salon", cta: "Bridal salons", lane: "couple" },
   "Create a wedding website": { href: "/site", cta: "Guest site", lane: "couple" },
@@ -71,6 +71,8 @@ export const CHECKLIST_ACTIONS: Record<string, ChecklistAction> = {
   "Book beauty for the bridal party": { href: "/vendors/browse?category=Hair / Makeup", cta: "Hair & makeup", lane: "party" },
   "Give each person a day-of job": { href: "/planning/party", cta: "Duties", lane: "party" },
   "Plan shower / bach if you want one": { href: "/events", cta: "Events", lane: "party" },
+  "Print escort / place cards from Cards": { href: "/studio/cards", cta: "Cards", lane: "couple" },
+  "Pack Studio boxes and print labels": { href: "/studio/inventory", cta: "Boxes", lane: "couple" },
 };
 
 export const PARTY_STARTER: { phase: string; title: string; done: boolean }[] = [

@@ -84,6 +84,9 @@ export default async function WeddingSitePage({
         coverUrl={cover || undefined}
         mode={announce ? "announce" : "invite"}
         night={night}
+        vibe={vision.vibe}
+        formal={vision.formal}
+        palette={vision.palette?.hex}
       >
         <div className="flex flex-col items-center gap-3">
           {open && !announce && (
@@ -223,7 +226,7 @@ export default async function WeddingSitePage({
                   <p className="font-medium">{h.name}</p>
                   {h.address && <p className="text-ink-soft">{h.address}</p>}
                   <p className="text-xs text-muted">
-                    {[h.rate, h.blockCode ? `code ${h.blockCode}` : "", h.cutoff ? `by ${h.cutoff}` : ""]
+                    {[h.rate, h.blockCode ? `code ${h.blockCode}` : "", h.cutoff ? `book by ${h.cutoff}` : ""]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>

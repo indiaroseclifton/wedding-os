@@ -47,6 +47,8 @@ export function CardsDesk({
   }
 
   const printHref = `/studio/cards/print?kind=${kind}&mode=${mode}${meals ? "&meals=1" : ""}`;
+  const avery5302 = `${printHref}&stock=avery5302`;
+  const avery5371 = `${printHref}&stock=avery5371`;
 
   return (
     <div className="space-y-6">
@@ -65,6 +67,12 @@ export function CardsDesk({
           </button>
           <Link href={printHref} className="btn btn-primary">
             Print {kind === "escort" ? "escort" : "tents"}
+          </Link>
+          <Link href={avery5302} className="btn btn-ghost">
+            Avery 5302
+          </Link>
+          <Link href={avery5371} className="btn btn-ghost">
+            Avery 5371
           </Link>
         </div>
       </header>

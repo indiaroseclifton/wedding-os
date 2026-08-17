@@ -86,6 +86,8 @@ export const STARTER: Omit<ChecklistItem, "id">[] = [
   { phase: "after", title: "Preserve dress / suit", done: false },
   { phase: "after", title: "Name-change paperwork if needed", done: false },
   { phase: "after", title: "Leave vendor reviews", done: false },
+  { phase: "1", title: "Print escort / place cards from Cards", done: false },
+  { phase: "week", title: "Pack Studio boxes and print labels", done: false },
 ];
 
 async function readAll(): Promise<Record<string, StoredChecklist>> {
@@ -120,12 +122,16 @@ export async function getChecklist(workspaceId: string): Promise<StoredChecklist
   }
   const have = new Set(all[workspaceId].items.map((i) => i.title));
   const meta = await getWorkspaceMeta(workspaceId, "");
-  const missing =
-    shapeOf(meta.shape) === "weekend" ? PARTY_STARTER.filter((s) => !have.has(s.title)) : [];
+  const shape = shapeOf(meta.shape);
+  const extras =
+    shape === "weekend"
+      ? [...PARTY_STARTER, ...STARTER.filter((s) => s.title.includes("Cards") || s.title.includes("Studio boxes"))]
+      : SHAPE_STARTERS[shape];
+  const missing = extras.filter((s) => !have.has(s.title));
   if (missing.length) {
     all[workspaceId] = {
       ...all[workspaceId],
-      items: [...all[workspaceId].items, ...missing.map((s) => ({ ...s, id: randomUUID() }))],
+      items: [...all[workspaceId].items, ...missing.map((s) => ({ ...s, done: false, source: "starter" as const, id: randomUUID() }))],
       updatedAt: new Date().toISOString(),
     };
     await writeAll(all);

@@ -15,6 +15,13 @@ type Hotel = {
   notes?: string;
 };
 
+function daysUntil(iso?: string) {
+  if (!iso) return null;
+  const d = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  return Math.round((d.getTime() - Date.now()) / 86400000);
+}
+
 export default function TravelPage() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [airport, setAirport] = useState("");
@@ -23,6 +30,7 @@ export default function TravelPage() {
   const [honeymoon, setHoneymoon] = useState("");
   const [notes, setNotes] = useState("");
   const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
   const [rate, setRate] = useState("");
   const [blockCode, setBlockCode] = useState("");
   const [cutoff, setCutoff] = useState("");
@@ -137,6 +145,7 @@ export default function TravelPage() {
           await post({
             action: "add_hotel",
             name,
+            address,
             rate,
             blockCode,
             cutoff,
@@ -145,6 +154,7 @@ export default function TravelPage() {
             kind,
           });
           setName("");
+          setAddress("");
           setRate("");
           setBlockCode("");
           setCutoff("");
@@ -154,11 +164,18 @@ export default function TravelPage() {
         className="space-y-3 glass-panel rounded-2xl p-4"
       >
         <p className="text-sm font-medium">Add a hotel block</p>
+        <p className="text-xs text-muted">These show on the letter when Travel is on.</p>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Hotel name"
+          className="w-full rounded-lg border border-line px-3 py-2 text-sm"
+        />
+        <input
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder="Street address"
           className="w-full rounded-lg border border-line px-3 py-2 text-sm"
         />
         <div className="grid gap-2 sm:grid-cols-2">
@@ -215,12 +232,18 @@ export default function TravelPage() {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-semibold">{h.name}</p>
+                {h.address ? <p className="text-ink-soft">{h.address}</p> : null}
                 <p className="text-xs text-muted">
                   {h.kind}
                   {h.rate ? ` · ${h.rate}` : ""}
                   {h.blockCode ? ` · code ${h.blockCode}` : ""}
                   {h.rooms ? ` · ${h.rooms} rooms` : ""}
                   {h.cutoff ? ` · cutoff ${h.cutoff}` : ""}
+                  {h.cutoff && daysUntil(h.cutoff) != null
+                    ? daysUntil(h.cutoff)! >= 0
+                      ? ` · ${daysUntil(h.cutoff)} days left`
+                      : " · cutoff passed"
+                    : ""}
                 </p>
                 {h.bookingUrl && (
                   <a

@@ -11,6 +11,9 @@ export function GuestHero({
   mode = "invite",
   night = false,
   compact = false,
+  vibe,
+  formal,
+  palette,
   children,
 }: {
   names: string;
@@ -20,6 +23,9 @@ export function GuestHero({
   mode?: "invite" | "announce";
   night?: boolean;
   compact?: boolean;
+  vibe?: string;
+  formal?: string;
+  palette?: string[];
   children?: ReactNode;
 }) {
   const height = compact
@@ -75,6 +81,22 @@ export function GuestHero({
             {location}
           </motion.p>
         )}
+        {!compact && (vibe || formal) ? (
+          <motion.p variants={fadeUp} className={`mt-1 text-xs tracking-wide ${night ? "text-[#f3efe6]/70" : "text-muted"}`}>
+            {[vibe, formal].filter(Boolean).join(" · ")}
+          </motion.p>
+        ) : null}
+        {!compact && palette && palette.length > 0 ? (
+          <motion.div variants={fadeUp} className="mt-3 flex justify-center gap-1.5">
+            {palette.slice(0, 6).map((hex) => (
+              <span
+                key={hex}
+                className="h-3.5 w-3.5 rounded-full border border-white/40"
+                style={{ background: hex }}
+              />
+            ))}
+          </motion.div>
+        ) : null}
         {children ? <motion.div variants={fadeUp} className="mt-5">{children}</motion.div> : null}
       </motion.div>
     </div>

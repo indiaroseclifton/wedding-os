@@ -12,6 +12,8 @@ import {
 import { listPayments } from "@/lib/data/payments-store";
 import { listVendors } from "@/lib/data/vendors-store";
 import { diyEstimate, getDiy } from "@/lib/data/diy-store";
+import { getStudio } from "@/lib/data/studio-store";
+import { projectCost } from "@/lib/studio-project";
 import { getPath } from "@/lib/data/path-store";
 import { requiredString, ValidationError } from "@/lib/validation";
 import { BUDGET_ENVELOPES, envelopeForVendor } from "@/lib/budget-envelopes";
@@ -19,20 +21,24 @@ import { BUDGET_ENVELOPES, envelopeForVendor } from "@/lib/budget-envelopes";
 function rollup(
   budget: Awaited<ReturnType<typeof getBudget>>,
   payments: Awaited<ReturnType<typeof listPayments>>,
-  diy: Awaited<ReturnType<typeof getDiy>>
+  diy: Awaited<ReturnType<typeof getDiy>>,
+  studioSpend: number
 ) {
   const vendorPaid = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + (p.amount || 0), 0);
   const vendorOpen = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + (p.amount || 0), 0);
   const linesPlanned = budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
   const linesActual = budget.lines.reduce((s, l) => s + (l.actual || 0), 0);
   const diyEst = Math.round(diyEstimate(diy));
+  const studio = Math.round(studioSpend);
+  const making = Math.max(diyEst, studio);
   const spent = vendorPaid + linesActual;
-  const committed = vendorPaid + vendorOpen + diyEst + Math.max(0, linesPlanned - linesActual);
+  const committed = vendorPaid + vendorOpen + making + Math.max(0, linesPlanned - linesActual);
   return {
     vendorPaid,
     vendorOpen,
     vendorAll: vendorPaid + vendorOpen,
-    diyEst,
+    diyEst: making,
+    studioSpend: studio,
     linesPlanned,
     linesActual,
     spent,
@@ -75,13 +81,15 @@ export async function GET() {
   const access = await requireCoupleApi();
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
-  const [budget, payments, diy, path, vendors] = await Promise.all([
+  const [budget, payments, diy, path, vendors, studio] = await Promise.all([
     getBudget(workspace.id),
     listPayments(workspace.id),
     getDiy(workspace.id),
     getPath(workspace.id),
     listVendors(workspace.id),
+    getStudio(workspace.id),
   ]);
+  const studioSpend = studio.projects.reduce((s, p) => s + projectCost(p), 0);
   const upcoming = payments
     .filter((p) => p.status !== "PAID")
     .sort((a, b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999"))
@@ -92,7 +100,7 @@ export async function GET() {
     path: path.choices,
     upcoming,
     envelopes: envelopes(budget, payments, vendors),
-    rollup: rollup(budget, payments, diy),
+    rollup: rollup(budget, payments, diy, studioSpend),
   });
 }
 

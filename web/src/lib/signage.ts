@@ -369,6 +369,7 @@ export function cricutPrep(sign: SignDesign) {
           : "Text",
     copiesHint: spec.copiesHint,
     space,
+    vinyl: vinylArea(sign),
     steps: [
       "Download the SVG — or search Design Space for the official project.",
       `In Design Space search: “${space.search}”.`,
@@ -385,14 +386,29 @@ export function cricutPrep(sign: SignDesign) {
   };
 }
 
+export function vinylArea(sign: SignDesign) {
+  const copies = Math.max(1, sign.copies || 1);
+  const sqIn = sign.widthIn * sign.heightIn * copies;
+  const withWaste = sqIn * 1.15;
+  const linear12 = Math.ceil(withWaste / 12);
+  return {
+    sqIn: Math.round(sqIn),
+    sqFt: Math.round((withWaste / 144) * 100) / 100,
+    linear12,
+    waste: "15%",
+  };
+}
+
 export function materialsFor(sign: SignDesign) {
   const spec = specOf(sign.kind);
   const n = sign.copies > 1 ? `${sign.copies} ` : "";
+  const vinyl = vinylArea(sign);
+  const vinylQty = `${vinyl.sqFt} sq ft · ${vinyl.linear12}" of 12" roll (+15%)`;
   if (sign.kind === "welcome") {
     return [
       { item: "Acrylic or foam board", qty: `1 · ${sign.widthIn}×${sign.heightIn}"` },
-      { item: "Permanent vinyl", qty: "1 sheet" },
-      { item: "Transfer tape", qty: "1 roll" },
+      { item: "Permanent vinyl", qty: vinylQty },
+      { item: "Transfer tape", qty: `${vinyl.linear12}"` },
       { item: "Easel", qty: "1" },
     ];
   }

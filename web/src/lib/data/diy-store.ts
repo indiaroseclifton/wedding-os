@@ -234,6 +234,20 @@ export async function pushFloralShop(
   const next = await patchProject(workspaceId, project.id, { shopping, tables });
   const amount = shopping.reduce((s, i) => s + (i.qty || 0) * (i.estEach || 0), 0);
   await writeDiyBudget(workspaceId, "flowers", "DIY flowers", amount);
+  const { upsertKindProject } = await import("./studio-store");
+  await upsertKindProject(workspaceId, {
+    kind: "floral",
+    title: "Garden centerpiece",
+    qty: Math.max(1, tables),
+    vendorEst: Math.round(amount * 2.2),
+    note: "From floral studio",
+    materials: shopping.map((s) => ({
+      label: s.label,
+      qty: s.qty,
+      unit: s.unit,
+      estEach: s.estEach || 0,
+    })),
+  });
   return next;
 }
 
