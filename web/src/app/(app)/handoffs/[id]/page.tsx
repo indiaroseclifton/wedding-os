@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PrintButton } from "@/components/ui/PrintButton";
 import { ExportTextButton } from "@/components/handoffs/ExportTextButton";
@@ -62,6 +62,7 @@ function formatStamp(iso?: string) {
 
 export default function HandoffDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const [pkg, setPkg] = useState<Pkg | null>(null);
   const [sections, setSections] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +124,22 @@ export default function HandoffDetailPage() {
       setInfo(data.message || "Refreshed");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not refresh");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function toSend() {
+    setSaving(true);
+    setError(null);
+    try {
+      await save();
+      const res = await fetch(`/api/handoffs/${id}/to-send`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not put this on Send");
+      router.push(`/send/${data.vendorId}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not put this on Send");
     } finally {
       setSaving(false);
     }
@@ -214,29 +231,40 @@ export default function HandoffDetailPage() {
       <div className="flex flex-wrap gap-2 print:hidden">
         <button
           type="button"
-          onClick={save}
+          onClick={toSend}
           disabled={saving}
           className="btn btn-primary"
         >
-          {saving ? "Working…" : "Save draft"}
+          {saving ? "Working…" : "Put on their packet"}
+        </button>
+        <button
+          type="button"
+          onClick={save}
+          disabled={saving}
+          className="btn btn-ghost"
+        >
+          Save
         </button>
         <button
           type="button"
           onClick={share}
           disabled={saving}
-          className="rounded-lg border border-line bg-surface px-4 py-2 text-sm font-medium text-ink"
+          className="text-xs text-muted underline"
         >
-          Share link
+          Make the old /p link
         </button>
       </div>
 
       {shareUrl && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm print:hidden">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-medium text-emerald-900">Share this link with your vendor</p>
-            <CopyButton value={shareUrl} />
+        <div className="glass-panel rounded-2xl p-4 text-sm print:hidden">
+          <p className="kicker">Old door</p>
+          <p className="mt-2 text-sm text-ink-soft">
+            This /p link is archive. The live page is Send.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="break-all text-xs text-muted">{shareUrl}</p>
+            <CopyButton value={shareUrl} label="Copy old link" />
           </div>
-          <p className="mt-2 break-all text-emerald-800">{shareUrl}</p>
         </div>
       )}
     </div>

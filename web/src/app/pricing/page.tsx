@@ -13,7 +13,7 @@ const TIERS = [
     name: "Studio",
     price: "$29",
     line: "/ month after public launch",
-    points: ["Everything in Desk", "Guest site custom domain", "Unlimited handoffs", "Places + music exports", "Priority email"],
+    points: ["Everything in Desk", "Guest site custom domain", "Unlimited packets", "Places + music exports", "Priority email"],
   },
   {
     name: "Planner",

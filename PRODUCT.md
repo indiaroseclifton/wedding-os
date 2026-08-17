@@ -39,7 +39,7 @@ One couple workspace. File JSON under `web/.data/` is the source of truth (`DATA
 | Guests | List, RSVP, dietary, travel | Households, plus-ones |
 | Seating + floor | Tables, `seatIndex`, room fixtures | Hidden for `us` |
 | Vendors | Card with category *face* (cover + fields), ledger, checklists | `lib/vendor-face.ts` |
-| Send | One living packet per vendor. Public `/v/[token]` | `/p` redirects to `/v`. Vendor writes land on the card. |
+| Send | One living packet per vendor. Public `/v/[token]` | `/p` is archive. Extra notes land on Send. |
 | Budget / payments | Envelopes, deposit/progress/final, print statement | No Stripe. Shape reweights envelopes. |
 | The day | Run of show, cue book, day-of board | Templates follow shape + enter |
 | Guest site `/w/[token]` | Invite **or** announcement | `siteMode` / `us` → announce, no RSVP |

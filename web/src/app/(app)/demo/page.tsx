@@ -24,15 +24,15 @@ const STEPS = [
   },
   {
     n: 4,
-    title: "Catering handoff",
-    body: "Handoffs → New → Catering. Keep prefill on. You should see headcount and dietary notes from the guest list. Share link or Download .txt.",
-    href: "/handoffs/new",
-    cta: "New handoff",
+    title: "Send the catering packet",
+    body: "Dietary is the kitchen rollup. Send is the door. Open the caterer and make their link.",
+    href: "/send",
+    cta: "Send",
   },
   {
     n: 5,
-    title: "DJ handoff from music",
-    body: "Open Music (sample must-play / do-not-play). Then create a DJ handoff with prefill on — or open the draft DJ package from seed.",
+    title: "DJ packet from music",
+    body: "Open Music. Must-play and do-not-play land on the DJ packet under Send.",
     href: "/music",
     cta: "Music",
   },
@@ -61,8 +61,7 @@ export default function DemoPage() {
         </p>
         <h1 className="mt-1 title">Demo walkthrough</h1>
         <p className="mt-2 text-sm text-muted">
-          This is the core product story: decisions → guests → handoffs → party coordination.
-          Other modules can wait for Phase 2 depth.
+          This is the core product story: decisions → guests → Send → party.
         </p>
       </div>
 
@@ -93,7 +92,7 @@ export default function DemoPage() {
         <p className="font-medium text-ink">What this proves</p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
           <li>Couple can decide and turn choices into work</li>
-          <li>Guest data feeds vendor handoffs (catering + DJ)</li>
+          <li>Guest data feeds the kitchen and the DJ packet on Send</li>
           <li>Wedding party has a simpler portal for day-of and tasks</li>
           <li>No spreadsheet required for the core coordination loop</li>
         </ul>

@@ -24,17 +24,24 @@ export default async function HandoffsPage() {
             .
           </p>
         </div>
-        <Link href="/handoffs/new" className="btn btn-primary">
-          New package
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/send" className="btn btn-primary">
+            Open Send
+          </Link>
+          <Link href="/handoffs/new" className="btn btn-ghost">
+            Write a note
+          </Link>
+        </div>
       </div>
 
       {packages.length === 0 ? (
         <EmptyState
-          title="No handoff packages yet"
-          body="Create a DJ, day-of, or photographer package, fill the sections, then share a link."
-          primaryHref="/handoffs/new"
-          primaryLabel="New package"
+          title="Nothing extra written"
+          body="The live page is Send. Write a note only if you have something that is not already on the packet."
+          primaryHref="/send"
+          primaryLabel="Open Send"
+          secondaryHref="/handoffs/new"
+          secondaryLabel="Write a note"
         />
       ) : (
         <ul className="panel divide-y divide-line">

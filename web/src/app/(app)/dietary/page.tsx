@@ -30,8 +30,8 @@ export default async function DietaryPage({
             Caterer packet
           </Link>
           <PrintButton />
-          <Link href="/handoffs" className="btn btn-primary">
-            Catering handoff
+          <Link href="/send" className="btn btn-primary">
+            Send to caterer
           </Link>
         </div>
       </div>

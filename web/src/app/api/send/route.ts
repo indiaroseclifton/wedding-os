@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { getVendor, listVendors } from "@/lib/data/vendors-store";
-import { listSends, upsertSend, markSendShared, answerQuestion } from "@/lib/data/sends-store";
+import { listSends, upsertSend, markSendShared, answerQuestion, getSendForVendor } from "@/lib/data/sends-store";
 import { defaultAttachments, isAttachmentId, type AttachmentId } from "@/lib/send/attachments";
 import { assemblePacket, sendHref, tickHandoffChecklist } from "@/lib/send/assemble";
 import { sendAppEmail, requestOrigin } from "@/lib/email/send";
@@ -33,6 +33,20 @@ export async function POST(request: Request) {
   if (!vendor || vendor.workspaceId !== workspace.id) {
     return NextResponse.json({ error: "Vendor not found" }, { status: 404 });
   }
+
+  if (body.action === "note") {
+    const existing = await getSendForVendor(workspace.id, vendor.id);
+    const text = String(body.handoffNote || "").slice(0, 4000);
+    const row = await upsertSend({
+      workspaceId: workspace.id,
+      vendorId: vendor.id,
+      category: vendor.category,
+      attachments: existing?.attachments,
+      handoffNote: text,
+    });
+    return NextResponse.json({ send: row, vendorId: vendor.id });
+  }
+
   const attachments = Array.isArray(body.attachments)
     ? (body.attachments as string[]).filter(isAttachmentId)
     : defaultAttachments(vendor.category);

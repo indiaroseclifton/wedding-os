@@ -311,7 +311,7 @@ function MusicInner() {
           >
             Save cue sheet
           </button>
-          {saved && <p className="text-xs text-moss">Saved. DJ handoff pulls this automatically.</p>}
+          {saved && <p className="text-xs text-moss">Saved. The DJ packet on Send reads this.</p>}
         </>
       )}
 
@@ -536,7 +536,7 @@ function MusicInner() {
         Save lists
       </button>
       {saved && (
-        <p className="text-xs text-moss">Saved. Refresh a DJ handoff to pull the latest lists.</p>
+        <p className="text-xs text-moss">Saved. Open Send for the DJ packet.</p>
       )}
 
       <div className="rounded-xl border border-line bg-surface p-4">
