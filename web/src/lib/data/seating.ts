@@ -4,6 +4,7 @@ export type SeatGuest = {
   tableLabel?: string | null;
   seatIndex?: number | null;
   dietary?: string | null;
+  meal?: string | null;
   rsvp: string;
   side?: string | null;
   partyName?: string | null;
@@ -35,8 +36,13 @@ export function seatWeight(g: SeatGuest) {
 
 export function householdKey(g: SeatGuest) {
   if (g.partyName?.trim()) return g.partyName.trim();
-  const last = g.name.trim().split(/\s+/)[0] ? g.name.trim().split(/\s+/).slice(-1)[0] : g.name;
-  return last || g.name;
+  return g.name.trim() || g.id;
+}
+
+export function inSeatingPool(g: SeatGuest, mode: "holding" | "plates") {
+  if (g.rsvp === "NO") return false;
+  if (mode === "plates") return g.rsvp === "YES";
+  return true;
 }
 
 export function groupHouseholds(guests: SeatGuest[]) {

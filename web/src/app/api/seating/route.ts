@@ -7,13 +7,15 @@ import {
   seatGuests,
   promotePlusOnes,
 } from "@/lib/data/workspace";
-import { autoSeat, constraintViolations } from "@/lib/data/seating";
+import { autoSeat, constraintViolations, inSeatingPool } from "@/lib/data/seating";
 import {
   addConstraint,
   freezeSeating,
   getSeatingPlan,
   removeConstraint,
+  setSeatMode,
 } from "@/lib/data/seating-plan-store";
+import { applyFreezeAssignments } from "@/lib/data/store";
 
 function pack(tables: Awaited<ReturnType<typeof getWorkspaceTables>>, guests: Awaited<ReturnType<typeof getWorkspaceGuests>>) {
   return {
@@ -78,7 +80,9 @@ export async function POST(request: Request) {
       getWorkspaceGuests(workspace.id),
       getSeatingPlan(workspace.id),
     ]);
-    const result = autoSeat(tables, guests, plan.constraints);
+    const mode = plan.seatMode === "plates" ? "plates" : "holding";
+    const pool = guests.filter((g) => inSeatingPool(g, mode));
+    const result = autoSeat(tables, pool, plan.constraints);
     const byTable = new Map<string, { ids: string[]; firstSeat?: number }>();
     for (const row of result) {
       const list = byTable.get(row.table) || { ids: [] };
@@ -151,6 +155,38 @@ export async function POST(request: Request) {
       freeze,
       plan,
       ...pack(tables, guests),
+    });
+  }
+
+  if (body.action === "mode") {
+    const plan = await setSeatMode(workspace.id, body.seatMode === "plates" ? "plates" : "holding");
+    const [tables, guests] = await Promise.all([
+      getWorkspaceTables(workspace.id),
+      getWorkspaceGuests(workspace.id),
+    ]);
+    return NextResponse.json({
+      ok: true,
+      ...pack(tables, guests),
+      plan,
+      violations: constraintViolations(guests.filter((g) => g.rsvp !== "NO"), plan.constraints),
+    });
+  }
+
+  if (body.action === "restore") {
+    const plan = await getSeatingPlan(workspace.id);
+    const freeze = plan.freezes.find((f) => f.id === String(body.freezeId || plan.freezes[0]?.id));
+    if (!freeze) return NextResponse.json({ error: "No freeze to restore" }, { status: 400 });
+    await applyFreezeAssignments(workspace.id, freeze.assignments);
+    const [tables, guests] = await Promise.all([
+      getWorkspaceTables(workspace.id),
+      getWorkspaceGuests(workspace.id),
+    ]);
+    return NextResponse.json({
+      ok: true,
+      restored: freeze.label,
+      ...pack(tables, guests),
+      plan,
+      violations: constraintViolations(guests.filter((g) => g.rsvp !== "NO"), plan.constraints),
     });
   }
 

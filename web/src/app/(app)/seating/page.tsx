@@ -22,7 +22,8 @@ export default async function SeatingPage() {
         <div>
           <h1 className="font-serif text-4xl">Room planner</h1>
           <p className="mt-1 text-sm text-muted">
-            Place the room, then the chairs. Rules survive auto-seat. Freeze before you send the venue.
+            Place the room, then the chairs. Holding keeps maybes. Plates is who you feed.
+            Freeze, then put it back if the count moves.
           </p>
         </div>
         <div className="flex gap-2">
@@ -60,6 +61,7 @@ export default async function SeatingPage() {
             partyName: g.partyName || null,
             plusOnes: g.plusOnes || 0,
             plusOneNames: g.plusOneNames || [],
+            meal: g.meal || null,
             seatIndex: g.seatIndex ?? null,
           }))}
         />

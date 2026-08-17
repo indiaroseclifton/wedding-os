@@ -10,6 +10,7 @@ export type StoredSeatingPlan = {
   workspaceId: string;
   constraints: SeatConstraint[];
   freezes: SeatFreeze[];
+  seatMode?: "holding" | "plates";
   updatedAt: string;
 };
 
@@ -26,6 +27,7 @@ export async function getSeatingPlan(workspaceId: string): Promise<StoredSeating
     workspaceId,
     constraints: [],
     freezes: [],
+    seatMode: "holding",
     updatedAt: new Date().toISOString(),
   };
   rows.push(fresh);
@@ -75,4 +77,10 @@ export async function freezeSeating(workspaceId: string, guests: SeatGuest[], la
   plan.freezes = [freeze, ...plan.freezes].slice(0, 12);
   await save(plan);
   return freeze;
+}
+
+export async function setSeatMode(workspaceId: string, seatMode: "holding" | "plates") {
+  const plan = await getSeatingPlan(workspaceId);
+  plan.seatMode = seatMode === "plates" ? "plates" : "holding";
+  return save(plan);
 }

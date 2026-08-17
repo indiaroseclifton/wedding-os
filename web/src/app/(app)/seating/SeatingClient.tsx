@@ -12,6 +12,7 @@ import {
   type SeatGuest,
   freezeDiff,
   groupHouseholds,
+  inSeatingPool,
   seatWeight,
   tableFill,
 } from "@/lib/data/seating";
@@ -33,8 +34,8 @@ export function SeatingClient({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showChart, setShowChart] = useState(false);
-  const [printMode, setPrintMode] = useState<"room" | "board" | "escort" | "cards">("room");
   const [view, setView] = useState<"room" | "chairs">("room");
+  const [seatMode, setSeatMode] = useState<"holding" | "plates">("holding");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
@@ -58,23 +59,24 @@ export function SeatingClient({
       .catch(() => {});
   }, []);
 
-  const unseated = guests.filter((g) => !g.tableLabel && g.rsvp !== "NO");
+  const pool = guests.filter((g) => inSeatingPool(g, seatMode));
+  const unseated = pool.filter((g) => !g.tableLabel);
   const filteredUnseated = unseated.filter((g) =>
     !query.trim()
       ? true
-      : `${g.name} ${g.partyName || ""} ${g.dietary || ""} ${g.side || ""}`
+      : `${g.name} ${g.partyName || ""} ${g.dietary || ""} ${g.side || ""} ${(g.plusOneNames || []).join(" ")}`
           .toLowerCase()
           .includes(query.toLowerCase())
   );
   const houses = useMemo(() => groupHouseholds(filteredUnseated), [filteredUnseated]);
   const overCapacity = tables.filter((t) => tableFill(t.name, guests) > t.capacity);
-  const seatedCount = guests.filter((g) => g.tableLabel).reduce((s, g) => s + seatWeight(g), 0);
+  const seatedCount = pool.filter((g) => g.tableLabel).reduce((s, g) => s + seatWeight(g), 0);
   const openCount = unseated.reduce((s, g) => s + seatWeight(g), 0);
 
   function applyPayload(data: {
     tables?: Table[];
     guests?: SeatGuest[];
-    plan?: { constraints?: SeatConstraint[]; freezes?: SeatFreeze[] };
+    plan?: { constraints?: SeatConstraint[]; freezes?: SeatFreeze[]; seatMode?: "holding" | "plates" };
     violations?: { id: string; message: string }[];
   }) {
     if (data.tables) {
@@ -101,6 +103,7 @@ export function SeatingClient({
             partyName: g.partyName || null,
             plusOnes: g.plusOnes || 0,
             plusOneNames: g.plusOneNames || [],
+            meal: g.meal || null,
             seatIndex: g.seatIndex ?? null,
           }))
       );
@@ -108,6 +111,9 @@ export function SeatingClient({
     if (data.plan) {
       setConstraints(data.plan.constraints || []);
       setFreezes(data.plan.freezes || []);
+      if (data.plan.seatMode === "plates" || data.plan.seatMode === "holding") {
+        setSeatMode(data.plan.seatMode);
+      }
     }
     if (data.violations) setViolations(data.violations);
   }
@@ -189,6 +195,36 @@ export function SeatingClient({
     } finally {
       setBusy(false);
     }
+  }
+
+  async function restoreNow() {
+    const snap = freezes[0];
+    if (!snap) return;
+    if (!confirm(`Put back ${snap.label}? Tonight’s chart becomes that snapshot.`)) return;
+    setBusy(true);
+    try {
+      const res = await fetch("/api/seating", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "restore", freezeId: snap.id }),
+      });
+      if (!res.ok) throw new Error("Could not restore");
+      applyPayload(await res.json());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function changeMode(next: "holding" | "plates") {
+    setSeatMode(next);
+    const res = await fetch("/api/seating", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "mode", seatMode: next }),
+    });
+    if (res.ok) applyPayload(await res.json());
   }
 
   async function expandNamed() {
@@ -308,9 +344,6 @@ export function SeatingClient({
     assign(ids.length ? ids : selected, tableName);
   }
 
-  const escort = [...guests]
-    .filter((g) => g.tableLabel)
-    .sort((a, b) => a.name.localeCompare(b.name));
   const namedPlus = guests.filter((g) => (g.plusOneNames || []).some((n) => n.trim())).length;
   const lastFreeze = freezes[0] || null;
   const diff = freezeDiff(guests, lastFreeze);
@@ -344,6 +377,18 @@ export function SeatingClient({
             }`}
           >
             {v === "room" ? "Room" : "Chairs"}
+          </button>
+        ))}
+        {(["holding", "plates"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => changeMode(m)}
+            className={`min-h-11 rounded-full px-4 text-sm ${
+              seatMode === m ? "bg-moss text-ivory" : "border border-line"
+            }`}
+          >
+            {m === "holding" ? "Holding" : "Plates"}
           </button>
         ))}
       </div>
@@ -388,6 +433,16 @@ export function SeatingClient({
         >
           Freeze {lastFreeze ? `· ${lastFreeze.label}` : "chart"}
         </button>
+        {lastFreeze && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={restoreNow}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+          >
+            Put back {lastFreeze.label}
+          </button>
+        )}
         {namedPlus > 0 && (
           <button
             type="button"
@@ -398,17 +453,7 @@ export function SeatingClient({
             Name {namedPlus} plus-one{namedPlus === 1 ? "" : "s"}
           </button>
         )}
-        <select
-          value={printMode}
-          onChange={(e) => setPrintMode(e.target.value as typeof printMode)}
-          className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
-        >
-          <option value="room">Print: room</option>
-          <option value="board">Print: board</option>
-          <option value="escort">Print: escort list</option>
-          <option value="cards">Print: table cards</option>
-        </select>
-        <PrintButton label="Print" />
+        <PrintButton label="Print room" />
         <Link href="/seating/usher" className="rounded-full border border-line px-3 py-1.5 text-xs print:hidden">
           Usher card
         </Link>
@@ -533,8 +578,8 @@ export function SeatingClient({
         )}
       </form>
 
-      {showChart && printMode === "board" && (
-        <div className="print:break-inside-avoid">
+      {showChart && (
+        <div className="print:hidden">
           <SeatingChart tables={tables} guests={guests} />
         </div>
       )}
@@ -587,48 +632,13 @@ export function SeatingClient({
 
       {error && <p className="text-xs text-rose-600 print:hidden">{error}</p>}
 
-      {printMode === "escort" ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <h2 className="text-sm font-semibold">Escort list</h2>
-          <ul className="mt-3 divide-y divide-slate-100 text-sm">
-            {escort.map((g) => (
-              <li key={g.id} className="flex justify-between py-1.5">
-                <span>{g.name}</span>
-                <span className="text-slate-500">{g.tableLabel}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : printMode === "cards" ? (
-        <div className="grid gap-4 sm:grid-cols-2 print:grid-cols-2">
-          {tables.map((t) => (
-            <div
-              key={t.id}
-              className="rounded-xl border border-slate-200 bg-white p-4 print:break-inside-avoid"
-            >
-              <p className="text-lg font-semibold">{t.name}</p>
-              <ul className="mt-3 space-y-1 text-sm">
-                {guests
-                  .filter((g) => g.tableLabel === t.name)
-                  .map((g) => (
-                    <li key={g.id}>
-                      {g.name}
-                      {(g.plusOnes || 0) > 0 ? ` +${g.plusOnes}` : ""}
-                      {g.dietary ? ` · ${g.dietary}` : ""}
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 print:hidden">
             <p className="text-sm font-medium text-amber-900">Need a table</p>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search name, party, diet…"
+              placeholder="Search Dad, a plus-one, a household…"
               className="mt-2 w-full rounded-lg border border-amber-300 bg-white px-3 py-2 text-sm"
             />
             <ul className="mt-3 space-y-3">
@@ -660,7 +670,11 @@ export function SeatingClient({
                         >
                           <span>
                             {g.name}
-                            {(g.plusOnes || 0) > 0 ? ` +${g.plusOnes}` : ""}
+                            {g.plusOneNames?.length
+                              ? ` + ${g.plusOneNames.join(", ")}`
+                              : (g.plusOnes || 0) > 0
+                                ? ` +${g.plusOnes}`
+                                : ""}
                             {g.dietary ? ` · ${g.dietary}` : ""}
                           </span>
                           {g.side && <span className="opacity-70">{g.side}</span>}
@@ -748,7 +762,12 @@ export function SeatingClient({
                       >
                         <span>
                           {g.name}
-                          {(g.plusOnes || 0) > 0 ? ` +${g.plusOnes}` : ""}
+                          {g.plusOneNames?.length
+                            ? ` + ${g.plusOneNames.join(", ")}`
+                            : (g.plusOnes || 0) > 0
+                              ? ` +${g.plusOnes}`
+                              : ""}
+                          {g.meal ? ` · ${g.meal}` : ""}
                           {g.dietary ? ` · ${g.dietary}` : ""}
                         </span>
                         <button
@@ -791,7 +810,6 @@ export function SeatingClient({
             })}
           </div>
         </div>
-      )}
     </div>
   );
 }

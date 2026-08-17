@@ -544,9 +544,24 @@ export async function expandPlusOnes(workspaceId: string) {
     const names = (parent.plusOneNames || []).map((n) => n.trim()).filter(Boolean);
     if (!names.length) continue;
     let made = 0;
+    const table = parent.tableLabel;
+    const taken = new Set(
+      rows
+        .filter((r) => r.tableLabel === table && r.seatIndex != null)
+        .map((r) => r.seatIndex as number)
+    );
+    let nextSeat =
+      table && parent.seatIndex != null ? parent.seatIndex + 1 : undefined;
     for (const name of names) {
       const key = name.toLowerCase();
       if (existing.has(key)) continue;
+      let seatIndex: number | undefined;
+      if (table && typeof nextSeat === "number") {
+        while (taken.has(nextSeat)) nextSeat += 1;
+        seatIndex = nextSeat;
+        taken.add(nextSeat);
+        nextSeat += 1;
+      }
       const row: StoredGuest = {
         workspaceId,
         name,
@@ -557,7 +572,8 @@ export async function expandPlusOnes(workspaceId: string) {
         plusOneNames: [],
         dietary: undefined,
         meal: parent.meal,
-        tableLabel: parent.tableLabel,
+        tableLabel: table,
+        seatIndex,
         notes: `Plus-one of ${parent.name}`,
         id: randomUUID(),
         rsvpToken: randomUUID().replace(/-/g, "").slice(0, 16),
@@ -577,6 +593,28 @@ export async function expandPlusOnes(workspaceId: string) {
   }
   if (created.length) await writeJson(guestsFile, rows);
   return created;
+}
+
+export async function applyFreezeAssignments(
+  workspaceId: string,
+  assignments: { guestId: string; table: string | null; seatIndex: number | null }[]
+) {
+  const rows = await readJson<StoredGuest>(guestsFile);
+  const now = new Date().toISOString();
+  const byId = new Map(assignments.map((a) => [a.guestId, a]));
+  for (const row of rows) {
+    if (row.workspaceId !== workspaceId) continue;
+    const a = byId.get(row.id);
+    if (!a || !a.table) {
+      row.tableLabel = undefined;
+      row.seatIndex = undefined;
+    } else {
+      row.tableLabel = a.table;
+      row.seatIndex = a.seatIndex ?? undefined;
+    }
+    row.updatedAt = now;
+  }
+  await writeJson(guestsFile, rows);
 }
 
 function householdFrom(name: string) {
