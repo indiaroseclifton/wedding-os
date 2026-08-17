@@ -49,86 +49,84 @@ export function HomeDashboard({
 
   return (
     <div className="home-desk">
-      <section className="relative">
-        <div className="relative h-[min(70vh,36rem)] overflow-hidden">
-          <img
-            src={coverUrl}
-            alt=""
-            className="home-hero-img absolute inset-0 h-full w-full object-cover object-[center_30%]"
-          />
-          <div className="home-hero-wash absolute inset-0" />
-          <div className="absolute inset-x-0 bottom-0 px-6 pb-24 pt-24 sm:px-10 sm:pb-28">
-            <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-ink/55">{shapeTitle}</p>
-            <div className="mt-1 flex flex-wrap items-end gap-x-5 gap-y-1">
-              <p className="font-serif text-[clamp(6rem,15vw,8.75rem)] leading-[0.78] tracking-[-0.055em] text-ink">
-                {headline}
-              </p>
-              <div className="mb-2 min-w-0">
-                <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-ink/50">{sub}</p>
-                {dateLabel ? (
-                  <p className="mt-0.5 font-serif text-[clamp(1.6rem,4vw,2.35rem)] leading-none tracking-tight text-ink">
-                    {dateLabel}
-                  </p>
-                ) : null}
-              </div>
+      <section className="home-hero">
+        <img
+          src={coverUrl}
+          alt=""
+          className="home-hero-img absolute inset-0 h-full w-full object-cover object-[center_30%]"
+        />
+        <div className="home-hero-wash absolute inset-0" />
+        <div className="absolute inset-x-0 bottom-0 px-6 pb-28 pt-24 sm:px-10 sm:pb-32">
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-ink/55">{shapeTitle}</p>
+          <div className="mt-1 flex flex-wrap items-end gap-x-5 gap-y-1">
+            <p className="font-serif text-[clamp(6rem,15vw,8.75rem)] leading-[0.78] tracking-[-0.055em] text-ink">
+              {headline}
+            </p>
+            <div className="mb-2 min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-ink/50">{sub}</p>
+              {dateLabel ? (
+                <p className="mt-0.5 font-serif text-[clamp(1.6rem,4vw,2.35rem)] leading-none tracking-tight text-ink">
+                  {dateLabel}
+                </p>
+              ) : null}
             </div>
-          </div>
-        </div>
-
-        <div className="relative z-10 -mt-[4.75rem] px-4 sm:-mt-20 sm:px-8">
-          <div className="grid overflow-hidden rounded-[1.15rem] bg-surface shadow-[0_28px_64px_-24px_rgba(28,22,14,0.28)] sm:grid-cols-3">
-            {cards.map((card, i) => (
-              <article
-                key={card.id}
-                className={`flex min-h-[13.5rem] flex-col justify-between gap-6 px-6 py-6 sm:px-7 sm:py-7 ${
-                  i > 0 ? "border-t border-line/80 sm:border-l sm:border-t-0" : ""
-                }`}
-              >
-                <div>
-                  <p
-                    className={`text-[10px] font-medium uppercase tracking-[0.2em] ${
-                      card.alert ? "text-clay" : "text-muted"
-                    }`}
-                  >
-                    {card.alert ? <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-clay" /> : null}
-                    {card.kicker}
-                  </p>
-                  <h2 className="mt-2.5 font-serif text-[1.7rem] leading-[1.15] tracking-tight">{card.title}</h2>
-                  <p className="mt-1.5 text-[13px] leading-5 text-muted">{card.detail}</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-4">
-                  {card.alert || card.id === "pay" ? (
-                    <>
-                      <Link
-                        href={card.href}
-                        className="inline-flex h-9 items-center rounded-md bg-moss px-3.5 text-[13px] font-medium text-moss-fg"
-                      >
-                        {card.cta}
-                      </Link>
-                      {card.secondary ? (
-                        <button
-                          type="button"
-                          onClick={() => (card.snoozeId ? dismiss(card.snoozeId) : undefined)}
-                          className="text-[13px] text-ink-soft"
-                        >
-                          {card.secondary}
-                        </button>
-                      ) : null}
-                    </>
-                  ) : (
-                    <Link href={card.href} className="text-[13px] font-medium text-ink underline underline-offset-[5px]">
-                      {card.cta}
-                    </Link>
-                  )}
-                </div>
-              </article>
-            ))}
           </div>
         </div>
       </section>
 
-      <section className="grid gap-12 px-6 pb-20 pt-12 sm:px-8 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16 lg:pt-14">
-        <div>
+      <div className="home-cards">
+        <div className="grid overflow-hidden rounded-[1.15rem] bg-surface shadow-[0_28px_64px_-24px_rgba(28,22,14,0.28)] sm:grid-cols-3">
+          {cards.map((card, i) => (
+            <article
+              key={card.id}
+              className={`flex min-h-[13.5rem] flex-col justify-between gap-6 px-6 py-6 sm:px-7 sm:py-7 ${
+                i > 0 ? "border-t border-line/80 sm:border-l sm:border-t-0" : ""
+              }`}
+            >
+              <div>
+                <p
+                  className={`text-[10px] font-medium uppercase tracking-[0.2em] ${
+                    card.alert ? "text-clay" : "text-muted"
+                  }`}
+                >
+                  {card.alert ? <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-clay" /> : null}
+                  {card.kicker}
+                </p>
+                <h2 className="mt-2.5 font-serif text-[1.7rem] leading-[1.15] tracking-tight">{card.title}</h2>
+                <p className="mt-1.5 text-[13px] leading-5 text-muted">{card.detail}</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-4">
+                {card.alert || card.id === "pay" ? (
+                  <>
+                    <Link
+                      href={card.href}
+                      className="inline-flex h-9 items-center rounded-md bg-moss px-3.5 text-[13px] font-medium text-moss-fg"
+                    >
+                      {card.cta}
+                    </Link>
+                    {card.secondary ? (
+                      <button
+                        type="button"
+                        onClick={() => (card.snoozeId ? dismiss(card.snoozeId) : undefined)}
+                        className="text-[13px] text-ink-soft"
+                      >
+                        {card.secondary}
+                      </button>
+                    ) : null}
+                  </>
+                ) : (
+                  <Link href={card.href} className="text-[13px] font-medium text-ink underline underline-offset-[5px]">
+                    {card.cta}
+                  </Link>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <section className="home-rest">
+        <div className="span-8">
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Also open</p>
           {!onboarded ? (
             <p className="mt-3 text-sm text-muted">
@@ -143,24 +141,24 @@ export function HomeDashboard({
           ) : (
             <ul className="mt-1 divide-y divide-line">
               {open.map((row) => (
-                <li key={row.id} className="flex items-center gap-3 py-3.5">
+                <li key={row.id} className="desk-row py-3.5">
                   <button
                     type="button"
                     onClick={() => dismiss(row.id)}
                     aria-label={`Done: ${row.title}`}
                     className="h-[15px] w-[15px] shrink-0 rounded-[3px] border border-ink/25 hover:border-moss"
                   />
-                  <Link href={row.href} className="min-w-0 flex-1 text-[15px] text-ink">
+                  <Link href={row.href} className="min-w-0 text-[15px] text-ink">
                     {row.title}
                   </Link>
-                  <span className="shrink-0 text-xs text-muted">{row.when}</span>
+                  <span className="text-xs text-muted">{row.when}</span>
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        <aside className="space-y-10 border-t border-line pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
+        <aside className="span-4 space-y-10 border-t border-line pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
           <div>
             <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">Ledger</p>
             <p className="mt-2 font-serif text-[3.25rem] leading-none tracking-tight">{money(spent)}</p>

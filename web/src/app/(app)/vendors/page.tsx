@@ -21,72 +21,74 @@ export default async function VendorsPage() {
   ).length;
 
   return (
-    <div className="space-y-6">
-      <RoomSubnav room="vendors" />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="font-serif text-4xl">Vendors</h1>
-          <p className="mt-1 text-sm text-muted">
-            {vendors.length} total · {booked} booked
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/vendors/browse"
-            className="rounded-full bg-moss px-4 py-2 text-sm font-medium text-ivory hover:bg-moss/90"
-          >
-            Browse directory
-          </Link>
-          <Link
-            href="/vendors/contracts"
-            className="rounded-full border border-line px-4 py-2 text-sm"
-          >
-            Contracts
-          </Link>
-          <Link
-            href="/vendors/new"
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium"
-          >
-            Add your own
-          </Link>
-        </div>
+    <div className="paper">
+      <div className="span-12">
+        <RoomSubnav room="vendors" />
+      </div>
+      <header className="span-8">
+        <h1 className="font-serif text-4xl">Vendors</h1>
+        <p className="mt-1 text-sm text-muted">
+          {vendors.length} total · {booked} booked
+        </p>
+      </header>
+      <div className="span-4 flex flex-wrap gap-2 lg:justify-end">
+        <Link
+          href="/vendors/browse"
+          className="inline-flex min-h-11 items-center rounded-full bg-moss px-4 text-sm font-medium text-moss-fg"
+        >
+          Browse directory
+        </Link>
+        <Link
+          href="/vendors/new"
+          className="inline-flex min-h-11 items-center rounded-full border border-line px-4 text-sm"
+        >
+          Add your own
+        </Link>
       </div>
 
-      {vendors.length > 0 && (
-        <p className="text-xs text-slate-500">
-          {vendors.length} total · {booked} booked / deposit / done
-        </p>
-      )}
-
       {vendors.length === 0 ? (
-        <EmptyState
-          title="No vendors on this wedding yet"
-          body="Browse the directory (florist, photo, venue, DJ…) or add someone you already hired."
-          primaryHref="/vendors/browse"
-          primaryLabel="Browse vendors"
-        />
+        <div className="span-12">
+          <EmptyState
+            title="No vendors on this wedding yet"
+            body="Browse the directory (florist, photo, venue, DJ…) or add someone you already hired."
+            primaryHref="/vendors/browse"
+            primaryLabel="Browse vendors"
+          />
+        </div>
       ) : (
-        <VendorsClient
-          vendors={vendors.map((v) => {
-            const mine = paymentsForVendor(payments, v);
-            let moneyHint = vendorMoneyHint(mine);
-            if (!moneyHint && v.contractUrl) moneyHint = "contract attached";
-            const review = reviewHint(v.contractReview);
-            if (review) moneyHint = moneyHint ? `${moneyHint} · ${review}` : review;
-            const strip = sendStrip(sendBy.get(v.id)).line;
-            const hint = faceLine(v.face, v.category);
-            return {
-              id: v.id,
-              name: v.name,
-              category: v.category,
-              status: v.status,
-              email: v.email,
-              moneyHint,
-              strip,
-              faceHint: hint,
-            };
-          })}
-        />
+        <>
+          <div className="span-8">
+            <VendorsClient
+              vendors={vendors.map((v) => {
+                const mine = paymentsForVendor(payments, v);
+                let moneyHint = vendorMoneyHint(mine);
+                if (!moneyHint && v.contractUrl) moneyHint = "contract attached";
+                const review = reviewHint(v.contractReview);
+                if (review) moneyHint = moneyHint ? `${moneyHint} · ${review}` : review;
+                const strip = sendStrip(sendBy.get(v.id)).line;
+                const hint = faceLine(v.face, v.category);
+                return {
+                  id: v.id,
+                  name: v.name,
+                  category: v.category,
+                  status: v.status,
+                  email: v.email,
+                  moneyHint,
+                  strip,
+                  faceHint: hint,
+                };
+              })}
+            />
+          </div>
+          <aside className="span-4 space-y-4 border-t border-line pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-1">
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted">On the books</p>
+            <p className="font-serif text-5xl leading-none tracking-tight">{booked}</p>
+            <p className="text-sm text-muted">booked of {vendors.length}</p>
+            <Link href="/vendors/contracts" className="inline-block text-sm underline underline-offset-4">
+              Contracts
+            </Link>
+          </aside>
+        </>
       )}
     </div>
   );

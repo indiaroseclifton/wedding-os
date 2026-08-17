@@ -81,13 +81,13 @@ export function AppShell({
   }
 
   return (
-    <div className="relative h-dvh overflow-hidden bg-paper lg:flex">
+    <div className={`desk ${home ? "is-home" : ""}`}>
       <a href="#main" className="skip-link">
         Skip to the desk
       </a>
       <ThemeProvider />
 
-      <aside className="rail relative hidden h-dvh w-[15.75rem] shrink-0 flex-col overflow-hidden lg:flex">
+      <aside className="desk-rail rail relative">
         <img src={photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="rail-wash absolute inset-0" />
         <div className="relative z-10 flex h-full flex-col px-4 pb-5 pt-7">
@@ -123,50 +123,37 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-paper">
-        <header
-          className={`flex shrink-0 items-center justify-between gap-3 print:hidden ${
-            home
-              ? "pointer-events-none absolute inset-x-0 top-0 z-20 px-6 py-6 sm:px-10 lg:left-[15.75rem]"
-              : "border-b border-line/70 px-4 py-3 sm:px-8"
-          }`}
-        >
-          <div className="min-w-0">
-            <p className={`text-[11px] font-medium uppercase tracking-[0.22em] ${home ? "text-ink/45" : "text-muted"}`}>
-              {roomLabel || "Home"}
+      <header
+        className={`desk-mast flex items-center justify-between gap-3 print:hidden ${
+          home ? "px-6 py-6 sm:px-10" : "border-b border-line/70 px-1 py-3 sm:px-2"
+        }`}
+      >
+        <div className="min-w-0">
+          <p className={`text-[11px] font-medium uppercase tracking-[0.22em] ${home ? "text-ink/45" : "text-muted"}`}>
+            {roomLabel || "Home"}
+          </p>
+          {!home && (
+            <p className="truncate text-sm text-ink-soft lg:hidden">
+              {names}
+              {date ? ` · ${date}` : ""}
             </p>
-            {!home && (
-              <p className="truncate text-sm text-ink-soft lg:hidden">
-                {names}
-                {date ? ` · ${date}` : ""}
-              </p>
-            )}
-          </div>
-          <div className="pointer-events-auto flex items-center gap-2">
-            <CommandPalette tone={home ? "onPhoto" : "paper"} />
-            <button
-              type="button"
-              onClick={() => setRooms(true)}
-              className="min-h-11 rounded-full border border-line/80 bg-surface/70 px-3 py-2 text-xs font-medium backdrop-blur lg:hidden"
-            >
-              Menu
-            </button>
-          </div>
-        </header>
+          )}
+        </div>
+        <div className="pointer-events-auto flex items-center gap-2">
+          <CommandPalette tone={home ? "onPhoto" : "paper"} />
+          <button
+            type="button"
+            onClick={() => setRooms(true)}
+            className="min-h-11 rounded-full border border-line/80 bg-surface/70 px-3 py-2 text-xs font-medium backdrop-blur lg:hidden"
+          >
+            Menu
+          </button>
+        </div>
+      </header>
 
-        <main
-          id="main"
-          ref={pane}
-          tabIndex={-1}
-          className={
-            home
-              ? "min-h-0 flex-1 overflow-y-auto pb-20 lg:pb-8"
-              : "min-h-0 flex-1 overflow-y-auto px-4 py-6 pb-24 sm:px-8 lg:py-8 lg:pb-10"
-          }
-        >
-          {children}
-        </main>
-      </div>
+      <main id="main" ref={pane} tabIndex={-1} className="desk-canvas">
+        {children}
+      </main>
 
       {rooms && (
         <div className="fixed inset-0 z-50 print:hidden">
@@ -208,7 +195,7 @@ export function AppShell({
       )}
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-line/70 bg-paper/90 backdrop-blur-xl lg:hidden print:hidden"
+        className="desk-dock border-t border-line/70 bg-paper/90 backdrop-blur-xl print:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5">
