@@ -13,6 +13,7 @@ import {
   patchRegistryItem,
 } from "@/lib/data/registry-store";
 import { importGiftsAsThanks } from "@/lib/data/thanks-store";
+import { storeNameFromUrl } from "@/lib/registry-stores";
 import { optionalString, requiredString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -30,9 +31,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { workspace } = await ensureDemoWorkspace();
     if (body.action === "add_link") {
+      const url = requiredString(body.url, "URL", 400);
       const registry = await addRegistryLink(workspace.id, {
-        store: requiredString(body.store, "Store", 80),
-        url: requiredString(body.url, "URL", 400),
+        store: optionalString(body.store, 80) || storeNameFromUrl(url),
+        url,
         notes: optionalString(body.notes, 200),
       });
       return NextResponse.json({ registry });

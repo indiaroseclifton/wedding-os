@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { StoreCards } from "@/components/registry/StoreCards";
+import { KNOWN_STORES } from "@/lib/registry-stores";
 
 type LinkItem = { id: string; store: string; url: string };
 type Item = {
@@ -66,21 +68,66 @@ export default function RegistryPage() {
       <RoomSubnav room="planning" />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-serif text-4xl">Registry</h1>
-          <p className="mt-1 text-sm text-muted">
-            Items you want, who claimed them, what arrived — then thank-yous from the same list.
+          <p className="kicker">Plan</p>
+          <h1 className="mt-2 font-serif text-[clamp(2.2rem,6vw,3.6rem)] leading-none tracking-tight">Registry</h1>
+          <p className="home-script mt-2">They shop there. We keep the thank-yous.</p>
+          <p className="mt-2 max-w-xl text-sm text-muted">
+            Paste a Zola, Amazon, Bloomingdale’s, Anthropologie, or Macy’s URL. Guests open their site. We never iframe the mall.
           </p>
         </div>
         <div className="flex gap-2">
-          <button type="button" onClick={() => post({ action: "to_thanks" })} className="rounded-full border border-line px-3 py-1.5 text-xs">
+          <button type="button" onClick={() => post({ action: "to_thanks" })} className="btn btn-ghost">
             Send to thank-yous
           </button>
-          <Link href="/thanks" className="rounded-full border border-line px-3 py-1.5 text-xs">
+          <Link href="/thanks" className="btn btn-ghost">
             Thank-yous
           </Link>
         </div>
       </div>
-      {msg && <p className="text-xs text-moss">{msg}</p>}
+      {msg && <p className="text-xs text-sage">{msg}</p>}
+
+      <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+        <p className="kicker">Their stores</p>
+        <h2 className="mt-1 font-serif text-2xl tracking-tight">Paste the public URL.</h2>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await post({ action: "add_link", store, url });
+            setStore("");
+            setUrl("");
+          }}
+          className="mt-4 space-y-3"
+        >
+          <div className="flex flex-wrap gap-2">
+            {KNOWN_STORES.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => {
+                  setStore(s.name);
+                  if (!url) setUrl(s.start);
+                }}
+                className={`min-h-11 rounded-full px-4 text-sm ${store === s.name ? "bg-ink text-ivory" : "border border-line"}`}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+          <input
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            required
+            placeholder="https://www.amazon.com/wedding/your-registry"
+            className="field w-full"
+          />
+          <button type="submit" className="btn btn-primary">
+            Add store
+          </button>
+        </form>
+        <div className="mt-5">
+          <StoreCards links={links} onRemove={(id) => post({ action: "delete_link", id })} />
+        </div>
+      </section>
 
       <div className="grid grid-cols-3 gap-3">
         {[
@@ -104,19 +151,20 @@ export default function RegistryPage() {
         }}
         className="space-y-2 rounded-2xl border border-line bg-surface p-4"
       >
-        <p className="text-sm font-medium">Add an item</p>
+        <p className="kicker">Also here</p>
+        <p className="text-sm font-medium">A short list you keep in Vowfolk</p>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           placeholder="Linen napkins, stand mixer…"
-          className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+          className="field w-full"
         />
         <input
           value={itemUrl}
           onChange={(e) => setItemUrl(e.target.value)}
           placeholder="Link (optional)"
-          className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+          className="field w-full"
         />
         <button type="submit" className="btn btn-primary">
           Add item
@@ -165,50 +213,6 @@ export default function RegistryPage() {
       <form
         onSubmit={async (e) => {
           e.preventDefault();
-          await post({ action: "add_link", store, url });
-          setStore("");
-          setUrl("");
-        }}
-        className="space-y-2 rounded-2xl border border-line bg-surface p-4"
-      >
-        <p className="text-sm font-medium">Store link</p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <input
-            value={store}
-            onChange={(e) => setStore(e.target.value)}
-            required
-            placeholder="Zola, Amazon…"
-            className="rounded-lg border border-line bg-paper px-3 py-2 text-sm"
-          />
-          <input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-            placeholder="https://…"
-            className="rounded-lg border border-line bg-paper px-3 py-2 text-sm"
-          />
-        </div>
-        <button type="submit" className="rounded-full border border-line px-4 py-2 text-sm">
-          Add store
-        </button>
-      </form>
-
-      <ul className="space-y-2">
-        {links.map((l) => (
-          <li key={l.id} className="flex justify-between rounded-xl border border-line bg-surface px-4 py-3 text-sm">
-            <a href={l.url} className="underline" target="_blank" rel="noreferrer">
-              {l.store}
-            </a>
-            <button type="button" onClick={() => post({ action: "delete_link", id: l.id })} className="text-xs text-muted underline">
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
           await post({ action: "add_gift", from, description });
           setFrom("");
           setDescription("");
@@ -220,14 +224,14 @@ export default function RegistryPage() {
           onChange={(e) => setFrom(e.target.value)}
           required
           placeholder="From"
-          className="rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+          className="field"
         />
         <input
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
           placeholder="What they gave"
-          className="rounded-lg border border-line bg-paper px-3 py-2 text-sm"
+          className="field"
         />
         <button type="submit" className="btn btn-primary">
           Log gift

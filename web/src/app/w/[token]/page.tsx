@@ -11,6 +11,7 @@ import { slotTitle, slotVisible } from "@/lib/data/run-of-show";
 import { formatRange } from "@/lib/data/run-of-show";
 import { GuestHero } from "@/components/site/GuestHero";
 import { SiteGate } from "@/components/site/SiteGate";
+import { StoreCards } from "@/components/registry/StoreCards";
 import { Icon } from "@/components/icons";
 import { getSessionUser } from "@/lib/auth/session";
 import { DEMO_WORKSPACE, getWorkspaceDecisions, getWorkspaceGuests } from "@/lib/data/workspace";
@@ -251,20 +252,9 @@ export default async function WeddingSitePage({
             <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">
               <Icon name="gift" className="h-3.5 w-3.5" /> Registry
             </h2>
-            <ul className="mt-3 space-y-2 text-sm">
-              {registry.links.map((l) => (
-                <li key={l.url}>
-                  <a
-                    href={l.url}
-                    className="inline-flex min-h-11 items-center underline"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {l.store}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-3">
+              <StoreCards links={registry.links} />
+            </div>
           </section>
         )}
 
