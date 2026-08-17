@@ -1,18 +1,12 @@
 import { getAttire, saveAttire } from "@/lib/data/attire-store";
 import { getSite, saveSite } from "@/lib/data/site-store";
-import { updateWorkspaceMeta } from "@/lib/data/workspace";
-import { siteTemplateFor, visionCover, type VisionPayload } from "@/lib/vision";
+import { siteTemplateFor, type VisionPayload } from "@/lib/vision";
 
 export async function applyVisionSteering(
   workspaceId: string,
   vision: VisionPayload,
   decided: boolean
 ) {
-  const cover = visionCover(vision);
-  if (cover) {
-    await updateWorkspaceMeta(workspaceId, { coverUrl: cover });
-  }
-
   if (!decided) return;
 
   const attire = await getAttire(workspaceId);

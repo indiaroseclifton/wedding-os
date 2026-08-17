@@ -469,6 +469,11 @@ export function visionCover(v: Pick<VisionPayload, "coverUrl" | "feel">, fallbac
   return v.coverUrl || v.feel[0]?.url || fallback || "";
 }
 
+/** Guest hero only — the pin they locked. Empty is empty. */
+export function visionHero(v: Pick<VisionPayload, "coverUrl">) {
+  return v.coverUrl || "";
+}
+
 function hexLum(hex: string) {
   const h = hex.replace("#", "");
   if (h.length < 6) return 1;

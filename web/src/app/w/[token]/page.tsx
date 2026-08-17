@@ -15,7 +15,7 @@ import { Icon } from "@/components/icons";
 import { getSessionUser } from "@/lib/auth/session";
 import { DEMO_WORKSPACE, getWorkspaceDecisions } from "@/lib/data/workspace";
 import { siteModeFor } from "@/lib/shape";
-import { normalizeVision, siteTemplateFor, visionAccent, visionCover } from "@/lib/vision";
+import { normalizeVision, siteTemplateFor, visionAccent, visionHero } from "@/lib/vision";
 
 function prettyDate(iso?: string) {
   if (!iso) return null;
@@ -51,7 +51,7 @@ export default async function WeddingSitePage({
   const decisions = await getWorkspaceDecisions(site.workspaceId);
   const vision = normalizeVision(decisions.find((d) => d.type === "STYLE_VIBE")?.payload);
   const look = site.template !== "letter" ? site.template : siteTemplateFor(vision.story);
-  const cover = visionCover(vision, meta.coverUrl);
+  const cover = visionHero(vision);
   const accent = visionAccent(vision);
   const dress = site.dressCode || vision.formal || meta.formality;
   const travel = site.showTravel ? await getTravel(site.workspaceId) : null;
@@ -79,7 +79,7 @@ export default async function WeddingSitePage({
         names={names}
         date={date}
         location={meta.location}
-        coverUrl={cover || "/brand/tablescape.jpg"}
+        coverUrl={cover || undefined}
       />
       <main className={`mx-auto max-w-xl px-5 py-10 sm:py-12 ${garden ? "max-w-2xl" : ""}`}>
 

@@ -12,7 +12,7 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
     items: [
       { id: "planning", title: "Planning is a desk", body: "Vision, checklist %, next milestone, hire-or-make — not six tiles.", href: "/planning", status: "shipped" },
       { id: "party", title: "Party roster and a real portal", body: "They mark their task, size, and check-in.", href: "/planning/party", status: "shipped" },
-      { id: "mood", title: "Moodboard with pictures", body: "The vision board is the board. One pin is the cover. The guest site wears it.", href: "/planning/vision?view=board", status: "shipped" },
+      { id: "mood", title: "Moodboard with pictures", body: "Vision cover is the guest hero. Settings photo is desk chrome only.", href: "/planning/vision?view=board", status: "shipped" },
       { id: "timeline", title: "Timeline on the wedding date", body: "“6 months out” becomes a day. Build from the date.", href: "/timeline", status: "shipped" },
       { id: "events", title: "Extra-event RSVPs on the list", body: "Rehearsal, brunch — columns, not a hidden map.", href: "/guests", status: "shipped" },
       { id: "budget", title: "Budget envelopes", body: "Typical wedding split, bars, who pays, coming due.", href: "/budget", status: "shipped" },

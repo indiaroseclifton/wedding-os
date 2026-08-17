@@ -654,7 +654,6 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
       coupleNames: "Alex & Jordan",
       weddingDate: "2026-10-17",
       location: "Atlanta, GA",
-      coverUrl: "/brand/tablescape.jpg",
       theme: "linen",
       faith: "none",
     };
@@ -672,10 +671,6 @@ export async function getWorkspaceMeta(workspaceId: string, fallbackName: string
   }
   if (!row.location) {
     row.location = "Atlanta, GA";
-    dirty = true;
-  }
-  if (!row.coverUrl) {
-    row.coverUrl = "/brand/tablescape.jpg";
     dirty = true;
   }
   if (!row.theme) {

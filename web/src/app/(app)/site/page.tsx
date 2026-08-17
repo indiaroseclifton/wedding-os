@@ -78,7 +78,7 @@ export default function SiteEditorPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Wedding site</h1>
           <p className="mt-1 text-sm text-slate-600">
-            The page guests open. Story, travel, registry, and they RSVP themselves.
+            The page guests open. The hero is the Vision cover. Gallery is extra pictures.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -127,6 +127,13 @@ export default function SiteEditorPage() {
         </label>
         <label className="block text-sm">
           Gallery URLs (one per line)
+          <span className="mt-0.5 block text-xs text-slate-500">
+            Extra photos under the letter. The hero is locked on{" "}
+            <Link href="/planning/vision?view=board" className="underline">
+              Vision
+            </Link>
+            .
+          </span>
           <textarea
             value={(site.gallery || []).join("\n")}
             onChange={(e) =>

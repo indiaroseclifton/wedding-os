@@ -372,7 +372,8 @@ export default function SettingsPage() {
           </div>
           <p className="mt-2 text-xs text-muted">Still stops the home photo and all motion. Calm is the desk. Lively is a little more.</p>
         </div>
-        <p className="text-xs text-muted">Cover photo</p>
+        <p className="text-xs text-muted">Desk photo</p>
+        <p className="text-[11px] text-muted">The rail and look. Guests see the Vision cover — not this.</p>
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {COVER_PRESETS.map((c) => (
             <button

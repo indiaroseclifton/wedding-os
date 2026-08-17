@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
-import { ensureDemoWorkspace, ensureEmailMember, getWorkspaceDecisions, getWorkspaceGuests } from "@/lib/data/workspace";
+import { ensureDemoWorkspace, ensureEmailMember, getWorkspaceGuests } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { loadThisWeek } from "@/lib/this-week";
 import { nextShapeDate } from "@/lib/shape";
 import { AppShell } from "@/components/layout/AppShell";
-import { normalizeVision, visionCover } from "@/lib/vision";
 
 export default async function AppLayout({
   children,
@@ -19,15 +18,12 @@ export default async function AppLayout({
   }
   const { workspace, meta } = await ensureDemoWorkspace();
   const countDate = nextShapeDate(meta.weddingDate, meta.gatheringDate) || meta.weddingDate;
-  const [guests, vendors, week, decisions] = await Promise.all([
+  const [guests, vendors, week] = await Promise.all([
     getWorkspaceGuests(workspace.id),
     listVendors(workspace.id),
     loadThisWeek(workspace.id, countDate),
-    getWorkspaceDecisions(workspace.id),
   ]);
   const kick = week.items[0];
-  const vision = normalizeVision(decisions.find((d) => d.type === "STYLE_VIBE")?.payload);
-  const cover = visionCover(vision, meta.coverUrl) || "/brand/flowers.jpg";
 
   return (
     <AppShell
@@ -35,7 +31,7 @@ export default async function AppLayout({
       coupleNames={meta.coupleNames}
       weddingDate={meta.weddingDate}
       location={meta.location}
-      coverUrl={cover}
+      coverUrl={meta.coverUrl}
       shape={meta.shape}
       guestCount={guests.length}
       vendorCount={vendors.length}
