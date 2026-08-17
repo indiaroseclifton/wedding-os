@@ -8,7 +8,7 @@ import { DIRECTORY_CATEGORIES } from "@/lib/data/vendor-directory";
 
 const ROOMS = [
   { src: "/brand/setting.jpg", k: "Guests", t: "The list, not a spreadsheet", d: "RSVPs, plus-ones, seating, phone import." },
-  { src: "/brand/garden.jpg", k: "Vendors", t: "Find them. Then run them.", d: "Places search, contracts, deposits, handoffs." },
+  { src: "/brand/rooms/vendors.jpg", k: "Vendors", t: "Find them. Then run them.", d: "Places search, contracts, deposits, handoffs." },
   { src: "/brand/flowers.jpg", k: "DIY", t: "YouTube, but it stays here", d: "Flowers, tables, lists sized to your room." },
   { src: "/brand/candles.jpg", k: "The day", t: "A cue sheet the DJ can open", d: "Processional to last dance. Run of show." },
 ];

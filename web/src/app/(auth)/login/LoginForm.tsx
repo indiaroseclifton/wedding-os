@@ -57,7 +57,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-night text-ivory">
-      <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <img src="/brand/tablescape.jpg" alt="" className="absolute inset-0 h-full w-full object-cover object-[center_35%]" />
       <div className="absolute inset-0 bg-black/55" />
       <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
         <p className="font-serif text-2xl tracking-tight">Wedding OS</p>

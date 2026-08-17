@@ -16,7 +16,7 @@ export function GuestHero({
   return (
     <div className="relative h-[56vh] min-h-[300px] overflow-hidden">
       <motion.img
-        src={coverUrl || "/brand/garden.jpg"}
+        src={coverUrl || "/brand/tablescape.jpg"}
         alt=""
         initial={{ scale: 1.08 }}
         animate={{ scale: 1 }}

@@ -17,7 +17,7 @@ export default async function DiscoverPage() {
   return (
     <div className="min-h-screen bg-paper text-ink">
       <div className="relative h-72 overflow-hidden">
-        <img src="/brand/garden.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <img src="/brand/flowers.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-black/45" />
         <MarketingNav signedIn={Boolean(session)} />
         <div className="relative mx-auto flex h-full max-w-6xl items-end px-5 pb-10 sm:px-10">
