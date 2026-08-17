@@ -55,6 +55,7 @@ export const VISUAL_ROOMS = [
 ] as const;
 
 export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
+  { href: "/registry", label: "Registry", icon: "gift" },
   { href: "/settings", label: "Settings", icon: "settings" },
   { href: "/studio", label: "Studio", icon: "scissors" },
   { href: "/seating", label: "Seating", icon: "chair" },

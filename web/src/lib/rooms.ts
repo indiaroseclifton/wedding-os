@@ -14,6 +14,7 @@ export const ROOM_TREE: Record<NavRoom, NavNode[]> = {
     { href: "/checklist", label: "Checklist" },
     { href: "/vendors", label: "Vendors", children: [{ href: "/vendors", label: "Team" }, { href: "/send", label: "Packets" }, { href: "/vendors/browse", label: "Find" }] },
     { href: "/budget", label: "Budget" },
+    { href: "/registry", label: "Registry" },
     { href: "/after", label: "After" },
     { href: "/thanks", label: "Thank-yous" },
     { href: "/legal", label: "Names" },

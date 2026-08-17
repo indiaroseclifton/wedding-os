@@ -17,7 +17,7 @@ function tabOn(pathname: string, match: readonly string[]) {
 
 const TOP: { href: string; label: string; match: readonly string[] }[] = [
   { href: "/dashboard", label: "Home", match: ["/dashboard"] },
-  { href: "/planning", label: "Plan", match: ["/planning", "/checklist", "/decisions", "/vendors", "/send", "/budget", "/after", "/thanks", "/legal"] },
+  { href: "/planning", label: "Plan", match: ["/planning", "/checklist", "/decisions", "/vendors", "/send", "/budget", "/registry", "/after", "/thanks", "/legal"] },
   { href: "/guests", label: "People", match: ["/guests", "/seating", "/site", "/travel", "/dietary"] },
   { href: "/studio", label: "Studio", match: ["/studio", "/diy"] },
   { href: "/day-of", label: "Wedding Day", match: ["/day-of", "/run-of-show", "/music", "/packet"] },
