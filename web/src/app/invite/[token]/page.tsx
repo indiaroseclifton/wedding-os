@@ -25,7 +25,7 @@ export default function AcceptInvitePage() {
         throw new Error(data.error || "Could not accept invite");
       }
       const data = await res.json();
-      if (data.role === "WEDDING_PARTY") {
+      if (data.role !== "COUPLE") {
         router.push("/party");
       } else {
         router.push("/dashboard");

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { TABLE_KITS, TABLE_SHAPES, tableShop, type TableLook } from "@/lib/table-studio";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 type Saved = { id: string; title: string; kind?: string; shape?: string; seats?: number; tables?: number; runner?: boolean; candles?: number; buds?: number; bowl?: boolean; plates?: boolean };
 
@@ -65,6 +66,7 @@ export function TableStudio() {
 
   return (
     <div className="space-y-5 pb-16">
+      <RoomSubnav room="studio" />
       <div>
         <p className="kicker kicker-moss">DIY · Tablescape</p>
         <h1 className="mt-1 font-serif text-4xl">Set one table. Multiply it.</h1>
@@ -89,6 +91,9 @@ export function TableStudio() {
               look.shape === "round" ? "h-[72%] w-[72%] rounded-full" : "h-[58%] w-[86%] rounded-xl"
             }`}
           >
+            <div className="pointer-events-none absolute inset-x-[10%] top-1/2 z-10 border-t border-dashed border-ink/25">
+              <span className="absolute left-1/2 top-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-paper/90 px-2 py-1 text-[9px] uppercase tracking-wide text-ink/55">clear talk-over line</span>
+            </div>
             {look.runner && look.shape === "farm" && (
               <div className="absolute inset-y-[12%] left-1/2 w-[18%] -translate-x-1/2 bg-[#c9b7a0]/80" />
             )}
@@ -97,15 +102,34 @@ export function TableStudio() {
                 <img src="/diy/floral/rose.jpg" alt="" className="h-full w-full object-cover" />
               </div>
             )}
+            {look.plates && Array.from({ length: look.seats }).map((_, i) => {
+              const angle = (i / look.seats) * Math.PI * 2 - Math.PI / 2;
+              return (
+                <span
+                  key={`plate-${i}`}
+                  aria-hidden
+                  className="absolute h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#f8f3ea] shadow-sm ring-1 ring-ink/10"
+                  style={{ left: `${50 + Math.cos(angle) * 41}%`, top: `${50 + Math.sin(angle) * 40}%` }}
+                >
+                  <span className="absolute inset-1.5 rounded-full border border-ink/15" />
+                </span>
+              );
+            })}
             {Array.from({ length: look.candles }).map((_, i) => (
               <span
                 key={i}
-                className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ivory shadow"
+                aria-hidden
+                className="absolute h-6 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-ink/10 bg-ivory shadow"
                 style={{
-                  left: `${50 + Math.cos((i / look.candles) * Math.PI * 2) * 22}%`,
-                  top: `${50 + Math.sin((i / look.candles) * Math.PI * 2) * 22}%`,
+                  left: `${50 + Math.cos((i / look.candles) * Math.PI * 2) * 27}%`,
+                  top: `${50 + Math.sin((i / look.candles) * Math.PI * 2) * 24}%`,
                 }}
-              />
+              ><span className="absolute -top-1 left-1/2 h-1.5 w-1 -translate-x-1/2 rounded-full bg-[#d49555]" /></span>
+            ))}
+            {Array.from({ length: look.buds }).map((_, i) => (
+              <span key={`bud-${i}`} aria-hidden className="absolute h-5 w-3 -translate-x-1/2 -translate-y-1/2 rounded-b-full rounded-t-lg border border-ink/10 bg-[#b7c2ae] shadow-sm" style={{ left: `${50 + (i - (look.buds - 1) / 2) * 10}%`, top: `${look.shape === "farm" ? 50 : 45 + (i % 2) * 10}%` }}>
+                <span className="absolute -top-2 left-1/2 h-3 w-3 -translate-x-1/2 rounded-full bg-[#f6dbd6]" />
+              </span>
             ))}
           </div>
         </div>

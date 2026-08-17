@@ -21,8 +21,8 @@ export default async function PartyHubPage() {
     getSpeeches(workspace.id),
   ]);
 
-  const party = members.filter((m) => m.role === "WEDDING_PARTY");
-  const pending = invites.filter((i) => i.role === "WEDDING_PARTY" && i.status === "PENDING");
+  const party = members.filter((m) => m.role !== "COUPLE");
+  const pending = invites.filter((i) => i.role !== "COUPLE" && i.status === "PENDING");
 
   const rows = [
     ...party.map((m) => {
@@ -36,7 +36,7 @@ export default async function PartyHubPage() {
         name: m.name,
         email: m.email,
         status: m.status,
-        role: dress?.role || "Party",
+        role: dress?.role || m.role.replaceAll("_", " ").toLowerCase(),
         attire: dress?.status || "—",
         size: dress?.size,
         open,
@@ -63,7 +63,7 @@ export default async function PartyHubPage() {
       <RoomSubnav room="day" />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-serif text-4xl">Wedding party</h1>
+          <h1 className="font-serif text-4xl">Team</h1>
           <p className="mt-1 text-sm text-muted">
             {party.length} in · {pending.length} invite{pending.length === 1 ? "" : "s"} waiting
           </p>
@@ -99,7 +99,7 @@ export default async function PartyHubPage() {
         ))}
         {!rows.length && (
           <li className="px-4 py-10 text-center text-sm text-muted">
-            No one standing with you yet. Invite the party.
+            No collaborators yet. Invite the people helping make and run the day.
           </li>
         )}
       </ul>

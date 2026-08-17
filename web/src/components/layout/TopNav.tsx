@@ -59,9 +59,10 @@ export function TopNav() {
               className={`relative px-2.5 py-2 text-[11px] font-medium uppercase tracking-[0.18em] ${
                 on ? "text-ink" : "text-muted hover:text-ink"
               }`}
+              aria-current={on ? "page" : undefined}
             >
               {tab.label}
-              {on ? <span className="absolute inset-x-2.5 -bottom-1 h-px bg-dusty" /> : null}
+              {on ? <span className="absolute inset-x-2.5 -bottom-1 h-0.5 rounded-full bg-ink" /> : null}
             </Link>
             {hasMenu ? (
               <button

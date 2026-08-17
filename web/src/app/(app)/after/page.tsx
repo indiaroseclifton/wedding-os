@@ -46,7 +46,7 @@ export default async function AfterPage() {
 
   return (
     <div className="space-y-10">
-      <RoomSubnav room="planning" />
+      <RoomSubnav room="after" />
 
       <header className="max-w-2xl">
         <p className="kicker kicker-moss">After</p>
@@ -56,6 +56,29 @@ export default async function AfterPage() {
         </h1>
         <p className="deck mt-4 max-w-xl text-pretty">{desk.pace}</p>
       </header>
+
+      {waiting ? (
+        <section className="rounded-[1.6rem] border border-line bg-surface p-6 sm:p-8">
+          <p className="kicker kicker-moss">Preview only</p>
+          <h2 className="mt-3 max-w-2xl font-serif text-3xl sm:text-4xl">This room opens after the wedding.</h2>
+          <p className="mt-3 max-w-2xl text-sm text-ink-soft">
+            Nothing here counts as overdue yet. When the day is done, Vowfolk will activate returns, thank-yous, rental handbacks and reviews using the records you already have.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              ["Returns", "Rentals, borrowed pieces and Studio boxes."],
+              ["Thank-yous", "Guests, gifts and missing addresses."],
+              ["Reviews", "Your vendor team and private notes."],
+            ].map(([title, detail]) => (
+              <div key={title} className="rounded-2xl bg-paper p-5">
+                <p className="font-serif text-2xl">{title}</p>
+                <p className="mt-2 text-sm text-muted">{detail}</p>
+              </div>
+            ))}
+          </div>
+          <Link href="/dashboard" className="mt-6 inline-flex min-h-11 items-center rounded-full bg-ink px-5 text-sm text-ivory">Back to the control room</Link>
+        </section>
+      ) : null}
 
       {live && (
         <div>
@@ -72,7 +95,7 @@ export default async function AfterPage() {
         </div>
       )}
 
-      <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_17rem]">
+      {live ? <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_17rem]">
         <section className="min-w-0">
           {desk.current && live ? (
             <p className="mb-4 text-sm text-ink-soft text-pretty">
@@ -133,7 +156,24 @@ export default async function AfterPage() {
               : "What we made — pack the boxes"}
           </Link>
         </aside>
-      </div>
+      </div> : null}
+
+      {live ? (
+        <div className="grid gap-4 border-t border-line pt-8 md:grid-cols-2">
+          <section id="returns" className="rounded-2xl border border-line bg-surface p-5">
+            <p className="kicker">Returns</p>
+            <h2 className="mt-2 font-serif text-3xl">Boxes, rentals and borrowed things</h2>
+            <p className="mt-2 text-sm text-muted">Use the Studio inventory as the handback list—keep, return, sell or donate.</p>
+            <Link href="/studio/inventory" className="mt-4 inline-block text-sm font-medium underline underline-offset-4">Open inventory</Link>
+          </section>
+          <section id="reviews" className="rounded-2xl border border-line bg-surface p-5">
+            <p className="kicker">Reviews</p>
+            <h2 className="mt-2 font-serif text-3xl">Close the loop with your team</h2>
+            <p className="mt-2 text-sm text-muted">Review vendor records after final payments and private notes are complete.</p>
+            <Link href="/vendors" className="mt-4 inline-block text-sm font-medium underline underline-offset-4">Open vendor team</Link>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }

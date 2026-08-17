@@ -8,6 +8,9 @@ import {
 } from "@/lib/data/workspace";
 import { sendAppEmail, requestOrigin } from "@/lib/email/send";
 import { optionalString, ValidationError } from "@/lib/validation";
+import type { WorkspaceRole } from "@/lib/data/store";
+
+const INVITE_ROLES: WorkspaceRole[] = ["COUPLE", "PLANNER", "WEDDING_PARTY", "FAMILY", "DIY_HELPER", "VENDOR", "VIEWER"];
 
 export async function GET() {
   const access = await requireCoupleApi();
@@ -26,11 +29,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { workspace } = await ensureDemoWorkspace();
+    const requestedRole = String(body.role || "WEDDING_PARTY") as WorkspaceRole;
     const invite = await addInvite({
       workspaceId: workspace.id,
       email: optionalString(body.email, 200),
       name: optionalString(body.name, 120),
-      role: body.role === "COUPLE" ? "COUPLE" : "WEDDING_PARTY",
+      role: INVITE_ROLES.includes(requestedRole) ? requestedRole : "WEDDING_PARTY",
     });
     const invitePath = `/invite/${invite.token}`;
     let emailed = false;
@@ -41,7 +45,7 @@ export async function POST(request: Request) {
       const result = await sendAppEmail({
         to: invite.email,
         subject: `You're invited to help plan ${workspace.name}`,
-        text: `${invite.name || "Hey"} — open this link to join the wedding party portal:\n${link}`,
+        text: `${invite.name || "Hey"} — open this link to join the Vowfolk team workspace:\n${link}`,
         html: `<p>${invite.name || "Hey"} — you're invited to help plan <strong>${workspace.name}</strong>.</p>
 <p><a href="${link}">Open your invite</a></p>
 <p style="color:#64748b;font-size:13px">If the button doesn't work: ${link}</p>`,

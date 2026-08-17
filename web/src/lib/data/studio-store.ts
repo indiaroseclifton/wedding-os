@@ -121,6 +121,10 @@ export async function upsertKindProject(
     materials: { label: string; qty: number; unit?: string; estEach: number }[];
     vendorEst?: number;
     note?: string;
+    inspiration?: string;
+    budget?: number;
+    owner?: string;
+    steps?: { when: string; what: string; hours: number }[];
   }
 ) {
   const current = await getStudio(workspaceId);
@@ -135,17 +139,30 @@ export async function upsertKindProject(
     bought: false,
     source: "Studio",
   }));
+  const incomingSteps = (input.steps || []).map((step) => ({
+    ...step,
+    id: randomUUID(),
+    done: false,
+  }));
   if (existing) {
     const kept = existing.materials.map((old) => {
       const hit = incoming.find((m) => m.label === old.label);
       return hit ? { ...old, qty: hit.qty, estEach: hit.estEach } : old;
     });
     const added = incoming.filter((m) => !existing.materials.some((o) => o.label === m.label));
+    const steps = incomingSteps.map((step) => {
+      const previous = existing.steps.find((old) => old.what === step.what);
+      return previous ? { ...step, id: previous.id, done: previous.done } : step;
+    });
     return patchProject(workspaceId, existing.id, {
       qty: input.qty,
       vendorEst: input.vendorEst ?? existing.vendorEst,
       note: input.note ?? existing.note,
+      inspiration: input.inspiration ?? existing.inspiration,
+      budget: input.budget ?? existing.budget,
+      owner: input.owner ?? existing.owner,
       materials: [...kept, ...added],
+      steps: incomingSteps.length ? steps : existing.steps,
     });
   }
   const now = new Date().toISOString();
@@ -155,16 +172,16 @@ export async function upsertKindProject(
     kind: input.kind,
     intent: "recreate",
     stage: "spec",
-    inspiration: "",
+    inspiration: input.inspiration || "",
     note: input.note || "",
     qty: input.qty,
-    budget: 0,
+    budget: input.budget || 0,
     vendorEst: input.vendorEst || 0,
-    owner: "",
+    owner: input.owner || "",
     zone: input.kind === "floral" ? "Tables" : "",
     afterFate: "unset",
     materials: incoming,
-    steps: [],
+    steps: incomingSteps,
     createdAt: now,
     updatedAt: now,
   };

@@ -31,13 +31,22 @@ export type StoredDecision = {
   updatedAt: string;
 };
 
+export type WorkspaceRole =
+  | "COUPLE"
+  | "PLANNER"
+  | "WEDDING_PARTY"
+  | "FAMILY"
+  | "DIY_HELPER"
+  | "VENDOR"
+  | "VIEWER";
+
 export type StoredMember = {
   id: string;
   workspaceId: string;
   userId: string;
   name: string;
   email: string;
-  role: "COUPLE" | "WEDDING_PARTY";
+  role: WorkspaceRole;
   status: "ACTIVE" | "PENDING";
   createdAt: string;
 };
@@ -47,7 +56,7 @@ export type StoredInvite = {
   workspaceId: string;
   email?: string;
   token: string;
-  role: "COUPLE" | "WEDDING_PARTY";
+  role: WorkspaceRole;
   status: "PENDING" | "ACCEPTED" | "EXPIRED";
   name?: string;
   createdAt: string;
@@ -232,7 +241,7 @@ export async function addOrActivateMember(input: {
   userId: string;
   name: string;
   email: string;
-  role: "COUPLE" | "WEDDING_PARTY";
+  role: WorkspaceRole;
 }) {
   const rows = await readJson<StoredMember>(membersFile);
   const existing = rows.find((r) => r.workspaceId === input.workspaceId && r.userId === input.userId);
@@ -263,7 +272,7 @@ export async function createInvite(input: {
   workspaceId: string;
   email?: string;
   name?: string;
-  role: "COUPLE" | "WEDDING_PARTY";
+  role: WorkspaceRole;
 }) {
   const rows = await readJson<StoredInvite>(invitesFile);
   const row: StoredInvite = {

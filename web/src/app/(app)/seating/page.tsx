@@ -6,6 +6,7 @@ import {
   getWorkspaceTables,
 } from "@/lib/data/workspace";
 import { SeatingClient } from "./SeatingClient";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 export default async function SeatingPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -18,12 +19,12 @@ export default async function SeatingPage() {
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="guests" />
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="font-serif text-4xl">Room planner</h1>
           <p className="mt-1 text-sm text-muted">
-            Place the room, then the chairs. Holding keeps maybes. Plates is who you feed.
-            Freeze, then put it back if the count moves.
+            See every table, capacity warning and traffic conflict. Move objects by drag or keyboard, then freeze the handoff when the count is right.
           </p>
         </div>
         <div className="flex gap-2">

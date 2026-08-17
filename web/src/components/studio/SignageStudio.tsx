@@ -17,6 +17,7 @@ import {
   type SignKind,
   type SignPalette,
 } from "@/lib/signage";
+import { RoomSubnav } from "@/components/layout/RoomSubnav";
 
 function downloadSvg(sign: SignDesign) {
   const svg = buildSignSvg(sign);
@@ -136,6 +137,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
 
   return (
     <div className="space-y-6">
+      <RoomSubnav room="studio" />
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="kicker">Studio</p>
@@ -156,6 +158,13 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
           </button>
         </div>
       </header>
+
+      <section className="grid gap-3 sm:grid-cols-4" aria-label="Export readiness">
+        <div className="rounded-2xl border border-line bg-surface p-4"><p className="kicker">Cut size</p><p className="mt-2 font-serif text-xl">{prep.cut}</p></div>
+        <div className="rounded-2xl border border-line bg-surface p-4"><p className="kicker">Material</p><p className="mt-2 font-serif text-xl">{prep.material}</p></div>
+        <div className="rounded-2xl border border-line bg-surface p-4"><p className="kicker">Layers</p><p className="mt-2 font-serif text-xl">{prep.layers}</p></div>
+        <div className="rounded-2xl border border-line bg-surface p-4"><p className="kicker">Copies</p><p className="mt-2 font-serif text-xl">{sign.copies || 1}</p></div>
+      </section>
 
       <div className="flex flex-wrap gap-2">
         {GROUPS.map((g) => (
@@ -210,7 +219,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_20rem]">
         <div
-          className="flex min-h-[22rem] items-center justify-center rounded-2xl border border-line bg-surface p-4 [&_svg]:h-auto [&_svg]:max-h-[32rem] [&_svg]:w-full"
+          className="flex min-h-[34rem] items-center justify-center rounded-[1.5rem] border border-line bg-surface p-4 sm:p-8 [&_svg]:h-auto [&_svg]:max-h-[42rem] [&_svg]:w-full"
           dangerouslySetInnerHTML={{ __html: svg }}
         />
 
