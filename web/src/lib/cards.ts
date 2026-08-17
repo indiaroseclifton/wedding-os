@@ -141,6 +141,39 @@ export function menuCsv(input: { names: string; date: string; heading?: string; 
   return [header, row].join("\n");
 }
 
+export type PrintKind = "inkjet" | "laser";
+
+export type PrintProfile = {
+  kind: PrintKind;
+  borderless: boolean;
+  scale: number;
+};
+
+export const PRINT_KEY = "vowfolk-print";
+
+export function defaultPrint(): PrintProfile {
+  return { kind: "inkjet", borderless: false, scale: 1 };
+}
+
+export function scaleFromMeasure(inches: number) {
+  if (!Number.isFinite(inches) || inches < 1.5 || inches > 2.6) return 1;
+  return Math.round((2 / inches) * 1000) / 1000;
+}
+
+export function pressAdvice(kind: PrintKind, stock: "letter" | "avery5302" | "avery5371" | "menu") {
+  const lines = [
+    "Scale: Actual size / 100%. Never Fit to page.",
+    "Tray: manual or rear — the straightest path.",
+    "Media: Labels, Heavyweight, or Cardstock.",
+  ];
+  if (kind === "inkjet") lines.push("Inkjet: let it dry before you cut. Don’t stack wet sheets.");
+  if (kind === "laser") lines.push("Laser: only packs marked laser-safe. Heat warps some tents.");
+  if (stock === "avery5302") lines.push("5302: one side first. Avery’s duplex flip ruins a box.");
+  if (stock === "avery5371") lines.push("5371 / 8371: this side up, top-left of the sheet.");
+  if (stock === "menu") lines.push("5×7 menu: borderless if you have it, or 2-up on letter and trim.");
+  return lines;
+}
+
 export function mealMark(meal: string) {
   const s = meal.toLowerCase();
   if (!s) return "";

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PrintButton } from "@/components/ui/PrintButton";
+import { PrintScale } from "@/components/studio/PrintScale";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { mealMark, mergeCards, sortCards, type CardKind, type CardMode } from "@/lib/cards";
 
@@ -28,6 +29,7 @@ export default async function CardsPrintPage({
     stock === "avery5302" ? "Avery 5302 tents" : stock === "avery5371" ? "Avery 5371 / 8371" : kind === "escort" ? "Escort cards" : "Place tents";
 
   return (
+    <PrintScale stock={stock}>
     <div className="cards-print">
       <style>{`
         @page { size: letter; margin: ${stock === "letter" ? "0.4in" : "0.5in"}; }
@@ -39,6 +41,8 @@ export default async function CardsPrintPage({
         .sheet {
           display: grid;
           margin: 0 auto;
+          transform: scale(var(--print-scale, 1));
+          transform-origin: top left;
         }
         .sheet.letter-escort { width: 7.7in; height: 10.2in; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); }
         .sheet.letter-place { width: 7.7in; height: 10.2in; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
@@ -118,5 +122,6 @@ export default async function CardsPrintPage({
         ))
       )}
     </div>
+    </PrintScale>
   );
 }

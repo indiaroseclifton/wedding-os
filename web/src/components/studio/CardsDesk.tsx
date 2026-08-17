@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { StoredGuest } from "@/lib/data/store";
 import { CANVA_FIELDS, CANVA_SIZES, cardsCsv, menuCsv, mergeCards, sortCards, type CardKind, type CardMode } from "@/lib/cards";
+import { PrintPress } from "@/components/studio/PrintPress";
 
 function downloadText(name: string, text: string) {
   const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
@@ -176,6 +177,8 @@ export function CardsDesk({
       </div>
 
       {msg ? <p className="text-xs text-sage">{msg}</p> : null}
+
+      <PrintPress />
 
       <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
         <p className="kicker">Canva</p>
