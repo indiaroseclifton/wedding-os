@@ -173,11 +173,13 @@ export function VisionStudio({
 
   if (mode === "board") {
     return (
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-6xl">
         <VisionTabs mode={mode} onMode={setMode} />
         <p className="kicker kicker-moss mt-6">The board</p>
         <h1 className="headline mt-2">Pictures you keep</h1>
-        <p className="deck mt-2 max-w-xl">Kept from the walk, plus anything you pin. The No strip stays visible.</p>
+        <p className="deck mt-2 max-w-xl">
+          Pin and it stays. Tap a picture to change the why or the column. Drag to move.
+        </p>
         <div className="mt-6">
           <VisionBoard
             vision={vision}

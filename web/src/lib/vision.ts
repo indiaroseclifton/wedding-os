@@ -408,7 +408,7 @@ export function mergeVision(prev: VisionPayload, next: Partial<VisionPayload>): 
     reject: next.reject && next.reject.length ? next.reject : prev.reject,
     story: next.story || prev.story,
     lockedAt: next.lockedAt || prev.lockedAt,
-    coverUrl: next.coverUrl || prev.coverUrl,
+    coverUrl: typeof next.coverUrl === "string" ? next.coverUrl : prev.coverUrl,
   };
 }
 
@@ -489,6 +489,19 @@ export function visionAccent(v: Pick<VisionPayload, "palette">) {
   const dark = [...hex].sort((a, b) => hexLum(a) - hexLum(b))[0];
   if (hexLum(dark) > 0.45) return null;
   return dark;
+}
+
+export const BOARD_SECTIONS = ["Florals", "Tables", "Dress", "Venue", "Paper", "Other"] as const;
+export type BoardSection = (typeof BOARD_SECTIONS)[number];
+
+export function pinSection(tag: string): BoardSection {
+  const t = tag.toLowerCase();
+  if (t === "flower" || t === "floral" || t === "florals") return "Florals";
+  if (t === "table" || t === "tables" || t === "light") return "Tables";
+  if (t === "dress") return "Dress";
+  if (t === "place" || t === "venue") return "Venue";
+  if (t === "paper") return "Paper";
+  return "Other";
 }
 
 export const HOUSE_LIBRARY = uniqueSides(VISION_PAIRS);
