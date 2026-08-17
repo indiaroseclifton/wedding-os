@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { PrintScale } from "@/components/studio/PrintScale";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
-import { mealMark, mergeCards, sortCards, type CardKind, type CardMode } from "@/lib/cards";
+import { addressLine, householdLabels, mealMark, mergeCards, sortCards, type CardKind, type CardMode } from "@/lib/cards";
 
-type Stock = "letter" | "avery5302" | "avery5371";
+type Stock = "letter" | "avery5302" | "avery5371" | "avery5160";
 
 export default async function CardsPrintPage({
   searchParams,
@@ -13,25 +13,34 @@ export default async function CardsPrintPage({
   const q = await searchParams;
   const kind: CardKind = q.kind === "place" ? "place" : "escort";
   const mode: CardMode = q.mode === "holding" ? "holding" : "plates";
-  const stock: Stock = q.stock === "avery5302" ? "avery5302" : q.stock === "avery5371" ? "avery5371" : "letter";
+  const stock: Stock =
+    q.stock === "avery5302" ? "avery5302" : q.stock === "avery5371" ? "avery5371" : q.stock === "avery5160" ? "avery5160" : "letter";
   const showMeals = q.meals === "1";
   const { workspace, meta } = await ensureDemoWorkspace();
   const guests = await getWorkspaceGuests(workspace.id);
   const { rows } = mergeCards(guests, mode);
-  const sorted = sortCards(rows, kind);
+  const labels = stock === "avery5160" ? householdLabels(rows) : sortCards(rows, kind);
   const tent = stock === "avery5302" || (stock === "letter" && kind === "place");
-  const per = stock === "avery5302" ? 4 : stock === "avery5371" ? 10 : kind === "escort" ? 8 : 4;
-  const sheets: (typeof sorted)[] = [];
-  for (let i = 0; i < sorted.length; i += per) sheets.push(sorted.slice(i, i + per));
+  const per = stock === "avery5302" ? 4 : stock === "avery5371" ? 10 : stock === "avery5160" ? 30 : kind === "escort" ? 8 : 4;
+  const sheets: (typeof labels)[] = [];
+  for (let i = 0; i < labels.length; i += per) sheets.push(labels.slice(i, i + per));
   if (!sheets.length) sheets.push([]);
   const title =
-    stock === "avery5302" ? "Avery 5302 tents" : stock === "avery5371" ? "Avery 5371 / 8371" : kind === "escort" ? "Escort cards" : "Place tents";
+    stock === "avery5302"
+      ? "Avery 5302 tents"
+      : stock === "avery5371"
+        ? "Avery 5371 / 8371"
+        : stock === "avery5160"
+          ? "Avery 5160 / 8160"
+          : kind === "escort"
+            ? "Escort cards"
+            : "Place tents";
 
   return (
     <PrintScale stock={stock}>
     <div className="cards-print">
       <style>{`
-        @page { size: letter; margin: ${stock === "letter" ? "0.4in" : "0.5in"}; }
+        @page { size: letter; margin: ${stock === "avery5160" ? "0.5in 0.1875in" : stock === "letter" ? "0.4in" : "0.5in"}; }
         @media print {
           .no-print { display: none !important; }
           .sheet { break-after: page; }
@@ -47,6 +56,13 @@ export default async function CardsPrintPage({
         .sheet.letter-place { width: 7.7in; height: 10.2in; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
         .sheet.avery5302 { width: 7.5in; height: 10in; grid-template-columns: 3.5in 3.5in; grid-template-rows: 5in 5in; column-gap: 0.5in; }
         .sheet.avery5371 { width: 7.5in; height: 10in; grid-template-columns: 3.5in 3.5in; grid-template-rows: repeat(5, 2in); column-gap: 0.5in; }
+        .sheet.avery5160 {
+          width: 8.125in;
+          height: 10in;
+          grid-template-columns: 2.625in 2.625in 2.625in;
+          grid-template-rows: repeat(10, 1in);
+          column-gap: 0.125in;
+        }
         .card {
           display: flex;
           flex-direction: column;
@@ -58,6 +74,13 @@ export default async function CardsPrintPage({
           overflow: hidden;
         }
         .card.tent { justify-content: space-around; }
+        .card.label {
+          align-items: flex-start;
+          justify-content: center;
+          text-align: left;
+          padding: 0.08in 0.1in;
+          border-color: transparent;
+        }
         .fold { width: 70%; border-top: 0.4pt dashed #c9c2b8; }
       `}</style>
 
@@ -67,7 +90,12 @@ export default async function CardsPrintPage({
           <h1 className="mt-1 font-serif text-3xl">{title}</h1>
           <p className="mt-1 max-w-lg text-sm text-muted">
             Letter, 100% scale, actual size. {per} per sheet.
-            {stock !== "letter" ? " Load the Avery pack. Align to the top-left." : " Cut the dashes."} {meta.coupleNames}
+            {stock === "avery5160"
+              ? " One label per household. Load 5160 / 8160."
+              : stock !== "letter"
+                ? " Load the Avery pack. Align to the top-left."
+                : " Cut the dashes."}{" "}
+            {meta.coupleNames}
           </p>
         </div>
         <div className="flex gap-2">
@@ -80,17 +108,32 @@ export default async function CardsPrintPage({
         </div>
       </div>
 
-      {sorted.length === 0 ? (
+      {labels.length === 0 ? (
         <p className="text-sm text-muted">No cards in this pool.</p>
       ) : (
         sheets.map((page, i) => (
           <section
             key={i}
             className={`sheet ${
-              stock === "avery5302" ? "avery5302" : stock === "avery5371" ? "avery5371" : kind === "escort" ? "letter-escort" : "letter-place"
+              stock === "avery5302"
+                ? "avery5302"
+                : stock === "avery5371"
+                  ? "avery5371"
+                  : stock === "avery5160"
+                    ? "avery5160"
+                    : kind === "escort"
+                      ? "letter-escort"
+                      : "letter-place"
             }`}
           >
-            {page.map((r) => (
+            {page.map((r) =>
+              stock === "avery5160" ? (
+                <article key={r.id} className="card label">
+                  <p className="text-[11px] font-medium leading-tight">{r.party || r.name}</p>
+                  {r.address ? <p className="text-[10px] leading-tight">{r.address}</p> : <p className="text-[10px] text-muted">Address?</p>}
+                  <p className="text-[10px] leading-tight">{addressLine(r)}</p>
+                </article>
+              ) : (
               <article key={r.id} className={`card ${tent ? "tent" : ""}`}>
                 {tent ? (
                   <>
@@ -118,7 +161,8 @@ export default async function CardsPrintPage({
                   </>
                 )}
               </article>
-            ))}
+              )
+            )}
           </section>
         ))
       )}

@@ -15,10 +15,15 @@ export type CardRow = {
   party: string;
   first: string;
   last: string;
+  address: string;
+  city: string;
+  region: string;
+  postal: string;
 };
 
 export type CardProof = {
   noTable: CardRow[];
+  noAddress: CardRow[];
   unnamedPlus: { guestId: string; name: string; missing: number }[];
 };
 
@@ -60,6 +65,10 @@ export function mergeCards(guests: StoredGuest[], mode: CardMode) {
       party,
       first: guestParts.first,
       last: guestParts.last,
+      address: clean(g.address),
+      city: clean(g.city),
+      region: clean(g.region),
+      postal: clean(g.postal),
     });
     const named = (g.plusOneNames || []).map(clean).filter(Boolean);
     const slots = Math.max(0, g.plusOnes || 0);
@@ -77,6 +86,10 @@ export function mergeCards(guests: StoredGuest[], mode: CardMode) {
         party,
         first: parts.first,
         last: parts.last,
+        address: clean(g.address),
+        city: clean(g.city),
+        region: clean(g.region),
+        postal: clean(g.postal),
       });
     });
     const missing = Math.max(0, slots - named.length);
@@ -84,7 +97,26 @@ export function mergeCards(guests: StoredGuest[], mode: CardMode) {
   }
 
   const noTable = rows.filter((r) => !r.table);
-  return { rows, proof: { noTable, unnamedPlus } };
+  const noAddress = rows.filter((r) => r.source === "guest" && !r.address && !r.city);
+  return { rows, proof: { noTable, noAddress, unnamedPlus } };
+}
+
+export function addressLine(r: Pick<CardRow, "city" | "region" | "postal">) {
+  const cityState = [r.city, r.region].filter(Boolean).join(", ");
+  return [cityState, r.postal].filter(Boolean).join(" ");
+}
+
+export function householdLabels(rows: CardRow[]) {
+  const seen = new Set<string>();
+  const out: CardRow[] = [];
+  for (const r of rows.filter((row) => row.source === "guest")) {
+    const key = r.party || r.guestId;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(r);
+  }
+  out.sort((a, b) => a.last.localeCompare(b.last) || a.name.localeCompare(b.name));
+  return out;
 }
 
 export function sortCards(rows: CardRow[], kind: CardKind) {
@@ -121,14 +153,15 @@ export const CANVA_SIZES = [
   { id: "letter-tent", label: "Letter · tent", size: "3.75\" × 5\" (fold in half)" },
   { id: "avery-5302", label: "Avery 5302 tent", size: "2\" × 3.5\" · 4 per sheet" },
   { id: "avery-5371", label: "Avery 5371 / 8371", size: "2\" × 3.5\" · 10 per sheet" },
+  { id: "avery-5160", label: "Avery 5160 / 8160", size: "1\" × 2.625\" · 30 per sheet" },
   { id: "menu", label: "Menu", size: "5\" × 7\" or 4.25\" × 9.5\"" },
   { id: "program", label: "Program", size: "5\" × 7\"" },
 ] as const;
 
 export function cardsCsv(rows: CardRow[]) {
-  const header = "Name,First,Last,Table,Seat,Meal,Party,Rsvp";
+  const header = "Name,First,Last,Table,Seat,Meal,Party,Rsvp,Address,City,Region,Postal";
   const body = rows.map((r) =>
-    [r.name, r.first, r.last, r.table || "", r.seat != null ? String(r.seat + 1) : "", r.meal, r.party, r.rsvp]
+    [r.name, r.first, r.last, r.table || "", r.seat != null ? String(r.seat + 1) : "", r.meal, r.party, r.rsvp, r.address, r.city, r.region, r.postal]
       .map(csvEscape)
       .join(",")
   );
@@ -179,7 +212,7 @@ export function scaleFromMeasure(inches: number) {
   return Math.round((2 / inches) * 1000) / 1000;
 }
 
-export function pressAdvice(kind: PrintKind, stock: "letter" | "avery5302" | "avery5371" | "menu") {
+export function pressAdvice(kind: PrintKind, stock: "letter" | "avery5302" | "avery5371" | "avery5160" | "menu") {
   const lines = [
     "Scale: Actual size / 100%. Never Fit to page.",
     "Tray: manual or rear — the straightest path.",
@@ -189,11 +222,12 @@ export function pressAdvice(kind: PrintKind, stock: "letter" | "avery5302" | "av
   if (kind === "laser") lines.push("Laser: only packs marked laser-safe. Heat warps some tents.");
   if (stock === "avery5302") lines.push("5302: one side first. Avery’s duplex flip ruins a box.");
   if (stock === "avery5371") lines.push("5371 / 8371: this side up, top-left of the sheet.");
+  if (stock === "avery5160") lines.push("5160 / 8160: this side up. 30 labels. Don’t run them through twice.");
   if (stock === "menu") lines.push("5×7 menu: borderless if you have it, or 2-up on letter and trim.");
   return lines;
 }
 
-export function printDialogRows(kind: PrintKind, stock: "letter" | "avery5302" | "avery5371" | "menu") {
+export function printDialogRows(kind: PrintKind, stock: "letter" | "avery5302" | "avery5371" | "avery5160" | "menu") {
   return [
     { label: "Paper size", set: "Letter · 8.5 × 11" },
     { label: "Scale", set: "100% / Actual size — never Fit" },

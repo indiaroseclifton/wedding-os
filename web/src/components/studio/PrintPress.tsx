@@ -12,7 +12,7 @@ import {
   type PrintProfile,
 } from "@/lib/cards";
 
-export function PrintPress({ stock = "letter" }: { stock?: "letter" | "avery5302" | "avery5371" | "menu" }) {
+export function PrintPress({ stock = "letter" }: { stock?: "letter" | "avery5302" | "avery5371" | "avery5160" | "menu" }) {
   const [p, setP] = useState<PrintProfile>(defaultPrint);
   const [pack, setPack] = useState(stock);
 
@@ -65,6 +65,7 @@ export function PrintPress({ stock = "letter" }: { stock?: "letter" | "avery5302
             ["letter", "Letter"],
             ["avery5302", "5302"],
             ["avery5371", "5371"],
+            ["avery5160", "5160"],
             ["menu", "Menu"],
           ] as const
         ).map(([id, label]) => (

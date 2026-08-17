@@ -13,7 +13,7 @@ export function PrintScale({
   stock,
   children,
 }: {
-  stock: "letter" | "avery5302" | "avery5371";
+  stock: "letter" | "avery5302" | "avery5371" | "avery5160";
   children: ReactNode;
 }) {
   const [scale, setScale] = useState(1);

@@ -50,6 +50,7 @@ export function CardsDesk({
   const printHref = `/studio/cards/print?kind=${kind}&mode=${mode}${meals ? "&meals=1" : ""}`;
   const avery5302 = `${printHref}&stock=avery5302`;
   const avery5371 = `${printHref}&stock=avery5371`;
+  const avery5160 = `${printHref}&stock=avery5160`;
 
   return (
     <div className="space-y-6">
@@ -74,6 +75,9 @@ export function CardsDesk({
           </Link>
           <Link href={avery5371} className="btn btn-ghost">
             Avery 5371
+          </Link>
+          <Link href={avery5160} className="btn btn-ghost">
+            Avery 5160
           </Link>
         </div>
       </header>
@@ -115,7 +119,7 @@ export function CardsDesk({
         </label>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-4">
         <div className="rounded-2xl border border-line bg-surface px-4 py-3">
           <p className="kicker">Cards</p>
           <p className="font-serif text-3xl">{sorted.length}</p>
@@ -132,6 +136,13 @@ export function CardsDesk({
           <p className="kicker">Nameless plus-ones</p>
           <p className="font-serif text-3xl">{proof.unnamedPlus.reduce((s, u) => s + u.missing, 0)}</p>
           <p className="text-xs text-muted">No card until they have a name</p>
+        </div>
+        <div className="rounded-2xl border border-line bg-surface px-4 py-3">
+          <p className="kicker">No address</p>
+          <p className="font-serif text-3xl">{proof.noAddress.length}</p>
+          <p className="text-xs text-muted">
+            {proof.noAddress.length ? <Link href="/guests" className="underline">For 5160</Link> : "Ready to mail"}
+          </p>
         </div>
       </div>
 
