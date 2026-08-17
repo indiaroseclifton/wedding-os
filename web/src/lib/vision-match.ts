@@ -20,11 +20,16 @@ export const PLAYBOOK_VIBES: Record<string, string[]> = {
   "cake-table": ["Romantic classic", "Garden / outdoor"],
 };
 
-export function vibeMatchesStyles(vibe: string | undefined, styles: string[]) {
-  if (!vibe) return true;
-  const keys = VIBE_KEYS[vibe];
-  if (!keys?.length) return true;
-  return styles.some((s) => keys.some((k) => s.toLowerCase().includes(k)));
+export function vibeMatchesStyles(vibe?: string, styles: string[] = [], venueType?: string) {
+  const hay = styles.map((s) => s.toLowerCase());
+  const vibeKeys = vibe ? VIBE_KEYS[vibe] : undefined;
+  const vibeHit = !vibeKeys?.length || hay.some((s) => vibeKeys.some((k) => s.includes(k)));
+  const placeWords = venueType?.toLowerCase().split(/[^a-z]+/).filter((w) => w.length > 2) || [];
+  const placeHit = !placeWords.length || hay.some((s) => placeWords.some((w) => s.includes(w)));
+  if (!vibe && !venueType) return true;
+  if (vibe && venueType) return vibeHit || placeHit;
+  if (vibe) return vibeHit;
+  return placeHit;
 }
 
 export function playbookFitsVibe(slug: string, vibe?: string) {

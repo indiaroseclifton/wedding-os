@@ -70,6 +70,7 @@ export default function VendorBrowsePage() {
   const [near, setNear] = useState("");
   const [hiring, setHiring] = useState<string | null>(null);
   const [vibe, setVibe] = useState("");
+  const [venueType, setVenueType] = useState("");
   const [followVision, setFollowVision] = useState(true);
   const [allowedCats, setAllowedCats] = useState<string[] | null>(null);
 
@@ -100,6 +101,8 @@ export default function VendorBrowsePage() {
       .then((d) => {
         const v = d?.decision?.payload?.vibe;
         if (typeof v === "string") setVibe(v);
+        const place = d?.decision?.payload?.venueType;
+        if (typeof place === "string") setVenueType(place);
       })
       .catch(() => {});
   }, []);
@@ -170,14 +173,14 @@ export default function VendorBrowsePage() {
       if (band !== "All" && v.priceBand !== band) return false;
       if (city !== "All" && v.city !== city) return false;
       if (style !== "All" && !v.styles.includes(style)) return false;
-      if (followVision && vibe && !vibeMatchesStyles(vibe, v.styles)) return false;
+      if (followVision && (vibe || venueType) && !vibeMatchesStyles(vibe, v.styles, venueType)) return false;
       if (q.trim()) {
         const hay = `${v.name} ${v.city} ${v.blurb} ${v.styles.join(" ")}`.toLowerCase();
         if (!hay.includes(q.trim().toLowerCase())) return false;
       }
       return true;
     });
-  }, [listings, category, band, city, style, q, followVision, vibe]);
+  }, [listings, category, band, city, style, q, followVision, vibe, venueType]);
 
   function roleFilled(cat: string) {
     return hiredCats.some((c) => c.toLowerCase().includes(cat.split(" ")[0].toLowerCase())) ||
@@ -194,14 +197,14 @@ export default function VendorBrowsePage() {
         <p className="mt-1 text-sm text-muted">
           Every seat on a typical team — then shortlist and run them here. Not a link farm.
         </p>
-        {vibe && (
+        {(vibe || venueType) && (
           <label className="mt-3 flex items-center gap-2 text-xs">
             <input
               type="checkbox"
               checked={followVision}
               onChange={(e) => setFollowVision(e.target.checked)}
             />
-            Match my vision ({vibe})
+            Match my vision ({[vibe, venueType].filter(Boolean).join(" · ")})
           </label>
         )}
       </div>

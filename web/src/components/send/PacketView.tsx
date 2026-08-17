@@ -37,6 +37,32 @@ export function PacketView({
         <p className="text-xs text-ink-soft">{packet.vendor.category}</p>
       </header>
 
+      {packet.vision && (packet.vision.vibe || packet.vision.cover) ? (
+        <section>
+          <h2 className="font-serif text-2xl">How it should feel</h2>
+          {packet.vision.cover ? (
+            <img src={packet.vision.cover} alt="" className="mt-3 aspect-[16/8] w-full rounded-2xl object-cover" />
+          ) : null}
+          <p className="mt-3 font-serif text-2xl">{packet.vision.vibe}</p>
+          <p className="mt-1 text-sm text-muted">{[packet.vision.formal, packet.vision.story].filter(Boolean).join(" · ")}</p>
+          {packet.vision.hex.length ? (
+            <div className="mt-3 flex gap-1.5">
+              {packet.vision.hex.map((c) => (
+                <span key={c} className="h-6 w-6 rounded-full border border-line" style={{ background: c }} />
+              ))}
+            </div>
+          ) : null}
+          {packet.vision.avoid ? <p className="mt-2 text-sm">Hard no: {packet.vision.avoid}</p> : null}
+          {packet.vision.nos.length ? (
+            <div className="mt-3 flex gap-2">
+              {packet.vision.nos.slice(0, 6).map((src) => (
+                <img key={src} src={src} alt="" className="h-12 w-14 rounded object-cover opacity-55" />
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
       {note?.trim() && (
         <section className="rounded-2xl border border-line bg-surface px-5 py-4">
           <p className="kicker kicker-moss">A note from us</p>

@@ -108,6 +108,13 @@ export default function SettingsPage() {
       return;
     }
     applyLook({ theme: form.theme, glass: form.glass, density: form.density, typeScale: form.typeScale });
+    if (form.formality) {
+      await fetch("/api/decisions/style-vibe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "EXPLORING", payload: { formal: form.formality } }),
+      }).catch(() => {});
+    }
     setMsg(
       form.faith && form.faith !== "none"
         ? "Saved. Religious items are now on your Planning checklist."

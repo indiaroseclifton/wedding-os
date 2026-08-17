@@ -166,6 +166,9 @@ export default function DiyHubPage() {
                 {vibe && playbookFitsVibe(b.slug, vibe) && (
                   <p className="mt-1 text-[11px] text-moss">Fits {vibe}</p>
                 )}
+                {vibe && !playbookFitsVibe(b.slug, vibe) && (
+                  <p className="mt-1 text-[11px] text-muted">Doesn’t follow {vibe}</p>
+                )}
                 <p className="mt-1 text-xs text-ink-soft">{b.summary}</p>
               </div>
             </Link>

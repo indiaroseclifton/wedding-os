@@ -33,6 +33,15 @@ export default function AttirePage() {
 
   useEffect(() => {
     load();
+    fetch("/api/decisions/style-vibe")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        const hex = d?.decision?.payload?.palette?.hex;
+        if (Array.isArray(hex) && hex.length) {
+          setPalette((cur) => cur || hex.join(" · "));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   async function savePalette() {

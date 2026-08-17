@@ -1,8 +1,7 @@
-import { DEMO_WORKSPACE } from "@/lib/data/workspace";
+import { DEMO_WORKSPACE, getWorkspaceDecisions, getWorkspaceTables } from "@/lib/data/workspace";
 import { getWorkspaceMeta, listGuests } from "@/lib/data/store";
-import { getWorkspaceTables } from "@/lib/data/workspace";
 import { getDayOf } from "@/lib/data/dayof-store";
-import { listVendors, getVendor, updateVendor } from "@/lib/data/vendors-store";
+import { listVendors, getVendor, updateVendor, type StoredVendor } from "@/lib/data/vendors-store";
 import {
   listPayments,
   paymentsForVendor,
@@ -25,7 +24,7 @@ import {
 import { getSendForVendor, type VendorSend } from "@/lib/data/sends-store";
 import { findHandoffNote } from "./handoff-notes";
 import { faceLine } from "@/lib/vendor-face";
-import type { StoredVendor } from "@/lib/data/vendors-store";
+import { normalizeVision } from "@/lib/vision";
 
 const ALLERGY = [
   { id: "nut", label: "Nut", re: /nut|peanut|tree nut/i },
@@ -89,6 +88,15 @@ export type AssembledPacket = {
   clauseMeta: { namedLead?: string; hours?: string; overtimeRate?: string; coiReceived?: boolean };
   contacts: { role: string; name: string; phone?: string; email?: string }[];
   floral: { notes?: string; fixtures: string[] };
+  vision?: {
+    vibe?: string;
+    formal?: string;
+    story?: string;
+    avoid?: string;
+    hex: string[];
+    cover?: string;
+    nos: string[];
+  };
   handoffNote?: string;
   readiness: { id: AttachmentId; label: string; ready: boolean; hint: string }[];
   gaps: string[];
@@ -103,7 +111,7 @@ export async function assemblePacket(
   vendor: StoredVendor,
   attachments?: AttachmentId[]
 ): Promise<AssembledPacket> {
-  const [meta, dayOf, guests, tables, vendors, payments, music, diet, floor] = await Promise.all([
+  const [meta, dayOf, guests, tables, vendors, payments, music, diet, floor, decisions] = await Promise.all([
     getWorkspaceMeta(workspaceId, DEMO_WORKSPACE.name),
     getDayOf(workspaceId),
     listGuests(workspaceId),
@@ -113,7 +121,9 @@ export async function assemblePacket(
     getMusic(workspaceId),
     getDietary(workspaceId),
     getFloorPlan(workspaceId),
+    getWorkspaceDecisions(workspaceId),
   ]);
+  const vision = normalizeVision(decisions.find((d) => d.type === "STYLE_VIBE")?.payload);
 
   const couple = meta.coupleNames || meta.name;
   const key = categoryKey(vendor.category);
@@ -282,6 +292,15 @@ export async function assemblePacket(
     floral: {
       notes: [vendor.notes, faceLine(vendor.face, vendor.category)].filter(Boolean).join(" · ") || undefined,
       fixtures: floralFixtures.length ? floralFixtures : fixtures,
+    },
+    vision: {
+      vibe: vision.vibe,
+      formal: vision.formal,
+      story: vision.story,
+      avoid: vision.avoid,
+      hex: vision.palette?.hex || [],
+      cover: vision.feel[0]?.url,
+      nos: vision.reject.map((p) => p.url),
     },
     handoffNote: (await findHandoffNote(workspaceId, vendor)) || undefined,
     readiness: [],

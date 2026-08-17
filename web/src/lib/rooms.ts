@@ -14,9 +14,9 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
       children: [
         { href: "/decisions", label: "All" },
         { href: "/decisions/path", label: "Hire or make" },
-        { href: "/decisions/venue", label: "Venue" },
+        { href: "/planning/vision", label: "Venue" },
         { href: "/planning/vision", label: "Style" },
-        { href: "/decisions/priorities", label: "Priorities" },
+        { href: "/planning/vision", label: "Priorities" },
       ],
     },
     { href: "/checklist", label: "Checklist" },

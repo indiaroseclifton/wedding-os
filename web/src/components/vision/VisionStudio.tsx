@@ -7,6 +7,7 @@ import { COLOR_STORIES } from "@/lib/floral-studio";
 import {
   FORMAL,
   MUSTS,
+  VENUES,
   VIBES,
   VISION_PAIRS,
   type PairSide,
@@ -18,18 +19,21 @@ import {
   suggestFromSides,
   visionSummary,
 } from "@/lib/vision";
+import { VisionBoard } from "./VisionBoard";
 
-type Mode = "walk" | "brief";
+type Mode = "walk" | "board" | "brief";
 
 export function VisionStudio({
   initial,
   startWalk,
+  startView,
 }: {
   initial: VisionPayload;
   startWalk?: boolean;
+  startView?: Mode;
 }) {
   const hadWalk = initial.feel.length > 0;
-  const [mode, setMode] = useState<Mode>(startWalk || !hadWalk ? "walk" : "brief");
+  const [mode, setMode] = useState<Mode>(startView || (startWalk || !hadWalk ? "walk" : "brief"));
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<PairSide[]>([]);
   const [rejected, setRejected] = useState<PairSide[]>([]);
@@ -111,6 +115,7 @@ export function VisionStudio({
   if (mode === "walk" && pair) {
     return (
       <div className="mx-auto max-w-5xl">
+        <VisionTabs mode={mode} onMode={setMode} />
         <p className="kicker kicker-moss">
           {pair.set} · {setPos} of {setPairs.length}
         </p>
@@ -144,12 +149,28 @@ export function VisionStudio({
     );
   }
 
+  if (mode === "board") {
+    return (
+      <div className="mx-auto max-w-4xl">
+        <VisionTabs mode={mode} onMode={setMode} />
+        <p className="kicker kicker-moss mt-6">The board</p>
+        <h1 className="headline mt-2">Pictures you keep</h1>
+        <p className="deck mt-2 max-w-xl">Kept from the walk, plus anything you pin. The No strip stays visible.</p>
+        <div className="mt-6">
+          <VisionBoard vision={vision} onChange={setVision} onSave={() => save("EXPLORING")} />
+        </div>
+        {msg ? <p className="mt-3 text-sm text-muted">{msg}</p> : null}
+      </div>
+    );
+  }
+
   const cover = vision.feel[0]?.url;
   const hex = vision.palette?.hex || [];
 
   return (
     <div className="mx-auto max-w-3xl">
-      <p className="kicker kicker-moss">The brief</p>
+      <VisionTabs mode={mode} onMode={setMode} />
+      <p className="kicker kicker-moss mt-6">The brief</p>
       <h1 className="headline mt-2">How it should feel</h1>
       <p className="deck mt-2 max-w-xl">
         Pictures first. The word is a caption. Lock it when you’d hand this to a florist.
@@ -264,6 +285,24 @@ export function VisionStudio({
           </div>
 
           <div>
+            <p className="text-sm font-medium">The place</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {VENUES.map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setVision((cur) => ({ ...cur, venueType: v }))}
+                  className={`min-h-11 rounded-full px-3.5 text-sm ${
+                    vision.venueType === v ? "bg-moss text-moss-fg" : "border border-line bg-surface"
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <p className="text-sm font-medium">If something has to win</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {MUSTS.map((v) => (
@@ -313,6 +352,9 @@ export function VisionStudio({
             <button type="button" disabled={saving} onClick={() => save("DECIDED")} className="btn btn-primary min-h-11">
               Lock this vision
             </button>
+            <Link href="/planning/vision/print" className="btn btn-ghost min-h-11">
+              Print the brief
+            </Link>
             <button
               type="button"
               onClick={() => {
@@ -336,7 +378,7 @@ export function VisionStudio({
           hire or make
         </Link>
         ,{" "}
-        <Link href="/moodboard" className="underline">
+        <Link href="/planning/vision?view=board" className="underline">
           pin more
         </Link>
         , or{" "}
@@ -345,6 +387,31 @@ export function VisionStudio({
         </Link>
         .
       </p>
+    </div>
+  );
+}
+
+function VisionTabs({ mode, onMode }: { mode: Mode; onMode: (m: Mode) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {(
+        [
+          ["walk", "This / not this"],
+          ["board", "Board"],
+          ["brief", "Brief"],
+        ] as const
+      ).map(([id, label]) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => onMode(id)}
+          className={`min-h-10 rounded-full px-4 text-sm ${
+            mode === id ? "bg-moss text-moss-fg" : "border border-line"
+          }`}
+        >
+          {label}
+        </button>
+      ))}
     </div>
   );
 }

@@ -33,6 +33,7 @@ export type VisionPayload = {
   must: string[];
   avoid: string;
   notes: string;
+  venueType?: string;
   feel: VisionPin[];
   reject: VisionPin[];
   story?: string;
@@ -374,6 +375,7 @@ export function normalizeVision(raw: unknown): VisionPayload {
     must,
     avoid: typeof p.avoid === "string" ? p.avoid : "",
     notes: typeof p.notes === "string" ? p.notes : "",
+    venueType: typeof p.venueType === "string" ? p.venueType : "",
     feel,
     reject,
     story: typeof p.story === "string" ? p.story : palette?.story,
@@ -389,12 +391,18 @@ function isPin(x: unknown): x is VisionPin {
 
 export function mergeVision(prev: VisionPayload, next: Partial<VisionPayload>): VisionPayload {
   return {
-    ...prev,
-    ...next,
-    must: next.must ?? prev.must,
-    feel: next.feel ?? prev.feel,
-    reject: next.reject ?? prev.reject,
-    palette: next.palette ?? prev.palette,
+    vibe: next.vibe || prev.vibe,
+    formal: next.formal || prev.formal,
+    colors: next.colors || prev.colors,
+    palette: next.palette?.hex?.length ? next.palette : prev.palette,
+    must: next.must && (next.must.length || next.vibe) ? next.must : prev.must,
+    avoid: next.vibe || (next.feel && next.feel.length) ? (next.avoid ?? "") : next.avoid || prev.avoid,
+    notes: next.vibe || (next.feel && next.feel.length) ? (next.notes ?? "") : next.notes || prev.notes,
+    venueType: next.venueType || prev.venueType,
+    feel: next.feel && next.feel.length ? next.feel : prev.feel,
+    reject: next.reject && next.reject.length ? next.reject : prev.reject,
+    story: next.story || prev.story,
+    lockedAt: next.lockedAt || prev.lockedAt,
   };
 }
 
@@ -432,4 +440,36 @@ export function visionSummary(v: VisionPayload) {
 export function colorsLine(v: VisionPayload) {
   if (v.palette?.hex.length) return v.palette.hex.join(" · ");
   return v.colors;
+}
+
+export const VENUES = [
+  "Garden / outdoor",
+  "Ballroom",
+  "Barn / rustic",
+  "Museum / gallery",
+  "Restaurant / private dining",
+  "Home / backyard",
+  "Hotel",
+  "Not sure",
+] as const;
+
+export function siteTemplateFor(story?: string): "letter" | "garden" | "midnight" {
+  if (story === "midnight" || story === "ink-blush") return "midnight";
+  if (story === "garden" || story === "citrus") return "garden";
+  return "letter";
+}
+
+export const HOUSE_LIBRARY = uniqueSides(VISION_PAIRS);
+
+function uniqueSides(pairs: VisionPair[]) {
+  const seen = new Set<string>();
+  const out: PairSide[] = [];
+  for (const p of pairs) {
+    for (const s of [p.left, p.right]) {
+      if (seen.has(s.url)) continue;
+      seen.add(s.url);
+      out.push(s);
+    }
+  }
+  return out;
 }

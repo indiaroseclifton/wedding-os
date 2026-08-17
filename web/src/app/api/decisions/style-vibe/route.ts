@@ -7,6 +7,7 @@ import {
   saveStyleVibeDecision,
   updateWorkspaceMeta,
 } from "@/lib/data/workspace";
+import { applyVisionSteering } from "@/lib/vision-steer";
 import { mergeVision, normalizeVision, visionSummary } from "@/lib/vision";
 
 export async function GET() {
@@ -40,6 +41,7 @@ export async function POST(request: Request) {
     if (next.formal) {
       await updateWorkspaceMeta(workspace.id, { formality: next.formal });
     }
+    await applyVisionSteering(workspace.id, next, body.status === "DECIDED");
     return NextResponse.json({ decision: { ...decision, payload: next } });
   } catch (error) {
     console.error(error);

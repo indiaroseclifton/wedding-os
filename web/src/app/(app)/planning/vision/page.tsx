@@ -6,9 +6,17 @@ import { EMPTY_VISION, normalizeVision } from "@/lib/vision";
 export default async function VisionPage({
   searchParams,
 }: {
-  searchParams: Promise<{ walk?: string }>;
+  searchParams: Promise<{ walk?: string; view?: string }>;
 }) {
-  const { walk } = await searchParams;
+  const { walk, view } = await searchParams;
+  const startView =
+    walk === "1" || view === "walk"
+      ? "walk"
+      : view === "board"
+        ? "board"
+        : view === "brief"
+          ? "brief"
+          : undefined;
   const { workspace } = await ensureDemoWorkspace();
   const decisions = await getWorkspaceDecisions(workspace.id);
   const row = decisions.find((d) => d.type === "STYLE_VIBE");
@@ -17,7 +25,7 @@ export default async function VisionPage({
   return (
     <div>
       <RoomSubnav room="planning" />
-      <VisionStudio initial={initial} startWalk={walk === "1"} />
+      <VisionStudio initial={initial} startWalk={walk === "1"} startView={startView} />
     </div>
   );
 }

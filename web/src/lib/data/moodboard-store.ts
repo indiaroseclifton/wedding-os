@@ -1,6 +1,6 @@
 import path from "path";
 import { randomUUID } from "crypto";
-import { dataDir, ensureDir, readText, writeText, ensureFile, pathExists } from "./store-io";
+import { dataDir, ensureDir, readText, writeText } from "./store-io";
 
 const moodFile = path.join(dataDir, "moodboard.json");
 
@@ -77,6 +77,37 @@ export async function removeMoodItem(workspaceId: string, itemId: string) {
   all[workspaceId] = {
     ...board,
     items: board.items.filter((i) => i.id !== itemId),
+    updatedAt: new Date().toISOString(),
+  };
+  await writeAll(all);
+  return all[workspaceId];
+}
+
+export async function upsertMoodPins(
+  workspaceId: string,
+  pins: { title: string; url: string; notes?: string; tag?: string }[]
+) {
+  if (!pins.length) return getMoodboard(workspaceId);
+  const all = await readAll();
+  const board = await getMoodboard(workspaceId);
+  const have = new Set(board.items.map((i) => i.url).filter(Boolean));
+  const extra: MoodItem[] = [];
+  for (const pin of pins) {
+    if (!pin.url || have.has(pin.url)) continue;
+    have.add(pin.url);
+    extra.push({
+      id: randomUUID(),
+      title: pin.title,
+      url: pin.url,
+      notes: pin.notes,
+      tag: pin.tag,
+      createdAt: new Date().toISOString(),
+    });
+  }
+  if (!extra.length) return board;
+  all[workspaceId] = {
+    ...board,
+    items: [...extra, ...board.items],
     updatedAt: new Date().toISOString(),
   };
   await writeAll(all);
