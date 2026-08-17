@@ -7,6 +7,7 @@ export function RoomTile({
   label,
   line,
   icon,
+  deep,
   onClick,
 }: {
   href: string;
@@ -14,6 +15,7 @@ export function RoomTile({
   label: string;
   line: string;
   icon?: string;
+  deep?: boolean;
   onClick?: () => void;
 }) {
   return (
@@ -21,20 +23,28 @@ export function RoomTile({
       href={href}
       scroll={false}
       onClick={onClick}
-      className="group relative aspect-[5/4] overflow-hidden rounded-2xl border border-white/50 bg-surface/30"
+      className="group relative aspect-[4/3] overflow-hidden rounded-[1.35rem]"
     >
       <img
         src={photo}
         alt=""
-        className="h-full w-full object-cover opacity-50 saturate-[.65] transition duration-500 group-hover:scale-[1.03] group-hover:opacity-65"
+        className={`h-full w-full object-cover transition duration-700 group-hover:scale-[1.03] ${
+          deep ? "opacity-80 saturate-[.55]" : "opacity-70 saturate-[.45]"
+        }`}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-paper/95 via-paper/30 to-paper/10 backdrop-blur-[2px]" />
-      <div className="absolute inset-x-0 bottom-0 p-3">
-        <p className="flex items-center gap-2 font-serif text-xl text-ink">
-          {icon ? <Icon name={icon} className="h-4 w-4" /> : null}
+      <div
+        className={`absolute inset-0 ${
+          deep
+            ? "bg-gradient-to-t from-moss/80 via-moss/15 to-transparent"
+            : "bg-gradient-to-t from-paper/90 via-paper/25 to-paper/5"
+        }`}
+      />
+      <div className="absolute inset-x-0 bottom-0 p-5">
+        <p className={`flex items-center gap-2 font-serif text-[1.65rem] leading-none tracking-tight ${deep ? "text-ivory" : "text-ink"}`}>
+          {icon ? <Icon name={icon} className="h-[1.1rem] w-[1.1rem]" /> : null}
           {label}
         </p>
-        <p className="mt-0.5 text-[11px] leading-4 text-ink-soft">{line}</p>
+        <p className={`mt-1.5 text-sm ${deep ? "text-ivory/75" : "text-ink-soft"}`}>{line}</p>
       </div>
     </Link>
   );
