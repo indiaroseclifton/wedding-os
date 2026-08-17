@@ -84,10 +84,10 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
     { href: "/dietary", label: "Dietary", children: [{ href: "/dietary", label: "Rollup" }, { href: "/dietary/packet", label: "Caterer packet" }] },
     {
       href: "/site",
-      label: "Guest site",
+      label: "The letter",
       children: [
-        { href: "/site", label: "Build" },
-        { href: "/site/preview", label: "Open guest page" },
+        { href: "/site", label: "Write" },
+        { href: "/site/preview", label: "See as a guest" },
       ],
     },
   ],

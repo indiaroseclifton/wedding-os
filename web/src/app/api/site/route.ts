@@ -1,16 +1,41 @@
 import { NextResponse } from "next/server";
 import { requireCoupleApi } from "@/lib/auth/access";
-import { ensureDemoWorkspace, ensureRsvpTokens } from "@/lib/data/workspace";
+import {
+  DEMO_WORKSPACE,
+  ensureDemoWorkspace,
+  ensureRsvpTokens,
+  getWorkspaceDecisions,
+} from "@/lib/data/workspace";
+import { getWorkspaceMeta } from "@/lib/data/store";
 import { getSite, publishSite, saveSite } from "@/lib/data/site-store";
+import { siteModeFor } from "@/lib/shape";
+import { normalizeVision, siteTemplateFor, visionHero } from "@/lib/vision";
+
+function prettyDate(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 export async function GET() {
   const access = await requireCoupleApi();
   if (!access.ok) return access.response;
   const { workspace } = await ensureDemoWorkspace();
-  const [site, guests] = await Promise.all([
+  const [site, guests, meta, decisions] = await Promise.all([
     getSite(workspace.id),
     ensureRsvpTokens(workspace.id),
+    getWorkspaceMeta(workspace.id, DEMO_WORKSPACE.name),
+    getWorkspaceDecisions(workspace.id),
   ]);
+  const vision = normalizeVision(decisions.find((d) => d.type === "STYLE_VIBE")?.payload);
+  const lookName = site.template !== "letter" ? site.template : siteTemplateFor(vision.story);
+  const announce = meta.siteMode === "announce" || siteModeFor(meta.shape) === "announce";
   return NextResponse.json({
     site,
     guests: guests.map((g) => ({
@@ -19,6 +44,14 @@ export async function GET() {
       rsvp: g.rsvp,
       rsvpToken: g.rsvpToken,
     })),
+    look: {
+      names: meta.coupleNames || meta.name,
+      date: prettyDate(meta.weddingDate),
+      location: meta.location,
+      coverUrl: visionHero(vision) || "",
+      mode: announce ? "announce" : "invite",
+      night: lookName === "midnight",
+    },
   });
 }
 
