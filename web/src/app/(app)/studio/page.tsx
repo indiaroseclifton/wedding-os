@@ -1,143 +1,149 @@
 import Link from "next/link";
 import { ensureDemoWorkspace } from "@/lib/data/workspace";
-import { getDiy } from "@/lib/data/diy-store";
+import { getStudio } from "@/lib/data/studio-store";
 import { getInventory } from "@/lib/data/inventory-store";
-import { getBudget } from "@/lib/data/budget-store";
-import { APP_TAGLINE } from "@/lib/vowfolk";
+import {
+  KINDS,
+  STAGES,
+  consolidateShop,
+  hoursLeft,
+  nextStep,
+  projectCost,
+  projectProgress,
+} from "@/lib/studio-project";
 import { money } from "@/lib/visual-rooms";
-
-const TOOLS = [
-  { href: "/diy/studio/floral", title: "Flowers", line: "Design arrangements, calculate stems, and plan installs.", photo: "/brand/flowers.jpg" },
-  { href: "/diy/studio/table", title: "Tablescapes", line: "Plan layouts, place settings, linens, and accents.", photo: "/brand/tablescape.jpg" },
-  { href: "/studio/signage", title: "Cricut", line: "Signs, place cards, toppers, tags — cut-ready SVG.", photo: "/brand/paper.jpg" },
-  { href: "/studio/cards", title: "Cards", line: "Guest names onto escort cards, tents, Avery, Cricut.", photo: "/brand/paper.jpg" },
-  { href: "/studio/decor", title: "Decor Builds", line: "Build backdrops, arches, and statement pieces.", photo: "/brand/candles.jpg" },
-  { href: "/studio/inventory", title: "DIY Inventory", line: "Track supplies, tools, and on-hand materials.", photo: "/brand/setting.jpg" },
-  { href: "/diy/calendar", title: "Project Timeline", line: "Plan your build schedule and stay on track.", photo: "/brand/garden.jpg" },
-];
 
 export default async function StudioPage() {
   const { workspace } = await ensureDemoWorkspace();
-  const [diy, inventory, budget] = await Promise.all([
-    getDiy(workspace.id),
-    getInventory(workspace.id),
-    getBudget(workspace.id),
-  ]);
-  const projects = diy.projects || [];
-  const bought = projects.flatMap((p) => p.shopping).filter((s) => s.bought).length;
-  const shop = projects.flatMap((p) => p.shopping).length;
-  const progress = shop ? Math.round((bought / shop) * 100) : projects.length ? 20 : 0;
-  const est = projects.flatMap((p) => p.shopping).reduce((s, i) => s + (i.estEach || 0) * i.qty, 0);
-  const cap = budget.overallLimit || 0;
+  const [studio, inventory] = await Promise.all([getStudio(workspace.id), getInventory(workspace.id)]);
+  const projects = studio.projects;
+  const active = projects.filter((p) => p.stage !== "after");
+  const ready = active.length
+    ? Math.round(active.reduce((s, p) => s + projectProgress(p), 0) / active.length)
+    : 0;
+  const spend = projects.reduce((s, p) => s + projectCost(p), 0);
+  const vendor = projects.reduce((s, p) => s + p.vendorEst, 0);
+  const saved = Math.max(0, vendor - spend);
+  const hours = projects.reduce((s, p) => s + hoursLeft(p), 0);
+  const shop = consolidateShop(projects);
+  const upcoming = active.map(nextStep).filter(Boolean).slice(0, 4);
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-2xl border border-line bg-surface">
-        <div className="grid lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="p-6 sm:p-8">
-            <p className="kicker">Vowfolk Studio</p>
-            <h1 className="mt-3 font-serif text-[clamp(2.2rem,5vw,3.4rem)] leading-none tracking-tight">
-              Vowfolk Studio
-            </h1>
-            <p className="home-script mt-3">{APP_TAGLINE}</p>
-            <p className="mt-3 max-w-md text-sm text-muted">
-              Upload inspiration, build projects, calculate quantities, source materials, and coordinate helpers.
-            </p>
-            <Link href="/planning/vision" className="btn btn-primary mt-6">
-              Upload inspiration
-            </Link>
-          </div>
-          <div className="relative min-h-[12rem]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/flowers.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
-          </div>
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="kicker">Studio</p>
+          <h1 className="mt-2 font-serif text-[clamp(2.2rem,6vw,3.6rem)] leading-none tracking-tight">
+            Your wedding, in the making
+          </h1>
+          <p className="home-script mt-2">See it. Spec it. Get it to the room.</p>
         </div>
-      </section>
+        <Link href="/studio/make" className="btn btn-primary">
+          Make this
+        </Link>
+      </header>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <article className="panel p-5">
-          <p className="kicker">Project progress</p>
-          <p className="mt-2 font-serif text-4xl tabular-nums">{progress}%</p>
-          <p className="mt-1 text-sm text-muted">{shop ? "On track" : "Start a project"}</p>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-line">
-            <div className="h-full rounded-full bg-sage" style={{ width: `${progress}%` }} />
-          </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <article className="rounded-2xl border border-line bg-surface px-4 py-3">
+          <p className="kicker">Active</p>
+          <p className="font-serif text-3xl tabular-nums">{active.length}</p>
+          <p className="text-xs text-muted">{ready}% ready</p>
         </article>
-        <article className="panel p-5">
-          <p className="kicker">Estimated cost</p>
-          <p className="mt-2 font-serif text-4xl">{est ? money(est) : "—"}</p>
-          <p className="mt-1 text-sm text-muted">{cap ? `of ${money(cap)} budget` : "Add estimates on a list"}</p>
+        <article className="rounded-2xl border border-line bg-surface px-4 py-3">
+          <p className="kicker">DIY spend</p>
+          <p className="font-serif text-3xl">{spend ? money(spend) : "—"}</p>
+          <p className="text-xs text-muted">{saved ? `about ${money(saved)} vs hiring` : "Make a project"}</p>
         </article>
-        <article className="panel p-5">
-          <p className="kicker">Inventory</p>
-          <p className="mt-2 font-serif text-4xl tabular-nums">{inventory.boxes.length}</p>
-          <p className="mt-1 text-sm text-muted">{inventory.boxes.length ? "boxes packed" : "No boxes yet"}</p>
+        <article className="rounded-2xl border border-line bg-surface px-4 py-3">
+          <p className="kicker">Hours left</p>
+          <p className="font-serif text-3xl tabular-nums">{hours || "—"}</p>
+          <p className="text-xs text-muted">Across undone steps</p>
+        </article>
+        <article className="rounded-2xl border border-line bg-surface px-4 py-3">
+          <p className="kicker">Boxes</p>
+          <p className="font-serif text-3xl tabular-nums">{inventory.boxes.length}</p>
+          <p className="text-xs text-muted">{shop.length} supply lines</p>
         </article>
       </div>
 
-      <div>
-        <p className="kicker mb-3">Studio tools</p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {TOOLS.map((t) => (
-            <Link key={t.href} href={t.href} className="group overflow-hidden rounded-2xl border border-line bg-surface">
-              <div className="aspect-[16/9] overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={t.photo} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-              </div>
-              <div className="p-4">
-                <h2 className="font-serif text-xl tracking-tight">{t.title}</h2>
-                <p className="mt-1 text-sm text-muted">{t.line}</p>
-                <p className="mt-3 text-xs text-dusty">View projects →</p>
-              </div>
+      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <p className="kicker">Projects</p>
+            <Link href="/studio/projects" className="text-xs underline">
+              All
+            </Link>
+          </div>
+          {projects.length === 0 ? (
+            <p className="text-sm text-muted">
+              Upload a picture you love — or just name it.{" "}
+              <Link href="/studio/make" className="underline">
+                Make this
+              </Link>
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {projects.slice(0, 6).map((p) => (
+                <li key={p.id}>
+                  <Link href={`/studio/projects/${p.id}`} className="block rounded-2xl border border-line bg-surface px-4 py-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{p.title}</span>
+                      <span className="tabular-nums text-muted">{projectProgress(p)}%</span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted">
+                      {KINDS.find((k) => k.id === p.kind)?.label} · {STAGES.find((s) => s.id === p.stage)?.label} · ×{p.qty}
+                    </p>
+                    <div className="mt-2 h-1 overflow-hidden rounded-full bg-line">
+                      <div className="h-full bg-sage" style={{ width: `${projectProgress(p)}%` }} />
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section>
+          <p className="kicker mb-3">Up next</p>
+          {upcoming.length === 0 ? (
+            <p className="text-sm text-muted">Nothing on the week until a project has steps.</p>
+          ) : (
+            <ul className="space-y-2 text-sm">
+              {upcoming.map((s) =>
+                s ? (
+                  <li key={s.id} className="rounded-xl border border-line px-3 py-2">
+                    <span className="text-muted">{s.when}</span>
+                    <span className="block">{s.what}</span>
+                  </li>
+                ) : null
+              )}
+            </ul>
+          )}
+          <Link href="/studio/shop" className="btn btn-ghost mt-4 w-full">
+            Shopping list
+          </Link>
+        </section>
+      </div>
+
+      <section>
+        <p className="kicker mb-3">Rooms</p>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {KINDS.map((k) => (
+            <Link key={k.id} href={k.href} className="rounded-xl border border-line bg-surface px-4 py-3">
+              <p className="font-medium">{k.label}</p>
+              <p className="text-xs text-muted">{k.line}</p>
             </Link>
           ))}
-        </div>
-      </div>
-
-      <div className="grid gap-3 lg:grid-cols-3">
-        <article className="panel p-5">
-          <div className="flex items-center justify-between">
-            <p className="kicker">My projects</p>
-            <Link href="/diy" className="text-xs text-dusty">View all</Link>
-          </div>
-          {projects.length ? (
-            <ul className="mt-3 space-y-3">
-              {projects.slice(0, 4).map((p) => {
-                const n = p.shopping.length;
-                const d = p.shopping.filter((s) => s.bought).length;
-                const pct = n ? Math.round((d / n) * 100) : 0;
-                return (
-                  <li key={p.id}>
-                    <Link href={`/diy/${p.playbookSlug}`} className="block">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">{p.title}</span>
-                        <span className="tabular-nums text-muted">{pct}%</span>
-                      </div>
-                      <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-line">
-                        <div className="h-full bg-sage" style={{ width: `${pct}%` }} />
-                      </div>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="mt-3 text-sm text-muted">Commit a playbook and it lands here.</p>
-          )}
-        </article>
-        <article className="panel p-5 lg:col-span-2">
-          <div className="flex items-center justify-between">
-            <p className="kicker">Upcoming tasks</p>
-            <Link href="/diy/calendar" className="text-xs text-dusty">View full schedule</Link>
-          </div>
-          <p className="mt-3 text-sm text-muted">
-            The week-of calendar is where flowers arrive, stems get conditioned, and the backdrop goes up.
-          </p>
-          <Link href="/diy/calendar" className="btn btn-ghost mt-4">
-            Open build calendar
+          <Link href="/studio/inventory" className="rounded-xl border border-line bg-surface px-4 py-3">
+            <p className="font-medium">Inventory</p>
+            <p className="text-xs text-muted">Boxes, labels, after</p>
           </Link>
-        </article>
-      </div>
+          <Link href="/diy/calendar" className="rounded-xl border border-line bg-surface px-4 py-3">
+            <p className="font-medium">Build calendar</p>
+            <p className="text-xs text-muted">The week, backwards</p>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
