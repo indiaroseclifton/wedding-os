@@ -68,7 +68,7 @@ export function HomeDashboard({
 
   return (
     <div className="home-stage">
-      <img src="/brand/flowers.jpg" alt="" className="home-bloom" />
+      <img src="/brand/blossom.jpg" alt="" className="home-bloom" />
       <div className="home-bloom-wash" />
 
       <div className="home-grid">
@@ -97,7 +97,10 @@ export function HomeDashboard({
           </div>
           <ul className="mt-1">
             {open.length === 0 ? (
-              <li className="py-4 text-sm text-muted">You’re clear this week.</li>
+              <li className="flex items-center gap-3 py-4 text-sm text-muted">
+                <Icon name="sprig" className="h-5 w-5 text-moss/70" />
+                You’re clear this week.
+              </li>
             ) : (
               open.map((row, i) => (
                 <li key={row.id} className="desk-row py-[0.7rem]">

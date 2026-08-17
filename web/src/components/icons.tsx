@@ -106,6 +106,20 @@ function CustomMark({
   className: string;
 }) {
   switch (name) {
+    case "sprig":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className={className}>
+          <path d="M12 21V7" />
+          <path d="M12 16c-2.2-1-4-1.2-6-.4" />
+          <path d="M12 12c2.1-.9 4-1.1 6-.3" />
+          <path d="M12 9c-1.6-1.4-2.8-3.4-3.2-5.4" />
+          <path d="M12 8c1.5-1.5 2.6-3.4 3-5.2" />
+          <circle cx="6.2" cy="14.6" r="1.15" />
+          <circle cx="17.8" cy="10.7" r="1.15" />
+          <circle cx="8.2" cy="5.4" r="1.05" />
+          <circle cx="15.8" cy="4.6" r="1.05" />
+        </svg>
+      );
     case "flower":
       return (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className={className}>

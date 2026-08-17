@@ -656,8 +656,8 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 80% 18%;
-  opacity: 0.62;
+  object-position: 82% 40%;
+  opacity: 0.92;
   pointer-events: none;
 }
 
@@ -669,12 +669,11 @@ html {
     linear-gradient(
       96deg,
       var(--color-paper) 0%,
-      var(--color-paper) 28%,
-      color-mix(in srgb, var(--color-paper) 88%, transparent) 44%,
-      color-mix(in srgb, var(--color-paper) 35%, transparent) 66%,
-      transparent 88%
+      color-mix(in srgb, var(--color-paper) 92%, transparent) 26%,
+      color-mix(in srgb, var(--color-paper) 45%, transparent) 48%,
+      transparent 72%
     ),
-    linear-gradient(to top, var(--color-paper) 0%, color-mix(in srgb, var(--color-paper) 70%, transparent) 22%, transparent 48%);
+    linear-gradient(to top, var(--color-paper) 0%, color-mix(in srgb, var(--color-paper) 55%, transparent) 18%, transparent 40%);
 }
 
 .home-count {

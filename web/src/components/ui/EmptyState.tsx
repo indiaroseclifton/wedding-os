@@ -8,7 +8,7 @@ export function EmptyState({
   primaryLabel,
   secondaryHref,
   secondaryLabel,
-  icon = "spark",
+  icon = "sprig",
 }: {
   title: string;
   body: string;

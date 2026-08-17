@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { getDietary } from "@/lib/data/dietary-store";
 import { PrintButton } from "@/components/ui/PrintButton";
+import { PrintSeal } from "@/components/ui/PrintSeal";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { LeftoverPlan } from "@/components/dietary/LeftoverPlan";
 
@@ -31,7 +32,7 @@ export default async function DietaryPacketPage() {
       <RoomSubnav room="guests" />
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
-          <p className="kicker kicker-moss">Caterer packet</p>
+          <PrintSeal label="Caterer packet" />
           <h1 className="mt-1 font-serif text-4xl">What the kitchen needs</h1>
         </div>
         <div className="flex gap-2">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PrintButton } from "@/components/ui/PrintButton";
+import { PrintSeal } from "@/components/ui/PrintSeal";
 import { ensureDemoWorkspace, loadWorkspaceMeta } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import {
@@ -39,7 +40,7 @@ export default async function PaymentStatementPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
-          <p className="kicker kicker-moss">Vendor ledger</p>
+          <PrintSeal label="Vendor ledger" />
           <h1 className="mt-1 font-serif text-4xl">Statement</h1>
         </div>
         <div className="flex gap-2">
@@ -51,7 +52,7 @@ export default async function PaymentStatementPage() {
       </div>
 
       <header className="hidden print:block">
-        <p className="kicker kicker-moss">Vendor ledger</p>
+        <PrintSeal label="Vendor ledger" />
         <h1 className="mt-1 font-serif text-4xl">{meta.coupleNames || meta.name || "Wedding"}</h1>
         <p className="mt-1 text-sm text-muted">
           {meta.weddingDate || ""}

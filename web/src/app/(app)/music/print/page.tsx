@@ -2,6 +2,7 @@ import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { getMusic } from "@/lib/data/music-store";
 import { DJ_CUES, mergeCues } from "@/lib/dj-cues";
 import { PrintButton } from "@/components/ui/PrintButton";
+import { PrintSeal } from "@/components/ui/PrintSeal";
 import Link from "next/link";
 
 export default async function DjPrintPage() {
@@ -12,7 +13,7 @@ export default async function DjPrintPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between print:hidden">
         <div>
-          <p className="kicker kicker-moss">DJ packet</p>
+          <PrintSeal label="DJ packet" />
           <h1 className="mt-1 font-serif text-4xl">Cue book</h1>
         </div>
         <div className="flex gap-2">

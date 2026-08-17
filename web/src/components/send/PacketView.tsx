@@ -1,6 +1,7 @@
 import type { AssembledPacket } from "@/lib/send/assemble";
 import type { AttachmentId } from "@/lib/send/attachments";
 import { ATTACHMENTS } from "@/lib/send/attachments";
+import { PrintSeal } from "@/components/ui/PrintSeal";
 
 function dollars(n: number) {
   return n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -26,7 +27,7 @@ export function PacketView({
   return (
     <article className="space-y-8 text-ink">
       <header className="border-b border-line pb-5">
-        <p className="kicker kicker-moss">Vendor packet</p>
+        <PrintSeal label="Vendor packet" />
         <h1 className="mt-1 font-serif text-4xl leading-tight">{packet.vendor.name}</h1>
         <p className="mt-1 text-sm text-muted">
           {packet.couple}
