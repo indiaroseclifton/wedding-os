@@ -41,7 +41,7 @@ export default async function CardsPrintPage({
         .sheet {
           display: grid;
           margin: 0 auto;
-          transform: scale(var(--print-scale, 1));
+          transform: translate(var(--print-x, 0in), var(--print-y, 0in)) scale(var(--print-scale, 1));
           transform-origin: top left;
         }
         .sheet.letter-escort { width: 7.7in; height: 10.2in; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); }

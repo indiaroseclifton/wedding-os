@@ -147,12 +147,31 @@ export type PrintProfile = {
   kind: PrintKind;
   borderless: boolean;
   scale: number;
+  offsetX: number;
+  offsetY: number;
 };
 
 export const PRINT_KEY = "vowfolk-print";
+export const PRINT_STEP = 1 / 16;
 
 export function defaultPrint(): PrintProfile {
-  return { kind: "inkjet", borderless: false, scale: 1 };
+  return { kind: "inkjet", borderless: false, scale: 1, offsetX: 0, offsetY: 0 };
+}
+
+export function clampOffset(n: number) {
+  if (!Number.isFinite(n)) return 0;
+  const stepped = Math.round(n / PRINT_STEP) * PRINT_STEP;
+  return Math.max(-0.5, Math.min(0.5, Math.round(stepped * 1000) / 1000));
+}
+
+export function formatOffset(n: number) {
+  if (!n) return "0";
+  const sixteenths = Math.round(n / PRINT_STEP);
+  const sign = sixteenths > 0 ? "+" : "−";
+  const abs = Math.abs(sixteenths);
+  if (abs === 16) return `${sign}1″`;
+  if (abs % 16 === 0) return `${sign}${abs / 16}″`;
+  return `${sign}${abs}/16″`;
 }
 
 export function scaleFromMeasure(inches: number) {

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   PRINT_KEY,
   defaultPrint,
+  formatOffset,
   pressAdvice,
   type PrintKind,
   type PrintProfile,
@@ -29,7 +30,6 @@ export function PrintPress({ stock = "letter" }: { stock?: "letter" | "avery5302
   }
 
   const lines = pressAdvice(p.kind, pack);
-  const pct = Math.round(p.scale * 100);
 
   return (
     <section className="rounded-2xl border border-line bg-surface p-5 sm:p-6">
@@ -85,8 +85,7 @@ export function PrintPress({ stock = "letter" }: { stock?: "letter" | "avery5302
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <p className="text-sm">
-          Scale <span className="font-medium tabular-nums">{pct}%</span>
-          {pct !== 100 ? " — from the 2″ square" : " — print the square if names miss the holes"}
+          {Math.round(p.scale * 100)}% · {formatOffset(p.offsetX)} across · {formatOffset(p.offsetY)} down
         </p>
         <Link href="/studio/cards/calibrate" className="btn btn-ghost">
           Calibrate
