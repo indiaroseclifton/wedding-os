@@ -84,6 +84,7 @@ export default function VendorBrowsePage() {
   const [plannedByEnv, setPlannedByEnv] = useState<Record<string, number>>({});
   const [followVision, setFollowVision] = useState(true);
   const [allowedCats, setAllowedCats] = useState<string[] | null>(null);
+  const [diyFriendly, setDiyFriendly] = useState(false);
 
   async function load() {
     const res = await fetch("/api/directory");
@@ -205,6 +206,7 @@ export default function VendorBrowsePage() {
       if (band !== "All" && v.priceBand !== band) return false;
       if (city !== "All" && v.city !== city) return false;
       if (style !== "All" && !v.styles.includes(style)) return false;
+      if (diyFriendly && !(v.goodFor || []).some((item) => /diy|collab|partial|a la carte/i.test(item))) return false;
       if (q.trim()) {
         const hay = `${v.name} ${v.city} ${v.blurb} ${v.styles.join(" ")}`.toLowerCase();
         if (!hay.includes(q.trim().toLowerCase())) return false;
@@ -239,6 +241,7 @@ export default function VendorBrowsePage() {
     band,
     city,
     style,
+    diyFriendly,
     q,
     followVision,
     vibe,
@@ -450,6 +453,10 @@ export default function VendorBrowsePage() {
             <option key={s}>{s}</option>
           ))}
         </select>
+        <label className="flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface px-3 text-sm">
+          <input type="checkbox" checked={diyFriendly} onChange={(e) => setDiyFriendly(e.target.checked)} />
+          DIY-friendly
+        </label>
         <Link href="/vendors/shortlist" className="rounded-full border border-line px-3 py-2 text-xs font-medium">
           Compare ({shortlist.length})
         </Link>
@@ -486,6 +493,7 @@ export default function VendorBrowsePage() {
                   Usually {rangeFor(v.category).low}–{rangeFor(v.category).high} without a venue
                 </p>
                 <p className="mt-2 text-sm text-ink-soft">{v.blurb}</p>
+                {(v.goodFor || []).some((item) => /diy|collab|partial|a la carte/i.test(item)) ? <p className="mt-2 inline-flex rounded-full bg-moss-soft px-2.5 py-1 text-[11px] font-medium">DIY-friendly collaboration</p> : null}
                 <p className="mt-1 text-[11px] text-muted">
                   from {v.startingFrom}
                   {v.leadWeeks ? ` · book ${v.leadWeeks}` : ""}

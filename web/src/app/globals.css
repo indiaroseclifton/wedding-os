@@ -5,7 +5,7 @@
   --color-surface: #ffffff;
   --color-ink: #272727;
   --color-ink-soft: #5c5c5c;
-  --color-muted: #8a8680;
+  --color-muted: #6f6b65;
   --color-line: #e8e6e2;
   --color-moss: #272727;
   --color-moss-fg: #fffbf6;
@@ -870,9 +870,9 @@ html {
 }
 
 .kicker {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-muted);
 }

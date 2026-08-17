@@ -78,6 +78,7 @@ export function RoomSubnav({ room }: { room?: NavRoom }) {
                         key={item.href + item.label}
                         href={item.href}
                         role="menuitem"
+                        aria-current={on ? "page" : undefined}
                         scroll={false}
                         className={`flex min-h-10 items-center rounded-xl px-3 text-sm ${
                           on ? "bg-surface font-medium" : "hover:bg-surface/70"

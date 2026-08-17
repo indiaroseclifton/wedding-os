@@ -27,7 +27,7 @@ export async function requireCoupleApi() {
   if (!sessionResult.ok) return sessionResult;
 
   const membership = await getCurrentMembership(sessionResult.session.userId);
-  if (membership?.role === "WEDDING_PARTY") {
+  if (membership && membership.role !== "COUPLE") {
     return {
       ok: false as const,
       response: NextResponse.json(
@@ -55,7 +55,7 @@ export async function requireTaskAccess(taskId: string) {
 
   const membership = await getCurrentMembership(sessionResult.session.userId);
   if (
-    membership?.role === "WEDDING_PARTY" &&
+    membership && membership.role !== "COUPLE" &&
     task.ownerId !== sessionResult.session.userId
   ) {
     return {

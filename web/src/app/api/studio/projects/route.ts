@@ -9,6 +9,7 @@ import {
   setStage,
   toggleMaterial,
   toggleStep,
+  upsertKindProject,
 } from "@/lib/data/studio-store";
 
 export async function GET() {
@@ -33,6 +34,21 @@ export async function POST(request: Request) {
         inspiration: body.inspiration,
         intent: body.intent,
         budget: Number(body.budget) || 0,
+      });
+      return NextResponse.json({ studio });
+    }
+    if (body.action === "upsert_kind") {
+      const studio = await upsertKindProject(workspace.id, {
+        kind: body.kind,
+        title: String(body.title || "Untitled project"),
+        qty: Number(body.qty) || 1,
+        materials: Array.isArray(body.materials) ? body.materials : [],
+        vendorEst: Number(body.vendorEst) || 0,
+        note: typeof body.note === "string" ? body.note : "",
+        inspiration: typeof body.inspiration === "string" ? body.inspiration : "",
+        budget: Number(body.budget) || 0,
+        owner: typeof body.owner === "string" ? body.owner : "",
+        steps: Array.isArray(body.steps) ? body.steps : [],
       });
       return NextResponse.json({ studio });
     }

@@ -79,6 +79,7 @@ export function DeskNav({
                         className={`flex min-h-11 items-center rounded-lg px-3 text-[14px] ${
                           on ? "bg-paper font-medium text-ink" : "text-ink-soft hover:bg-paper/70 hover:text-ink"
                         }`}
+                        aria-current={on ? "page" : undefined}
                       >
                         {child.label}
                       </Link>
@@ -91,6 +92,7 @@ export function DeskNav({
                               className={`ml-3 flex min-h-10 items-center rounded-lg px-3 text-[13px] ${
                                 leafOn(c.href) ? "text-ink" : "text-muted hover:text-ink"
                               }`}
+                              aria-current={leafOn(c.href) ? "page" : undefined}
                             >
                               {c.label}
                             </Link>

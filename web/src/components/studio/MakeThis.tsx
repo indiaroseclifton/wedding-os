@@ -14,7 +14,21 @@ export function MakeThis() {
   const [title, setTitle] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [referenceName, setReferenceName] = useState("");
   const tmpl = TEMPLATES.find((t) => t.id === templateId) || TEMPLATES[0];
+
+  function uploadReference(file?: File) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setMsg("Choose an image file");
+    if (file.size > 4_000_000) return setMsg("Keep the reference image under 4 MB");
+    const reader = new FileReader();
+    reader.onload = () => {
+      setInspiration(String(reader.result || ""));
+      setReferenceName(file.name);
+      setMsg(null);
+    };
+    reader.readAsDataURL(file);
+  }
 
   async function make() {
     setBusy(true);
@@ -43,20 +57,28 @@ export function MakeThis() {
         <p className="kicker">Studio</p>
         <h1 className="mt-2 font-serif text-[clamp(2.2rem,6vw,3.6rem)] leading-none tracking-tight">Make this</h1>
         <p className="home-script mt-2">See it. Spec it. Build it.</p>
-        <p className="mt-2 text-sm text-muted">
-          We do not guess flowers from a screenshot. You name what you saw. We write the recipe, the list, and the week.
-        </p>
+        <p className="mt-2 text-sm text-muted">Upload the reference. Confirm or correct the closest starting recipe, then Vowfolk turns it into quantities, sourcing and build work.</p>
       </header>
 
-      <label className="block text-sm">
-        <span className="kicker">What did you see?</span>
+      <section className="grid gap-4 rounded-[1.5rem] border border-line bg-surface p-5 sm:grid-cols-[13rem_minmax(0,1fr)]">
+        <label className="flex min-h-52 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-line bg-paper text-center">
+          {inspiration.startsWith("data:image/") ? <img src={inspiration} alt="Uploaded inspiration" className="h-full min-h-52 w-full object-cover" /> : <><span className="font-serif text-2xl">Add a photo</span><span className="mt-2 px-4 text-xs text-muted">JPG, PNG or WebP · up to 4 MB</span></>}
+          <input type="file" accept="image/*" className="sr-only" onChange={(e) => uploadReference(e.target.files?.[0])} />
+        </label>
+        <div>
+          <p className="kicker kicker-moss">1 · The reference</p>
+          <p className="mt-2 font-serif text-2xl">{referenceName || "Photo or link"}</p>
+          <label className="mt-4 block text-sm">
+        <span className="kicker">Or paste a link / describe it</span>
         <textarea
           className="field mt-1 min-h-24"
           placeholder="Pinterest URL, or: low garden centerpiece, hydrangea and trailing green"
-          value={inspiration}
-          onChange={(e) => setInspiration(e.target.value)}
+          value={inspiration.startsWith("data:image/") ? "" : inspiration}
+          onChange={(e) => { setInspiration(e.target.value); setReferenceName(""); }}
         />
       </label>
+        </div>
+      </section>
 
       <div>
         <p className="kicker">What do you want to do with it?</p>
@@ -78,7 +100,8 @@ export function MakeThis() {
       {intent !== "style" ? (
         <>
           <div>
-            <p className="kicker">Start from</p>
+            <p className="kicker kicker-moss">2 · Confirm or correct our starting read</p>
+            <p className="mt-2 text-sm text-muted">The first match is only a starting point. Pick the recipe that is actually closest to the reference.</p>
             <div className="mt-2 grid gap-2">
               {TEMPLATES.map((t) => (
                 <button

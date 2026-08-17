@@ -111,6 +111,35 @@ export function RoomCanvas({
     persist(positions, next);
   }
 
+  function fitTables() {
+    if (!tables.length) return;
+    const cols = Math.max(1, Math.ceil(Math.sqrt(tables.length * 1.5)));
+    const rows = Math.ceil(tables.length / cols);
+    const next = tables.map((table, index) => ({
+      tableId: table.id,
+      x: cols === 1 ? 50 : 14 + (index % cols) * (72 / (cols - 1)),
+      y: rows === 1 ? 50 : 24 + Math.floor(index / cols) * (58 / (rows - 1)),
+    }));
+    setPositions(next);
+    persist(next, objects);
+  }
+
+  function nudge(kind: "table" | "obj", id: string, e: React.KeyboardEvent<HTMLButtonElement>) {
+    const delta = e.shiftKey ? 5 : 1;
+    const move = e.key === "ArrowLeft" ? { x: -delta, y: 0 } : e.key === "ArrowRight" ? { x: delta, y: 0 } : e.key === "ArrowUp" ? { x: 0, y: -delta } : e.key === "ArrowDown" ? { x: 0, y: delta } : null;
+    if (!move) return;
+    e.preventDefault();
+    if (kind === "table") {
+      const next = positions.map((row) => row.tableId === id ? { ...row, x: Math.min(92, Math.max(8, row.x + move.x)), y: Math.min(90, Math.max(10, row.y + move.y)) } : row);
+      setPositions(next);
+      persist(next, objects);
+    } else {
+      const next = objects.map((row) => row.id === id ? { ...row, x: Math.min(92, Math.max(8, row.x + move.x)), y: Math.min(90, Math.max(10, row.y + move.y)) } : row);
+      setObjects(next);
+      persist(positions, next);
+    }
+  }
+
   const overlaps = (() => {
     const hits: string[] = [];
     for (let i = 0; i < tables.length; i++) {
@@ -132,6 +161,7 @@ export function RoomCanvas({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 print:hidden">
+        <button type="button" onClick={fitTables} className="min-h-11 rounded-full bg-ink px-4 text-xs text-ivory">Zoom to fit all {tables.length} tables</button>
         {FIXTURES.map((f) => (
           <button
             key={f.kind}
@@ -203,6 +233,8 @@ export function RoomCanvas({
               setDrag({ kind: "obj", id: o.id });
               setSelectedObj(o.id);
             }}
+            onKeyDown={(e) => nudge("obj", o.id, e)}
+            aria-label={`${o.label}. Use arrow keys to move; hold Shift for a larger move.`}
             className="absolute -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-lg border border-dashed border-ink/30 bg-surface/50 text-[10px] uppercase tracking-wide text-ink/70 backdrop-blur-sm"
             style={{
               left: `${o.x}%`,
@@ -225,12 +257,14 @@ export function RoomCanvas({
                 e.currentTarget.setPointerCapture(e.pointerId);
                 setDrag({ kind: "table", id: t.id });
               }}
+              onKeyDown={(e) => nudge("table", t.id, e)}
               onClick={() => {
                 if (selected.length) onAssign(selected, t.name);
               }}
               className={`absolute flex -translate-x-1/2 -translate-y-1/2 cursor-grab flex-col items-center justify-center bg-surface/90 text-center shadow-sm ${
                 t.shape === "RECT" || t.shape === "HEAD" ? "rounded-lg" : "rounded-full"
               }`}
+              aria-label={`${t.name}, ${fill} of ${t.capacity} seats. Use arrow keys to move; hold Shift for a larger move.`}
               style={{ left: `${pos.x}%`, top: `${pos.y}%`, width: "14%", aspectRatio: "1" }}
             >
               <span className="font-serif text-sm">{t.name}</span>
@@ -241,10 +275,10 @@ export function RoomCanvas({
           );
         })}
       </div>
-      <p className="text-xs text-muted print:hidden">
-        Drag tables and fixtures. Select people below, then tap a table. Tap a fixture, then remove.
-        {overlaps.length ? ` · Overlap: ${overlaps.join(", ")}` : ""}
-      </p>
+      <div className="flex flex-wrap justify-between gap-2 text-xs text-muted print:hidden" aria-live="polite">
+        <p>Drag or use arrow keys to move. Select people below, then choose a table.</p>
+        <p className={overlaps.length ? "font-medium text-clay" : "text-moss"}>{overlaps.length ? `Overlap: ${overlaps.join(", ")}` : `All ${tables.length} tables are visible · traffic spacing clear`}</p>
+      </div>
     </div>
   );
 }

@@ -29,6 +29,7 @@ export default async function GuestsPage() {
   const pending = guests.filter((g) =>
     ["UNKNOWN", "INVITED", "MAYBE"].includes(g.rsvp)
   ).length;
+  const declined = guests.filter((g) => g.rsvp === "NO").length;
 
   const tableNames = Array.from(
     new Set([
@@ -75,48 +76,47 @@ export default async function GuestsPage() {
           </Link>
         </div>
       </div>
+      <nav aria-label="Guest workspace" className="flex flex-wrap gap-2 border-b border-line pb-4">
+        <a href="#rsvp-health" className="rounded-full bg-ink px-4 py-2 text-sm text-ivory">RSVP health</a>
+        <a href="#communications" className="rounded-full border border-line bg-surface px-4 py-2 text-sm">Communications</a>
+        <a href="#guest-list" className="rounded-full border border-line bg-surface px-4 py-2 text-sm">Guest list</a>
+      </nav>
+
+      <section id="rsvp-health" aria-labelledby="rsvp-health-heading">
+        <div className="mb-4">
+          <p className="kicker">RSVP health</p>
+          <h2 id="rsvp-health-heading" className="mt-2 font-serif text-3xl">Replies without the fuzzy math</h2>
+          <p className="mt-1 text-sm text-muted">Invitation records count households or parties. Confirmed seats include named plus-ones.</p>
+        </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="panel p-4 text-center">
           <p className="font-serif text-3xl tabular-nums">{guests.length}</p>
-          <p className="kicker mt-1">Invited</p>
+          <p className="kicker mt-1">Invitation records</p>
         </div>
         <div className="panel p-4 text-center">
           <p className="font-serif text-3xl tabular-nums">{plates}</p>
-          <p className="kicker mt-1">RSVP yes</p>
+          <p className="kicker mt-1">Confirmed seats</p>
         </div>
         <div className="panel p-4 text-center">
           <p className="font-serif text-3xl tabular-nums">{pending}</p>
-          <p className="kicker mt-1">Pending</p>
+          <p className="kicker mt-1">Awaiting reply</p>
         </div>
         <div className="panel p-4 text-center">
-          <p className="font-serif text-3xl tabular-nums">{holding}</p>
-          <p className="kicker mt-1">Holding</p>
+          <p className="font-serif text-3xl tabular-nums">{declined}</p>
+          <p className="kicker mt-1">Declined</p>
         </div>
       </div>
-      <ImportContacts />
+        <p className="mt-3 text-sm text-muted">{holding} seats are still being held across yes, maybe and unanswered invitations.</p>
+      </section>
 
-      {guests.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { label: "People", value: String(guests.length) },
-            { label: "Waiting", value: String(pending) },
-            { label: "Holding", value: String(holding), hint: "Everyone but no" },
-            { label: "Plates", value: String(plates), hint: "Yes + extras" },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="rounded-xl border border-line bg-surface px-3 py-3 text-center"
-            >
-              <p className="font-serif text-2xl text-ink">{s.value}</p>
-              <p className="text-xs text-muted">{s.label}</p>
-              {"hint" in s && s.hint ? <p className="text-[10px] text-muted">{s.hint}</p> : null}
-            </div>
-          ))}
-        </div>
-      )}
+      <section id="communications" aria-labelledby="communications-heading" className="space-y-4">
+        <div><p className="kicker">Communications</p><h2 id="communications-heading" className="mt-2 font-serif text-3xl">Chase, import and keep context</h2></div>
+        {guests.length > 0 && <NudgePanel />}
+        <ImportContacts />
+      </section>
 
-      {guests.length > 0 && <NudgePanel />}
-
+      <section id="guest-list" aria-labelledby="guest-list-heading" className="space-y-4">
+        <div><p className="kicker">Guest list</p><h2 id="guest-list-heading" className="mt-2 font-serif text-3xl">People and parties</h2></div>
       {guests.length === 0 ? (
         <EmptyState
           title="No guests yet"
@@ -152,6 +152,7 @@ export default async function GuestsPage() {
           }))}
         />
       )}
+      </section>
     </div>
   );
 }

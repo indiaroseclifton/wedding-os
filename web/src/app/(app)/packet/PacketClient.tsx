@@ -55,6 +55,13 @@ export function PacketClient({
     setMsg(res.ok ? "Sent" : "Could not send — check Resend, or print instead.");
   }
 
+  function changeAudience(value: string) {
+    setAudience(value);
+    if (value === "vendor") setOn({ ros: true, seating: false, vendors: true, dietary: true });
+    else if (value === "party") setOn({ ros: true, seating: true, vendors: false, dietary: false });
+    else setOn({ ros: true, seating: true, vendors: true, dietary: true });
+  }
+
   return (
     <div className="space-y-6">
       <style>{hide}</style>
@@ -62,14 +69,28 @@ export function PacketClient({
       <div className="flex flex-wrap items-start justify-between gap-3 print:hidden">
         <div>
           <h1 className="font-serif text-4xl">Day-of packet</h1>
-          <p className="mt-1 text-sm text-muted">Trim the sections. Print, or email the coordinator.</p>
+          <p className="mt-1 text-sm text-muted">Preview each role, trim the sections, then print or email the handoff.</p>
         </div>
         <PrintButton label="Print / PDF" />
       </div>
 
-      <div className="flex flex-wrap gap-3 print:hidden">
+      <div className="rounded-2xl border border-line bg-surface p-4 print:hidden">
+        <div className="flex flex-wrap items-center gap-3">
+        <span className="kicker">Preview as</span>
+        <select
+          value={audience}
+          onChange={(e) => changeAudience(e.target.value)}
+          className="min-h-11 rounded-lg border border-line bg-paper px-3 text-sm"
+          aria-label="Packet audience preview"
+        >
+          <option value="coordinator">Coordinator</option>
+          <option value="vendor">Vendor</option>
+          <option value="party">Wedding party</option>
+        </select>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-4">
         {SECTIONS.map((s) => (
-          <label key={s.id} className="flex items-center gap-2 text-xs">
+          <label key={s.id} className="flex min-h-11 items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={on[s.id]}
@@ -78,15 +99,7 @@ export function PacketClient({
             {s.label}
           </label>
         ))}
-        <select
-          value={audience}
-          onChange={(e) => setAudience(e.target.value)}
-          className="rounded-lg border border-line px-2 py-1 text-xs"
-        >
-          <option value="coordinator">For coordinator</option>
-          <option value="vendor">For vendors</option>
-          <option value="party">For the party</option>
-        </select>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-end gap-2 print:hidden">
@@ -105,7 +118,7 @@ export function PacketClient({
         >
           Email packet
         </button>
-        {msg && <p className="text-xs text-muted">{msg}</p>}
+        {msg && <p className="text-sm text-muted" aria-live="polite">{msg}</p>}
       </div>
 
       {children}

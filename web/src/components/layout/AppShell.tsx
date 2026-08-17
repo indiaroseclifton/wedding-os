@@ -93,7 +93,7 @@ export function AppShell({
         <div className="flex items-center gap-1">
           <CommandPalette tone="paper" iconOnly />
           <Link
-            href="/checklist"
+            href="/dashboard#attention"
             className="relative flex h-11 w-11 items-center justify-center rounded-full text-ink-soft hover:bg-paper"
             aria-label="Notifications"
           >
@@ -150,6 +150,7 @@ export function AppShell({
                   className={`flex min-h-12 flex-col items-center justify-center gap-0.5 text-[10px] font-medium tracking-wide ${
                     on ? "text-ink" : "text-muted"
                   }`}
+                  aria-current={on ? "page" : undefined}
                 >
                   {tab.label}
                 </Link>

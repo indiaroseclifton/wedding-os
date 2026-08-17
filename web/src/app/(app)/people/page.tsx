@@ -22,6 +22,16 @@ type Invite = {
   status: string;
 };
 
+const ROLE_LABELS: Record<string, string> = {
+  COUPLE: "Couple / owner",
+  PLANNER: "Planner / coordinator",
+  WEDDING_PARTY: "Wedding party",
+  FAMILY: "Family contributor",
+  DIY_HELPER: "DIY build helper",
+  VENDOR: "Vendor",
+  VIEWER: "Read-only approver",
+};
+
 export default function PeoplePage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
@@ -86,7 +96,7 @@ export default function PeoplePage() {
       <div>
         <p className="kicker kicker-moss">Day-of</p>
         <h1 className="title mt-2">People</h1>
-        <p className="deck mt-2">Partner or party. They get the smaller desk.</p>
+        <p className="deck mt-2">Invite each person into a focused workspace with only the work they own.</p>
       </div>
 
       <form onSubmit={createInvite} className="glass-panel space-y-3 rounded-2xl p-5">
@@ -111,6 +121,11 @@ export default function PeoplePage() {
         >
           <option value="WEDDING_PARTY">Wedding party</option>
           <option value="COUPLE">Partner / couple</option>
+          <option value="PLANNER">Planner / coordinator</option>
+          <option value="FAMILY">Family contributor</option>
+          <option value="DIY_HELPER">DIY build helper</option>
+          <option value="VENDOR">Vendor</option>
+          <option value="VIEWER">Read-only approver</option>
         </select>
         {error && <p className="text-xs text-clay">{error}</p>}
         <button
@@ -153,7 +168,7 @@ export default function PeoplePage() {
                   {m.name}
                   <span className="text-xs text-muted">
                     {" "}
-                    · {m.role}
+                    · {ROLE_LABELS[m.role] || m.role}
                     {m.email ? ` · ${m.email}` : ""}
                   </span>
                 </span>
@@ -184,7 +199,7 @@ export default function PeoplePage() {
                       {i.name || i.email || "Invite"}
                       <span className="text-xs text-muted">
                         {" "}
-                        · {i.role} · {i.status}
+                        · {ROLE_LABELS[i.role] || i.role} · {i.status}
                       </span>
                     </p>
                     {i.status === "PENDING" && (

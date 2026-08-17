@@ -13,61 +13,96 @@ export type NavGroup = {
 };
 
 const PLAN: NavNode[] = [
-  { href: "/planning", label: "Overview" },
-  { href: "/planning/vision", label: "Vision" },
-  { href: "/together", label: "Together" },
-  { href: "/decisions", label: "Decisions", children: [{ href: "/decisions", label: "All" }, { href: "/decisions/path", label: "Hire or make" }] },
-  { href: "/checklist", label: "Checklist" },
-  { href: "/vendors", label: "Vendors", children: [{ href: "/vendors", label: "Team" }, { href: "/send", label: "Packets" }, { href: "/vendors/browse", label: "Find" }] },
-  { href: "/budget", label: "Budget" },
-  { href: "/payments", label: "Payments" },
-  { href: "/registry", label: "Registry" },
-  { href: "/traditions", label: "Traditions" },
-  { href: "/legal", label: "Names" },
-  { href: "/timeline", label: "Timeline" },
+  {
+    href: "/planning/vision",
+    label: "Vision",
+    children: [
+      { href: "/planning/vision", label: "Wedding brief" },
+      { href: "/moodboard", label: "Moodboard" },
+      { href: "/together", label: "Together" },
+    ],
+  },
+  {
+    href: "/planning",
+    label: "Plan",
+    children: [
+      { href: "/planning", label: "Overview" },
+      { href: "/decisions", label: "Decisions" },
+      { href: "/checklist", label: "Checklist" },
+      { href: "/timeline", label: "Timeline" },
+    ],
+  },
+  {
+    href: "/budget",
+    label: "Money",
+    children: [
+      { href: "/budget", label: "Budget" },
+      { href: "/payments", label: "Payments" },
+      { href: "/registry", label: "Registry" },
+    ],
+  },
+  {
+    href: "/vendors",
+    label: "Vendors",
+    children: [
+      { href: "/vendors", label: "Team" },
+      { href: "/vendors/browse", label: "Find" },
+      { href: "/send", label: "Packets" },
+    ],
+  },
+  {
+    href: "/guests",
+    label: "Guests",
+    children: [
+      { href: "/guests", label: "Guest list" },
+      { href: "/events", label: "Events & RSVP" },
+      { href: "/seating", label: "Seating" },
+      { href: "/travel", label: "Travel" },
+    ],
+  },
 ];
 
-const PEOPLE: NavNode[] = [
-  { href: "/guests", label: "List", children: [{ href: "/guests", label: "Everyone" }, { href: "/guests/chase", label: "The chase" }, { href: "/guests/new", label: "Add one" }] },
-  { href: "/events", label: "Events" },
-  { href: "/seating", label: "Seating", children: [{ href: "/seating", label: "Chart" }, { href: "/seating/usher", label: "Usher card" }, { href: "/studio/cards", label: "Cards" }] },
-  { href: "/site", label: "The letter", children: [{ href: "/site", label: "Write" }, { href: "/site/preview", label: "See as a guest" }] },
-  { href: "/travel", label: "Travel" },
-  { href: "/dietary", label: "Dietary" },
-];
+const PEOPLE: NavNode[] = PLAN.filter((item) => item.label === "Guests");
 
 const STUDIO: NavNode[] = [
-  { href: "/studio", label: "Studio Home" },
-  { href: "/studio/make", label: "Make this" },
-  { href: "/studio/projects", label: "Projects" },
-  { href: "/planning/vision", label: "Inspiration" },
+  { href: "/studio", label: "Projects" },
   { href: "/diy/studio/floral", label: "Flowers" },
   { href: "/diy/studio/table", label: "Tables" },
-  { href: "/studio/cards", label: "Print" },
-  { href: "/studio/signage", label: "Cricut" },
-  { href: "/studio/decor", label: "Décor" },
-  { href: "/studio/shop", label: "Shopping" },
-  { href: "/studio/inventory", label: "Inventory" },
-  { href: "/diy/calendar", label: "Build calendar" },
+  {
+    href: "/studio/cards",
+    label: "Print",
+    children: [
+      { href: "/studio/cards", label: "Cards" },
+      { href: "/studio/signage", label: "Cricut & signs" },
+      { href: "/studio/decor", label: "Décor builds" },
+    ],
+  },
+  {
+    href: "/studio/shop",
+    label: "Supplies",
+    children: [
+      { href: "/studio/shop", label: "Shopping" },
+      { href: "/studio/inventory", label: "Inventory & boxes" },
+    ],
+  },
+  { href: "/diy/calendar", label: "Build week" },
 ];
 
 const DAY: NavNode[] = [
-  { href: "/day-of", label: "Call sheet" },
-  { href: "/planning/party", label: "Party" },
-  { href: "/run-of-show", label: "Edit times" },
-  { href: "/music", label: "Music" },
+  { href: "/day-of", label: "Live run", children: [{ href: "/run-of-show", label: "Edit timeline" }, { href: "/music", label: "Music" }] },
+  { href: "/planning/party", label: "Team" },
   { href: "/packet", label: "Packet" },
 ];
 
 const AFTER: NavNode[] = [
-  { href: "/after", label: "The weeks after" },
+  { href: "/after#returns", label: "Returns" },
   { href: "/thanks", label: "Thank-yous" },
+  { href: "/after#reviews", label: "Reviews" },
 ];
 
 export const ROOM_GROUPS: Record<"before" | "studio" | "day" | "after", NavGroup[]> = {
   before: [
-    { label: "Plan", href: "/planning", items: PLAN },
-    { label: "People", href: "/guests", items: PEOPLE },
+    { label: "Before", href: "/planning", items: PLAN },
   ],
   studio: [{ label: "Studio", href: "/studio", items: STUDIO }],
   day: [{ label: "The day", href: "/day-of", items: DAY }],
