@@ -20,7 +20,7 @@ const ROOMS: Hit[] = [
   { title: "Integrations", href: "/integrations", type: "Room" },
 ];
 
-export function CommandPalette({ tone = "paper" }: { tone?: "paper" | "onPhoto" }) {
+export function CommandPalette({ tone = "paper", iconOnly = false }: { tone?: "paper" | "onPhoto"; iconOnly?: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -36,8 +36,15 @@ export function CommandPalette({ tone = "paper" }: { tone?: "paper" | "onPhoto" 
       }
       if (e.key === "Escape") setOpen(false);
     }
+    function onSearch() {
+      setOpen(true);
+    }
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    document.addEventListener("wedding-search", onSearch);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("wedding-search", onSearch);
+    };
   }, []);
 
   useEffect(() => {
@@ -87,17 +94,30 @@ export function CommandPalette({ tone = "paper" }: { tone?: "paper" | "onPhoto" 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`hidden items-center gap-2 rounded-full px-3 py-1.5 text-xs sm:inline-flex ${
-          tone === "onPhoto"
-            ? "border border-white/70 bg-surface text-ink-soft shadow-sm"
-            : "border border-line text-muted"
+        className={`items-center justify-center ${
+          iconOnly
+            ? "inline-flex h-11 w-11 rounded-full text-ink-soft hover:bg-paper"
+            : `hidden items-center gap-2 rounded-full px-3 py-1.5 text-xs sm:inline-flex ${
+                tone === "onPhoto"
+                  ? "border border-white/70 bg-surface text-ink-soft shadow-sm"
+                  : "border border-line text-muted"
+              }`
         }`}
+        aria-label="Search"
       >
-        Search
-        <kbd className="rounded border border-line bg-paper px-1.5 py-0.5 text-[10px] font-medium text-ink-soft">
-          ⌘K
-        </kbd>
+        {iconOnly ? (
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <circle cx="11" cy="11" r="6" />
+            <path d="M16 16l4 4" />
+          </svg>
+        ) : (
+          <>
+            Search
+            <kbd className="rounded border border-line bg-paper px-1.5 py-0.5 text-[10px] font-medium text-ink-soft">⌘K</kbd>
+          </>
+        )}
       </button>
+      {!iconOnly && (
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -109,6 +129,7 @@ export function CommandPalette({ tone = "paper" }: { tone?: "paper" | "onPhoto" 
           <path d="M16 16l4 4" />
         </svg>
       </button>
+      )}
 
       {open && (
         <div className="fixed inset-0 z-50 print:hidden">

@@ -17,24 +17,24 @@ export const VISUAL_ROOMS = [
   { href: "/registry", label: "Registry", photo: "/brand/rooms/registry.jpg", line: "The list, claimed, thanks", icon: "gift", rank: "support" },
 ] as const;
 
-export const MORE_ROOMS: { href: string; label: string }[] = [
-  { href: "/settings", label: "Settings" },
-  { href: "/diy", label: "DIY studio" },
-  { href: "/seating", label: "Seating" },
-  { href: "/floorplan", label: "Floor plan" },
-  { href: "/music", label: "Music" },
-  { href: "/travel", label: "Travel" },
-  { href: "/payments", label: "Payments" },
-  { href: "/send", label: "Send" },
-  { href: "/run-of-show", label: "Run of show" },
-  { href: "/site", label: "Guest site" },
-  { href: "/moodboard", label: "Moodboard" },
-  { href: "/onboard", label: "Setup" },
-  { href: "/start", label: "First wedding" },
-  { href: "/mobile", label: "Phone / app" },
-  { href: "/improvements", label: "Improvements" },
-  { href: "/discover", label: "Discover" },
-  { href: "/", label: "Marketing site" },
+export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
+  { href: "/settings", label: "Settings", icon: "settings" },
+  { href: "/diy", label: "DIY studio", icon: "scissors" },
+  { href: "/seating", label: "Seating", icon: "chair" },
+  { href: "/floorplan", label: "Floor plan", icon: "grid" },
+  { href: "/music", label: "Music", icon: "music" },
+  { href: "/travel", label: "Travel", icon: "plane" },
+  { href: "/payments", label: "Payments", icon: "card" },
+  { href: "/send", label: "Send", icon: "send" },
+  { href: "/run-of-show", label: "Run of show", icon: "star" },
+  { href: "/site", label: "Guest site", icon: "globe" },
+  { href: "/moodboard", label: "Moodboard", icon: "image" },
+  { href: "/onboard", label: "Setup", icon: "wrench" },
+  { href: "/start", label: "First wedding", icon: "heart" },
+  { href: "/mobile", label: "Phone / app", icon: "phone" },
+  { href: "/improvements", label: "Improvements", icon: "chart" },
+  { href: "/discover", label: "Discover", icon: "spark" },
+  { href: "/", label: "Marketing site", icon: "megaphone" },
 ];
 
 export function firstNames(coupleNames?: string, fallback = "You two") {

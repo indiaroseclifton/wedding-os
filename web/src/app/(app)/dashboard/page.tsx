@@ -4,16 +4,16 @@ import { listPayments } from "@/lib/data/payments-store";
 import { getMedia } from "@/lib/data/media-store";
 import { getMoodboard } from "@/lib/data/moodboard-store";
 import { listVendors } from "@/lib/data/vendors-store";
-import { listSends } from "@/lib/data/sends-store";
 import { loadThisWeek } from "@/lib/this-week";
 import { HomeDashboard } from "@/components/this-week/HomeDashboard";
 import { nextShapeDate } from "@/lib/shape";
-import { buildSpotlight } from "@/lib/home-spotlight";
+import { firstNames, prettyWeddingDate } from "@/lib/visual-rooms";
+import { isPendingRsvp } from "@/lib/data/guest-mail";
 
 export default async function DashboardPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
   const countDate = nextShapeDate(meta.weddingDate, meta.gatheringDate) || meta.weddingDate;
-  const [week, budget, payments, media, mood, guests, vendors, sends] = await Promise.all([
+  const [week, budget, payments, media, mood, guests, vendors] = await Promise.all([
     loadThisWeek(workspace.id, countDate),
     getBudget(workspace.id),
     listPayments(workspace.id),
@@ -21,43 +21,40 @@ export default async function DashboardPage() {
     getMoodboard(workspace.id),
     getWorkspaceGuests(workspace.id),
     listVendors(workspace.id),
-    listSends(workspace.id),
   ]);
 
   const fromLibrary =
     media.items.find((i) => i.kind === "PHOTO" && i.url)?.url || mood.items.find((i) => i.url)?.url;
-  const coverUrl = meta.coverUrl || fromLibrary || "/brand/tablescape.jpg";
+  const coverUrl = meta.coverUrl || fromLibrary || "/brand/flowers.jpg";
   const spent =
     budget.lines.reduce((s, l) => s + (l.actual || 0), 0) +
     payments.filter((p) => p.status === "PAID").reduce((s, p) => s + (p.amount || 0), 0);
   const cap = budget.overallLimit || budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
-  const spot = buildSpotlight({
-    guests,
-    vendors,
-    payments,
-    sends,
-    weekItems: week.items,
-    spent,
-    cap,
-    weddingDate: countDate,
-    gatheringDate: meta.gatheringDate,
-    shape: meta.shape,
-    coverUrl,
-  });
+  const booked = vendors.filter((v) => ["BOOKED", "PAID_DEPOSIT", "DONE"].includes(v.status)).length;
+  const pending = vendors.filter((v) => !["BOOKED", "PAID_DEPOSIT", "DONE", "PASSED"].includes(v.status)).length;
+  const dateLine = [prettyWeddingDate(countDate).toUpperCase(), meta.location?.toUpperCase()].filter(Boolean).join("  ·  ");
+
+  const nextUp = week.items.slice(0, 2).map((item) => ({
+    when: item.urgency === "now" ? "Today" : item.urgency === "week" ? "This week" : "Soon",
+    title: item.title,
+    href: item.href,
+  }));
 
   return (
     <HomeDashboard
       days={week.days}
       coverUrl={coverUrl}
-      dateLabel={spot.dateLabel}
-      shapeTitle={spot.shapeTitle}
-      cards={spot.cards}
-      alsoOpen={spot.alsoOpen}
+      names={firstNames(meta.coupleNames, "Alex & Jordan")}
+      dateLine={dateLine}
+      tagline="The adventure begins…"
+      weekItems={week.items}
       spent={spent}
       cap={cap}
-      replies={spot.replies}
-      onboarded={meta.onboarded === true}
-      firstWalkDone={meta.firstWalkDone === true}
+      guestTotal={guests.length}
+      guestResponded={guests.filter((g) => !isPendingRsvp(g.rsvp)).length}
+      vendorBooked={booked}
+      vendorPending={pending}
+      nextUp={nextUp}
     />
   );
 }

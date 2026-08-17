@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth/session";
 import { ensureDemoWorkspace, ensureEmailMember, getWorkspaceGuests } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
+import { loadThisWeek } from "@/lib/this-week";
+import { nextShapeDate } from "@/lib/shape";
 import { AppShell } from "@/components/layout/AppShell";
 
 export default async function AppLayout({
@@ -15,10 +17,13 @@ export default async function AppLayout({
     await ensureEmailMember(session);
   }
   const { workspace, meta } = await ensureDemoWorkspace();
-  const [guests, vendors] = await Promise.all([
+  const countDate = nextShapeDate(meta.weddingDate, meta.gatheringDate) || meta.weddingDate;
+  const [guests, vendors, week] = await Promise.all([
     getWorkspaceGuests(workspace.id),
     listVendors(workspace.id),
+    loadThisWeek(workspace.id, countDate),
   ]);
+  const kick = week.items[0];
 
   return (
     <AppShell
@@ -26,10 +31,14 @@ export default async function AppLayout({
       coupleNames={meta.coupleNames}
       weddingDate={meta.weddingDate}
       location={meta.location}
-      coverUrl={meta.coverUrl}
+      coverUrl={meta.coverUrl || "/brand/flowers.jpg"}
       shape={meta.shape}
       guestCount={guests.length}
       vendorCount={vendors.length}
+      kickTitle={kick?.title}
+      kickWhen={kick?.urgency === "now" ? "Now" : kick?.urgency === "week" ? "This week" : kick ? "Soon" : undefined}
+      kickHref={kick?.href}
+      alerts={week.items.filter((i) => i.urgency === "now").length}
     >
       {children}
     </AppShell>

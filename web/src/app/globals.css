@@ -549,36 +549,89 @@ html {
   .desk:not(.is-home) .desk-canvas {
     padding-bottom: var(--desk-gutter);
   }
-
-  .desk.is-home {
-    grid-template-rows: minmax(0, 1fr);
-    grid-template-areas: "rail canvas";
-  }
-
-  .desk.is-home .desk-mast {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: var(--desk-rail);
-    z-index: 20;
-    pointer-events: none;
-  }
 }
 
 @media (max-width: 1023px) {
-  .desk.is-home {
-    grid-template-rows: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "canvas"
-      "dock";
+  .desk-rail.light-rail {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    display: flex;
+    width: var(--desk-rail);
+    transform: translateX(-105%);
+    transition: transform 200ms ease;
   }
 
-  .desk.is-home .desk-mast {
-    position: absolute;
-    inset: 0 0 auto 0;
-    z-index: 20;
-    pointer-events: none;
+  .desk-rail.light-rail.is-open {
+    transform: none;
   }
+}
+
+.desk-rail.light-rail {
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-line);
+}
+
+.light-mast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.75rem;
+  padding: 0.5rem 1.25rem;
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+  background: color-mix(in srgb, var(--color-paper) 78%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-line) 70%, transparent);
+}
+
+.desk.is-home .desk-canvas {
+  padding: 0;
+}
+
+.home-stage,
+.rooms-stage {
+  position: relative;
+  min-height: 100%;
+  padding: 1.25rem 1.5rem 3.5rem;
+}
+
+@media (min-width: 1024px) {
+  .home-stage,
+  .rooms-stage {
+    padding: 1.5rem 2rem 3rem;
+  }
+}
+
+.home-bloom {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 78% 30%;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.home-bloom-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    var(--color-paper) 0%,
+    color-mix(in srgb, var(--color-paper) 82%, transparent) 42%,
+    color-mix(in srgb, var(--color-paper) 30%, transparent) 72%,
+    transparent 100%
+  );
+}
+
+.panel {
+  background: var(--color-surface);
+  border-radius: 1.25rem;
+  box-shadow: 0 18px 48px -28px rgb(28 22 14 / 0.2);
 }
 
 .paper {

@@ -3,39 +3,61 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { money } from "@/lib/visual-rooms";
-import type { SpotlightCard, AlsoItem } from "@/lib/home-spotlight";
+import { Icon } from "@/components/icons";
+import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
+import type { WeekItem } from "@/lib/this-week";
+
+const STRIP = [
+  { href: "/guests", label: "Guests", icon: "users" },
+  { href: "/vendors", label: "Vendors", icon: "bag" },
+  { href: "/planning", label: "Planning", icon: "calendar" },
+  { href: "/day-of", label: "The Day", icon: "sun" },
+  { href: "/budget", label: "Budget", icon: "wallet" },
+  { href: "/registry", label: "Registry", icon: "gift" },
+] as const;
+
+function whenFor(item: WeekItem, i: number) {
+  if (item.urgency === "now") return i === 0 ? "Today" : "Now";
+  if (item.urgency === "week") return i === 1 ? "Tomorrow" : "This week";
+  return "Soon";
+}
 
 export function HomeDashboard({
   days,
   coverUrl,
-  dateLabel,
-  shapeTitle,
-  cards,
-  alsoOpen,
+  names,
+  dateLine,
+  tagline,
+  weekItems,
   spent,
   cap,
-  replies,
-  onboarded,
+  guestTotal,
+  guestResponded,
+  vendorBooked,
+  vendorPending,
+  nextUp,
 }: {
   days: number | null;
   coverUrl: string;
-  dateLabel: string;
-  shapeTitle: string;
-  cards: SpotlightCard[];
-  alsoOpen: AlsoItem[];
+  names: string;
+  dateLine: string;
+  tagline?: string;
+  weekItems: WeekItem[];
   spent: number;
   cap: number;
-  replies: number;
-  onboarded?: boolean;
-  firstWalkDone?: boolean;
+  guestTotal: number;
+  guestResponded: number;
+  vendorBooked: number;
+  vendorPending: number;
+  nextUp: { when: string; title: string; href: string }[];
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(alsoOpen);
-  const headline =
-    days == null ? "—" : days === 0 ? "0" : days > 0 ? String(days) : String(Math.abs(days));
-  const sub = days == null ? "Set the date" : days === 0 ? "It’s the day" : days > 0 ? "Days to go" : "Days ago";
+  const [open, setOpen] = useState(weekItems.slice(0, 4));
+  const headline = days == null ? "—" : days === 0 ? "0" : String(Math.abs(days));
+  const sub = days == null ? "Set the date" : days === 0 ? "It’s the day" : days > 0 ? "days to go" : "days ago";
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
+  const rooms = VISUAL_ROOMS;
+  const heroRoom = rooms[0];
 
   async function dismiss(id: string) {
     setOpen((rows) => rows.filter((r) => r.id !== id));
@@ -48,121 +70,174 @@ export function HomeDashboard({
   }
 
   return (
-    <div className="home-desk">
-      <section className="home-hero">
-        <img
-          src={coverUrl}
-          alt=""
-          className="home-hero-img absolute inset-0 h-full w-full object-cover object-[center_30%]"
-        />
-        <div className="home-hero-wash absolute inset-0" />
-        <div className="absolute inset-x-0 bottom-0 px-6 pb-28 pt-24 sm:px-10 sm:pb-32">
-          <p className="kicker kicker-soft">{shapeTitle}</p>
-          <div className="mt-1 flex flex-wrap items-end gap-x-5 gap-y-1">
-            <p className="display text-ink">{headline}</p>
-            <div className="mb-2 min-w-0">
-              <p className="kicker kicker-soft">{sub}</p>
-              {dateLabel ? <p className="title mt-1 text-ink">{dateLabel}</p> : null}
-            </div>
+    <div className="home-stage">
+      <img src={coverUrl} alt="" className="home-bloom" />
+      <div className="home-bloom-wash" />
+
+      <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20.5rem] lg:items-start">
+        <div className="pt-2">
+          <h1 className="font-serif text-[clamp(2.4rem,5vw,3.4rem)] leading-none tracking-[-0.03em] text-ink">
+            {names}
+          </h1>
+          {dateLine ? <p className="kicker mt-4">{dateLine}</p> : null}
+          <p className="display mt-6 text-moss">{headline}</p>
+          <p className="title mt-1 text-ink">{sub}</p>
+          <p className="mt-4 font-serif text-xl italic text-ink-soft">{tagline || "The adventure begins…"}</p>
+          <Link href="/planning" className="btn btn-primary mt-6">
+            View our plan
+          </Link>
+        </div>
+
+        <aside className="panel p-5">
+          <div className="flex items-center justify-between">
+            <p className="kicker">This week</p>
+            <Link href="/checklist" className="text-xs text-muted hover:text-ink">
+              View all
+            </Link>
           </div>
-        </div>
-      </section>
-
-      <div className="home-cards">
-        <div className="lift grid overflow-hidden rounded-[1.15rem] bg-surface sm:grid-cols-3">
-          {cards.map((card, i) => (
-            <article
-              key={card.id}
-              className={`flex min-h-[13.5rem] flex-col justify-between gap-6 px-6 py-6 sm:px-7 sm:py-7 ${
-                i > 0 ? "border-t border-line/80 sm:border-l sm:border-t-0" : ""
-              }`}
-            >
-              <div>
-                <p className={`kicker ${card.alert ? "text-clay" : ""}`}>
-                  {card.alert ? <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-clay" /> : null}
-                  {card.kicker}
-                </p>
-                <h2 className="spot mt-2">{card.title}</h2>
-                <p className="mt-1.5 text-sm leading-5 text-muted">{card.detail}</p>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                {card.alert || card.id === "pay" ? (
-                  <>
-                    <Link
-                      href={card.href}
-                      className="inline-flex h-9 items-center rounded-md bg-moss px-3.5 text-[13px] font-medium text-moss-fg"
-                    >
-                      {card.cta}
-                    </Link>
-                    {card.secondary ? (
-                      <button
-                        type="button"
-                        onClick={() => (card.snoozeId ? dismiss(card.snoozeId) : undefined)}
-                        className="text-[13px] text-ink-soft"
-                      >
-                        {card.secondary}
-                      </button>
-                    ) : null}
-                  </>
-                ) : (
-                  <Link href={card.href} className="text-[13px] font-medium text-ink underline underline-offset-[5px]">
-                    {card.cta}
-                  </Link>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <section className="home-rest">
-        <div className="span-8">
-          <p className="kicker">Also open</p>
-          {!onboarded ? (
-            <p className="mt-3 text-sm text-muted">
-              <Link href="/onboard" className="underline underline-offset-4">
-                What kind of day is it?
-              </Link>
-              <span> The desk follows that.</span>
-            </p>
-          ) : null}
-          {open.length === 0 ? (
-            <p className="mt-6 text-sm text-muted">You’re clear. When something is due, it lands here.</p>
-          ) : (
-            <ul className="mt-1 divide-y divide-line">
-              {open.map((row) => (
-                <li key={row.id} className="desk-row py-3.5">
+          <ul className="mt-3 divide-y divide-line">
+            {open.length === 0 ? (
+              <li className="py-4 text-sm text-muted">You’re clear this week.</li>
+            ) : (
+              open.map((row, i) => (
+                <li key={row.id} className="desk-row py-2.5">
                   <button
                     type="button"
                     onClick={() => dismiss(row.id)}
                     aria-label={`Done: ${row.title}`}
-                    className="h-[15px] w-[15px] shrink-0 rounded-[3px] border border-ink/25 hover:border-moss"
+                    className="relative h-5 w-5 shrink-0 rounded-full border border-ink/25 after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 hover:border-moss"
                   />
-                  <Link href={row.href} className="min-w-0 text-[15px] text-ink">
+                  <Link href={row.href} className="min-w-0 text-sm text-ink">
                     {row.title}
                   </Link>
-                  <span className="text-xs text-muted">{row.when}</span>
+                  <span className="text-xs text-muted">{whenFor(row, i)}</span>
                 </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <aside className="span-4 space-y-10 border-t border-line pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-1">
-          <div>
-            <p className="kicker">Ledger</p>
-            <p className="figure mt-2">{money(spent)}</p>
-            <p className="mt-2 text-sm text-muted">committed of {cap ? money(cap) : "—"}</p>
-            <div className="mt-5 h-px bg-line">
-              <div className="h-px bg-moss" style={{ width: `${Math.max(pct, 2)}%` }} />
+              ))
+            )}
+          </ul>
+          <div className="mt-5 border-t border-line pt-4">
+            <p className="kicker">Budget overview</p>
+            <p className="figure mt-2 text-ink">{money(spent)}</p>
+            <p className="text-sm text-muted">of {cap ? money(cap) : "—"}</p>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-line">
+                <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
+              </div>
+              <span className="text-xs tabular-nums text-muted">{pct}%</span>
             </div>
           </div>
-          <div>
-            <p className="kicker">Replies</p>
-            <p className="figure mt-2">{replies}</p>
-            <p className="mt-2 text-sm text-muted">yes so far</p>
-          </div>
         </aside>
+      </div>
+
+      <div className="relative z-10 mt-8 panel grid grid-cols-3 divide-x divide-line sm:grid-cols-6">
+        {STRIP.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="flex min-h-20 flex-col items-center justify-center gap-1.5 py-4 text-ink-soft hover:text-ink"
+          >
+            <Icon name={item.icon} className="h-5 w-5" />
+            <span className="text-xs">{item.label}</span>
+          </Link>
+        ))}
+      </div>
+
+      <div className="relative z-10 mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <Link href="/guests" className="panel flex flex-col justify-between p-5">
+          <div className="flex items-start justify-between">
+            <p className="kicker">Guests</p>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-paper text-moss">
+              <Icon name="users" />
+            </span>
+          </div>
+          <div>
+            <p className="figure">{guestTotal}</p>
+            <p className="text-sm text-muted">Invited</p>
+            <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-sm">
+              <span className="text-ink">{guestResponded} Responded</span>
+              <span className="text-muted">›</span>
+            </div>
+          </div>
+        </Link>
+
+        <Link href="/vendors" className="panel flex flex-col justify-between p-5">
+          <div className="flex items-start justify-between">
+            <p className="kicker">Vendors</p>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-paper text-moss">
+              <Icon name="leaf" />
+            </span>
+          </div>
+          <div>
+            <p className="figure">{vendorBooked}</p>
+            <p className="text-sm text-muted">Booked</p>
+            <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-sm">
+              <span className="text-ink">{vendorPending} Pending</span>
+              <span className="text-muted">›</span>
+            </div>
+          </div>
+        </Link>
+
+        <Link href="/budget" className="panel flex flex-col justify-between p-5">
+          <div className="flex items-start justify-between">
+            <p className="kicker">Budget</p>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-paper text-moss">
+              <Icon name="dollar" />
+            </span>
+          </div>
+          <div>
+            <p className="figure">{money(spent)}</p>
+            <p className="text-sm text-muted">of {cap ? money(cap) : "—"}</p>
+            <div className="mt-4 border-t border-line pt-3">
+              <div className="flex items-center gap-3">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
+                  <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="text-xs tabular-nums text-muted">{pct}%</span>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link href={nextUp[0]?.href || "/checklist"} className="panel flex flex-col justify-between p-5">
+          <div className="flex items-start justify-between">
+            <p className="kicker">Next up</p>
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-paper text-moss">
+              <Icon name="calendar" />
+            </span>
+          </div>
+          <div className="space-y-3">
+            {(nextUp.length ? nextUp : [{ when: "Soon", title: "Nothing dated yet", href: "/checklist" }])
+              .slice(0, 2)
+              .map((n) => (
+                <div key={n.title} className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-medium text-ink">{n.when}</p>
+                    <p className="text-sm text-muted">{n.title}</p>
+                  </div>
+                  <span className="text-muted">›</span>
+                </div>
+              ))}
+          </div>
+        </Link>
+      </div>
+
+      <section className="relative z-10 mt-4 panel p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="kicker">Your rooms</p>
+          <Link href="/rooms" className="text-xs text-muted hover:text-ink">
+            View all
+          </Link>
+        </div>
+        <Link href={heroRoom.href} className="block overflow-hidden rounded-2xl">
+          <img src={heroRoom.photo} alt="" className="aspect-[16/8] w-full object-cover" />
+        </Link>
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          {rooms.slice(1, 4).map((r) => (
+            <Link key={r.href} href={r.href} className="overflow-hidden rounded-xl">
+              <img src={r.photo} alt={r.label} className="aspect-[4/3] w-full object-cover" />
+            </Link>
+          ))}
+        </div>
       </section>
     </div>
   );

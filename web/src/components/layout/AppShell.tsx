@@ -5,14 +5,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CommandPalette } from "@/components/search/CommandPalette";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { MORE_ROOMS, NAV_ITEMS, VISUAL_ROOMS, firstNames, shortWeddingDate } from "@/lib/visual-rooms";
+import { NAV_ITEMS, firstNames, shortWeddingDate } from "@/lib/visual-rooms";
 import { roomVisible } from "@/lib/shape";
 import { Icon } from "@/components/icons";
-import { RoomTile } from "@/components/layout/RoomTile";
-import { DeskNav, currentRoomLabel } from "@/components/layout/DeskNav";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
+}
+
+function initials(names: string) {
+  const parts = names.split(" & ").map((n) => n[0]).filter(Boolean);
+  return (parts.join("&") || "A&J").slice(0, 3);
 }
 
 export function AppShell({
@@ -24,6 +27,10 @@ export function AppShell({
   shape,
   guestCount,
   vendorCount,
+  kickTitle,
+  kickWhen,
+  kickHref,
+  alerts,
   children,
 }: {
   userName: string;
@@ -34,17 +41,22 @@ export function AppShell({
   shape?: string;
   guestCount?: number;
   vendorCount?: number;
+  kickTitle?: string;
+  kickWhen?: string;
+  kickHref?: string;
+  alerts?: number;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const pane = useRef<HTMLElement>(null);
-  const [rooms, setRooms] = useState(false);
+  const [railOpen, setRailOpen] = useState(false);
   const names = firstNames(coupleNames, "Alex & Jordan");
   const date = shortWeddingDate(weddingDate);
   const home = pathname === "/dashboard" || pathname === "/";
-  const roomLabel = currentRoomLabel(pathname);
-  const photo = coverUrl || "/brand/tablescape.jpg";
+  const roomsPage = pathname === "/rooms";
+  const photo = coverUrl || "/brand/flowers.jpg";
+  const mark = initials(names);
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -52,33 +64,15 @@ export function AppShell({
     }
     for (const item of NAV_ITEMS) router.prefetch(item.href);
     router.prefetch("/settings");
+    router.prefetch("/rooms");
   }, [router]);
 
   useEffect(() => {
-    setRooms(false);
+    setRailOpen(false);
     pane.current?.scrollTo({ top: 0 });
   }, [pathname]);
 
-  useEffect(() => {
-    document.body.style.overflow = rooms ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [rooms]);
-
-  useEffect(() => {
-    if (!rooms) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setRooms(false);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [rooms]);
-
-  async function signOut() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/login";
-  }
+  const nav = NAV_ITEMS.filter((item) => !item.room || roomVisible(item.href, shape));
 
   return (
     <div className={`desk ${home ? "is-home" : ""}`}>
@@ -87,65 +81,149 @@ export function AppShell({
       </a>
       <ThemeProvider />
 
-      <aside className="desk-rail rail relative">
-        <img src={photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="rail-wash absolute inset-0" />
-        <div className="relative z-10 flex h-full flex-col px-4 pb-5 pt-7">
-          <Link href="/dashboard" scroll={false} className="px-2">
-            <p className="brand text-moss-fg">{names}</p>
-            <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.16em] text-moss-fg/55">
-              {date}
-              {location ? ` · ${location}` : ""}
-            </p>
+      <aside className={`desk-rail light-rail ${railOpen ? "is-open" : ""}`}>
+        <Link href="/dashboard" scroll={false} className="flex flex-col items-center px-4 pt-7 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-moss font-serif text-lg tracking-tight text-moss-fg">
+            {mark}
+          </span>
+          <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink">{names}</p>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-muted">{date || "Set the date"}</p>
+        </Link>
+
+        <nav className="mt-6 flex-1 space-y-0.5 overflow-y-auto px-3" aria-label="Rooms">
+          {nav.map((item) => {
+            const on = tabOn(pathname, item.match);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                scroll={false}
+                prefetch
+                className={`flex min-h-11 items-center gap-3 rounded-full px-3 text-sm ${
+                  on ? "bg-champagne/80 font-medium text-ink" : "text-ink-soft hover:bg-paper"
+                }`}
+              >
+                <Icon name={item.icon} className="h-[18px] w-[18px]" />
+                {item.label}
+              </Link>
+            );
+          })}
+          <Link
+            href="/moodboard"
+            scroll={false}
+            className={`flex min-h-11 items-center gap-3 rounded-full px-3 text-sm ${
+              pathname.startsWith("/moodboard") ? "bg-champagne/80 font-medium text-ink" : "text-ink-soft hover:bg-paper"
+            }`}
+          >
+            <Icon name="ideas" className="h-[18px] w-[18px]" />
+            Ideas
           </Link>
-          <div className="mt-8 min-h-0 flex-1 overflow-y-auto pr-1">
-            <DeskNav shape={shape} guestCount={guestCount} vendorCount={vendorCount} />
-          </div>
-          <div className="mt-4 space-y-1 border-t border-white/10 pt-3">
-            <button
-              type="button"
-              onClick={() => setRooms(true)}
-              className="flex min-h-10 w-full items-center rounded-lg px-3 text-sm text-moss-fg/70 hover:bg-white/10 hover:text-moss-fg"
-            >
-              More rooms
-            </button>
-            <Link
-              href="/settings"
-              scroll={false}
-              className="flex min-h-10 items-center rounded-lg px-3 text-sm text-moss-fg/70 hover:bg-white/10 hover:text-moss-fg"
-            >
-              Settings
-            </Link>
-            <button type="button" onClick={signOut} className="px-3 py-1 text-left text-[11px] text-moss-fg/40 underline">
-              Sign out
-            </button>
-          </div>
+          <Link
+            href="/rooms"
+            scroll={false}
+            className={`flex min-h-11 items-center gap-3 rounded-full px-3 text-sm ${
+              roomsPage ? "bg-champagne/80 font-medium text-ink" : "text-ink-soft hover:bg-paper"
+            }`}
+          >
+            <Icon name="more" className="h-[18px] w-[18px]" />
+            More
+          </Link>
+        </nav>
+
+        {(kickTitle || guestCount != null) && (
+          <Link
+            href={kickHref || "/checklist"}
+            className="mx-3 mb-3 overflow-hidden rounded-2xl bg-paper"
+          >
+            <div className="relative h-24">
+              <img src={photo} alt="" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-paper via-paper/40 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-3">
+                <p className="text-sm font-medium text-ink">{kickTitle || "This week"}</p>
+                <p className="text-[11px] text-muted">{kickWhen || `${guestCount ?? 0} guests · ${vendorCount ?? 0} vendors`}</p>
+                <p className="mt-1 text-[11px] text-moss">
+                  View details <span aria-hidden>→</span>
+                </p>
+              </div>
+            </div>
+          </Link>
+        )}
+
+        <div className="flex items-center justify-center gap-1 border-t border-line px-2 py-3">
+          <button type="button" onClick={() => document.dispatchEvent(new Event("wedding-search"))} className="flex h-11 w-11 items-center justify-center rounded-full text-ink-soft hover:bg-paper" aria-label="Search">
+            <Icon name="search" />
+          </button>
+          <Link href="/checklist" className="relative flex h-11 w-11 items-center justify-center rounded-full text-ink-soft hover:bg-paper" aria-label="Alerts">
+            <Icon name="bell" />
+            {alerts ? (
+              <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-moss" />
+            ) : null}
+          </Link>
+          <Link href="/settings" className="flex h-11 w-11 items-center justify-center rounded-full text-ink-soft hover:bg-paper" aria-label="Settings">
+            <Icon name="settings" />
+          </Link>
         </div>
       </aside>
 
-      <header
-        className={`desk-mast flex items-center justify-between gap-3 print:hidden ${
-          home ? "px-6 py-6 sm:px-10" : "border-b border-line/70 px-1 py-3 sm:px-2"
-        }`}
-      >
-        <div className="min-w-0">
-          <p className={`kicker ${home ? "kicker-soft" : ""}`}>{roomLabel || "Home"}</p>
-          {!home && (
-            <p className="truncate text-sm text-ink-soft lg:hidden">
-              {names}
-              {date ? ` · ${date}` : ""}
-            </p>
-          )}
-        </div>
-        <div className="pointer-events-auto flex items-center gap-2">
-          <CommandPalette tone={home ? "onPhoto" : "paper"} />
+      {railOpen && (
+        <button type="button" className="fixed inset-0 z-30 bg-ink/25 lg:hidden" aria-label="Close menu" onClick={() => setRailOpen(false)} />
+      )}
+
+      <header className="desk-mast light-mast print:hidden">
+        <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setRooms(true)}
-            className="min-h-11 rounded-full border border-line/80 bg-surface/70 px-3 py-2 text-xs font-medium backdrop-blur lg:hidden"
+            onClick={() => setRailOpen((v) => !v)}
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-surface lg:hidden"
+            aria-label="Menu"
           >
-            Menu
+            <Icon name="menu" />
           </button>
+          <button
+            type="button"
+            onClick={() => setRailOpen((v) => !v)}
+            className="hidden h-11 w-11 items-center justify-center rounded-xl border border-line bg-surface lg:flex"
+            aria-label="Toggle menu"
+          >
+            <Icon name="menu" />
+          </button>
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
+            {nav.map((item) => {
+              const on = tabOn(pathname, item.match);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  scroll={false}
+                  className={`px-3 py-2 text-sm ${on ? "border-b border-ink font-medium text-ink" : "text-ink-soft hover:text-ink"}`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+        <div className="flex items-center gap-2">
+          {roomsPage ? (
+            <Link href="/dashboard" className="flex h-11 w-11 items-center justify-center rounded-full text-ink-soft hover:bg-paper" aria-label="Close">
+              ×
+            </Link>
+          ) : (
+            <>
+              <CommandPalette tone="paper" iconOnly />
+              <Link href="/checklist" className="relative flex h-11 w-11 items-center justify-center rounded-full text-ink-soft hover:bg-paper" aria-label="Notifications">
+                <Icon name="bell" />
+                {alerts ? (
+                  <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-moss px-1 text-[9px] text-moss-fg">
+                    {alerts}
+                  </span>
+                ) : null}
+              </Link>
+              <span className="h-9 w-9 overflow-hidden rounded-full border border-line">
+                <img src={photo} alt="" className="h-full w-full object-cover" />
+              </span>
+            </>
+          )}
         </div>
       </header>
 
@@ -153,47 +231,8 @@ export function AppShell({
         {children}
       </main>
 
-      {rooms && (
-        <div className="fixed inset-0 z-50 print:hidden">
-          <button type="button" className="absolute inset-0 bg-ink/40" aria-label="Close" onClick={() => setRooms(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[90vh] overflow-y-auto rounded-t-3xl bg-paper px-5 pb-10 pt-5 sm:inset-6 sm:rounded-3xl sm:pb-6">
-            <div className="mb-5 flex items-start justify-between">
-              <div>
-                <p className="kicker">
-                  {date}
-                  {location ? `  ·  ${location}` : ""}
-                </p>
-                <h2 className="title mt-1">Rooms</h2>
-              </div>
-              <button type="button" onClick={() => setRooms(false)} className="text-xl leading-none">
-                ×
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-              {VISUAL_ROOMS.filter((room) => roomVisible(room.href, shape)).map((room) => (
-                <RoomTile key={room.href} {...room} onClick={() => setRooms(false)} />
-              ))}
-            </div>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {MORE_ROOMS.filter((r) => roomVisible(r.href, shape)).map((r) => (
-                <Link
-                  key={r.href}
-                  href={r.href}
-                  scroll={false}
-                  onClick={() => setRooms(false)}
-                  className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs"
-                >
-                  {r.label}
-                </Link>
-              ))}
-              <p className="w-full pt-2 text-[11px] text-muted">Hi {userName.split(" ")[0]}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
       <nav
-        className="desk-dock border-t border-line/70 bg-paper/90 backdrop-blur-xl print:hidden"
+        className="desk-dock border-t border-line bg-surface/95 print:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <ul className="mx-auto grid max-w-lg grid-cols-5">
@@ -205,7 +244,7 @@ export function AppShell({
                   href={tab.href}
                   scroll={false}
                   prefetch
-                  className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium ${
+                  className={`flex min-h-11 flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
                     on ? "text-moss" : "text-muted"
                   }`}
                 >
@@ -216,14 +255,15 @@ export function AppShell({
             );
           })}
           <li>
-            <button
-              type="button"
-              onClick={() => setRooms(true)}
-              className="flex w-full flex-col items-center gap-0.5 py-2 text-[10px] font-medium text-muted"
+            <Link
+              href="/rooms"
+              className={`flex min-h-11 w-full flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
+                roomsPage ? "text-moss" : "text-muted"
+              }`}
             >
-              <span className="text-base leading-none">···</span>
+              <Icon name="more" />
               More
-            </button>
+            </Link>
           </li>
         </ul>
       </nav>

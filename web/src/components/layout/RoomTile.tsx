@@ -7,7 +7,6 @@ export function RoomTile({
   label,
   line,
   icon,
-  deep,
   onClick,
 }: {
   href: string;
@@ -28,23 +27,20 @@ export function RoomTile({
       <img
         src={photo}
         alt=""
-        className={`h-full w-full object-cover transition duration-700 group-hover:scale-[1.03] ${
-          deep ? "opacity-80 saturate-[.55]" : "opacity-70 saturate-[.45]"
-        }`}
+        className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
       />
-      <div
-        className={`absolute inset-0 ${
-          deep
-            ? "bg-gradient-to-t from-moss/80 via-moss/15 to-transparent"
-            : "bg-gradient-to-t from-paper/90 via-paper/25 to-paper/5"
-        }`}
-      />
-      <div className="absolute inset-x-0 bottom-0 p-5">
-        <p className={`spot flex items-center gap-2 ${deep ? "text-ivory" : "text-ink"}`}>
-          {icon ? <Icon name={icon} className="h-4 w-4 opacity-80" /> : null}
-          {label}
-        </p>
-        <p className={`mt-1 text-[13px] ${deep ? "text-ivory/70" : "text-muted"}`}>{line}</p>
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+        <div className="min-w-0">
+          <span className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 text-ink shadow-sm">
+            {icon ? <Icon name={icon} className="h-4 w-4" /> : null}
+          </span>
+          <p className="font-serif text-[1.45rem] leading-none tracking-tight text-ivory">{label}</p>
+          <p className="mt-1 text-[13px] text-ivory/80">{line}</p>
+        </div>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface/90 text-ink shadow-sm">
+          <Icon name="arrow" className="h-4 w-4" />
+        </span>
       </div>
     </Link>
   );
