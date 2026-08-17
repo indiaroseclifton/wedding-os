@@ -35,7 +35,7 @@ export const ROOM_TREE: Record<NavRoom, NavNode[]> = {
     { href: "/diy/studio/floral", label: "Flowers" },
     { href: "/diy/studio/table", label: "Tablescapes" },
     { href: "/studio/decor", label: "Decor Builds" },
-    { href: "/diy/signage", label: "Signage" },
+    { href: "/studio/signage", label: "Signage" },
     { href: "/vendors", label: "Vendors" },
   ],
   day: [

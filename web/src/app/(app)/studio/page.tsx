@@ -9,7 +9,7 @@ import { money } from "@/lib/visual-rooms";
 const TOOLS = [
   { href: "/diy/studio/floral", title: "Flowers", line: "Design arrangements, calculate stems, and plan installs.", photo: "/brand/flowers.jpg" },
   { href: "/diy/studio/table", title: "Tablescapes", line: "Plan layouts, place settings, linens, and accents.", photo: "/brand/tablescape.jpg" },
-  { href: "/diy/signage", title: "Signage & Cricut", line: "Create custom signs and details with templates.", photo: "/brand/paper.jpg" },
+  { href: "/studio/signage", title: "Signage & Cricut", line: "Create custom signs and details with templates.", photo: "/brand/paper.jpg" },
   { href: "/studio/decor", title: "Decor Builds", line: "Build backdrops, arches, and statement pieces.", photo: "/brand/candles.jpg" },
   { href: "/studio/inventory", title: "DIY Inventory", line: "Track supplies, tools, and on-hand materials.", photo: "/brand/setting.jpg" },
   { href: "/diy/calendar", title: "Project Timeline", line: "Plan your build schedule and stay on track.", photo: "/brand/garden.jpg" },
