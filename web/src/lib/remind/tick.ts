@@ -54,7 +54,6 @@ export async function runTick(origin: string) {
   ].filter((v, i, a) => a.indexOf(v) === i);
 
   const overdue = payments.filter((p) => p.status === "OVERDUE" || (p.status !== "PAID" && p.dueDate && new Date(`${p.dueDate}T00:00:00`) < now));
-  const cardsOpen = (thanks.items || []).filter((i) => i.status !== "SENT").length;
   const after = afterPhase(meta.weddingDate, now);
   const weekItems = week.items;
 
@@ -74,18 +73,23 @@ export async function runTick(origin: string) {
     );
   }
   if (after.daysAgo != null && after.daysAgo >= 0) {
+    const missing = (thanks.items || []).filter((i) => i.status !== "SENT").length;
     lines.push(
       `• Day ${after.daysAgo} after. ${after.current ? after.current.title : "The three months."}${
-        cardsOpen ? ` ${cardsOpen} thank-you${cardsOpen === 1 ? "" : "s"} still to write.` : ""
+        missing ? ` ${missing} thank-you${missing === 1 ? "" : "s"} still to write.` : " Cards are clear."
       }`
     );
   }
 
   if (arms.digest && coupleTo.length && lines.length && !sameDay(arms.lastDigestAt, now)) {
-    const text = `What next for ${names}\n\n${lines.join("\n")}\n\n${origin}/dashboard\n`;
+    const text = `What next for ${names}\n\n${lines.join("\n")}\n\n${origin}${
+      after.daysAgo != null && after.daysAgo >= 0 ? "/after" : "/dashboard"
+    }\n`;
     const html = `<p>What next for <strong>${names}</strong></p><ul>${lines
       .map((l) => `<li>${l.replace(/^• /, "")}</li>`)
-      .join("")}</ul><p><a href="${origin}/dashboard">Open the desk</a></p>`;
+      .join("")}</ul><p><a href="${origin}${
+      after.daysAgo != null && after.daysAgo >= 0 ? "/after" : "/dashboard"
+    }">Open the desk</a></p>`;
     let ok = false;
     for (const to of coupleTo) {
       const sent = await sendAppEmail({

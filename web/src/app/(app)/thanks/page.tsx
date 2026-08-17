@@ -70,14 +70,19 @@ export default function ThanksPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Thank-you notes</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Aim to send within three months. Import gifts from Registry so you don’t miss anyone.
+          <h1 className="font-serif text-4xl">Thank-you notes</h1>
+          <p className="mt-1 text-sm text-muted">
+            Industry practice is three months. After walks the stack. This is the full list.
           </p>
         </div>
-        <Link href="/registry" className="text-xs font-medium underline">
-          Registry
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/after" className="rounded-full border border-line px-3 py-1.5 text-xs">
+            After
+          </Link>
+          <Link href="/registry" className="text-xs font-medium underline">
+            Registry
+          </Link>
+        </div>
       </div>
 
       <p className="text-xs text-slate-500">

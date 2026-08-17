@@ -113,6 +113,12 @@ export default async function WeddingSitePage({
           </p>
         )}
 
+        <div className="mt-6 text-center">
+          <Link href={`/w/${token}/table`} className="text-sm text-moss underline">
+            Find your table
+          </Link>
+        </div>
+
         {site.scheduleNote && (
           <section className="mt-12">
             <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted">

@@ -10,6 +10,8 @@ export type AfterBeat = {
   toDay: number;
 };
 
+export const AFTER_DAYS = 90;
+
 export const AFTER_BEATS: AfterBeat[] = [
   {
     id: "returns",
@@ -60,9 +62,21 @@ export const AFTER_BEATS: AfterBeat[] = [
 
 export function afterPhase(weddingDate?: string, today = new Date()) {
   const d = daysUntil(weddingDate, today);
-  if (d == null) return { daysAgo: null, current: AFTER_BEATS[0], upcoming: AFTER_BEATS };
+  if (d == null) {
+    return { daysAgo: null as number | null, daysLeft: null as number | null, current: AFTER_BEATS[0], upcoming: AFTER_BEATS };
+  }
   const daysAgo = -d;
-  if (daysAgo < 0) return { daysAgo, current: null, upcoming: AFTER_BEATS };
-  const current = AFTER_BEATS.find((b) => daysAgo >= b.fromDay && daysAgo <= b.toDay) || AFTER_BEATS[AFTER_BEATS.length - 1];
-  return { daysAgo, current, upcoming: AFTER_BEATS };
+  const daysLeft = AFTER_DAYS - daysAgo;
+  if (daysAgo < 0) return { daysAgo, daysLeft: AFTER_DAYS, current: null, upcoming: AFTER_BEATS };
+  const current =
+    AFTER_BEATS.find((b) => daysAgo >= b.fromDay && daysAgo <= b.toDay) || AFTER_BEATS[AFTER_BEATS.length - 1];
+  return { daysAgo, daysLeft, current, upcoming: AFTER_BEATS };
+}
+
+export function cardPace(open: number, daysLeft: number | null) {
+  if (!open) return "The stack is gone.";
+  if (daysLeft == null) return `${open} still to write.`;
+  if (daysLeft <= 0) return `${open} still to write. The three months are up.`;
+  const perWeek = Math.max(1, Math.ceil((open / daysLeft) * 7));
+  return `${open} left · about ${perWeek} a week to finish by day 90.`;
 }

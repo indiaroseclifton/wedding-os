@@ -11,6 +11,8 @@ export type ThankYou = {
   status: "TODO" | "SENT";
   sentDate?: string;
   notes?: string;
+  guestId?: string;
+  source?: "guest" | "registry" | "manual";
 };
 
 export type StoredThanks = {
@@ -55,7 +57,7 @@ export async function saveThanks(workspaceId: string, patch: Partial<StoredThank
 
 export async function addThankYou(
   workspaceId: string,
-  input: { guestName: string; gift?: string; notes?: string }
+  input: { guestName: string; gift?: string; notes?: string; guestId?: string; source?: ThankYou["source"] }
 ) {
   const current = await getThanks(workspaceId);
   const item: ThankYou = {
@@ -63,6 +65,8 @@ export async function addThankYou(
     guestName: input.guestName,
     gift: input.gift,
     notes: input.notes,
+    guestId: input.guestId,
+    source: input.source || "manual",
     status: "TODO",
   };
   return saveThanks(workspaceId, { items: [...current.items, item] });
@@ -101,7 +105,35 @@ export async function importGiftsAsThanks(
       guestName: g.from,
       gift: g.description,
       status: "TODO",
+      source: "registry",
     });
+  }
+  if (!extras.length) return current;
+  return saveThanks(workspaceId, { items: [...current.items, ...extras] });
+}
+
+export async function seedThanksFromGuests(
+  workspaceId: string,
+  guests: { id: string; name: string; rsvp: string; showed?: boolean }[]
+) {
+  const current = await getThanks(workspaceId);
+  const existingIds = new Set(current.items.map((i) => i.guestId).filter(Boolean) as string[]);
+  const existingNames = new Set(current.items.map((i) => i.guestName.trim().toLowerCase()));
+  const extras: ThankYou[] = [];
+  for (const g of guests) {
+    if (g.showed === false || g.rsvp === "NO") continue;
+    if (g.rsvp !== "YES" && g.showed !== true) continue;
+    const key = g.name.trim().toLowerCase();
+    if (existingIds.has(g.id) || existingNames.has(key)) continue;
+    extras.push({
+      id: randomUUID(),
+      guestName: g.name,
+      guestId: g.id,
+      status: "TODO",
+      source: "guest",
+    });
+    existingIds.add(g.id);
+    existingNames.add(key);
   }
   if (!extras.length) return current;
   return saveThanks(workspaceId, { items: [...current.items, ...extras] });

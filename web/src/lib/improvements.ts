@@ -30,7 +30,8 @@ export const IMPROVEMENTS: { phase: string; items: Improvement[] }[] = [
     phase: "Later — real, but not this week",
     items: [
       { id: "stripe", title: "Stripe for deposits", body: "Ledger is honest. Charging cards is a different product.", href: "/payments", status: "later" },
-      { id: "seating-rules", title: "Don’t sit X with Y", body: "Chair seating works. Constraints and a venue floor photo come after.", href: "/seating", status: "later" },
+      { id: "seating-rules", title: "Don’t sit X with Y", body: "Never / must / lock. Freeze and put it back.", href: "/seating", status: "shipped" },
+      { id: "after", title: "The three months", body: "Week 2, week 8, day 90. Write the next card. The digest nags you.", href: "/after", status: "shipped" },
       { id: "households", title: "Households as people", body: "Named plus-ones on the RSVP, the list, and the chairs.", href: "/guests", status: "shipped" },
       { id: "site-share", title: "Guest site you can send", body: "Password, a text-this card, preview without publishing.", href: "/site", status: "shipped" },
       { id: "start", title: "First-wedding walkthrough", body: "Names, one vendor, publish. After the four questions.", href: "/start", status: "shipped" },

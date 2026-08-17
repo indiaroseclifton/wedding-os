@@ -60,6 +60,8 @@ export async function GET(request: Request) {
       partyName: guest.partyName,
       answers: guest.answers || {},
       plusPolicy: guest.plusPolicy || "ok",
+      tableLabel: guest.rsvp === "YES" ? guest.tableLabel || null : null,
+      seatIndex: guest.rsvp === "YES" ? guest.seatIndex ?? null : null,
     },
     household: household.map((g) => ({
       id: g.id,
@@ -81,9 +83,6 @@ export async function POST(request: Request) {
   if (!site || !site.published) {
     return NextResponse.json({ error: "Site not found" }, { status: 404 });
   }
-  if (!rsvpIsOpen(site)) {
-    return NextResponse.json({ error: "RSVP is closed" }, { status: 400 });
-  }
 
   if (body.action === "lookup") {
     const q = norm(String(body.name || ""));
@@ -102,6 +101,40 @@ export async function POST(request: Request) {
         rsvpToken: g.rsvpToken,
       }));
     return NextResponse.json({ matches });
+  }
+
+  if (body.action === "table") {
+    const guest = body.rsvpToken
+      ? await getGuestByRsvpToken(String(body.rsvpToken))
+      : null;
+    if (!guest || guest.workspaceId !== site.workspaceId) {
+      return NextResponse.json({ error: "Guest not found" }, { status: 404 });
+    }
+    if (guest.rsvp !== "YES") {
+      return NextResponse.json({
+        name: guest.name,
+        seated: false,
+        message: "Your table shows after you say yes.",
+      });
+    }
+    if (!guest.tableLabel) {
+      return NextResponse.json({
+        name: guest.name,
+        seated: false,
+        message: "The couple hasn’t seated you yet.",
+      });
+    }
+    return NextResponse.json({
+      name: guest.name,
+      seated: true,
+      tableLabel: guest.tableLabel,
+      seatIndex: guest.seatIndex ?? null,
+      plusOneNames: guest.plusOneNames || [],
+    });
+  }
+
+  if (!rsvpIsOpen(site)) {
+    return NextResponse.json({ error: "RSVP is closed" }, { status: 400 });
   }
 
   if (body.action === "submit") {

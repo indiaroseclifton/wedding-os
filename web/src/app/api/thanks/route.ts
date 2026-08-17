@@ -8,7 +8,9 @@ import {
   getThanks,
   importGiftsAsThanks,
   patchThankYou,
+  seedThanksFromGuests,
 } from "@/lib/data/thanks-store";
+import { getWorkspaceGuests } from "@/lib/data/workspace";
 import { optionalString, requiredString, ValidationError } from "@/lib/validation";
 
 export async function GET() {
@@ -50,6 +52,11 @@ export async function POST(request: Request) {
         workspace.id,
         registry.gifts.map((g) => ({ from: g.from, description: g.description }))
       );
+      return NextResponse.json({ thanks });
+    }
+    if (body.action === "seed_guests") {
+      const guests = await getWorkspaceGuests(workspace.id);
+      const thanks = await seedThanksFromGuests(workspace.id, guests);
       return NextResponse.json({ thanks });
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

@@ -11,6 +11,8 @@ import { flagCount } from "@/lib/data/contract-review";
 import { PLAYBOOKS } from "@/lib/data/diy-playbooks";
 import { hasMailingAddress, isPendingRsvp } from "@/lib/data/guest-mail";
 import { getDismissedWeek } from "@/lib/data/week-dismiss-store";
+import { getThanks } from "@/lib/data/thanks-store";
+import { cardPace } from "@/lib/after-arc";
 import type { StoredTask } from "@/lib/data/store";
 
 export type WeekUrgency = "now" | "week" | "soon";
@@ -68,7 +70,7 @@ export async function loadThisWeek(
   weddingDate?: string,
   today = new Date()
 ) {
-  const [tasks, guests, vendors, packages, payments, dayOf, checklist, budget, sends, seatingPlan] =
+  const [tasks, guests, vendors, packages, payments, dayOf, checklist, budget, sends, seatingPlan, thanks] =
     await Promise.all([
       getWorkspaceTasks(workspaceId),
       getWorkspaceGuests(workspaceId),
@@ -80,6 +82,7 @@ export async function loadThisWeek(
       getBudget(workspaceId),
       listSends(workspaceId),
       getSeatingPlan(workspaceId),
+      getThanks(workspaceId),
     ]);
 
   const days = daysUntil(weddingDate, today);
@@ -188,11 +191,15 @@ export async function loadThisWeek(
   }
 
   if (days != null && days < 0) {
+    const openCards = (thanks.items || []).filter((i) => i.status !== "SENT").length;
+    const daysAgo = -days;
     items.push({
       id: "after-now",
       urgency: "now",
-      title: "The three months have started",
-      detail: "Thank-yous, leftover flowers, mark the team.",
+      title: openCards ? cardPace(openCards, 90 - daysAgo) : "The three months have started",
+      detail: openCards
+        ? `Day ${daysAgo} after. Industry practice: thank-yous within 90.`
+        : "Thank-yous, leftover flowers, mark the team.",
       href: "/after",
       cta: "Open After",
     });

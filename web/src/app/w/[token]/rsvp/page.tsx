@@ -54,6 +54,8 @@ function PublicRsvpInner() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [tableLabel, setTableLabel] = useState<string | null>(null);
+  const [seatIndex, setSeatIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!guestToken) return;
@@ -68,6 +70,8 @@ function PublicRsvpInner() {
         setPlusPolicy(data.guest.plusPolicy || "ok");
         setDietary(data.guest.dietary || "");
         setMeal(data.guest.meal || "");
+        setTableLabel(data.guest.tableLabel || null);
+        setSeatIndex(typeof data.guest.seatIndex === "number" ? data.guest.seatIndex : null);
         setNotes(data.guest.notes || "");
         setAddress(data.guest.address || "");
         setCity(data.guest.city || "");
@@ -160,20 +164,31 @@ function PublicRsvpInner() {
         <h1 className="mt-4 font-serif text-4xl tracking-tight">RSVP</h1>
 
         {done ? (
-          <p className="mt-6 text-sm text-ink-soft">
-            Thank you{name ? `, ${name}` : ""}. We have you as{" "}
-            <span className="font-medium">{rsvp === "YES" ? "yes" : rsvp === "NO" ? "no" : "maybe"}</span>
-            {events.length
-              ? ` for the wedding${events
-                  .filter((ev) => ["YES", "NO", "MAYBE"].includes(eventAnswers[ev.id]?.status || ""))
-                  .map((ev) => {
-                    const s = eventAnswers[ev.id]?.status;
-                    return `, ${s === "YES" ? "yes" : s === "NO" ? "no" : "maybe"} for ${ev.name}`;
-                  })
-                  .join("")}`
-              : ""}
-            .
-          </p>
+          <div className="mt-6 space-y-3">
+            <p className="text-sm text-ink-soft">
+              Thank you{name ? `, ${name}` : ""}. We have you as{" "}
+              <span className="font-medium">{rsvp === "YES" ? "yes" : rsvp === "NO" ? "no" : "maybe"}</span>
+              {events.length
+                ? ` for the wedding${events
+                    .filter((ev) => ["YES", "NO", "MAYBE"].includes(eventAnswers[ev.id]?.status || ""))
+                    .map((ev) => {
+                      const s = eventAnswers[ev.id]?.status;
+                      return `, ${s === "YES" ? "yes" : s === "NO" ? "no" : "maybe"} for ${ev.name}`;
+                    })
+                    .join("")}`
+                : ""}
+              .
+            </p>
+            {rsvp === "YES" && tableLabel ? (
+              <p className="rounded-[1.3rem] border border-line bg-surface px-5 py-4 font-serif text-2xl">
+                You’re at {tableLabel}
+                {seatIndex != null ? ` · seat ${seatIndex + 1}` : ""}
+                {plusNames.filter(Boolean).length ? ` · with ${plusNames.filter(Boolean).join(", ")}` : ""}
+              </p>
+            ) : rsvp === "YES" ? (
+              <p className="text-sm text-muted">We’ll add your table here when the chart is ready.</p>
+            ) : null}
+          </div>
         ) : !guestToken ? (
           <form onSubmit={lookup} className="mt-6 space-y-3">
             <p className="text-sm text-ink-soft">Type your name as it appears on the invite.</p>
@@ -220,6 +235,13 @@ function PublicRsvpInner() {
         ) : (
           <form onSubmit={submit} className="mt-6 space-y-6">
             <p className="text-sm font-medium">{name}</p>
+            {tableLabel && (
+              <p className="rounded-[1.3rem] border border-line bg-surface px-4 py-3 text-sm">
+                You’re at <span className="font-medium">{tableLabel}</span>
+                {seatIndex != null ? ` · seat ${seatIndex + 1}` : ""}
+                {plusNames.filter(Boolean).length ? ` · with ${plusNames.filter(Boolean).join(", ")}` : ""}
+              </p>
+            )}
             {household.length > 1 && (
               <label className="flex items-center gap-2 text-sm">
                 <input
