@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Icon } from "@/components/icons";
-import { VISUAL_ROOMS, money } from "@/lib/visual-rooms";
+import { money } from "@/lib/visual-rooms";
 import type { WeekItem } from "@/lib/this-week";
 
 const STRIP = [
@@ -55,8 +55,6 @@ export function HomeDashboard({
   const headline = days == null ? "—" : days === 0 ? "0" : String(Math.abs(days));
   const sub = days == null ? "Set the date" : days === 0 ? "It’s the day" : days > 0 ? "days to go" : "days ago";
   const pct = cap > 0 ? Math.min(100, Math.round((spent / cap) * 100)) : 0;
-  const rooms = VISUAL_ROOMS;
-  const heroRoom = rooms[2] || rooms[0];
 
   async function dismiss(id: string) {
     setOpen((rows) => rows.filter((r) => r.id !== id));
@@ -74,17 +72,18 @@ export function HomeDashboard({
       <div className="home-bloom-wash" />
 
       <div className="home-grid">
-        <div className="home-hero pt-2">
-          <h1 className="font-serif text-[clamp(2.7rem,4.6vw,3.55rem)] leading-none tracking-[-0.035em] text-ink">
+        <div className="home-hero">
+          <h1 className="font-serif text-[clamp(2.55rem,4.4vw,3.4rem)] leading-none tracking-[-0.038em] text-ink">
             {names}
           </h1>
-          {dateLine ? <p className="kicker mt-3.5">{dateLine}</p> : null}
-          <p className="home-count mt-5">{headline}</p>
+          {dateLine ? <p className="kicker mt-3">{dateLine}</p> : null}
+          <p className="home-count mt-4">{headline}</p>
           <p className="home-days mt-1">{sub}</p>
-          <p className="mt-4 font-serif text-[1.35rem] italic leading-none text-ink-soft">
-            {tagline || "The adventure begins…"}
-          </p>
-          <Link href="/planning" className="mt-6 inline-flex h-10 items-center rounded-full bg-moss px-5 text-sm font-medium text-moss-fg">
+          <p className="home-script mt-4">{tagline || "The adventure begins…"}</p>
+          <Link
+            href="/planning"
+            className="mt-5 inline-flex h-10 items-center rounded-full bg-moss px-5 text-[13px] font-medium tracking-wide text-moss-fg"
+          >
             View our plan
           </Link>
         </div>
@@ -92,58 +91,58 @@ export function HomeDashboard({
         <aside className="home-week panel px-5 py-5">
           <div className="flex items-center justify-between">
             <p className="kicker">This week</p>
-            <Link href="/checklist" className="text-xs text-muted hover:text-ink">
+            <Link href="/checklist" className="text-[12px] text-muted hover:text-ink">
               View all
             </Link>
           </div>
-          <ul className="mt-2">
+          <ul className="mt-1">
             {open.length === 0 ? (
               <li className="py-4 text-sm text-muted">You’re clear this week.</li>
             ) : (
               open.map((row, i) => (
-                <li key={row.id} className="desk-row py-2.5">
+                <li key={row.id} className="desk-row py-[0.7rem]">
                   <button
                     type="button"
                     onClick={() => dismiss(row.id)}
                     aria-label={`Done: ${row.title}`}
-                    className="relative h-[18px] w-[18px] shrink-0 rounded-full border border-ink/20 after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 hover:border-moss"
+                    className="relative h-[17px] w-[17px] shrink-0 rounded-full border border-ink/18 after:absolute after:left-1/2 after:top-1/2 after:h-11 after:w-11 after:-translate-x-1/2 after:-translate-y-1/2 hover:border-moss"
                   />
-                  <Link href={row.href} className="min-w-0 text-[14px] text-ink">
+                  <Link href={row.href} className="min-w-0 truncate text-[14px] text-ink">
                     {row.title}
                   </Link>
-                  <span className="text-xs text-muted">{whenFor(row, i)}</span>
+                  <span className="shrink-0 text-[12px] text-muted">{whenFor(row, i)}</span>
                 </li>
               ))
             )}
           </ul>
-          <div className="mt-3 border-t border-line pt-4">
+          <div className="mt-2 border-t border-line pt-4">
             <p className="kicker">Budget overview</p>
-            <p className="mt-2 font-serif text-[2.35rem] leading-none tracking-tight">{money(spent)}</p>
+            <p className="mt-2 font-serif text-[2.2rem] leading-none tracking-tight">{money(spent)}</p>
             <p className="mt-1 text-sm text-muted">of {cap ? money(cap) : "—"}</p>
             <div className="mt-3 flex items-center gap-3">
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-line">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
                 <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
               </div>
-              <span className="text-xs tabular-nums text-muted">{pct}%</span>
+              <span className="text-[12px] tabular-nums text-muted">{pct}%</span>
             </div>
           </div>
         </aside>
 
-        <nav className="home-strip panel grid grid-cols-3 divide-x divide-line sm:grid-cols-6">
+        <nav className="home-strip panel grid grid-cols-3 divide-x divide-line/80 sm:grid-cols-6">
           {STRIP.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="flex min-h-[4.6rem] flex-col items-center justify-center gap-1.5 text-moss/80 hover:text-ink"
+              className="flex min-h-[4.85rem] flex-col items-center justify-center gap-1.5 text-moss/75 hover:text-ink"
             >
-              <Icon name={item.icon} className="h-5 w-5" />
-              <span className="text-[12px]">{item.label}</span>
+              <Icon name={item.icon} className="h-[22px] w-[22px]" />
+              <span className="text-[12px] tracking-wide">{item.label}</span>
             </Link>
           ))}
         </nav>
 
-        <div className="home-stats grid grid-cols-2 gap-3 xl:grid-cols-4">
-          <Link href="/guests" className="panel flex flex-col justify-between p-4">
+        <div className="home-stats grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <Link href="/guests" className="home-stat panel">
             <div className="flex items-start justify-between">
               <p className="kicker">Guests</p>
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
@@ -151,16 +150,16 @@ export function HomeDashboard({
               </span>
             </div>
             <div>
-              <p className="mt-3 font-serif text-[2.15rem] leading-none tracking-tight">{guestTotal}</p>
+              <p className="font-serif text-[2.05rem] leading-none tracking-tight">{guestTotal}</p>
               <p className="mt-1 text-sm text-muted">Invited</p>
-              <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-sm">
+              <div className="mt-3 flex items-center justify-between border-t border-line pt-2.5 text-sm">
                 <span>{guestResponded} Responded</span>
                 <span className="text-muted">›</span>
               </div>
             </div>
           </Link>
 
-          <Link href="/vendors" className="panel flex flex-col justify-between p-4">
+          <Link href="/vendors" className="home-stat panel">
             <div className="flex items-start justify-between">
               <p className="kicker">Vendors</p>
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
@@ -168,16 +167,16 @@ export function HomeDashboard({
               </span>
             </div>
             <div>
-              <p className="mt-3 font-serif text-[2.15rem] leading-none tracking-tight">{vendorBooked}</p>
+              <p className="font-serif text-[2.05rem] leading-none tracking-tight">{vendorBooked}</p>
               <p className="mt-1 text-sm text-muted">Booked</p>
-              <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-sm">
+              <div className="mt-3 flex items-center justify-between border-t border-line pt-2.5 text-sm">
                 <span>{vendorPending} Pending</span>
                 <span className="text-muted">›</span>
               </div>
             </div>
           </Link>
 
-          <Link href="/budget" className="panel flex flex-col justify-between p-4">
+          <Link href="/budget" className="home-stat panel">
             <div className="flex items-start justify-between">
               <p className="kicker">Budget</p>
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
@@ -185,27 +184,27 @@ export function HomeDashboard({
               </span>
             </div>
             <div>
-              <p className="mt-3 font-serif text-[2.15rem] leading-none tracking-tight">{money(spent)}</p>
+              <p className="font-serif text-[2.05rem] leading-none tracking-tight">{money(spent)}</p>
               <p className="mt-1 text-sm text-muted">of {cap ? money(cap) : "—"}</p>
-              <div className="mt-4 border-t border-line pt-3">
+              <div className="mt-3 border-t border-line pt-2.5">
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
                     <div className="h-full rounded-full bg-moss" style={{ width: `${pct}%` }} />
                   </div>
-                  <span className="text-xs tabular-nums text-muted">{pct}%</span>
+                  <span className="text-[12px] tabular-nums text-muted">{pct}%</span>
                 </div>
               </div>
             </div>
           </Link>
 
-          <Link href={nextUp[0]?.href || "/checklist"} className="panel flex flex-col justify-between p-4">
+          <Link href={nextUp[0]?.href || "/checklist"} className="home-stat panel">
             <div className="flex items-start justify-between">
               <p className="kicker">Next up</p>
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-paper text-moss">
                 <Icon name="calendar" />
               </span>
             </div>
-            <div className="mt-3 space-y-3">
+            <div className="space-y-2.5">
               {(nextUp.length ? nextUp : [{ when: "Soon", title: "Nothing dated yet", href: "/checklist" }])
                 .slice(0, 2)
                 .map((n) => (
@@ -221,11 +220,11 @@ export function HomeDashboard({
         <section className="home-rooms panel p-4">
           <div className="mb-3 flex items-center justify-between">
             <p className="kicker">Your rooms</p>
-            <Link href="/rooms" className="text-xs text-muted hover:text-ink">
+            <Link href="/rooms" className="text-[12px] text-muted hover:text-ink">
               View all
             </Link>
           </div>
-          <Link href={heroRoom.href} className="group block overflow-hidden rounded-xl">
+          <Link href="/rooms" className="group block overflow-hidden rounded-xl">
             <img
               src="/brand/rooms/guests.jpg"
               alt=""
@@ -233,13 +232,18 @@ export function HomeDashboard({
             />
           </Link>
           <div className="mt-2.5 grid grid-cols-3 gap-2">
-            {["/brand/rooms/planning.jpg", "/brand/rooms/day.jpg", "/brand/rooms/vendors.jpg"].map((src, i) => (
-              <Link key={src} href={rooms[i]?.href || "/rooms"} className="group overflow-hidden rounded-lg">
-                <img src={src} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
+            {[
+              { src: "/brand/rooms/planning.jpg", href: "/planning" },
+              { src: "/brand/rooms/day.jpg", href: "/day-of" },
+              { src: "/brand/rooms/vendors.jpg", href: "/vendors" },
+            ].map((r) => (
+              <Link key={r.src} href={r.href} className="group overflow-hidden rounded-lg">
+                <img src={r.src} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
               </Link>
             ))}
           </div>
         </section>
+
       </div>
     </div>
   );

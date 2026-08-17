@@ -594,8 +594,128 @@ html {
 .rooms-stage {
   position: relative;
   min-height: 100%;
-  padding: 1.25rem 1.25rem 3.5rem;
-  overflow: hidden;
+  padding: 1.1rem 1.15rem 3.25rem;
+}
+
+.home-grid {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  gap: 1rem;
+}
+
+.home-hero,
+.home-week,
+.home-strip,
+.home-stats,
+.home-rooms {
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .home-grid {
+    grid-template-columns: minmax(0, 1fr) 22.75rem;
+    grid-template-areas:
+      "hero week"
+      "strip ."
+      "stats rooms";
+    column-gap: 1.5rem;
+    row-gap: 1rem;
+    align-items: start;
+  }
+
+  .home-hero {
+    grid-area: hero;
+    padding-top: 0.35rem;
+  }
+  .home-week {
+    grid-area: week;
+    margin-top: 4.75rem;
+  }
+  .home-strip {
+    grid-area: strip;
+  }
+  .home-stats {
+    grid-area: stats;
+  }
+  .home-rooms {
+    grid-area: rooms;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-stage,
+  .rooms-stage {
+    padding: 1.15rem 1.85rem 2.25rem;
+  }
+}
+
+.home-bloom {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 80% 18%;
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.home-bloom-wash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      96deg,
+      var(--color-paper) 0%,
+      var(--color-paper) 28%,
+      color-mix(in srgb, var(--color-paper) 88%, transparent) 44%,
+      color-mix(in srgb, var(--color-paper) 35%, transparent) 66%,
+      transparent 88%
+    ),
+    linear-gradient(to top, var(--color-paper) 0%, color-mix(in srgb, var(--color-paper) 70%, transparent) 22%, transparent 48%);
+}
+
+.home-count {
+  font-family: var(--font-serif);
+  font-size: clamp(5.4rem, 12vw, 8.4rem);
+  font-weight: 560;
+  line-height: 0.72;
+  letter-spacing: -0.055em;
+  color: var(--color-moss);
+}
+
+.home-days {
+  font-family: var(--font-serif);
+  font-size: clamp(1.85rem, 3.2vw, 2.55rem);
+  font-weight: 560;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+}
+
+.home-script {
+  font-family: var(--font-serif);
+  font-size: 1.28rem;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--color-ink-soft);
+}
+
+.home-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 11.5rem;
+  padding: 1.05rem 1.1rem 1rem;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.home-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 26px 56px -30px rgb(28 22 14 / 0.28);
 }
 
 .home-grid {
