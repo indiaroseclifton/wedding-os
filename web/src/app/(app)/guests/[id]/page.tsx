@@ -11,6 +11,7 @@ type Guest = {
   rsvp: string;
   plusOnes: number;
   plusOneNames?: string[];
+  plusPolicy?: "ok" | "none" | "named";
   dietary?: string;
   tableLabel?: string;
   notes?: string;
@@ -58,6 +59,7 @@ export default function EditGuestPage() {
           rsvp: form.get("rsvp"),
           plusOnes: Number(form.get("plusOnes") || 0),
           plusOneText: form.get("plusOneText") || "",
+          plusPolicy: form.get("plusPolicy") || "ok",
           dietary: form.get("dietary") || undefined,
           tableLabel: form.get("tableLabel") || undefined,
           address: form.get("address") || undefined,
@@ -131,6 +133,14 @@ export default function EditGuestPage() {
             </select>
           </label>
         </div>
+        <label className="block text-sm">
+          <span className="font-medium">Plus-one</span>
+          <select name="plusPolicy" defaultValue={guest.plusPolicy || "ok"} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <option value="ok">Allowed</option>
+            <option value="named">Named only</option>
+            <option value="none">No plus-one</option>
+          </select>
+        </label>
         <label className="block text-sm">
           <span className="font-medium">Plus-ones — names</span>
           <input name="plusOnes" type="number" min={0} defaultValue={guest.plusOnes || 0} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />

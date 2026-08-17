@@ -32,6 +32,7 @@ function PublicRsvpInner() {
   const [rsvp, setRsvp] = useState("YES");
   const [plusOnes, setPlusOnes] = useState(0);
   const [plusNames, setPlusNames] = useState<string[]>([]);
+  const [plusPolicy, setPlusPolicy] = useState("ok");
   const [dietary, setDietary] = useState("");
   const [meal, setMeal] = useState("");
   const [notes, setNotes] = useState("");
@@ -64,6 +65,7 @@ function PublicRsvpInner() {
         if (["YES", "NO", "MAYBE"].includes(data.guest.rsvp)) setRsvp(data.guest.rsvp);
         setPlusOnes(data.guest.plusOnes || 0);
         setPlusNames(data.guest.plusOneNames || []);
+        setPlusPolicy(data.guest.plusPolicy || "ok");
         setDietary(data.guest.dietary || "");
         setMeal(data.guest.meal || "");
         setNotes(data.guest.notes || "");
@@ -245,7 +247,12 @@ function PublicRsvpInner() {
                 </label>
               ))}
             </fieldset>
-            {rsvp !== "NO" && (
+            {rsvp !== "NO" && plusPolicy === "none" && (
+              <p className="rounded-xl border border-line bg-paper px-3 py-2 text-sm text-muted">
+                You’re invited — just you. The room is full for extra guests.
+              </p>
+            )}
+            {rsvp !== "NO" && plusPolicy !== "none" && (
               <>
                 <label className="block text-sm">
                   Plus-ones with you

@@ -16,12 +16,6 @@ const STRIP = [
   { href: "/registry", label: "Registry", icon: "gift" },
 ] as const;
 
-function whenFor(item: WeekItem, i: number) {
-  if (item.urgency === "now") return i === 0 ? "Today" : "Now";
-  if (item.urgency === "week") return i === 1 ? "Tomorrow" : i === 2 ? "2 days" : "This week";
-  return i === 3 ? "Oct 20" : "Soon";
-}
-
 export function HomeDashboard({
   names,
   dateLine,
@@ -90,19 +84,26 @@ export function HomeDashboard({
 
         <aside className="home-week panel px-5 py-5">
           <div className="flex items-center justify-between">
-            <p className="kicker">This week</p>
-            <Link href="/checklist" className="text-[12px] text-muted hover:text-ink">
-              View all
+            <p className="kicker">What next</p>
+            <Link href="/after" className="text-[12px] text-muted hover:text-ink">
+              After
             </Link>
           </div>
-          <ul className="mt-1">
-            {open.length === 0 ? (
-              <li className="flex items-center gap-3 py-4 text-sm text-muted">
-                <Icon name="sprig" className="h-5 w-5 text-moss/70" />
-                You’re clear this week.
-              </li>
-            ) : (
-              open.map((row, i) => (
+          {open[0] ? (
+            <Link href={open[0].href} className="mt-3 block">
+              <p className="font-serif text-2xl leading-tight">{open[0].title}</p>
+              <p className="mt-1 text-sm text-muted">{open[0].detail}</p>
+              <p className="mt-2 text-xs text-moss">{open[0].cta}</p>
+            </Link>
+          ) : (
+            <p className="mt-4 flex items-center gap-2 text-sm text-muted">
+              <Icon name="sprig" className="h-5 w-5 text-moss/70" />
+              You’re clear this week.
+            </p>
+          )}
+          {open.length > 1 ? (
+            <ul className="mt-3 border-t border-line">
+              {open.slice(1, 4).map((row) => (
                 <li key={row.id} className="desk-row py-[0.7rem]">
                   <button
                     type="button"
@@ -113,11 +114,10 @@ export function HomeDashboard({
                   <Link href={row.href} className="min-w-0 truncate text-[14px] text-ink">
                     {row.title}
                   </Link>
-                  <span className="shrink-0 text-[12px] text-muted">{whenFor(row, i)}</span>
                 </li>
-              ))
-            )}
-          </ul>
+              ))}
+            </ul>
+          ) : null}
           <div className="mt-2 border-t border-line pt-4">
             <p className="kicker">Budget overview</p>
             <p className="mt-2 font-serif text-[2.2rem] leading-none tracking-tight">{money(spent)}</p>

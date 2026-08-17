@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SeatingChart } from "./SeatingChart";
 import { SeatCanvas } from "./SeatCanvas";
@@ -408,6 +409,9 @@ export function SeatingClient({
           <option value="cards">Print: table cards</option>
         </select>
         <PrintButton label="Print" />
+        <Link href="/seating/usher" className="rounded-full border border-line px-3 py-1.5 text-xs print:hidden">
+          Usher card
+        </Link>
         {selected.length > 0 && (
           <span className="text-xs text-slate-500">{selected.length} selected — tap a table</span>
         )}

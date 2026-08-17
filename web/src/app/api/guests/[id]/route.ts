@@ -39,6 +39,8 @@ export async function PATCH(
     "meal",
     "tableLabel",
     "notes",
+    "plusPolicy",
+    "showed",
   ] as const;
   const patch: Record<string, unknown> = {};
   for (const key of allowed) {
@@ -51,6 +53,13 @@ export async function PATCH(
     );
     patch.plusOnes = extras.plusOnes;
     patch.plusOneNames = extras.plusOneNames;
+  }
+  if (typeof body.rsvp === "string") {
+    patch.rsvpAt = new Date().toISOString();
+  }
+  if (body.plusPolicy === "none") {
+    patch.plusOnes = 0;
+    patch.plusOneNames = [];
   }
   const guest = await patchGuest(id, patch);
   if (!guest) return NextResponse.json({ error: "Not found" }, { status: 404 });

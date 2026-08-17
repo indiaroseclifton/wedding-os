@@ -8,6 +8,7 @@ import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { vendorCatsFor } from "@/lib/shape";
 import { envelopeForVendor } from "@/lib/budget-envelopes";
 import { pathIdForCategory, scoreVendor } from "@/lib/vendor-score";
+import { rangeFor } from "@/lib/vendor-ranges";
 
 type Listing = {
   slug: string;
@@ -481,6 +482,9 @@ export default function VendorBrowsePage() {
                 {match.no.length ? (
                   <p className="mt-1 text-[12px] text-muted">{match.no.join(" · ")}</p>
                 ) : null}
+                <p className="mt-1 text-[12px] text-muted">
+                  Usually {rangeFor(v.category).low}–{rangeFor(v.category).high} without a venue
+                </p>
                 <p className="mt-2 text-sm text-ink-soft">{v.blurb}</p>
                 <p className="mt-1 text-[11px] text-muted">
                   from {v.startingFrom}

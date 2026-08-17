@@ -52,6 +52,9 @@ export async function PATCH(
     "face",
     "gutMark",
     "gutNote",
+    "quoteLow",
+    "quoteNote",
+    "asks",
   ] as const;
   const patch: Record<string, unknown> = {};
   for (const key of allowed) {

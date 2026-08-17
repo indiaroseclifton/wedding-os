@@ -35,6 +35,7 @@ export type VisionPayload = {
   notes: string;
   venueType?: string;
   feel: VisionPin[];
+  feelB?: VisionPin[];
   reject: VisionPin[];
   story?: string;
   lockedAt?: string;
@@ -377,6 +378,7 @@ export function normalizeVision(raw: unknown): VisionPayload {
     notes: typeof p.notes === "string" ? p.notes : "",
     venueType: typeof p.venueType === "string" ? p.venueType : "",
     feel,
+    feelB: Array.isArray(p.feelB) ? p.feelB.filter(isPin) : [],
     reject,
     story: typeof p.story === "string" ? p.story : palette?.story,
     lockedAt: typeof p.lockedAt === "string" ? p.lockedAt : undefined,
@@ -400,6 +402,7 @@ export function mergeVision(prev: VisionPayload, next: Partial<VisionPayload>): 
     notes: next.vibe || (next.feel && next.feel.length) ? (next.notes ?? "") : next.notes || prev.notes,
     venueType: next.venueType || prev.venueType,
     feel: next.feel && next.feel.length ? next.feel : prev.feel,
+    feelB: next.feelB && next.feelB.length ? next.feelB : prev.feelB,
     reject: next.reject && next.reject.length ? next.reject : prev.reject,
     story: next.story || prev.story,
     lockedAt: next.lockedAt || prev.lockedAt,

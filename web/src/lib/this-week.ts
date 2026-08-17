@@ -161,6 +161,43 @@ export async function loadThisWeek(
     });
   }
 
+  const chasePending = guests.filter((g) => g.rsvp === "UNKNOWN" || g.rsvp === "INVITED" || g.rsvp === "MAYBE");
+  if (chasePending.length >= 3) {
+    items.push({
+      id: "chase-rsvp",
+      urgency: days != null && days <= 35 ? "now" : "week",
+      title: `${chasePending.length} still haven’t answered`,
+      detail: "A click is not a seat. Chase them.",
+      href: "/guests/chase",
+      cta: "Open the chase",
+    });
+  }
+
+  const silentAsk = vendors.filter((v) =>
+    (v.asks || []).some((a) => !a.answer && Date.now() - new Date(a.at).getTime() > 7 * 86400000)
+  );
+  if (silentAsk.length) {
+    items.push({
+      id: "ask-silent",
+      urgency: "now",
+      title: `${silentAsk.length} vendor${silentAsk.length === 1 ? "" : "s"} silent on the first ask`,
+      detail: silentAsk.map((v) => v.name).join(" · "),
+      href: "/send/ask",
+      cta: "See the asks",
+    });
+  }
+
+  if (days != null && days < 0) {
+    items.push({
+      id: "after-now",
+      urgency: "now",
+      title: "The three months have started",
+      detail: "Thank-yous, leftover flowers, mark the team.",
+      href: "/after",
+      cta: "Open After",
+    });
+  }
+
   const coming = guests.filter((g) => g.rsvp !== "NO");
   const unseated = coming.filter((g) => !g.tableLabel);
   if (coming.length >= 8 && unseated.length >= 4) {

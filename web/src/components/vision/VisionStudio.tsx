@@ -37,6 +37,7 @@ export function VisionStudio({
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<PairSide[]>([]);
   const [rejected, setRejected] = useState<PairSide[]>([]);
+  const [walker, setWalker] = useState<"A" | "B">("A");
   const [vision, setVision] = useState(initial);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export function VisionStudio({
 
   function applySides(keep: PairSide[], drop: PairSide[]) {
     const nextFeel = [
-      ...vision.feel,
+      ...(walker === "B" ? vision.feelB || [] : vision.feel),
       ...keep.map((s) => ({ id: s.id, url: s.url, tag: s.tag, why: s.label })),
     ];
     const nextReject = [
@@ -58,7 +59,8 @@ export function VisionStudio({
     const allKeep = [...picked, ...keep];
     const suggestion = suggestFromSides(allKeep);
     return mergeVision(vision, {
-      feel: dedupePins(nextFeel),
+      feel: walker === "B" ? vision.feel : dedupePins(nextFeel),
+      feelB: walker === "B" ? dedupePins(nextFeel) : vision.feelB,
       reject: dedupePins(nextReject),
       vibe: vision.vibe || suggestion.vibe,
       formal: vision.formal || suggestion.formal,
@@ -116,7 +118,26 @@ export function VisionStudio({
     return (
       <div className="mx-auto max-w-5xl">
         <VisionTabs mode={mode} onMode={setMode} />
-        <p className="kicker kicker-moss">
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setWalker("A")}
+            className={`min-h-10 rounded-full px-4 text-sm ${walker === "A" ? "bg-moss text-moss-fg" : "border border-line"}`}
+          >
+            I’m A
+          </button>
+          <button
+            type="button"
+            onClick={() => setWalker("B")}
+            className={`min-h-10 rounded-full px-4 text-sm ${walker === "B" ? "bg-moss text-moss-fg" : "border border-line"}`}
+          >
+            I’m B
+          </button>
+          <Link href="/together" className="text-sm text-muted underline">
+            See overlap
+          </Link>
+        </div>
+        <p className="kicker kicker-moss mt-6">
           {pair.set} · {setPos} of {setPairs.length}
         </p>
         <h1 className="headline mt-2">{pair.ask}</h1>

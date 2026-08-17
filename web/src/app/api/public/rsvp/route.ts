@@ -58,6 +58,7 @@ export async function GET(request: Request) {
       phone: guest.phone,
       partyName: guest.partyName,
       answers: guest.answers || {},
+      plusPolicy: guest.plusPolicy || "ok",
     },
     household: household.map((g) => ({
       id: g.id,
@@ -120,6 +121,10 @@ export async function POST(request: Request) {
       }
     }
     const extras = withPlusOnes(plusOnes, parsePlusOneNames(body.plusOneNames ?? body.plusOneText));
+    if (guest.plusPolicy === "none") {
+      extras.plusOnes = 0;
+      extras.plusOneNames = [];
+    }
     const updated = await updateGuest(guest.id, {
       rsvp,
       plusOnes: extras.plusOnes,
@@ -133,6 +138,7 @@ export async function POST(request: Request) {
       postal: String(body.postal || "").slice(0, 20) || undefined,
       phone: String(body.phone || "").slice(0, 40) || undefined,
       answers,
+      rsvpAt: new Date().toISOString(),
     });
 
     if (body.forHousehold && guest.partyName) {

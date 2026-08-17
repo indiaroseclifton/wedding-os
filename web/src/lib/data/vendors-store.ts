@@ -34,6 +34,9 @@ export type StoredVendor = {
   gutMark?: "yes" | "maybe" | "no";
   gutNote?: string;
   gutAt?: string;
+  quoteLow?: string;
+  quoteNote?: string;
+  asks?: { id: string; body: string; at: string; answer?: string; answeredAt?: string }[];
   createdAt: string;
   updatedAt: string;
 };

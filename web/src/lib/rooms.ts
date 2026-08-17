@@ -8,6 +8,7 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
   planning: [
     { href: "/planning", label: "Overview" },
     { href: "/planning/vision", label: "My vision" },
+    { href: "/together", label: "Together" },
     {
       href: "/decisions",
       label: "Decisions",
@@ -20,6 +21,8 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
       ],
     },
     { href: "/checklist", label: "Checklist" },
+    { href: "/after", label: "After" },
+    { href: "/thanks", label: "Thank-yous" },
     { href: "/traditions", label: "Traditions" },
     { href: "/timeline", label: "Timeline" },
     { href: "/planning/party", label: "Wedding party" },
@@ -64,6 +67,7 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
       label: "Send",
       children: [
         { href: "/send", label: "Packets" },
+        { href: "/send/ask", label: "First ask" },
         { href: "/handoffs", label: "Extra notes" },
       ],
     },
@@ -74,11 +78,12 @@ export const ROOM_TREE: Record<"planning" | "vendors" | "guests" | "day" | "budg
       label: "List",
       children: [
         { href: "/guests", label: "Everyone" },
+        { href: "/guests/chase", label: "The chase" },
         { href: "/guests/new", label: "Add one" },
         { href: "/guests/import", label: "Import" },
       ],
     },
-    { href: "/seating", label: "Room planner" },
+    { href: "/seating", label: "Room planner", children: [{ href: "/seating", label: "Chart" }, { href: "/seating/usher", label: "Usher card" }] },
     { href: "/travel", label: "Travel" },
     { href: "/dietary", label: "Dietary", children: [{ href: "/dietary", label: "Rollup" }, { href: "/dietary/packet", label: "Caterer packet" }] },
     {

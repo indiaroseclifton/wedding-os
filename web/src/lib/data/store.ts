@@ -95,6 +95,9 @@ export type StoredGuest = {
   tableLabel?: string;
   seatIndex?: number;
   notes?: string;
+  plusPolicy?: "ok" | "none" | "named";
+  showed?: boolean;
+  rsvpAt?: string;
   createdAt: string;
   updatedAt: string;
 };

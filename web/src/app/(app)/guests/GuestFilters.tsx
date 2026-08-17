@@ -32,6 +32,7 @@ export function GuestFilters({
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("ALL");
+  const [q, setQ] = useState("");
   const [rows, setRows] = useState(guests);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
@@ -41,10 +42,15 @@ export function GuestFilters({
   const [bulkSide, setBulkSide] = useState("A");
 
   const visible = useMemo(() => {
-    if (filter === "ALL") return rows;
-    if (filter === "NO_ADDRESS") return rows.filter((g) => g.missingAddress);
-    return rows.filter((g) => g.rsvp === filter);
-  }, [rows, filter]);
+    const needle = q.trim().toLowerCase();
+    return rows.filter((g) => {
+      if (filter === "NO_ADDRESS" && !g.missingAddress) return false;
+      if (filter !== "ALL" && filter !== "NO_ADDRESS" && g.rsvp !== filter) return false;
+      if (!needle) return true;
+      const hay = `${g.name} ${g.plusOneNames?.join(" ") || ""} ${g.partyName || ""}`.toLowerCase();
+      return hay.includes(needle);
+    });
+  }, [rows, filter, q]);
 
   const allVisibleSelected =
     visible.length > 0 && visible.every((g) => selected.has(g.id));
@@ -139,6 +145,12 @@ export function GuestFilters({
 
   return (
     <div className="space-y-3">
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Find Dad, a plus-one, a household…"
+        className="field"
+      />
       <div className="flex flex-wrap gap-2">
         {FILTERS.map((f) => (
           <button
