@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       }
       let updated = 0;
       for (const id of ids) {
-        const g = await patchGuest(id, { rsvp });
+        const g = await patchGuest(id, { rsvp, rsvpAt: new Date().toISOString() });
         if (g) updated += 1;
       }
       return NextResponse.json({ ok: true, updated, action: "rsvp" });

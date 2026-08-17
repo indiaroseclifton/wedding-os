@@ -42,7 +42,7 @@ export function NudgePanel() {
   const rows = [
     { kind: "save_the_date", label: "Save the date", list: lists.saveTheDate },
     { kind: "invited", label: "You’re invited", list: lists.invited },
-    { kind: "rsvp", label: "RSVP nudge", list: lists.rsvp, hint: "Second send waits 10 days" },
+    { kind: "rsvp", label: "RSVP nudge", list: lists.rsvp, hint: "Waiting, maybe, and silent yes · second send waits 10 days" },
     { kind: "address", label: "Need address", list: lists.address },
   ];
 

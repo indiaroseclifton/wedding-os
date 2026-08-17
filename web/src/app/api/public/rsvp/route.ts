@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { parsePlusOneNames, withPlusOnes } from "@/lib/households";
+import { parsePlusOneNames, namedPlusOnes, guestLookupHay } from "@/lib/households";
+import { hasMailingAddress } from "@/lib/data/guest-mail";
 import { getSiteByToken, rsvpIsOpen } from "@/lib/data/site-store";
 import {
   ensureGuestRsvpTokens,
@@ -91,12 +92,14 @@ export async function POST(request: Request) {
     }
     const guests = await ensureGuestRsvpTokens(site.workspaceId);
     const matches = guests
-      .filter((g) => norm(g.name).includes(q) || q.includes(norm(g.name)))
+      .filter((g) => {
+        const hay = norm(guestLookupHay(g));
+        return hay.includes(q) || q.includes(norm(g.name));
+      })
       .slice(0, 6)
       .map((g) => ({
         name: g.name,
         rsvpToken: g.rsvpToken,
-        rsvp: g.rsvp,
       }));
     return NextResponse.json({ matches });
   }
@@ -110,9 +113,10 @@ export async function POST(request: Request) {
     if (!RSVP.has(rsvp)) {
       return NextResponse.json({ error: "Pick yes, no, or maybe" }, { status: 400 });
     }
-    const plusOnes = Math.max(0, Math.min(8, Number(body.plusOnes) || 0));
-    if (site.requireAddress && !String(body.address || "").trim()) {
-      return NextResponse.json({ error: "Please add a mailing address" }, { status: 400 });
+    const street = String(body.address || "").slice(0, 200);
+    const city = String(body.city || "").slice(0, 80);
+    if (site.requireAddress && rsvp !== "NO" && !hasMailingAddress({ address: street, city })) {
+      return NextResponse.json({ error: "Please add a street and city" }, { status: 400 });
     }
     const answers: Record<string, string> = {};
     if (body.answers && typeof body.answers === "object") {
@@ -120,11 +124,9 @@ export async function POST(request: Request) {
         answers[q.id] = String((body.answers as Record<string, string>)[q.id] || "").slice(0, 300);
       }
     }
-    const extras = withPlusOnes(plusOnes, parsePlusOneNames(body.plusOneNames ?? body.plusOneText));
-    if (guest.plusPolicy === "none") {
-      extras.plusOnes = 0;
-      extras.plusOneNames = [];
-    }
+    const offered = parsePlusOneNames(body.plusOneNames ?? body.plusOneText);
+    const extras = namedPlusOnes(guest.plusOneNames || [], offered, guest.plusPolicy || "ok");
+    const now = new Date().toISOString();
     const updated = await updateGuest(guest.id, {
       rsvp,
       plusOnes: extras.plusOnes,
@@ -132,13 +134,13 @@ export async function POST(request: Request) {
       dietary: String(body.dietary || "").slice(0, 500) || undefined,
       meal: String(body.meal || "").slice(0, 80) || undefined,
       notes: String(body.notes || "").slice(0, 1000) || guest.notes,
-      address: String(body.address || "").slice(0, 200) || undefined,
-      city: String(body.city || "").slice(0, 80) || undefined,
+      address: street || undefined,
+      city: city || undefined,
       region: String(body.region || "").slice(0, 80) || undefined,
       postal: String(body.postal || "").slice(0, 20) || undefined,
       phone: String(body.phone || "").slice(0, 40) || undefined,
       answers,
-      rsvpAt: new Date().toISOString(),
+      rsvpAt: now,
     });
 
     if (body.forHousehold && guest.partyName) {
@@ -146,7 +148,16 @@ export async function POST(request: Request) {
         (g) => g.id !== guest.id && g.partyName?.trim() === guest.partyName?.trim()
       );
       for (const other of house) {
-        await updateGuest(other.id, { rsvp });
+        await updateGuest(other.id, {
+          rsvp,
+          rsvpAt: now,
+          address: street || other.address,
+          city: city || other.city,
+          region: String(body.region || "").slice(0, 80) || other.region,
+          postal: String(body.postal || "").slice(0, 20) || other.postal,
+          phone: String(body.phone || "").slice(0, 40) || other.phone,
+          meal: String(body.meal || "").slice(0, 80) || other.meal,
+        });
       }
     }
 

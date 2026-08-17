@@ -84,7 +84,7 @@ function PublicRsvpInner() {
         const next: Record<string, { status: string; meal: string }> = {};
         for (const ev of extras) {
           next[ev.id] = {
-            status: ["YES", "NO", "MAYBE"].includes(ev.status) ? ev.status : "YES",
+            status: ["YES", "NO", "MAYBE"].includes(ev.status) ? ev.status : "INVITED",
             meal: ev.meal || "",
           };
         }
@@ -137,7 +137,7 @@ function PublicRsvpInner() {
         answers,
         eventRsvps: events.map((ev) => ({
           eventId: ev.id,
-          status: eventAnswers[ev.id]?.status || "YES",
+          status: eventAnswers[ev.id]?.status || "INVITED",
           meal: eventAnswers[ev.id]?.meal || "",
         })),
       }),
@@ -165,6 +165,7 @@ function PublicRsvpInner() {
             <span className="font-medium">{rsvp === "YES" ? "yes" : rsvp === "NO" ? "no" : "maybe"}</span>
             {events.length
               ? ` for the wedding${events
+                  .filter((ev) => ["YES", "NO", "MAYBE"].includes(eventAnswers[ev.id]?.status || ""))
                   .map((ev) => {
                     const s = eventAnswers[ev.id]?.status;
                     return `, ${s === "YES" ? "yes" : s === "NO" ? "no" : "maybe"} for ${ev.name}`;
@@ -252,7 +253,18 @@ function PublicRsvpInner() {
                 You’re invited — just you. The room is full for extra guests.
               </p>
             )}
-            {rsvp !== "NO" && plusPolicy !== "none" && (
+            {rsvp !== "NO" && plusPolicy === "named" && (
+              <div className="space-y-2 rounded-xl border border-line bg-paper px-3 py-3">
+                <p className="text-sm font-medium">Named guests only</p>
+                <p className="text-xs text-muted">We can’t add or swap anyone else.</p>
+                {(plusNames.length ? plusNames : []).map((n) => (
+                  <p key={n} className="text-sm">
+                    {n}
+                  </p>
+                ))}
+              </div>
+            )}
+            {rsvp !== "NO" && plusPolicy === "ok" && (
               <>
                 <label className="block text-sm">
                   Plus-ones with you
@@ -291,6 +303,10 @@ function PublicRsvpInner() {
                     ))}
                   </div>
                 )}
+              </>
+            )}
+            {rsvp !== "NO" && (
+              <>
                 <label className="block text-sm">
                   Meal
                   <select
@@ -328,7 +344,7 @@ function PublicRsvpInner() {
                 <input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  required={requireAddress}
+                  required={requireAddress && rsvp !== "NO"}
                   placeholder="Street"
                   className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                 />
@@ -336,7 +352,7 @@ function PublicRsvpInner() {
                   <input
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    required={requireAddress}
+                    required={requireAddress && rsvp !== "NO"}
                     placeholder="City"
                     className="rounded-lg border border-line bg-surface px-3 py-2 text-sm"
                   />
@@ -365,7 +381,7 @@ function PublicRsvpInner() {
             )}
 
             {events.map((ev) => {
-              const ans = eventAnswers[ev.id] || { status: "YES", meal: "" };
+              const ans = eventAnswers[ev.id] || { status: "INVITED", meal: "" };
               return (
                 <fieldset key={ev.id} className="space-y-2 border-t border-line pt-4">
                   <legend className="text-sm font-medium">
@@ -373,6 +389,7 @@ function PublicRsvpInner() {
                     {ev.date ? ` · ${ev.date}` : ""}
                   </legend>
                   {[
+                    ["INVITED", "Not yet"],
                     ["YES", "Yes"],
                     ["NO", "No"],
                     ["MAYBE", "Maybe"],

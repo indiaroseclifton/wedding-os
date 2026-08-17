@@ -15,7 +15,11 @@ export function formatMailingAddress(
 }
 
 export function isPendingRsvp(rsvp: string) {
-  return rsvp === "UNKNOWN" || rsvp === "INVITED";
+  return rsvp === "UNKNOWN" || rsvp === "INVITED" || rsvp === "MAYBE";
+}
+
+export function isSilentYes(g: Pick<StoredGuest, "rsvp" | "rsvpAt">) {
+  return g.rsvp === "YES" && !g.rsvpAt;
 }
 
 function hasRealEmail(g: StoredGuest) {
@@ -25,7 +29,8 @@ function hasRealEmail(g: StoredGuest) {
 }
 
 export function canNudge(g: StoredGuest, now = Date.now()) {
-  if (!hasRealEmail(g) || !g.rsvpToken || !isPendingRsvp(g.rsvp)) return false;
+  if (!hasRealEmail(g) || !g.rsvpToken) return false;
+  if (!isPendingRsvp(g.rsvp) && !isSilentYes(g)) return false;
   if (!g.lastNudgedAt) return true;
   const t = new Date(g.lastNudgedAt).getTime();
   if (!Number.isFinite(t)) return true;
@@ -49,7 +54,7 @@ export function canInviteEmail(g: StoredGuest, kind: "save_the_date" | "invited"
 }
 
 export function nudgeBlockReason(g: StoredGuest, now = Date.now()) {
-  if (!isPendingRsvp(g.rsvp)) return "already replied";
+  if (!isPendingRsvp(g.rsvp) && !isSilentYes(g)) return "already replied";
   if (!hasRealEmail(g)) return "no email";
   if (!g.rsvpToken) return "no link";
   if (g.lastNudgedAt) {

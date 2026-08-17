@@ -31,3 +31,20 @@ export function plusLine(g: { plusOnes?: number; plusOneNames?: string[] }) {
   if (g.plusOnes) return `+${g.plusOnes}`;
   return "";
 }
+
+export function namedPlusOnes(
+  allowed: string[],
+  incoming: string[],
+  policy?: string
+) {
+  if (policy === "none") return { plusOnes: 0, plusOneNames: [] as string[] };
+  const extras = withPlusOnes(incoming.length, incoming);
+  if (policy !== "named") return extras;
+  const allow = new Set(allowed.map((n) => n.trim().toLowerCase()).filter(Boolean));
+  const kept = extras.plusOneNames.filter((n) => allow.has(n.trim().toLowerCase()));
+  return { plusOnes: kept.length, plusOneNames: kept };
+}
+
+export function guestLookupHay(g: { name: string; plusOneNames?: string[]; partyName?: string }) {
+  return [g.name, g.partyName, ...(g.plusOneNames || [])].filter(Boolean).join(" ");
+}
