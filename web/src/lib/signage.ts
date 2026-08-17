@@ -22,6 +22,8 @@ export type SignKind =
 
 export type SignGroup = "signs" | "paper" | "table" | "favors";
 export type SignPalette = "sage" | "blush" | "charcoal" | "cream";
+export type SignStyle = "arch" | "minimal" | "floral" | "deco";
+export type CutOp = "Cut" | "Iron-on" | "Print Then Cut" | "Foil" | "Draw";
 
 export type SignSpec = {
   id: SignKind;
@@ -56,6 +58,7 @@ export type SignDesign = {
   widthIn: number;
   heightIn: number;
   copies: number;
+  style: SignStyle;
   updatedAt: string;
 };
 
@@ -88,6 +91,47 @@ export const SIGN_KINDS: SignSpec[] = [
   { id: "chair", group: "table", label: "Chair back", line: "Mr / Mrs or your names", widthIn: 10, heightIn: 4, heading: "Mr", sub: "Mrs", extra: "", headingSize: 36, bodySize: 16, vine: false, copiesHint: "2" },
   { id: "banner", group: "table", label: "Banner flag", line: "One word per flag", widthIn: 5, heightIn: 7, heading: "Just", sub: "married", extra: "", headingSize: 32, bodySize: 20, vine: false, copiesHint: "as many words" },
 ];
+
+export const STYLES: { id: SignStyle; label: string; line: string }[] = [
+  { id: "arch", label: "Arch", line: "Soft top, serif, a little vine" },
+  { id: "minimal", label: "Minimal", line: "Sharp edges, one weight" },
+  { id: "floral", label: "Floral", line: "Leaves at the corners" },
+  { id: "deco", label: "Art Deco", line: "Lines, a fan, tall type" },
+];
+
+export type SpaceCard = {
+  search: string;
+  official: string;
+  op: CutOp;
+  access: string;
+};
+
+export const SPACE: Record<SignKind, SpaceCard> = {
+  welcome: { search: "rustic wedding welcome sign", official: "Rustic / Groovy Wedding Welcome Sign", op: "Cut", access: "Official versions often need Access. Our SVG is free." },
+  table: { search: "customizable wedding table number", official: "Customizable Wedding Table Number Sign", op: "Cut", access: "Access if you use their images. Ours is just type." },
+  bar: { search: "wedding bar sign", official: "Wedding Bar Sign", op: "Cut", access: "Access for their florals. Ours is type + flourish." },
+  direction: { search: "wedding directional sign", official: "Wedding directional / this way", op: "Cut", access: "Search Projects. Or upload ours." },
+  reserved: { search: "reserved wedding sign", official: "Reserved seating sign", op: "Cut", access: "Usually free type. Access if you add their wreath." },
+  unplugged: { search: "unplugged ceremony sign", official: "Unplugged wedding sign", op: "Cut", access: "Access for illustrated phones. Ours is words." },
+  cards: { search: "cards and gifts wedding sign", official: "Cards & gifts sign", op: "Cut", access: "Access for icons. Ours is type." },
+  guestbook: { search: "guestbook wedding sign", official: "Guestbook sign", op: "Cut", access: "Access for their frames." },
+  memory: { search: "in loving memory wedding sign", official: "Memorial wedding sign", op: "Cut", access: "Keep this simple. Ours is type only." },
+  place: { search: "wedding place card", official: "Place cards (pen or Print Then Cut)", op: "Print Then Cut", access: "Their suites are Access. Batch ours on a 12×12." },
+  menu: { search: "wedding menu card", official: "Wine, Cheese & Chocolate pairing / menu", op: "Print Then Cut", access: "Foil and florals are Access. Our lines are free." },
+  program: { search: "wedding program", official: "Ceremony program", op: "Print Then Cut", access: "Access for illustrated timelines." },
+  favor: { search: "wedding favor tag", official: "Foil name gift tag", op: "Cut", access: "Foil kit is extra. Cardstock cut is free." },
+  thanks: { search: "thank you tag wedding", official: "Thank-you tag", op: "Cut", access: "Access for their script flourishes." },
+  bag: { search: "welcome bag tag wedding", official: "Welcome bag / hotel tag", op: "Cut", access: "Search Projects. Or upload ours." },
+  napkin: { search: "wedding monogram iron on", official: "Monogram Maker (Access, desktop)", op: "Iron-on", access: "Monogram Maker needs Access to send. Ours you upload." },
+  topper: { search: "wedding cake topper", official: "Cake topper names", op: "Cut", access: "Wood/chipboard is Maker. Cardstock works on Explore." },
+  flute: { search: "champagne glass decal wedding", official: "Champagne markers / flute decal", op: "Cut", access: "Engraved acrylic is Maker. Vinyl is any machine." },
+  chair: { search: "mr mrs chair sign wedding", official: "Mr & Mrs chair backs", op: "Iron-on", access: "Access for script. Mirror on before you cut." },
+  banner: { search: "just married banner", official: "Retro wedding velvet banner", op: "Cut", access: "Their velvet banner is Access. Ours is a flag." },
+};
+
+export function spaceOf(kind: SignKind) {
+  return SPACE[kind];
+}
 
 export const PALETTES: Record<SignPalette, { ink: string; accent: string; ground: string; label: string }> = {
   sage: { ink: "#3d4a38", accent: "#7d8b74", ground: "#faf7f2", label: "Sage" },
@@ -129,6 +173,7 @@ export function defaultSign(
     widthIn: spec.widthIn,
     heightIn: spec.heightIn,
     copies: 1,
+    style: spec.group === "signs" ? "arch" : spec.group === "table" ? "deco" : spec.group === "favors" ? "floral" : "minimal",
   };
 }
 
@@ -156,15 +201,60 @@ function hole(cx: number, y: number, r: number, color: string) {
   return `<circle id="cut-hole" cx="${cx}" cy="${y}" r="${r}" fill="none" stroke="${color}" stroke-width="1.2"/>`;
 }
 
+function typeface(style: SignStyle) {
+  if (style === "minimal") return "Helvetica, Arial, sans-serif";
+  if (style === "deco") return "Didot, Bodoni, Georgia, serif";
+  return "Georgia, 'Times New Roman', serif";
+}
+
+function styleBoard(w: number, h: number, style: SignStyle, pal: { ink: string; accent: string; ground: string }, kind: SignKind) {
+  const pad = 1;
+  if (style === "arch" && (kind === "welcome" || kind === "unplugged" || kind === "cards" || kind === "memory")) {
+    const r = Math.min(w * 0.5, h * 0.38);
+    return `<path id="guide-board" d="M${pad} ${r + pad} A${r} ${r} 0 0 1 ${w - pad} ${r + pad} L${w - pad} ${h - pad} L${pad} ${h - pad} Z" fill="${pal.ground}" stroke="${pal.accent}" stroke-width="1"/>`;
+  }
+  if (style === "minimal") {
+    return `<rect id="guide-board" x="${pad}" y="${pad}" width="${w - 2}" height="${h - 2}" fill="${pal.ground}" stroke="${pal.ink}" stroke-width="1.2"/>`;
+  }
+  if (style === "deco") {
+    return `<rect id="guide-board" x="${pad}" y="${pad}" width="${w - 2}" height="${h - 2}" fill="${pal.ground}" stroke="${pal.ink}" stroke-width="1"/>
+      <rect x="${8}" y="${8}" width="${w - 16}" height="${h - 16}" fill="none" stroke="${pal.accent}" stroke-width="0.8"/>`;
+  }
+  const rx = kind === "favor" || kind === "thanks" || kind === "bag" ? 10 : 14;
+  return `<rect id="guide-board" x="${pad}" y="${pad}" width="${w - 2}" height="${h - 2}" rx="${rx}" fill="${pal.ground}" stroke="${pal.accent}" stroke-width="1"/>`;
+}
+
+function styleFlourish(w: number, h: number, style: SignStyle, color: string, on: boolean) {
+  if (!on && style !== "deco") return "";
+  if (style === "minimal") return "";
+  if (style === "deco") {
+    const cx = w / 2;
+    return `<g id="cut-flourish" fill="none" stroke="${color}" stroke-width="${Math.max(0.9, w * 0.006)}">
+      <path d="M${cx - 36} ${h * 0.14} H${cx + 36}"/>
+      <path d="M${cx} ${h * 0.1} L${cx + 10} ${h * 0.16} L${cx} ${h * 0.18} L${cx - 10} ${h * 0.16} Z"/>
+    </g>`;
+  }
+  if (style === "floral") {
+    const leaf = (x: number, y: number, flip: number) =>
+      `<path d="M${x} ${y} C ${x + 10 * flip} ${y - 12}, ${x + 18 * flip} ${y - 4}, ${x + 4 * flip} ${y + 6}"/>`;
+    return `<g id="cut-flourish" fill="none" stroke="${color}" stroke-width="${Math.max(1, w * 0.007)}" stroke-linecap="round">
+      ${leaf(w * 0.12, h * 0.16, 1)}${leaf(w * 0.88, h * 0.16, -1)}
+      ${leaf(w * 0.12, h * 0.84, 1)}${leaf(w * 0.88, h * 0.84, -1)}
+    </g>`;
+  }
+  return vinePaths(w, h, color);
+}
+
 export function buildSignSvg(sign: SignDesign): string {
   const dpi = 72;
   const w = sign.widthIn * dpi;
   const h = sign.heightIn * dpi;
   const pal = PALETTES[sign.palette];
+  const style = sign.style || "arch";
   const lines = sign.extra.split("\n").map((l) => l.trim());
   const cx = w / 2;
-  const serif = "Georgia, 'Times New Roman', serif";
-  const vine = sign.vine ? vinePaths(w, h, pal.accent) : "";
+  const serif = typeface(style);
+  const vine = styleFlourish(w, h, style, pal.accent, sign.vine);
   const k = sign.kind;
   const mono = initials(sign.names);
   let body = "";
@@ -234,11 +324,11 @@ export function buildSignSvg(sign: SignDesign): string {
       <text x="${cx}" y="${h * 0.62}" text-anchor="middle" font-family="${serif}" font-style="italic" font-size="${sign.bodySize}" fill="${pal.accent}">${esc(sign.sub)}</text>`;
   }
 
-  const rx = k === "welcome" ? w * 0.28 : k === "favor" || k === "thanks" || k === "bag" ? 10 : 8;
+  const board = styleBoard(w, h, style, pal, k);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${sign.widthIn}in" height="${sign.heightIn}in" viewBox="0 0 ${w} ${h}">
   <title>${esc(fileName(sign))}</title>
-  <rect id="guide-board" x="1" y="1" width="${w - 2}" height="${h - 2}" rx="${rx}" fill="${pal.ground}" stroke="${pal.accent}" stroke-width="1"/>
+  ${board}
   ${extraCut}
   <g id="cut-text">${body}</g>
   ${vine}
@@ -251,6 +341,7 @@ export function fileName(sign: SignDesign) {
 
 export function cricutPrep(sign: SignDesign) {
   const spec = specOf(sign.kind);
+  const space = spaceOf(sign.kind);
   const tall = sign.heightIn > 11.5;
   const paper = spec.group === "paper" || spec.group === "favors";
   const iron = sign.kind === "napkin" || sign.kind === "chair";
@@ -271,22 +362,25 @@ export function cricutPrep(sign: SignDesign) {
     pressure: "Default",
     blade: "Fine-point",
     layers:
-      sign.vine
+      sign.style === "floral" || sign.vine
         ? "Text + flourish"
         : sign.kind === "favor" || sign.kind === "thanks" || sign.kind === "bag"
           ? "Tag + hole"
           : "Text",
     copiesHint: spec.copiesHint,
+    space,
     steps: [
-      "Download the SVG.",
-      "Design Space → Upload → Upload Image → this file.",
-      "Weld or attach the words so they cut as one piece.",
+      "Download the SVG — or search Design Space for the official project.",
+      `In Design Space search: “${space.search}”.`,
+      "If you use ours: Upload → Upload Image → this file. Weld the words.",
       "Hide the guide-board layer if you only want the letters.",
       iron
         ? "Mirror on. Make It. Weed. Press."
-        : paper
-          ? "Make It. Cardstock on a LightGrip mat, or Print Then Cut."
-          : "Make It. Weed, transfer, press onto the board.",
+        : space.op === "Print Then Cut"
+          ? "Make It as Print Then Cut, or cut cardstock on a LightGrip mat."
+          : space.op === "Foil"
+            ? "Foil Transfer on Maker / Explore. Or skip foil and cut vinyl."
+            : "Make It. Weed, transfer, press onto the board.",
     ],
   };
 }

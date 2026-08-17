@@ -5,6 +5,7 @@ import {
   GROUPS,
   PALETTES,
   SIGN_KINDS,
+  STYLES,
   buildSignSvg,
   cricutPrep,
   defaultSign,
@@ -49,7 +50,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
     const data = await res.json();
     const list: SignDesign[] = data.signage?.signs || [];
     setSigns(list);
-    if (list[0] && !sign.id) setSign({ ...list[0], copies: list[0].copies || 1 });
+    if (list[0] && !sign.id) setSign({ ...list[0], copies: list[0].copies || 1, style: list[0].style || "arch" });
   }
 
   useEffect(() => {
@@ -193,7 +194,7 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
               key={s.id}
               type="button"
               onClick={() => {
-                setSign({ ...s, copies: s.copies || 1 });
+                setSign({ ...s, copies: s.copies || 1, style: s.style || "arch" });
                 setGroup(specOf(s.kind).group);
               }}
               className={`min-h-9 rounded-full px-3 text-xs ${
@@ -289,6 +290,24 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
                 <span className="mt-1 block text-xs text-muted">{specOf(sign.kind).copiesHint}</span>
               </label>
               <div>
+                <p className="kicker">Style</p>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {STYLES.map((st) => (
+                    <button
+                      key={st.id}
+                      type="button"
+                      onClick={() => patch({ style: st.id, vine: st.id !== "minimal" })}
+                      className={`min-h-14 rounded-xl border px-3 py-2 text-left ${
+                        (sign.style || "arch") === st.id ? "border-ink bg-paper" : "border-line"
+                      }`}
+                    >
+                      <span className="block text-sm">{st.label}</span>
+                      <span className="block text-[11px] text-muted">{st.line}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
                 <p className="kicker">Color</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {(Object.keys(PALETTES) as SignPalette[]).map((id) => (
@@ -312,6 +331,27 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
 
           {tab === "cricut" ? (
             <div className="space-y-3 text-sm">
+              <div className="rounded-xl border border-line bg-paper p-3">
+                <p className="kicker">Design Space</p>
+                <p className="mt-1 font-medium">{prep.space.official}</p>
+                <p className="mt-1 text-muted">Search: “{prep.space.search}”</p>
+                <p className="mt-1 text-xs text-muted">{prep.space.op} · {prep.space.access}</p>
+                <div className="mt-3 flex flex-col gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-ghost w-full"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(prep.space.search);
+                      setMsg("Search copied — paste it in Design Space");
+                    }}
+                  >
+                    Copy search
+                  </button>
+                  <a href="https://design.cricut.com/" target="_blank" rel="noreferrer" className="btn btn-primary w-full">
+                    Open Design Space
+                  </a>
+                </div>
+              </div>
               <dl className="space-y-2">
                 <div className="flex justify-between gap-3"><dt className="text-muted">File</dt><dd>{prep.file}</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted">Cut size</dt><dd>{prep.cut}</dd></div>
@@ -326,11 +366,8 @@ export function SignageStudio({ names, date }: { names: string; date: string }) 
                   <li key={s}>{s}</li>
                 ))}
               </ol>
-              <a href="https://design.cricut.com/" target="_blank" rel="noreferrer" className="btn btn-primary w-full">
-                Open Design Space
-              </a>
               <button type="button" onClick={() => downloadSvg(sign)} className="btn btn-ghost w-full">
-                Download SVG first
+                Download our SVG instead
               </button>
             </div>
           ) : null}
