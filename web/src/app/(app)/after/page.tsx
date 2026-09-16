@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { AfterDesk } from "@/components/after/AfterDesk";
+import { AfterGiftRules } from "@/components/v2/AfterGiftRules";
 import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
 import { listVendors } from "@/lib/data/vendors-store";
 import { getThanks } from "@/lib/data/thanks-store";
@@ -56,6 +57,8 @@ export default async function AfterPage() {
         </h1>
         <p className="deck mt-4 max-w-xl text-pretty">{desk.pace}</p>
       </header>
+
+      <AfterGiftRules />
 
       {waiting ? (
         <section className="rounded-[1.6rem] border border-line bg-surface p-6 sm:p-8">
