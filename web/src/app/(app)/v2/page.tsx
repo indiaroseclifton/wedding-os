@@ -6,7 +6,18 @@ import { V2_ITEMS, type V2Group, type V2Item } from "@/lib/v2-board";
 
 const KEY = "vowfolk-v2-notes";
 type Notes = Record<string, string>;
-const GROUPS: V2Group[] = ["Home", "Before", "People", "Studio", "The day", "After", "Money", "V2 add-ons"];
+const GROUPS: V2Group[] = [
+  "Home",
+  "Before",
+  "People",
+  "Studio",
+  "The day",
+  "After",
+  "Money",
+  "Connect",
+  "Not built yet",
+  "Business",
+];
 
 function loadNotes(): Notes {
   if (typeof window === "undefined") return {};
@@ -63,12 +74,12 @@ export default function V2BoardPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="kicker kicker-moss">V2 preview — not production</p>
-          <h1 className="font-serif text-4xl">Every room</h1>
+          <h1 className="font-serif text-4xl">Every feature</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-            Open a card. Leave what to change. Then copy once and paste in chat.
+            Built, first-cut, or not started — each card still takes notes. Copy once and paste in chat.
           </p>
           <p className="mt-2 text-xs text-muted">
-            {V2_ITEMS.length} rooms · {packed.count} with notes · first-cut means usable, not finished
+            {V2_ITEMS.length} cards · {packed.count} with notes
           </p>
         </div>
         <button type="button" onClick={copyAll} className="rounded-full bg-ink px-4 py-2 text-sm text-ivory">
@@ -92,7 +103,7 @@ export default function V2BoardPage() {
       </div>
 
       {GROUPS.filter((g) => filter === "All" || filter === g).map((group) => (
-        <section key={group} id={group === "V2 add-ons" ? "money-plan" : group}>
+        <section key={group} id={group === "Business" ? "money-plan" : group}>
           <p className="mb-2 kicker kicker-moss">{group}</p>
           <ol className="space-y-3">
             {items
