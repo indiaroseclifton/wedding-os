@@ -8,10 +8,11 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { DeskNav, currentRoomLabel } from "@/components/layout/DeskNav";
 import { TopNav } from "@/components/layout/TopNav";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { MORE_ROOMS, NAV_ITEMS, firstNames } from "@/lib/visual-rooms";
+import { MORE_ROOMS, NAV_ITEMS } from "@/lib/visual-rooms";
 import { roomVisible } from "@/lib/shape";
 import { Icon } from "@/components/icons";
 import { CopilotDock } from "@/components/v2/CopilotDock";
+import { HowToPop } from "@/components/v2/HowToPop";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -182,6 +183,7 @@ export function AppShell({
         </div>
       )}
       <CopilotDock />
+      <HowToPop />
     </div>
   );
 }
