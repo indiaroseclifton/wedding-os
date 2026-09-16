@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { HowToButton } from "@/components/v2/HowToPop";
 import { V2_ITEMS, type V2Group, type V2Item } from "@/lib/v2-board";
 
 const KEY = "vowfolk-v2-notes";
@@ -79,10 +80,7 @@ export default function V2BoardPage() {
             Built, first-cut, or not started — each card still takes notes. Copy once and paste in chat.
           </p>
           <p className="mt-2 text-xs text-muted">
-            {V2_ITEMS.length} cards · {packed.count} with notes ·{" "}
-            <Link href="/how" className="underline">
-              How do I do it
-            </Link>
+            {V2_ITEMS.length} cards · {packed.count} with notes
           </p>
         </div>
         <button type="button" onClick={copyAll} className="rounded-full bg-ink px-4 py-2 text-sm text-ivory">
@@ -161,9 +159,7 @@ function ItemCard({
       </button>
       <p className="mt-1 text-sm leading-6 text-muted">{item.why}</p>
       <p className="mt-2">
-        <Link href={`/how/${item.id}`} className="text-xs underline">
-          How do I do it
-        </Link>
+        <HowToButton id={item.id} />
       </p>
       {open ? (
         <div className="mt-3 space-y-3 border-t border-line pt-3">
