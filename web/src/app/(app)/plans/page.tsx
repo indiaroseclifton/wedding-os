@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FEATURES, GROUPS, NAME_SETS, PLANS, type PlanId } from "@/lib/plans";
+import { DEFAULT_NAME_SET, FEATURES, GROUPS, NAME_SETS, PLANS, type PlanId } from "@/lib/plans";
 import { HowToButton } from "@/components/v2/HowToPop";
 
 export default function PlansPage() {
-  const [setId, setSetId] = useState(NAME_SETS[0].id);
+  const [setId, setSetId] = useState(DEFAULT_NAME_SET);
   const [plan, setPlan] = useState<PlanId | "all">("all");
   const names = NAME_SETS.find((s) => s.id === setId) || NAME_SETS[0];
   const label = { good: names.good, better: names.better, best: names.best };
@@ -18,10 +18,10 @@ export default function PlansPage() {
   return (
     <div className="space-y-8 pb-16">
       <div>
-        <p className="kicker kicker-moss">V2 — prices are a draft</p>
-        <h1 className="font-serif text-4xl">Good, better, best</h1>
+        <p className="kicker kicker-moss">Placeholder names · prices are a draft</p>
+        <h1 className="font-serif text-4xl">Paper, Cloth, Silk</h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-          Pick a name set. Click a plan to see only what it includes. Nothing here is billed yet.
+          Paper is free. Cloth is $99/mo. Silk is $199/mo. Other name sets stay here if these do not stick.
         </p>
         <p className="mt-2">
           <HowToButton id="money-plan" />
