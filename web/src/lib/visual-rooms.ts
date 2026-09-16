@@ -61,6 +61,7 @@ export const VISUAL_ROOMS = [
 ] as const;
 
 export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
+  { href: "/v2", label: "V2 board", icon: "chart" },
   { href: "/events", label: "Events", icon: "calendar" },
   { href: "/payments", label: "Payments", icon: "card" },
   { href: "/planning/party", label: "Party", icon: "users" },

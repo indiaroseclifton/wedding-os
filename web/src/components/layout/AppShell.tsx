@@ -62,6 +62,7 @@ export function AppShell({
     }
     for (const item of NAV_ITEMS) router.prefetch(item.href);
     router.prefetch("/settings");
+    router.prefetch("/v2");
   }, [router]);
 
   useEffect(() => {
@@ -76,6 +77,12 @@ export function AppShell({
         Skip to the desk
       </a>
       <ThemeProvider />
+
+      <div className="print:hidden border-b border-line bg-ink text-center text-[11px] tracking-wide text-ivory">
+        <Link href="/v2" className="inline-block min-h-10 px-3 py-2">
+          V2 PREVIEW — not production · open items and notes
+        </Link>
+      </div>
 
       <header className="desk-mast light-mast print:hidden">
         <div className="flex min-w-0 items-center gap-3">
