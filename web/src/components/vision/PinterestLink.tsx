@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const KEY = "vowfolk-pinterest-board";
@@ -78,8 +79,12 @@ export function PinterestLink({
       <p className="kicker">Pinterest</p>
       <h2 className="mt-1 font-serif text-2xl">Link the board</h2>
       <p className="mt-2 text-sm leading-6 text-muted">
-        Open the board on Pinterest. Copy the address bar. Paste it here. Public boards show below.
-        Secret boards will not embed — Pinterest blocks that.
+        Paste a public board URL. Pins show under the field.
+      </p>
+      <p className="mt-2">
+        <Link href="/how/pinterest" className="text-sm underline">
+          How do I do it
+        </Link>
       </p>
       <label className="mt-3 block text-sm">
         <span className="font-medium">Board URL</span>
@@ -108,7 +113,7 @@ export function PinterestLink({
         </div>
       ) : (
         <p className="mt-3 text-xs text-muted">
-          Needs a public board link like pinterest.com/name/board-name — not a search page.
+          Needs pinterest.com/name/board-name — not a search page. Secret boards will not show.
         </p>
       )}
     </section>
