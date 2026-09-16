@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { HowToButton } from "@/components/v2/HowToPop";
 
 const KEY = "vowfolk-pinterest-board";
 
@@ -78,13 +78,9 @@ export function PinterestLink({
     <section className="rounded-2xl border border-line bg-surface p-4">
       <p className="kicker">Pinterest</p>
       <h2 className="mt-1 font-serif text-2xl">Link the board</h2>
-      <p className="mt-2 text-sm leading-6 text-muted">
-        Paste a public board URL. Pins show under the field.
-      </p>
+      <p className="mt-2 text-sm leading-6 text-muted">Paste a public board URL. Pins show under the field.</p>
       <p className="mt-2">
-        <Link href="/how/pinterest" className="text-sm underline">
-          How do I do it
-        </Link>
+        <HowToButton id="pinterest" />
       </p>
       <label className="mt-3 block text-sm">
         <span className="font-medium">Board URL</span>
@@ -101,6 +97,9 @@ export function PinterestLink({
             Open on Pinterest
           </a>
         ) : null}
+        <a href="https://www.pinterest.com/login/" target="_blank" rel="noreferrer" className="rounded-full border border-line px-4 py-2 text-sm">
+          Sign in to Pinterest
+        </a>
         <a href="https://www.pinterest.com/" target="_blank" rel="noreferrer" className="rounded-full border border-line px-4 py-2 text-sm">
           Open Pinterest
         </a>
@@ -112,9 +111,7 @@ export function PinterestLink({
           </a>
         </div>
       ) : (
-        <p className="mt-3 text-xs text-muted">
-          Needs pinterest.com/name/board-name — not a search page. Secret boards will not show.
-        </p>
+        <p className="mt-3 text-xs text-muted">Needs pinterest.com/name/board-name. Secret boards will not show.</p>
       )}
     </section>
   );
