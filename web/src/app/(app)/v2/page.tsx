@@ -17,10 +17,26 @@ function loadNotes(): Notes {
   }
 }
 
+function packNotes(notes: Notes) {
+  const filled = V2_ITEMS.filter((item) => (notes[item.id] || "").trim()).map((item) => ({
+    id: item.id,
+    group: item.group,
+    title: item.title,
+    href: item.href,
+    note: (notes[item.id] || "").trim(),
+  }));
+  return {
+    savedAt: new Date().toISOString(),
+    count: filled.length,
+    notes: filled,
+  };
+}
+
 export default function V2BoardPage() {
   const [notes, setNotes] = useState<Notes>({});
   const [openId, setOpenId] = useState<string>("");
   const [filter, setFilter] = useState<V2Group | "All">("All");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setNotes(loadNotes());
@@ -32,21 +48,32 @@ export default function V2BoardPage() {
     localStorage.setItem(KEY, JSON.stringify(next));
   }
 
-  const noted = V2_ITEMS.filter((item) => (notes[item.id] || "").trim()).length;
-  const blob = useMemo(() => JSON.stringify({ notes, savedAt: new Date().toISOString() }, null, 2), [notes]);
+  const packed = useMemo(() => packNotes(notes), [notes]);
+  const blob = useMemo(() => JSON.stringify(packed, null, 2), [packed]);
   const items = filter === "All" ? V2_ITEMS : V2_ITEMS.filter((i) => i.group === filter);
+
+  async function copyAll() {
+    await navigator.clipboard.writeText(blob);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <div className="space-y-8 pb-16">
-      <div>
-        <p className="kicker kicker-moss">V2 preview — not production</p>
-        <h1 className="font-serif text-4xl">Every room</h1>
-        <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-          Open a card. Leave what to change. Next chat: continue V2 — notes on [item].
-        </p>
-        <p className="mt-2 text-xs text-muted">
-          {V2_ITEMS.length} rooms · {noted} with notes · first-cut means usable, not finished
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="kicker kicker-moss">V2 preview — not production</p>
+          <h1 className="font-serif text-4xl">Every room</h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
+            Open a card. Leave what to change. Then copy once and paste in chat.
+          </p>
+          <p className="mt-2 text-xs text-muted">
+            {V2_ITEMS.length} rooms · {packed.count} with notes · first-cut means usable, not finished
+          </p>
+        </div>
+        <button type="button" onClick={copyAll} className="rounded-full bg-ink px-4 py-2 text-sm text-ivory">
+          {copied ? "Copied" : `Copy all notes (${packed.count})`}
+        </button>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -85,11 +112,12 @@ export default function V2BoardPage() {
       ))}
 
       <section className="rounded-2xl border border-line bg-surface px-4 py-4">
-        <p className="text-[10px] uppercase tracking-wide text-muted">Copy notes for Grok</p>
-        <details className="mt-2">
-          <summary className="cursor-pointer text-xs underline">Notes JSON</summary>
-          <pre className="mt-2 overflow-auto rounded-lg bg-paper p-3 text-[11px] leading-5">{blob}</pre>
-        </details>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[10px] uppercase tracking-wide text-muted">One paste for Grok</p>
+          <button type="button" onClick={copyAll} className="text-xs underline">
+            {copied ? "Copied" : "Copy all notes"}
+          </button>
+        </div>
       </section>
     </div>
   );
