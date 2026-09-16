@@ -8,9 +8,11 @@ export type NameSet = {
   note: string;
 };
 
+export const DEFAULT_NAME_SET = "paper";
+
 export const NAME_SETS: NameSet[] = [
+  { id: "paper", good: "Paper", better: "Cloth", best: "Silk", note: "Placeholder. Quiet. Sounds like the table, not a credit card." },
   { id: "desk", good: "Desk", better: "Studio", best: "Day", note: "Matches the product. Studio is the paid flagship." },
-  { id: "paper", good: "Paper", better: "Cloth", best: "Silk", note: "Quiet. Sounds like the table, not a credit card." },
   { id: "letter", good: "Letter", better: "Suite", best: "House", note: "Invitation language. House = the whole weekend." },
   { id: "seed", good: "Seed", better: "Stem", best: "Table", note: "Studio-first. Grows with the work." },
   { id: "one", good: "One", better: "Many", best: "All", note: "Blunt. About quantity, not jewelry." },
