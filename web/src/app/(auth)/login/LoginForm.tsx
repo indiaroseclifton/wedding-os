@@ -26,6 +26,7 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [oauthNote, setOauthNote] = useState<string | null>(null);
 
   async function signInDemo(user: (typeof DEMO_USERS)[number]) {
     setLoadingId(user.userId);
@@ -100,6 +101,23 @@ export function LoginForm({ emailReady }: { emailReady: boolean }) {
               </button>
             </form>
           )}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setOauthNote("Google login needs Auth.js keys in Vercel. Magic link still works.")}
+              className="rounded-lg border border-white/20 px-3 py-2 text-xs"
+            >
+              Google
+            </button>
+            <button
+              type="button"
+              onClick={() => setOauthNote("Apple login needs Auth.js keys in Vercel. Magic link still works.")}
+              className="rounded-lg border border-white/20 px-3 py-2 text-xs"
+            >
+              Apple
+            </button>
+          </div>
+          {oauthNote ? <p className="text-xs text-white/60">{oauthNote}</p> : null}
           <div className="space-y-2">
             {DEMO_USERS.map((user) => (
               <button
