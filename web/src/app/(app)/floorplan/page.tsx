@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { FloorBoard } from "@/components/v2/FloorBoard";
 
-export default function FloorPlanRedirect() {
-  redirect("/seating");
+export default function FloorPlanPage() {
+  return <FloorBoard />;
 }
