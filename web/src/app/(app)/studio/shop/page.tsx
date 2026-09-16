@@ -3,6 +3,7 @@ import { ensureDemoWorkspace } from "@/lib/data/workspace";
 import { getStudio } from "@/lib/data/studio-store";
 import { consolidateShop } from "@/lib/studio-project";
 import { money } from "@/lib/visual-rooms";
+import { ShopSources } from "@/components/v2/ShopSources";
 
 export default async function StudioShopPage() {
   const { workspace } = await ensureDemoWorkspace();
@@ -19,6 +20,7 @@ export default async function StudioShopPage() {
           One list. Floral tape is not three line items. {rows.length ? money(total) : "Nothing to buy yet."}
         </p>
       </header>
+      <ShopSources />
       {rows.length === 0 ? (
         <p className="text-sm text-muted">
           <Link href="/studio/make" className="underline">Make a project</Link> and the list appears.

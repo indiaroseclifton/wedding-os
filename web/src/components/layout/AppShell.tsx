@@ -11,6 +11,7 @@ import { Wordmark } from "@/components/brand/Wordmark";
 import { MORE_ROOMS, NAV_ITEMS, firstNames } from "@/lib/visual-rooms";
 import { roomVisible } from "@/lib/shape";
 import { Icon } from "@/components/icons";
+import { CopilotDock } from "@/components/v2/CopilotDock";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -50,7 +51,6 @@ export function AppShell({
   const pane = useRef<HTMLElement>(null);
   const [railOpen, setRailOpen] = useState(false);
   const [more, setMore] = useState(false);
-  const names = firstNames(coupleNames, userName || "You");
   const home = pathname === "/dashboard" || pathname === "/";
   const photo = coverUrl || "/brand/flowers.jpg";
   const extras = MORE_ROOMS.filter((r) => roomVisible(r.href, shape));
@@ -181,6 +181,7 @@ export function AppShell({
           </div>
         </div>
       )}
+      <CopilotDock />
     </div>
   );
 }
