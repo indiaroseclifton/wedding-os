@@ -4,6 +4,37 @@ import { useEffect, useState } from "react";
 
 const KEY = "vowfolk-pinterest-board";
 
+declare global {
+  interface Window {
+    PinUtils?: { build: () => void };
+  }
+}
+
+function loadPinit() {
+  if (document.querySelector("script[data-vowfolk-pinit]")) {
+    window.PinUtils?.build();
+    return;
+  }
+  const script = document.createElement("script");
+  script.src = "https://assets.pinterest.com/js/pinit.js";
+  script.async = true;
+  script.defer = true;
+  script.setAttribute("data-vowfolk-pinit", "1");
+  script.onload = () => window.PinUtils?.build();
+  document.body.appendChild(script);
+}
+
+function isBoard(url: string) {
+  try {
+    const u = new URL(url);
+    if (!/(^|\.)pinterest\./i.test(u.hostname) && !/^pin\.it$/i.test(u.hostname)) return false;
+    const parts = u.pathname.split("/").filter(Boolean);
+    return parts.length >= 2;
+  } catch {
+    return false;
+  }
+}
+
 export function PinterestLink({
   value,
   onChange,
@@ -22,6 +53,13 @@ export function PinterestLink({
     }
   }, [value]);
 
+  useEffect(() => {
+    if (!isBoard(url)) return;
+    loadPinit();
+    const t = window.setTimeout(() => window.PinUtils?.build(), 400);
+    return () => window.clearTimeout(t);
+  }, [url]);
+
   function update(next: string) {
     setUrl(next);
     onChange?.(next);
@@ -33,14 +71,15 @@ export function PinterestLink({
   }
 
   const href = url.trim();
-  const ready = /^https?:\/\/(www\.)?pinterest\./i.test(href);
+  const ready = isBoard(href);
 
   return (
     <section className="rounded-2xl border border-line bg-surface p-4">
       <p className="kicker">Pinterest</p>
-      <h2 className="mt-1 font-serif text-2xl">The board you already have</h2>
-      <p className="mt-2 text-sm text-muted">
-        Paste the board. We do not import pins. Open it when you want more pictures.
+      <h2 className="mt-1 font-serif text-2xl">Link the board</h2>
+      <p className="mt-2 text-sm leading-6 text-muted">
+        Open the board on Pinterest. Copy the address bar. Paste it here. Public boards show below.
+        Secret boards will not embed — Pinterest blocks that.
       </p>
       <label className="mt-3 block text-sm">
         <span className="font-medium">Board URL</span>
@@ -48,27 +87,30 @@ export function PinterestLink({
           value={url}
           onChange={(e) => update(e.target.value)}
           placeholder="https://www.pinterest.com/you/wedding/"
-          className="field mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-sm"
         />
       </label>
       <div className="mt-3 flex flex-wrap gap-2">
         {ready ? (
           <a href={href} target="_blank" rel="noreferrer" className="rounded-full bg-ink px-4 py-2 text-sm text-ivory">
-            Open my board
+            Open on Pinterest
           </a>
         ) : null}
-        <a
-          href="https://www.pinterest.com/search/pins/?q=wedding%20moodboard"
-          target="_blank"
-          rel="noreferrer"
-          className="rounded-full border border-line px-4 py-2 text-sm"
-        >
-          Search Pinterest
-        </a>
         <a href="https://www.pinterest.com/" target="_blank" rel="noreferrer" className="rounded-full border border-line px-4 py-2 text-sm">
           Open Pinterest
         </a>
       </div>
+      {ready ? (
+        <div key={href} className="mt-4 min-h-[240px] overflow-hidden rounded-xl bg-paper p-2">
+          <a data-pin-do="embedBoard" data-pin-board-width="720" data-pin-scale-height="320" data-pin-scale-width="100" href={href}>
+            {" "}
+          </a>
+        </div>
+      ) : (
+        <p className="mt-3 text-xs text-muted">
+          Needs a public board link like pinterest.com/name/board-name — not a search page.
+        </p>
+      )}
     </section>
   );
 }
