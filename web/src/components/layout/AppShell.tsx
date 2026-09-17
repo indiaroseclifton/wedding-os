@@ -14,6 +14,7 @@ import { Icon } from "@/components/icons";
 import { CopilotDock } from "@/components/v2/CopilotDock";
 import { HowToPop } from "@/components/v2/HowToPop";
 import { EventSwitch } from "@/components/v2/EventSwitch";
+import { ControlDrawer, openControl } from "@/components/v2/ControlDrawer";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -64,7 +65,6 @@ export function AppShell({
     }
     for (const item of NAV_ITEMS) router.prefetch(item.href);
     router.prefetch("/settings");
-    router.prefetch("/control");
     router.prefetch("/v2");
     router.prefetch("/intake");
     router.prefetch("/events");
@@ -120,9 +120,14 @@ export function AppShell({
               </span>
             ) : null}
           </Link>
-          <Link href="/control" className="h-9 w-9 overflow-hidden rounded-full border border-line" aria-label="Control">
+          <button
+            type="button"
+            onClick={() => openControl()}
+            className="h-9 w-9 overflow-hidden rounded-full border border-line"
+            aria-label="Open control"
+          >
             <img src={photo} alt="" className="h-full w-full object-cover" />
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -181,11 +186,25 @@ export function AppShell({
           <button type="button" className="absolute inset-0 bg-ink/30" aria-label="Close" onClick={() => setMore(false)} />
           <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl bg-paper px-5 pb-10 pt-5">
             <nav className="flex flex-wrap gap-2">
-              {extras.map((r) => (
-                <Link key={r.href} href={r.href} className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]">
-                  {r.label}
-                </Link>
-              ))}
+              {extras.map((r) =>
+                r.href === "/control" ? (
+                  <button
+                    key={r.href}
+                    type="button"
+                    onClick={() => {
+                      setMore(false);
+                      openControl();
+                    }}
+                    className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]"
+                  >
+                    {r.label}
+                  </button>
+                ) : (
+                  <Link key={r.href} href={r.href} className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]">
+                    {r.label}
+                  </Link>
+                ),
+              )}
               <Link href="/intake?new=1" className="inline-flex min-h-11 items-center rounded-full bg-ink px-3.5 text-[13px] text-ivory">
                 Add event
               </Link>
@@ -195,6 +214,7 @@ export function AppShell({
       )}
       <CopilotDock />
       <HowToPop />
+      <ControlDrawer />
     </div>
   );
 }
