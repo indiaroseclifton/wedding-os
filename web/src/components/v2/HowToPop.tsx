@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { V2_ITEMS } from "@/lib/v2-board";
 import { INTAKE_HOW } from "@/lib/how-intake";
 import { CONTROL_HOW } from "@/lib/how-control";
+import { PRINT_HOW } from "@/lib/how-print";
 import { getHowTo, stepsFor, type HowAction, type HowGuide } from "@/lib/how-to";
 
 const PIN_KEY = "vowfolk-pinterest-board";
-const EXTRA: HowGuide[] = [INTAKE_HOW, ...CONTROL_HOW];
+const EXTRA: HowGuide[] = [INTAKE_HOW, PRINT_HOW, ...CONTROL_HOW];
 
 export function openHowTo(id: string) {
   window.dispatchEvent(new CustomEvent("vowfolk-how", { detail: id }));
