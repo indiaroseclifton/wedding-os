@@ -63,6 +63,7 @@ export const VISUAL_ROOMS = [
 export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
   { href: "/v2", label: "V2 board", icon: "chart" },
   { href: "/control", label: "Control", icon: "settings" },
+  { href: "/floorplan", label: "Floor Planner", icon: "chair" },
   { href: "/studio/print-center", label: "Print Center", icon: "scissors" },
   { href: "/events", label: "Events", icon: "calendar" },
   { href: "/payments", label: "Payments", icon: "card" },
@@ -75,7 +76,6 @@ export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
   { href: "/seating", label: "Seating", icon: "chair" },
   { href: "/music", label: "Music", icon: "music" },
   { href: "/travel", label: "Travel", icon: "plane" },
-  { href: "/payments", label: "Payments", icon: "card" },
   { href: "/send", label: "Send", icon: "send" },
   { href: "/run-of-show", label: "Run of show", icon: "star" },
   { href: "/site", label: "Guest site", icon: "globe" },
