@@ -23,7 +23,6 @@ export const NAV_ITEMS = [
       "/together",
       "/guests",
       "/seating",
-      "/floorplan",
       "/dietary",
       "/travel",
       "/site",
@@ -35,7 +34,7 @@ export const NAV_ITEMS = [
     label: "Studio",
     icon: "planning",
     room: "studio",
-    match: ["/studio", "/diy"],
+    match: ["/studio", "/diy", "/floorplan"],
   },
   {
     href: "/day-of",
@@ -63,7 +62,6 @@ export const VISUAL_ROOMS = [
 export const MORE_ROOMS: { href: string; label: string; icon: string }[] = [
   { href: "/v2", label: "V2 board", icon: "chart" },
   { href: "/control", label: "Control", icon: "settings" },
-  { href: "/floorplan", label: "Floor Planner", icon: "chair" },
   { href: "/studio/print-center", label: "Print Center", icon: "scissors" },
   { href: "/events", label: "Events", icon: "calendar" },
   { href: "/payments", label: "Payments", icon: "card" },
