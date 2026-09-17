@@ -87,8 +87,8 @@ export function FloorBoard() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="kicker kicker-moss">V2 first cut</p>
-          <h1 className="mt-2 font-serif text-4xl tracking-tight">Floor</h1>
+          <p className="kicker kicker-moss">Floorplan maker</p>
+          <h1 className="mt-2 font-serif text-4xl tracking-tight">Print Center</h1>
           <p className="mt-2 max-w-xl text-sm text-muted">
             Flat plan. Drag pieces. Print the table list and place-card sheet. Not 3D. Seating names still live on{" "}
             <Link href="/seating" className="underline">Seating</Link>.
