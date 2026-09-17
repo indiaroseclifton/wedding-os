@@ -64,6 +64,7 @@ export function AppShell({
     }
     for (const item of NAV_ITEMS) router.prefetch(item.href);
     router.prefetch("/settings");
+    router.prefetch("/control");
     router.prefetch("/v2");
     router.prefetch("/intake");
     router.prefetch("/events");
@@ -119,7 +120,7 @@ export function AppShell({
               </span>
             ) : null}
           </Link>
-          <Link href="/settings" className="h-9 w-9 overflow-hidden rounded-full border border-line" aria-label="Settings">
+          <Link href="/control" className="h-9 w-9 overflow-hidden rounded-full border border-line" aria-label="Control">
             <img src={photo} alt="" className="h-full w-full object-cover" />
           </Link>
         </div>
