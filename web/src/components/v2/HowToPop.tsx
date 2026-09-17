@@ -3,15 +3,19 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { V2_ITEMS } from "@/lib/v2-board";
+import { INTAKE_HOW } from "@/lib/how-intake";
 import { getHowTo, stepsFor, type HowAction, type HowGuide } from "@/lib/how-to";
 
 const PIN_KEY = "vowfolk-pinterest-board";
+const EXTRA: HowGuide[] = [INTAKE_HOW];
 
 export function openHowTo(id: string) {
   window.dispatchEvent(new CustomEvent("vowfolk-how", { detail: id }));
 }
 
 function resolve(id: string): HowGuide {
+  const extra = EXTRA.find((g) => g.id === id);
+  if (extra) return extra;
   const named = getHowTo(id);
   if (named) return named;
   const item = V2_ITEMS.find((i) => i.id === id);
@@ -19,9 +23,9 @@ function resolve(id: string): HowGuide {
   return {
     id,
     title: "How do I do it",
-    href: "/v2",
-    steps: ["This walkthrough is missing. Leave a note on the board."],
-    actions: [{ label: "Open the board", href: "/v2" }],
+    href: "/intake",
+    steps: ["Open the room this belongs to and do the next real-world step."],
+    actions: [{ label: "Open Intake", href: "/intake" }],
   };
 }
 
@@ -73,7 +77,7 @@ export function HowToPop() {
 
   if (!id) return null;
   const guide = resolve(id);
-  const actions = [...(guide.actions || []), ...extraActions(id)];
+  const actions = [...(guide.actions || []), ...extraActions(id)].filter((a) => a.href && a.href !== "#");
 
   return (
     <div
@@ -89,15 +93,9 @@ export function HowToPop() {
         }}
       >
         <p className="text-[10px] uppercase tracking-wide text-muted">How do I do it</p>
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => setId("")}
-            className="rounded-full border border-line px-2 py-1 text-[11px]"
-          >
-            Close
-          </button>
-        </div>
+        <button type="button" onClick={() => setId("")} className="rounded-full border border-line px-2 py-1 text-[11px]">
+          Close
+        </button>
       </div>
       <div className="max-h-[70vh] overflow-y-auto px-4 py-3">
         <h2 className="font-serif text-2xl">{guide.title}</h2>
@@ -114,13 +112,7 @@ export function HowToPop() {
         <div className="mt-4 flex flex-wrap gap-2">
           {actions.map((a) =>
             a.external ? (
-              <a
-                key={a.label}
-                href={a.href}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-full bg-ink px-3 py-1.5 text-xs text-ivory"
-              >
+              <a key={a.label} href={a.href} target="_blank" rel="noreferrer" className="rounded-full bg-ink px-3 py-1.5 text-xs text-ivory">
                 {a.label}
               </a>
             ) : (
