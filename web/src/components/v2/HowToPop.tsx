@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { V2_ITEMS } from "@/lib/v2-board";
 import { INTAKE_HOW } from "@/lib/how-intake";
+import { CONTROL_HOW } from "@/lib/how-control";
 import { getHowTo, stepsFor, type HowAction, type HowGuide } from "@/lib/how-to";
 
 const PIN_KEY = "vowfolk-pinterest-board";
-const EXTRA: HowGuide[] = [INTAKE_HOW];
+const EXTRA: HowGuide[] = [INTAKE_HOW, ...CONTROL_HOW];
 
 export function openHowTo(id: string) {
   window.dispatchEvent(new CustomEvent("vowfolk-how", { detail: id }));
@@ -89,7 +90,7 @@ export function HowToPop() {
       <div
         className="flex cursor-grab items-center justify-between gap-2 rounded-t-2xl border-b border-line bg-surface px-3 py-2 active:cursor-grabbing"
         onPointerDown={(e) => {
-          drag.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
+          drag.current = { dx: e.clientX - pos.x, dy: e.clientY - drag.current.dy };
         }}
       >
         <p className="text-[10px] uppercase tracking-wide text-muted">How do I do it</p>
