@@ -118,11 +118,11 @@ export default function BudgetPage() {
     setDiyEst("");
   }
 
-  const cap = rollup?.cap || 0;
+  const total = rollup?.cap || 0;
   const committed = rollup?.inPlay || 0;
   const spent = rollup?.spent || 0;
   const left = rollup?.remaining;
-  const usedPct = cap ? Math.min(100, Math.round((committed / cap) * 100)) : 0;
+  const usedPct = total ? Math.min(100, Math.round((committed / total) * 100)) : 0;
   const over = left != null && left < 0 ? Math.abs(left) : 0;
 
   const grouped = useMemo(() => {
@@ -140,7 +140,7 @@ export default function BudgetPage() {
         <div>
           <h1 className="font-serif text-4xl">Budget</h1>
           <p className="mt-1 text-sm text-muted">
-            One cap. Envelopes like a real wedding. Vendors and DIY feed the same number.
+            One number. Envelopes like a real wedding. Vendors and DIY feed the same budget.
           </p>
         </div>
         <div className="flex gap-2 text-xs">
@@ -159,7 +159,7 @@ export default function BudgetPage() {
             <p className="kicker kicker-moss">In play</p>
             <p className="font-serif text-5xl">{money(committed)}</p>
             <p className="mt-1 text-sm text-muted">
-              {cap ? `${money(cap)} cap` : "Set a cap"}
+              {total ? `${money(total)} budget` : "Set the budget"}
               {left != null ? ` · ${left >= 0 ? `${money(left)} left` : `${money(over)} over`}` : ""}
             </p>
           </div>
@@ -171,7 +171,7 @@ export default function BudgetPage() {
             className="flex items-end gap-2"
           >
             <label className="text-xs">
-              Cap
+              Budget
               <input
                 type="number"
                 min={0}
@@ -197,7 +197,7 @@ export default function BudgetPage() {
         </p>
         {over > 0 && (
           <p className="mt-3 rounded-xl bg-clay/10 px-3 py-2 text-sm text-clay">
-            You're {money(over)} over the cap.
+            You're {money(over)} over budget.
           </p>
         )}
       </section>
@@ -209,7 +209,7 @@ export default function BudgetPage() {
           onClick={() => post({ action: "seed", overallLimit: limit })}
           className="w-full rounded-2xl border border-dashed border-moss/40 bg-moss-soft px-4 py-6 text-sm"
         >
-          Build a typical wedding split from this cap
+          Build a typical wedding split from this budget
           <span className="mt-1 block text-xs text-muted">
             Venue 25%, food 22%, photo 12% — then you edit the envelopes.
           </span>
@@ -254,7 +254,7 @@ export default function BudgetPage() {
           {envelopes.map((env) => {
             const denom = env.planned || env.spent + env.open || 1;
             const pct = Math.min(100, Math.round(((env.spent + env.open) / denom) * 100));
-            const typical = cap ? Math.round((cap * env.typicalPct) / 100) : 0;
+            const typical = total ? Math.round((total * env.typicalPct) / 100) : 0;
             return (
               <button
                 key={env.id}
