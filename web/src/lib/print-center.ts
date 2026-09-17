@@ -6,6 +6,6 @@ export const PRINT_CENTER = {
 
 export const FLOOR_PLANNER = {
   name: "Floor Planner",
-  href: "/floorplan",
+  href: "/studio/floor-planner",
   line: "Draw the room. Seating names stay on Seating. Print opens Print Center.",
 } as const;
