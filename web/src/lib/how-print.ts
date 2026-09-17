@@ -3,15 +3,15 @@ import type { HowGuide } from "@/lib/how-to";
 export const FLOOR_HOW: HowGuide = {
   id: "floor-print",
   title: "Use Floor Planner",
-  href: "/floorplan",
+  href: "/studio/floor-planner",
   steps: [
-    "Open Floor Planner.",
+    "Open Studio → Floor Planner.",
     "Set the room. Add tables, stage, bar, dance floor.",
     "Names and who sits where stay on Seating.",
     "When the room is right, press Print. That opens Print Center.",
   ],
   actions: [
-    { label: "Open Floor Planner", href: "/floorplan" },
+    { label: "Open Floor Planner", href: "/studio/floor-planner" },
     { label: "Open Seating", href: "/seating" },
   ],
 };
@@ -27,6 +27,6 @@ export const PRINT_HOW: HowGuide = {
   ],
   actions: [
     { label: "Open Print Center", href: "/studio/print-center" },
-    { label: "Open Floor Planner", href: "/floorplan" },
+    { label: "Open Floor Planner", href: "/studio/floor-planner" },
   ],
 };
