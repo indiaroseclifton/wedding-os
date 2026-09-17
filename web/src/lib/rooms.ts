@@ -65,9 +65,6 @@ const PLAN: NavNode[] = [
 const PEOPLE: NavNode[] = PLAN.filter((item) => item.label === "Guests");
 
 const STUDIO: NavNode[] = [
-  { href: "/studio", label: "Projects" },
-  { href: "/diy/studio/floral", label: "Flowers" },
-  { href: "/diy/studio/table", label: "Tables" },
   { href: "/studio/floor-planner", label: "Floor Planner" },
   {
     href: "/studio/print-center",
@@ -78,6 +75,9 @@ const STUDIO: NavNode[] = [
       { href: "/studio/signage", label: "Signs" },
     ],
   },
+  { href: "/studio", label: "Projects" },
+  { href: "/diy/studio/floral", label: "Flowers" },
+  { href: "/diy/studio/table", label: "Tables" },
   {
     href: "/studio/shop",
     label: "Supplies",
