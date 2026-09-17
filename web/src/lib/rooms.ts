@@ -57,6 +57,7 @@ const PLAN: NavNode[] = [
       { href: "/guests", label: "Guest list" },
       { href: "/events", label: "Events & RSVP" },
       { href: "/seating", label: "Seating" },
+      { href: "/floorplan", label: "Floor Planner" },
       { href: "/travel", label: "Travel" },
     ],
   },
@@ -68,11 +69,12 @@ const STUDIO: NavNode[] = [
   { href: "/studio", label: "Projects" },
   { href: "/diy/studio/floral", label: "Flowers" },
   { href: "/diy/studio/table", label: "Tables" },
+  { href: "/floorplan", label: "Floor Planner" },
   {
     href: "/studio/print-center",
     label: "Print Center",
     children: [
-      { href: "/studio/print-center", label: "Floorplan" },
+      { href: "/studio/print-center", label: "Jobs" },
       { href: "/studio/cards", label: "Cards" },
       { href: "/studio/signage", label: "Signs" },
     ],
