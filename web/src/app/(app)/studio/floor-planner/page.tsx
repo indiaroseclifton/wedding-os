@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { HowToButton } from "@/components/v2/HowToPop";
+import "../../floor-planner.css";
 
 const EditorShell = dynamic(
   () => import("@/components/floorplan/editor-shell").then((m) => m.EditorShell),

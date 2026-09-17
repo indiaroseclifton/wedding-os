@@ -1,0 +1,27 @@
+.floor-planner {
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-primary: var(--color-moss);
+  --color-primary-foreground: var(--color-moss-fg);
+  --color-secondary: var(--color-moss-soft);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-moss-soft);
+  --color-muted-foreground: #6f6b65;
+  --color-border: var(--color-line);
+  --color-input: var(--color-line);
+  --color-ring: var(--color-ink);
+  --color-accent: var(--color-moss-soft);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: #9a4034;
+  --color-destructive-foreground: var(--color-ivory);
+  font-family: var(--font-sans);
+}
+
+.floor-planner h1,
+.floor-planner h2,
+.floor-planner .font-display,
+.floor-planner .font-serif {
+  font-family: var(--font-serif);
+}
