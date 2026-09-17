@@ -10,7 +10,7 @@ const JOBS = [
     id: "floor-sheets",
     title: "Floor sheets",
     line: "The room as paper. Sent here from Floor Planner.",
-    href: "/floorplan",
+    href: FLOOR_PLANNER.href,
   },
   {
     id: "cards",
