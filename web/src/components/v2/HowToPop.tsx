@@ -44,6 +44,7 @@ function extraActions(id: string): HowAction[] {
 export function HowToPop() {
   const [id, setId] = useState("");
   const [pos, setPos] = useState({ x: 24, y: 88 });
+  const box = useRef<HTMLDivElement>(null);
   const drag = useRef<{ dx: number; dy: number } | null>(null);
 
   useEffect(() => {
@@ -56,6 +57,17 @@ export function HowToPop() {
     window.addEventListener("vowfolk-how", onOpen);
     return () => window.removeEventListener("vowfolk-how", onOpen);
   }, []);
+
+  useEffect(() => {
+    if (!id) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Escape") return;
+      e.stopPropagation();
+      setId("");
+    }
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [id]);
 
   useEffect(() => {
     function move(e: PointerEvent) {
@@ -81,47 +93,51 @@ export function HowToPop() {
   const actions = [...(guide.actions || []), ...extraActions(id)].filter((a) => a.href && a.href !== "#");
 
   return (
-    <div
-      role="dialog"
-      aria-label={guide.title}
-      className="fixed z-[80] w-[min(92vw,380px)] rounded-2xl border border-line bg-paper shadow-xl print:hidden"
-      style={{ left: pos.x, top: pos.y }}
-    >
+    <div className="fixed inset-0 z-[80] print:hidden">
+      <button type="button" className="absolute inset-0 cursor-default bg-transparent" aria-label="Close" onClick={() => setId("")} />
       <div
-        className="flex cursor-grab items-center justify-between gap-2 rounded-t-2xl border-b border-line bg-surface px-3 py-2 active:cursor-grabbing"
-        onPointerDown={(e) => {
-          drag.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
-        }}
+        ref={box}
+        role="dialog"
+        aria-label={guide.title}
+        className="absolute w-[min(92vw,380px)] rounded-2xl border border-line bg-paper shadow-xl"
+        style={{ left: pos.x, top: pos.y }}
       >
-        <p className="text-[10px] uppercase tracking-wide text-muted">How do I do it</p>
-        <button type="button" onClick={() => setId("")} className="rounded-full border border-line px-2 py-1 text-[11px]">
-          Close
-        </button>
-      </div>
-      <div className="max-h-[70vh] overflow-y-auto px-4 py-3">
-        <h2 className="font-serif text-2xl">{guide.title}</h2>
-        <ol className="mt-3 space-y-3">
-          {guide.steps.map((step, i) => (
-            <li key={i} className="flex gap-3">
-              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ink text-[10px] text-ivory">
-                {i + 1}
-              </span>
-              <p className="text-sm leading-5">{step}</p>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {actions.map((a) =>
-            a.external ? (
-              <a key={a.label} href={a.href} target="_blank" rel="noreferrer" className="rounded-full bg-ink px-3 py-1.5 text-xs text-ivory">
-                {a.label}
-              </a>
-            ) : (
-              <Link key={a.label} href={a.href} className="rounded-full border border-line px-3 py-1.5 text-xs">
-                {a.label}
-              </Link>
-            ),
-          )}
+        <div
+          className="flex cursor-grab items-center justify-between gap-2 rounded-t-2xl border-b border-line bg-surface px-3 py-2 active:cursor-grabbing"
+          onPointerDown={(e) => {
+            drag.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
+          }}
+        >
+          <p className="text-[10px] uppercase tracking-wide text-muted">How do I do it</p>
+          <button type="button" onClick={() => setId("")} className="rounded-full border border-line px-2 py-1 text-[11px]">
+            Close
+          </button>
+        </div>
+        <div className="max-h-[70vh] overflow-y-auto px-4 py-3">
+          <h2 className="font-serif text-2xl">{guide.title}</h2>
+          <ol className="mt-3 space-y-3">
+            {guide.steps.map((step, i) => (
+              <li key={i} className="flex gap-3">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ink text-[10px] text-ivory">
+                  {i + 1}
+                </span>
+                <p className="text-sm leading-5">{step}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {actions.map((a) =>
+              a.external ? (
+                <a key={a.label} href={a.href} target="_blank" rel="noreferrer" className="rounded-full bg-ink px-3 py-1.5 text-xs text-ivory">
+                  {a.label}
+                </a>
+              ) : (
+                <Link key={a.label} href={a.href} className="rounded-full border border-line px-3 py-1.5 text-xs">
+                  {a.label}
+                </Link>
+              ),
+            )}
+          </div>
         </div>
       </div>
     </div>
