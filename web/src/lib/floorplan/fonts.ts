@@ -1,14 +1,14 @@
 export const LABEL_FONTS = [
-  { id: "sans", name: "Figtree", family: "Figtree, sans-serif" },
+  { id: "playfair", name: "Playfair", family: '"Playfair Display", Georgia, serif' },
+  { id: "lora", name: "Lora", family: "Lora, Georgia, serif" },
   { id: "serif", name: "Baskerville", family: '"Libre Baskerville", Georgia, serif' },
   { id: "display", name: "Fraunces", family: "Fraunces, Georgia, serif" },
+  { id: "sans", name: "Figtree", family: "Figtree, sans-serif" },
   { id: "script", name: "Great Vibes", family: '"Great Vibes", cursive' },
-  { id: "playfair", name: "Playfair", family: '"Playfair Display", Georgia, serif' },
   { id: "cormorant", name: "Cormorant", family: '"Cormorant Garamond", Georgia, serif' },
   { id: "cinzel", name: "Cinzel", family: "Cinzel, Georgia, serif" },
   { id: "parisienne", name: "Parisienne", family: "Parisienne, cursive" },
   { id: "montserrat", name: "Montserrat", family: "Montserrat, sans-serif" },
-  { id: "lora", name: "Lora", family: "Lora, Georgia, serif" },
   { id: "josefin", name: "Josefin", family: '"Josefin Sans", sans-serif' },
   { id: "marcellus", name: "Marcellus", family: "Marcellus, Georgia, serif" },
 ] as const;
@@ -27,7 +27,7 @@ export type TextStyle = {
 };
 
 export const DEFAULT_TEXT_STYLE: TextStyle = {
-  font: "sans",
+  font: "playfair",
   fontSizeIn: 14,
   color: "#272727",
   bgColor: "",
