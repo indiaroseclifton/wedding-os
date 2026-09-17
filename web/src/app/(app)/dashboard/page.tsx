@@ -12,6 +12,7 @@ import { getThanks } from "@/lib/data/thanks-store";
 import { buildAfterDesk } from "@/lib/after-desk";
 import { getStudio } from "@/lib/data/studio-store";
 import { projectCost, projectProgress } from "@/lib/studio-project";
+import { suggestPhase } from "@/lib/budget-plan";
 
 export default async function DashboardPage() {
   const { workspace, meta } = await ensureDemoWorkspace();
@@ -26,8 +27,20 @@ export default async function DashboardPage() {
     getStudio(workspace.id),
   ]);
 
-  const spent = budget.lines.reduce((s, l) => s + (l.actual || 0), 0);
-  const cap = budget.overallLimit || budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
+  const spent = budget.lines.reduce((s, l) => s + (l.actual || 0), 0) +
+    payments.filter((p) => p.status === "PAID").reduce((s, p) => s + (p.amount || 0), 0);
+  const openPay = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + (p.amount || 0), 0);
+  const planned = budget.lines.reduce((s, l) => s + (l.planned || 0), 0);
+  const agreed = Math.max(spent + openPay, planned);
+  const cap = budget.overallLimit || planned;
+  const phase =
+    budget.phase ||
+    suggestPhase({
+      budget: cap,
+      now: spent,
+      agreed,
+      lineCount: budget.lines.length,
+    });
   const booked = vendors.filter((v) => isBooked(v.status)).length;
   const pending = vendors.filter((v) => !isBooked(v.status) && v.status !== "PASSED").length;
   const dateLine = [prettyWeddingDate(countDate).toUpperCase(), meta.location?.toUpperCase()].filter(Boolean).join("  ·  ");
@@ -35,11 +48,12 @@ export default async function DashboardPage() {
     .filter((payment) => payment.status !== "PAID")
     .sort((a, b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999"))[0];
   const activeProject = [...studio.projects].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
-  const projectHref = activeProject?.kind === "floral"
-    ? "/diy/studio/floral"
-    : activeProject?.kind === "table"
-      ? "/diy/studio/table"
-      : "/studio";
+  const projectHref =
+    activeProject?.kind === "floral"
+      ? "/diy/studio/floral"
+      : activeProject?.kind === "table"
+        ? "/diy/studio/table"
+        : "/studio";
 
   const nextUp = week.items.slice(0, 2).map((item) => ({
     when: item.urgency === "now" ? "Today" : item.urgency === "week" ? "This week" : "Soon",
@@ -77,23 +91,33 @@ export default async function DashboardPage() {
       weekItems={after && afterItems.length ? afterItems : week.items}
       spent={spent}
       cap={cap}
+      agreed={agreed}
+      phase={phase}
       guestTotal={guests.length}
       guestResponded={guests.filter((g) => !isPendingRsvp(g.rsvp)).length}
       vendorBooked={booked}
       vendorPending={pending}
       nextUp={nextUp}
-      nextPayment={nextPayment ? {
-        label: nextPayment.label || "Wedding payment",
-        amount: nextPayment.amount || 0,
-        dueDate: nextPayment.dueDate,
-      } : null}
-      activeProject={activeProject ? {
-        title: activeProject.title,
-        stage: activeProject.stage,
-        progress: projectProgress(activeProject),
-        cost: projectCost(activeProject),
-        href: projectHref,
-      } : null}
+      nextPayment={
+        nextPayment
+          ? {
+              label: nextPayment.label || "Wedding payment",
+              amount: nextPayment.amount || 0,
+              dueDate: nextPayment.dueDate,
+            }
+          : null
+      }
+      activeProject={
+        activeProject
+          ? {
+              title: activeProject.title,
+              stage: activeProject.stage,
+              progress: projectProgress(activeProject),
+              cost: projectCost(activeProject),
+              href: projectHref,
+            }
+          : null
+      }
       season={after ? "after" : "planning"}
       coverUrl={meta.coverUrl || "/brand/tablescape.jpg"}
     />
