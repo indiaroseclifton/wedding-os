@@ -13,6 +13,7 @@ import { roomVisible } from "@/lib/shape";
 import { Icon } from "@/components/icons";
 import { CopilotDock } from "@/components/v2/CopilotDock";
 import { HowToPop } from "@/components/v2/HowToPop";
+import { EventSwitch } from "@/components/v2/EventSwitch";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -64,6 +65,8 @@ export function AppShell({
     for (const item of NAV_ITEMS) router.prefetch(item.href);
     router.prefetch("/settings");
     router.prefetch("/v2");
+    router.prefetch("/intake");
+    router.prefetch("/events");
   }, [router]);
 
   useEffect(() => {
@@ -75,7 +78,7 @@ export function AppShell({
   return (
     <div className={`desk ${home ? "is-home" : ""} ${hasRail ? "has-rail" : ""}`}>
       <a href="#main" className="skip-link">
-        Skip to the desk
+        Skip to the main page
       </a>
       <ThemeProvider />
 
@@ -96,9 +99,13 @@ export function AppShell({
             <Icon name="menu" />
           </button>
           <Wordmark />
+          <EventSwitch />
         </div>
         <TopNav />
         <div className="flex items-center gap-1">
+          <Link href="/intake?new=1" className="hidden rounded-full border border-line px-3 py-1.5 text-xs md:inline-flex">
+            Add event
+          </Link>
           <CommandPalette tone="paper" iconOnly />
           <Link
             href="/dashboard#attention"
@@ -178,6 +185,9 @@ export function AppShell({
                   {r.label}
                 </Link>
               ))}
+              <Link href="/intake?new=1" className="inline-flex min-h-11 items-center rounded-full bg-ink px-3.5 text-[13px] text-ivory">
+                Add event
+              </Link>
             </nav>
           </div>
         </div>
