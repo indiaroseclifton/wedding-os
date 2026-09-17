@@ -5,10 +5,13 @@ export const PRINT_HOW: HowGuide = {
   title: "Use Print Center",
   href: "/studio/print-center",
   steps: [
-    "Open Studio → Print Center.",
-    "Pick the paper job: cards, signs, floor sheets, packet, or DJ sheet.",
-    "Print at home tonight if the file is ready. A shop job comes later when the module file is attached.",
-    "Do not design in two places. Cards stay in Cards. Signs stay in Signs. Print Center is the press, not a second studio.",
+    "Open Studio → Print Center. That is the floorplan maker.",
+    "Add tables, stage, bar, dance floor. Drag them into the room.",
+    "Names and who sits where stay on Seating. This page is the picture and the print sheets.",
+    "Print sheets when the room is right. The module file you send will replace this first-cut board.",
   ],
-  actions: [{ label: "Open Print Center", href: "/studio/print-center" }],
+  actions: [
+    { label: "Open Print Center", href: "/studio/print-center" },
+    { label: "Open Seating", href: "/seating" },
+  ],
 };
