@@ -90,7 +90,7 @@ export function HowToPop() {
       <div
         className="flex cursor-grab items-center justify-between gap-2 rounded-t-2xl border-b border-line bg-surface px-3 py-2 active:cursor-grabbing"
         onPointerDown={(e) => {
-          drag.current = { dx: e.clientX - pos.x, dy: e.clientY - drag.current.dy };
+          drag.current = { dx: e.clientX - pos.x, dy: e.clientY - pos.y };
         }}
       >
         <p className="text-[10px] uppercase tracking-wide text-muted">How do I do it</p>
