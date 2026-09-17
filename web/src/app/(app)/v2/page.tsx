@@ -3,37 +3,41 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { HowToButton } from "@/components/v2/HowToPop";
-import { V2_ITEMS, type V2Group, type V2Item } from "@/lib/v2-board";
+import { V2_ITEMS, type V2Item } from "@/lib/v2-board";
 
 const KEY = "vowfolk-v2-notes";
 type Notes = Record<string, string>;
-const GROUPS: V2Group[] = [
+const GROUPS = [
   "Home",
   "Before",
   "People",
   "Studio",
   "The day",
   "After",
-  "Money",
+  "Budget & Books",
   "Connect",
   "Not built yet",
   "Business",
-];
+] as const;
+type BoardGroup = (typeof GROUPS)[number];
 
-const ITEMS: V2Item[] = V2_ITEMS.map((item) =>
-  item.id === "print-mass"
-    ? {
-        ...item,
-        id: "print-center",
-        title: "Print Center",
-        why: "The press. Cards, signs, floor sheets, packet.",
-        doThis: "Attach the print module file here. Until then use the jobs on /studio/print-center.",
-        wrap: "PRINT_CENTER + /studio/print-center stub. Module file incoming.",
-        href: "/studio/print-center",
-        status: "first-cut",
-      }
-    : item,
-);
+const ITEMS: V2Item[] = V2_ITEMS.map((item) => {
+  const group = (item.group === "Money" ? "Budget & Books" : item.group) as V2Item["group"];
+  if (item.id === "print-mass") {
+    return {
+      ...item,
+      id: "print-center",
+      group,
+      title: "Print Center",
+      why: "The floorplan maker.",
+      doThis: "Wait for the module file. First-cut board is on the page until then.",
+      wrap: "FloorBoard on /studio/print-center",
+      href: "/studio/print-center",
+      status: "first-cut",
+    };
+  }
+  return { ...item, group };
+});
 
 function loadNotes(): Notes {
   if (typeof window === "undefined") return {};
@@ -62,7 +66,7 @@ function packNotes(notes: Notes) {
 export default function V2BoardPage() {
   const [notes, setNotes] = useState<Notes>({});
   const [openId, setOpenId] = useState<string>("");
-  const [filter, setFilter] = useState<V2Group | "All">("All");
+  const [filter, setFilter] = useState<BoardGroup | "All">("All");
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
