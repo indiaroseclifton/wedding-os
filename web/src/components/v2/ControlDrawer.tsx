@@ -81,9 +81,12 @@ export function ControlDrawer() {
         role="dialog"
         aria-modal="true"
         aria-label="Control"
-        onInput={() => {
-          setDirty(true);
-          window.dispatchEvent(new CustomEvent("vowfolk-control-dirty", { detail: true }));
+        onInput={() => setDirty(true)}
+        onSubmit={() => {
+          window.setTimeout(() => {
+            const root = document.querySelector('[aria-label="Control"]');
+            if (root?.textContent?.includes("Saved")) setDirty(false);
+          }, 500);
         }}
         className={`absolute inset-y-0 right-0 flex w-[min(100vw,26rem)] flex-col border-l border-line bg-paper shadow-[-24px_0_48px_-28px_rgba(28,26,22,0.45)] transition-transform duration-300 ease-out ${
           shown ? "translate-x-0" : "translate-x-full"
