@@ -83,7 +83,7 @@ export function AppShell({
       <ThemeProvider />
 
       <div className="print:hidden border-b border-line bg-ink text-center text-[11px] tracking-wide text-ivory">
-        <Link href="/v2" className="inline-block min-h-10 px-3 py-2">
+        <Link href="/v2" target="_blank" rel="noreferrer" className="inline-block min-h-10 px-3 py-2">
           V2 PREVIEW — not production · open items and notes
         </Link>
       </div>
