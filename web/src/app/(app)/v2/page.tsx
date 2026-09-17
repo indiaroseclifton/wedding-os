@@ -20,6 +20,21 @@ const GROUPS: V2Group[] = [
   "Business",
 ];
 
+const ITEMS: V2Item[] = V2_ITEMS.map((item) =>
+  item.id === "print-mass"
+    ? {
+        ...item,
+        id: "print-center",
+        title: "Print Center",
+        why: "The press. Cards, signs, floor sheets, packet.",
+        doThis: "Attach the print module file here. Until then use the jobs on /studio/print-center.",
+        wrap: "PRINT_CENTER + /studio/print-center stub. Module file incoming.",
+        href: "/studio/print-center",
+        status: "first-cut",
+      }
+    : item,
+);
+
 function loadNotes(): Notes {
   if (typeof window === "undefined") return {};
   try {
@@ -30,7 +45,7 @@ function loadNotes(): Notes {
 }
 
 function packNotes(notes: Notes) {
-  const filled = V2_ITEMS.filter((item) => (notes[item.id] || "").trim()).map((item) => ({
+  const filled = ITEMS.filter((item) => (notes[item.id] || "").trim()).map((item) => ({
     id: item.id,
     group: item.group,
     title: item.title,
@@ -62,7 +77,7 @@ export default function V2BoardPage() {
 
   const packed = useMemo(() => packNotes(notes), [notes]);
   const blob = useMemo(() => JSON.stringify(packed, null, 2), [packed]);
-  const items = filter === "All" ? V2_ITEMS : V2_ITEMS.filter((i) => i.group === filter);
+  const items = filter === "All" ? ITEMS : ITEMS.filter((i) => i.group === filter);
 
   async function copyAll() {
     await navigator.clipboard.writeText(blob);
@@ -80,7 +95,7 @@ export default function V2BoardPage() {
             Built, first-cut, or not started — each card still takes notes. Copy once and paste in chat.
           </p>
           <p className="mt-2 text-xs text-muted">
-            {V2_ITEMS.length} cards · {packed.count} with notes
+            {ITEMS.length} cards · {packed.count} with notes
           </p>
         </div>
         <button type="button" onClick={copyAll} className="rounded-full bg-ink px-4 py-2 text-sm text-ivory">
