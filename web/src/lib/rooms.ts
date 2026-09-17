@@ -68,6 +68,7 @@ const STUDIO: NavNode[] = [
   { href: "/studio", label: "Projects" },
   { href: "/diy/studio/floral", label: "Flowers" },
   { href: "/diy/studio/table", label: "Tables" },
+  { href: "/studio/floor-planner", label: "Floor Planner" },
   {
     href: "/studio/print-center",
     label: "Print Center",
