@@ -34,7 +34,7 @@ const PLAN: NavNode[] = [
   },
   {
     href: "/budget",
-    label: "Money",
+    label: "Budget",
     children: [
       { href: "/budget", label: "Budget" },
       { href: "/payments", label: "Payments" },
@@ -69,12 +69,12 @@ const STUDIO: NavNode[] = [
   { href: "/diy/studio/floral", label: "Flowers" },
   { href: "/diy/studio/table", label: "Tables" },
   {
-    href: "/studio/cards",
-    label: "Print",
+    href: "/studio/print-center",
+    label: "Print Center",
     children: [
+      { href: "/studio/print-center", label: "Floorplan" },
       { href: "/studio/cards", label: "Cards" },
-      { href: "/studio/signage", label: "Cricut & signs" },
-      { href: "/studio/decor", label: "Décor builds" },
+      { href: "/studio/signage", label: "Signs" },
     ],
   },
   {
@@ -101,9 +101,7 @@ const AFTER: NavNode[] = [
 ];
 
 export const ROOM_GROUPS: Record<"before" | "studio" | "day" | "after", NavGroup[]> = {
-  before: [
-    { label: "Before", href: "/planning", items: PLAN },
-  ],
+  before: [{ label: "Before", href: "/planning", items: PLAN }],
   studio: [{ label: "Studio", href: "/studio", items: STUDIO }],
   day: [{ label: "The day", href: "/day-of", items: DAY }],
   after: [{ label: "After", href: "/after", items: AFTER }],
