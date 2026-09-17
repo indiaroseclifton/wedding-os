@@ -1,5 +1,6 @@
-import { FloorBoard } from "@/components/v2/FloorBoard";
+import { redirect } from "next/navigation";
+import { PRINT_CENTER } from "@/lib/print-center";
 
 export default function FloorPlanPage() {
-  return <FloorBoard />;
+  redirect(PRINT_CENTER.href);
 }
