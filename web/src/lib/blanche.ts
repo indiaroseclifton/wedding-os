@@ -5,9 +5,17 @@ export const BLANCHE = {
   years: 40,
   place: "Atlanta",
   look: {
-    hair: "Silver-blonde bob, just to the jaw, side part",
-    clothes: "Ivory silk blouse, tailored moss jacket, small gold hoops, thin chain. No costume pearls.",
-    prop: "Letter-size pad, 8.5 by 11, unlined or faint legal ruling. Fountain pen or sharp pencil. She writes while they talk.",
+    ageReads: "Sixty. Fine lines. Not forty. Not eighty.",
+    hair: "Silver-blonde bob, jaw length, side part",
+    clothes:
+      "Ivory silk blouse with a soft bow or a clean collar. Tailored moss-green jacket. Matching trousers when she stands. Small gold hoops. Thin gold chain. No costume pearls. No hat. No gloves.",
+    prop: "Letter-size pad, 8.5 by 11, cream, faint ruling. Fountain pen. She writes while they talk. Not a pocket notebook.",
+    style: "Illustrated gouache on cream paper. Editorial, not photoreal, not a cartoon Southern belle.",
+  },
+  portraits: {
+    hero: "waist-up, pad in the left hand, pen in the right, looking past the couple",
+    standing: "studio, mid-thigh up, pad against the forearm",
+    writing: "close, looking down at the pad on the desk",
   },
   job: "She has married the couple, then their children, then a grandchild. She has seen church halls, tents, and hotel ballrooms. She does not gasp. She writes it down.",
   voice: [
