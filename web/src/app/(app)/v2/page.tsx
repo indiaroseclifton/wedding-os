@@ -23,15 +23,27 @@ type BoardGroup = (typeof GROUPS)[number];
 
 const ITEMS: V2Item[] = V2_ITEMS.map((item) => {
   const group = (item.group === "Money" ? "Budget & Books" : item.group) as V2Item["group"];
+  if (item.id === "floor-print") {
+    return {
+      ...item,
+      group,
+      title: "Floor Planner",
+      why: "Draw the room. Tables, stage, bar, dance floor.",
+      doThis: "Build the plan here. Print opens Print Center.",
+      wrap: "EditorShell on /floorplan",
+      href: "/floorplan",
+      status: "first-cut",
+    };
+  }
   if (item.id === "print-mass") {
     return {
       ...item,
       id: "print-center",
       group,
       title: "Print Center",
-      why: "The floorplan maker.",
-      doThis: "Wait for the module file. First-cut board is on the page until then.",
-      wrap: "FloorBoard on /studio/print-center",
+      why: "The press. Floor sheets, cards, signs.",
+      doThis: "Open from Studio or press Print inside Floor Planner.",
+      wrap: "/studio/print-center",
       href: "/studio/print-center",
       status: "first-cut",
     };
@@ -191,7 +203,7 @@ function ItemCard({
             {item.wrap}
           </p>
           <Link href={item.href} className="inline-block text-xs underline">
-            Open the room
+            Open
           </Link>
           <label className="block text-sm">
             <span className="font-medium">Your notes</span>
