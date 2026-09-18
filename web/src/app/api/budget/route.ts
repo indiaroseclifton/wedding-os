@@ -17,12 +17,13 @@ import { projectCost } from "@/lib/studio-project";
 import { getPath } from "@/lib/data/path-store";
 import { requiredString, ValidationError } from "@/lib/validation";
 import { BUDGET_ENVELOPES, envelopeForVendor } from "@/lib/budget-envelopes";
+import { suggestPhase, type BudgetAlternative, type BudgetPhaseId } from "@/lib/budget-plan";
 
 function rollup(
   budget: Awaited<ReturnType<typeof getBudget>>,
   payments: Awaited<ReturnType<typeof listPayments>>,
   diy: Awaited<ReturnType<typeof getDiy>>,
-  studioSpend: number
+  studioSpend: number,
 ) {
   const vendorPaid = payments.filter((p) => p.status === "PAID").reduce((s, p) => s + (p.amount || 0), 0);
   const vendorOpen = payments.filter((p) => p.status !== "PAID").reduce((s, p) => s + (p.amount || 0), 0);
@@ -51,7 +52,7 @@ function rollup(
 function envelopes(
   budget: Awaited<ReturnType<typeof getBudget>>,
   payments: Awaited<ReturnType<typeof listPayments>>,
-  vendors: { id: string; name: string; category: string }[]
+  vendors: { id: string; name: string; category: string }[],
 ) {
   const byId = new Map(vendors.map((v) => [v.id, v]));
   return BUDGET_ENVELOPES.map((env) => {
@@ -77,9 +78,7 @@ function envelopes(
   });
 }
 
-export async function GET() {
-  const access = await requireCoupleApi();
-  if (!access.ok) return access.response;
+async function pack() {
   const { workspace } = await ensureDemoWorkspace();
   const [budget, payments, diy, path, vendors, studio] = await Promise.all([
     getBudget(workspace.id),
@@ -90,18 +89,35 @@ export async function GET() {
     getStudio(workspace.id),
   ]);
   const studioSpend = studio.projects.reduce((s, p) => s + projectCost(p), 0);
+  const numbers = rollup(budget, payments, diy, studioSpend);
+  const phase =
+    budget.phase ||
+    suggestPhase({
+      budget: numbers.cap,
+      now: numbers.spent,
+      agreed: numbers.inPlay,
+      lineCount: budget.lines.length,
+    });
   const upcoming = payments
     .filter((p) => p.status !== "PAID")
     .sort((a, b) => (a.dueDate || "9999").localeCompare(b.dueDate || "9999"))
     .slice(0, 5);
-  return NextResponse.json({
+  return {
     budget,
     payments,
     path: path.choices,
     upcoming,
     envelopes: envelopes(budget, payments, vendors),
-    rollup: rollup(budget, payments, diy, studioSpend),
-  });
+    rollup: numbers,
+    phase,
+    alternatives: budget.alternatives || [],
+  };
+}
+
+export async function GET() {
+  const access = await requireCoupleApi();
+  if (!access.ok) return access.response;
+  return NextResponse.json(await pack());
 }
 
 export async function POST(request: Request) {
@@ -112,7 +128,7 @@ export async function POST(request: Request) {
     const { workspace } = await ensureDemoWorkspace();
     if (body.action === "add_line") {
       const label = requiredString(body.label, "Label", 120);
-      const budget = await addBudgetLine(workspace.id, {
+      await addBudgetLine(workspace.id, {
         category: body.category || "Other",
         label,
         planned: body.planned,
@@ -122,10 +138,10 @@ export async function POST(request: Request) {
         path: body.path,
         who: body.who,
       });
-      return NextResponse.json({ budget });
+      return NextResponse.json(await pack());
     }
     if (body.action === "update_line") {
-      const budget = await updateBudgetLine(workspace.id, String(body.id), {
+      await updateBudgetLine(workspace.id, String(body.id), {
         category: body.category,
         label: body.label,
         planned: body.planned == null ? undefined : Number(body.planned) || 0,
@@ -135,27 +151,50 @@ export async function POST(request: Request) {
         path: body.path,
         who: body.who,
       });
-      return NextResponse.json({ budget });
+      return NextResponse.json(await pack());
     }
     if (body.action === "delete_line") {
-      const budget = await deleteBudgetLine(workspace.id, String(body.id));
-      return NextResponse.json({ budget });
+      await deleteBudgetLine(workspace.id, String(body.id));
+      return NextResponse.json(await pack());
     }
     if (body.action === "set_limit") {
-      const budget = await saveBudget(workspace.id, {
-        overallLimit: body.overallLimit === "" || body.overallLimit == null
-          ? undefined
-          : Number(body.overallLimit) || 0,
+      await saveBudget(workspace.id, {
+        overallLimit:
+          body.overallLimit === "" || body.overallLimit == null ? undefined : Number(body.overallLimit) || 0,
       });
-      return NextResponse.json({ budget });
+      return NextResponse.json(await pack());
+    }
+    if (body.action === "set_phase") {
+      await saveBudget(workspace.id, { phase: body.phase as BudgetPhaseId });
+      return NextResponse.json(await pack());
+    }
+    if (body.action === "save_alternatives") {
+      const alternatives = (body.alternatives || []) as BudgetAlternative[];
+      await saveBudget(workspace.id, { alternatives });
+      return NextResponse.json(await pack());
+    }
+    if (body.action === "keep_plan") {
+      const current = await getBudget(workspace.id);
+      const alternatives = (body.alternatives || current.alternatives || []) as BudgetAlternative[];
+      await saveBudget(workspace.id, { alternatives });
+      return NextResponse.json(await pack());
+    }
+    if (body.action === "set_envelopes") {
+      const current = await getBudget(workspace.id);
+      const planned = (body.planned || {}) as Record<string, number>;
+      const lines = current.lines.map((line) =>
+        planned[line.category] == null ? line : { ...line, planned: Number(planned[line.category]) || 0 },
+      );
+      await saveBudget(workspace.id, { lines });
+      return NextResponse.json(await pack());
     }
     if (body.action === "seed") {
       const path = await getPath(workspace.id);
       const current = await getBudget(workspace.id);
-      const cap = Number(body.overallLimit || current.overallLimit) || 0;
-      if (!cap) return NextResponse.json({ error: "Set a cap first" }, { status: 400 });
-      const budget = await seedBudgetEnvelopes(workspace.id, cap, path.choices);
-      return NextResponse.json({ budget });
+      const total = Number(body.overallLimit || current.overallLimit) || 0;
+      if (!total) return NextResponse.json({ error: "Set the budget first" }, { status: 400 });
+      await seedBudgetEnvelopes(workspace.id, total, path.choices);
+      return NextResponse.json(await pack());
     }
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {

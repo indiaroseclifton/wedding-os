@@ -8,9 +8,13 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { DeskNav, currentRoomLabel } from "@/components/layout/DeskNav";
 import { TopNav } from "@/components/layout/TopNav";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { MORE_ROOMS, NAV_ITEMS, firstNames } from "@/lib/visual-rooms";
+import { MORE_ROOMS, NAV_ITEMS } from "@/lib/visual-rooms";
 import { roomVisible } from "@/lib/shape";
 import { Icon } from "@/components/icons";
+import { CopilotDock } from "@/components/v2/CopilotDock";
+import { HowToPop } from "@/components/v2/HowToPop";
+import { EventSwitch } from "@/components/v2/EventSwitch";
+import { ControlDrawer, openControl } from "@/components/v2/ControlDrawer";
 
 function tabOn(pathname: string, match: readonly string[]) {
   return match.some((m) => pathname === m || pathname.startsWith(m + "/"));
@@ -50,7 +54,6 @@ export function AppShell({
   const pane = useRef<HTMLElement>(null);
   const [railOpen, setRailOpen] = useState(false);
   const [more, setMore] = useState(false);
-  const names = firstNames(coupleNames, userName || "You");
   const home = pathname === "/dashboard" || pathname === "/";
   const photo = coverUrl || "/brand/flowers.jpg";
   const extras = MORE_ROOMS.filter((r) => roomVisible(r.href, shape));
@@ -62,6 +65,9 @@ export function AppShell({
     }
     for (const item of NAV_ITEMS) router.prefetch(item.href);
     router.prefetch("/settings");
+    router.prefetch("/v2");
+    router.prefetch("/intake");
+    router.prefetch("/events");
   }, [router]);
 
   useEffect(() => {
@@ -73,9 +79,15 @@ export function AppShell({
   return (
     <div className={`desk ${home ? "is-home" : ""} ${hasRail ? "has-rail" : ""}`}>
       <a href="#main" className="skip-link">
-        Skip to the desk
+        Skip to the main page
       </a>
       <ThemeProvider />
+
+      <div className="print:hidden border-b border-line bg-ink text-center text-[11px] tracking-wide text-ivory">
+        <Link href="/v2" target="_blank" rel="noreferrer" className="inline-block min-h-10 px-3 py-2">
+          V2 PREVIEW — not production · open items and notes
+        </Link>
+      </div>
 
       <header className="desk-mast light-mast print:hidden">
         <div className="flex min-w-0 items-center gap-3">
@@ -88,9 +100,13 @@ export function AppShell({
             <Icon name="menu" />
           </button>
           <Wordmark />
+          <EventSwitch />
         </div>
         <TopNav />
         <div className="flex items-center gap-1">
+          <Link href="/intake?new=1" className="hidden rounded-full border border-line px-3 py-1.5 text-xs md:inline-flex">
+            Add event
+          </Link>
           <CommandPalette tone="paper" iconOnly />
           <Link
             href="/dashboard#attention"
@@ -104,9 +120,14 @@ export function AppShell({
               </span>
             ) : null}
           </Link>
-          <Link href="/settings" className="h-9 w-9 overflow-hidden rounded-full border border-line" aria-label="Settings">
+          <button
+            type="button"
+            onClick={() => openControl()}
+            className="h-9 w-9 overflow-hidden rounded-full border border-line"
+            aria-label="Open control"
+          >
             <img src={photo} alt="" className="h-full w-full object-cover" />
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -165,15 +186,35 @@ export function AppShell({
           <button type="button" className="absolute inset-0 bg-ink/30" aria-label="Close" onClick={() => setMore(false)} />
           <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl bg-paper px-5 pb-10 pt-5">
             <nav className="flex flex-wrap gap-2">
-              {extras.map((r) => (
-                <Link key={r.href} href={r.href} className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]">
-                  {r.label}
-                </Link>
-              ))}
+              {extras.map((r) =>
+                r.href === "/control" ? (
+                  <button
+                    key={r.href}
+                    type="button"
+                    onClick={() => {
+                      setMore(false);
+                      openControl();
+                    }}
+                    className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]"
+                  >
+                    {r.label}
+                  </button>
+                ) : (
+                  <Link key={r.href} href={r.href} className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]">
+                    {r.label}
+                  </Link>
+                ),
+              )}
+              <Link href="/intake?new=1" className="inline-flex min-h-11 items-center rounded-full bg-ink px-3.5 text-[13px] text-ivory">
+                Add event
+              </Link>
             </nav>
           </div>
         </div>
       )}
+      <CopilotDock />
+      <HowToPop />
+      <ControlDrawer />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { TravelSearch } from "@/components/v2/TravelSearch";
 
 type Hotel = {
   id: string;
@@ -80,6 +81,8 @@ export default function TravelPage() {
           hold rooms without you paying for unused ones.
         </p>
       </div>
+
+      <TravelSearch />
 
       <form
         onSubmit={async (e) => {

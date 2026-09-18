@@ -1,5 +1,6 @@
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
 import { VisionStudio } from "@/components/vision/VisionStudio";
+import { PinterestLink } from "@/components/vision/PinterestLink";
 import { ensureDemoWorkspace, getWorkspaceDecisions } from "@/lib/data/workspace";
 import { EMPTY_VISION, normalizeVision } from "@/lib/vision";
 
@@ -23,8 +24,9 @@ export default async function VisionPage({
   const initial = row ? normalizeVision(row.payload) : EMPTY_VISION;
 
   return (
-    <div>
+    <div className="space-y-6">
       <RoomSubnav room="planning" />
+      <PinterestLink />
       <VisionStudio initial={initial} startWalk={walk === "1"} startView={startView} />
     </div>
   );

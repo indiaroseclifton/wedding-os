@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { ShapeOnPlan } from "@/components/v2/ShapeOnPlan";
 import { ensureDemoWorkspace, getWorkspaceDecisions } from "@/lib/data/workspace";
 import { getChecklist } from "@/lib/data/checklist-store";
 import { getPath, PATH_CATEGORIES } from "@/lib/data/path-store";
@@ -41,6 +42,7 @@ export default async function PlanningPage() {
   return (
     <div className="space-y-8">
       <RoomSubnav room="planning" />
+      <ShapeOnPlan current={meta.shape} />
 
       <header className="grid gap-6 border-b border-line pb-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)]">
         <div>
@@ -127,4 +129,3 @@ export default async function PlanningPage() {
     </div>
   );
 }
-

@@ -34,7 +34,7 @@ const PLAN: NavNode[] = [
   },
   {
     href: "/budget",
-    label: "Money",
+    label: "Budget",
     children: [
       { href: "/budget", label: "Budget" },
       { href: "/payments", label: "Payments" },
@@ -65,18 +65,19 @@ const PLAN: NavNode[] = [
 const PEOPLE: NavNode[] = PLAN.filter((item) => item.label === "Guests");
 
 const STUDIO: NavNode[] = [
+  { href: "/studio/floor-planner", label: "Floor Planner" },
+  {
+    href: "/studio/print-center",
+    label: "Print Center",
+    children: [
+      { href: "/studio/print-center", label: "Jobs" },
+      { href: "/studio/cards", label: "Cards" },
+      { href: "/studio/signage", label: "Signs" },
+    ],
+  },
   { href: "/studio", label: "Projects" },
   { href: "/diy/studio/floral", label: "Flowers" },
   { href: "/diy/studio/table", label: "Tables" },
-  {
-    href: "/studio/cards",
-    label: "Print",
-    children: [
-      { href: "/studio/cards", label: "Cards" },
-      { href: "/studio/signage", label: "Cricut & signs" },
-      { href: "/studio/decor", label: "Décor builds" },
-    ],
-  },
   {
     href: "/studio/shop",
     label: "Supplies",
@@ -101,9 +102,7 @@ const AFTER: NavNode[] = [
 ];
 
 export const ROOM_GROUPS: Record<"before" | "studio" | "day" | "after", NavGroup[]> = {
-  before: [
-    { label: "Before", href: "/planning", items: PLAN },
-  ],
+  before: [{ label: "Before", href: "/planning", items: PLAN }],
   studio: [{ label: "Studio", href: "/studio", items: STUDIO }],
   day: [{ label: "The day", href: "/day-of", items: DAY }],
   after: [{ label: "After", href: "/after", items: AFTER }],

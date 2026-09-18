@@ -2,6 +2,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import { dataDir, ensureDir, readText, writeText } from "./store-io";
 import { BUDGET_ENVELOPES, envelopeForPath } from "@/lib/budget-envelopes";
+import type { BudgetAlternative, BudgetPhaseId } from "@/lib/budget-plan";
 
 const budgetFile = path.join(dataDir, "budget.json");
 
@@ -21,6 +22,8 @@ export type StoredBudget = {
   workspaceId: string;
   currency: string;
   overallLimit?: number;
+  phase?: BudgetPhaseId;
+  alternatives?: BudgetAlternative[];
   lines: BudgetLine[];
   updatedAt: string;
 };
@@ -47,16 +50,19 @@ export async function getBudget(workspaceId: string): Promise<StoredBudget> {
       workspaceId,
       currency: "USD",
       lines: [],
+      alternatives: [],
       updatedAt: new Date().toISOString(),
     };
     await writeAll(all);
   }
-  return all[workspaceId];
+  const row = all[workspaceId];
+  if (!row.alternatives) row.alternatives = [];
+  return row;
 }
 
 export async function saveBudget(
   workspaceId: string,
-  patch: { overallLimit?: number; lines?: BudgetLine[] }
+  patch: Partial<Pick<StoredBudget, "overallLimit" | "lines" | "phase" | "alternatives">>,
 ) {
   const all = await readAll();
   const current = await getBudget(workspaceId);
@@ -80,16 +86,16 @@ export async function addBudgetLine(
     diyEstimate?: number;
     path?: BudgetLine["path"];
     who?: BudgetLine["who"];
-  }
+  },
 ) {
   const budget = await getBudget(workspaceId);
-  const path = input.path || "undecided";
+  const pathChoice = input.path || "undecided";
   const hire = Number(input.hireEstimate) || 0;
   const diy = Number(input.diyEstimate) || 0;
   const planned =
-    path === "hire" && hire
+    pathChoice === "hire" && hire
       ? hire
-      : path === "diy" && diy
+      : pathChoice === "diy" && diy
         ? diy
         : Number(input.planned) || 0;
   const line: BudgetLine = {
@@ -100,7 +106,7 @@ export async function addBudgetLine(
     actual: Number(input.actual) || 0,
     hireEstimate: hire || undefined,
     diyEstimate: diy || undefined,
-    path,
+    path: pathChoice,
     who: input.who,
   };
   return saveBudget(workspaceId, { lines: [...budget.lines, line] });
@@ -109,7 +115,7 @@ export async function addBudgetLine(
 export async function updateBudgetLine(
   workspaceId: string,
   id: string,
-  patch: Partial<Pick<BudgetLine, "category" | "label" | "planned" | "actual" | "hireEstimate" | "diyEstimate" | "path" | "who">>
+  patch: Partial<Pick<BudgetLine, "category" | "label" | "planned" | "actual" | "hireEstimate" | "diyEstimate" | "path" | "who">>,
 ) {
   const budget = await getBudget(workspaceId);
   return saveBudget(workspaceId, {
@@ -124,8 +130,8 @@ export async function deleteBudgetLine(workspaceId: string, id: string) {
 
 export async function seedBudgetEnvelopes(
   workspaceId: string,
-  cap: number,
-  pathChoices: Record<string, string> = {}
+  total: number,
+  pathChoices: Record<string, string> = {},
 ) {
   const budget = await getBudget(workspaceId);
   const have = new Set(budget.lines.map((l) => l.category.toLowerCase()));
@@ -134,16 +140,16 @@ export async function seedBudgetEnvelopes(
     if (have.has(env.id.toLowerCase())) continue;
     const pathId = Object.keys(pathChoices).find((k) => envelopeForPath(k) === env.id);
     const choice = pathId ? pathChoices[pathId] : "undecided";
-    const path =
+    const pathChoice =
       choice === "hire" || choice === "diy" ? (choice as BudgetLine["path"]) : "undecided";
     added.push({
       id: randomUUID(),
       category: env.id,
       label: env.id,
-      planned: Math.round((cap * env.pct) / 100),
+      planned: Math.round((total * env.pct) / 100),
       actual: 0,
-      path,
+      path: pathChoice,
     });
   }
-  return saveBudget(workspaceId, { overallLimit: budget.overallLimit || cap, lines: added });
+  return saveBudget(workspaceId, { overallLimit: budget.overallLimit || total, lines: added });
 }

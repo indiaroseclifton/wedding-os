@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { RoomSubnav } from "@/components/layout/RoomSubnav";
+import { HouseList } from "@/components/v2/HouseList";
 
 const TYPES = [
   "Engagement party",
@@ -91,130 +92,96 @@ export default function EventsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <RoomSubnav room="guests" />
-      <div>
-        <h1 className="title">Events</h1>
-        <p className="mt-1 text-sm text-muted">
-          Rehearsal, brunch, welcome drinks — each can have its own RSVP on the same guest link.
-          Wedding day stays the main yes/no.
-        </p>
-      </div>
+      <HouseList />
 
-      <div className="stat-strip">
+      <section className="space-y-4">
         <div>
-          <p className="font-serif text-2xl tabular-nums">{rollup.count}</p>
-          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Events</p>
+          <h2 className="font-serif text-2xl">Days inside this one</h2>
+          <p className="mt-1 text-sm text-muted">Rehearsal, brunch, welcome drinks — RSVP on the same guest link. Not a second gathering.</p>
         </div>
-        <div>
-          <p className="font-serif text-2xl tabular-nums">{rollup.rsvpOpen || 0}</p>
-          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">On RSVP</p>
-        </div>
-        <div>
-          <p className="font-serif text-2xl tabular-nums">${rollup.budgetTotal.toLocaleString()}</p>
-          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Caps</p>
-        </div>
-        <div>
-          <p className="font-serif text-2xl tabular-nums">{rollup.guestsTotal}</p>
-          <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Expected</p>
-        </div>
-      </div>
 
-      <form onSubmit={add} className="space-y-3 glass-panel rounded-2xl p-4">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          placeholder="Event name"
-          className="w-full rounded-lg border border-line px-3 py-2 text-sm"
-        />
-        <div className="grid gap-2 sm:grid-cols-2">
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="rounded-lg border border-line px-3 py-2 text-sm"
-          >
-            {TYPES.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-          <input
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            type="date"
-            className="rounded-lg border border-line px-3 py-2 text-sm"
-          />
-          <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Location"
-            className="rounded-lg border border-line px-3 py-2 text-sm"
-          />
-          <input
-            value={budgetCap}
-            onChange={(e) => setBudgetCap(e.target.value)}
-            type="number"
-            min={0}
-            placeholder="Budget cap $"
-            className="rounded-lg border border-line px-3 py-2 text-sm"
-          />
+        <div className="stat-strip">
+          <div>
+            <p className="font-serif text-2xl tabular-nums">{rollup.count}</p>
+            <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Days</p>
+          </div>
+          <div>
+            <p className="font-serif text-2xl tabular-nums">{rollup.rsvpOpen || 0}</p>
+            <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">On RSVP</p>
+          </div>
+          <div>
+            <p className="font-serif text-2xl tabular-nums">${rollup.budgetTotal.toLocaleString()}</p>
+            <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Caps</p>
+          </div>
+          <div>
+            <p className="font-serif text-2xl tabular-nums">{rollup.guestsTotal}</p>
+            <p className="mt-1 text-[11px] uppercase tracking-wide text-muted">Expected</p>
+          </div>
         </div>
-        {type !== "Wedding day" && (
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={rsvpEnabled}
-              onChange={(e) => setRsvpEnabled(e.target.checked)}
-            />
-            Ask on the guest RSVP
-          </label>
-        )}
-        <button type="submit" className="btn btn-primary">
-          Add event
-        </button>
-      </form>
 
-      <ul className="space-y-3">
-        {events.map((ev) => (
-          <li key={ev.id} className="glass-panel rounded-2xl p-4">
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold">{ev.name}</p>
-                <p className="text-xs text-muted">
-                  {ev.type}
-                  {ev.date ? ` · ${ev.date}` : ""}
-                  {ev.location ? ` · ${ev.location}` : ""}
-                </p>
+        <form onSubmit={add} className="space-y-3 glass-panel rounded-2xl p-4">
+          <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Day name" className="w-full rounded-lg border border-line px-3 py-2 text-sm" />
+          <div className="grid gap-2 sm:grid-cols-2">
+            <select value={type} onChange={(e) => setType(e.target.value)} className="rounded-lg border border-line px-3 py-2 text-sm">
+              {TYPES.map((t) => (
+                <option key={t}>{t}</option>
+              ))}
+            </select>
+            <input value={date} onChange={(e) => setDate(e.target.value)} type="date" className="rounded-lg border border-line px-3 py-2 text-sm" />
+            <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location" className="rounded-lg border border-line px-3 py-2 text-sm" />
+            <input value={budgetCap} onChange={(e) => setBudgetCap(e.target.value)} type="number" min={0} placeholder="Budget cap $" className="rounded-lg border border-line px-3 py-2 text-sm" />
+          </div>
+          {type !== "Wedding day" && (
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={rsvpEnabled} onChange={(e) => setRsvpEnabled(e.target.checked)} />
+              Ask on the guest RSVP
+            </label>
+          )}
+          <button type="submit" className="btn btn-primary">
+            Add a day
+          </button>
+        </form>
+
+        <ul className="space-y-3">
+          {events.map((ev) => (
+            <li key={ev.id} className="glass-panel rounded-2xl p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold">{ev.name}</p>
+                  <p className="text-xs text-muted">
+                    {ev.type}
+                    {ev.date ? ` · ${ev.date}` : ""}
+                    {ev.location ? ` · ${ev.location}` : ""}
+                  </p>
+                </div>
+                {ev.type !== "Wedding day" && (
+                  <button
+                    type="button"
+                    onClick={() => toggleRsvp(ev)}
+                    className={`rounded-full px-2.5 py-0.5 text-[11px] ${ev.rsvpEnabled ? "bg-moss-soft text-moss" : "bg-surface text-ink-soft"}`}
+                  >
+                    {ev.rsvpEnabled ? "On RSVP" : "Not on RSVP"}
+                  </button>
+                )}
               </div>
-              {ev.type !== "Wedding day" && (
-                <button
-                  type="button"
-                  onClick={() => toggleRsvp(ev)}
-                  className={`rounded-full px-2.5 py-0.5 text-[11px] ${
-                    ev.rsvpEnabled ? "bg-moss-soft text-moss" : "bg-surface text-ink-soft"
-                  }`}
-                >
-                  {ev.rsvpEnabled ? "On RSVP" : "Not on RSVP"}
-                </button>
+              {ev.rsvpEnabled && ev.rsvpCounts && (
+                <p className="mt-2 text-xs text-muted">
+                  {ev.rsvpCounts.yes} yes · {ev.rsvpCounts.no} no · {ev.rsvpCounts.pending} pending
+                  {ev.inviteMode === "everyone" ? " · everyone can answer" : ""}
+                </p>
               )}
-            </div>
-            {ev.rsvpEnabled && ev.rsvpCounts && (
-              <p className="mt-2 text-xs text-muted">
-                {ev.rsvpCounts.yes} yes · {ev.rsvpCounts.no} no · {ev.rsvpCounts.pending} pending
-                {ev.inviteMode === "everyone" ? " · everyone can answer" : ""}
-              </p>
-            )}
-            <div className="mt-3 flex gap-3 text-xs">
-              <Link href={`/events/${ev.id}`} className="font-medium underline">
-                {ev.rsvpEnabled ? "Invite list" : "Open"}
-              </Link>
-            </div>
-          </li>
-        ))}
-        {!events.length && (
-          <li className="py-8 text-center text-sm text-muted">No sub-events yet</li>
-        )}
-      </ul>
+              <div className="mt-3 flex gap-3 text-xs">
+                <Link href={`/events/${ev.id}`} className="font-medium underline">
+                  {ev.rsvpEnabled ? "Invite list" : "Open"}
+                </Link>
+              </div>
+            </li>
+          ))}
+          {!events.length && <li className="py-8 text-center text-sm text-muted">No extra days yet</li>}
+        </ul>
+      </section>
     </div>
   );
 }
