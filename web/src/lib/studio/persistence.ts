@@ -1,7 +1,56 @@
-import path from 'path';
-import {promises as fs} from 'fs';
-import {randomUUID} from 'crypto';
-import {dataDir,readText,usePrismaStore as prismaEnabled} from '@/lib/data/store-io';
-const queues=new Map<string,Promise<unknown>>();
-export async function readRecord<T>(name:string):Promise<Record<string,T>>{try{return JSON.parse(await readText(path.join(dataDir,name)));}catch(e){if((e as NodeJS.ErrnoException).code==='ENOENT')return {};throw e;}}
-export async function mutateRecord<T,R>(name:string,change:(data:Record<string,T>)=>R|Promise<R>):Promise<R>{if(prismaEnabled()){const {prisma}=await import('@/lib/data/prisma');return prisma.$transaction(async tx=>{await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${name}))`;const row=await tx.jsonStore.findUnique({where:{key:name}});const all=(row?.payload||{}) as Record<string,T>;const result=await change(all);const payload=JSON.parse(JSON.stringify(all));await tx.jsonStore.upsert({where:{key:name},create:{key:name,payload},update:{payload}});return result;},{timeout:30000});}const operation=(queues.get(name)||Promise.resolve()).then(async()=>{const all=await readRecord<T>(name);const result=await change(all);await fs.mkdir(dataDir,{recursive:true});const file=path.join(dataDir,name),tmp=`${file}.${randomUUID()}.tmp`;await fs.writeFile(tmp,JSON.stringify(all),{mode:0o600});await fs.rename(tmp,file);return result;});queues.set(name,operation.catch(()=>undefined));return operation;}
+import path from "path";
+import { promises as fs } from "fs";
+import { randomUUID } from "crypto";
+import {
+  dataDir,
+  readText,
+  usePrismaStore as prismaEnabled,
+} from "@/lib/data/store-io";
+const queues = new Map<string, Promise<unknown>>();
+export async function readRecord<T>(name: string): Promise<Record<string, T>> {
+  try {
+    return JSON.parse(await readText(path.join(dataDir, name)));
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return {};
+    throw e;
+  }
+}
+export async function mutateRecord<T, R>(
+  name: string,
+  change: (data: Record<string, T>) => R | Promise<R>,
+): Promise<R> {
+  if (prismaEnabled()) {
+    const { prisma } = await import("@/lib/data/prisma");
+    return prisma.$transaction(
+      async (tx) => {
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${name}))`;
+        const row = await tx.jsonStore.findUnique({ where: { key: name } });
+        const all = (row?.payload || {}) as Record<string, T>;
+        const result = await change(all);
+        const payload = JSON.parse(JSON.stringify(all));
+        await tx.jsonStore.upsert({
+          where: { key: name },
+          create: { key: name, payload },
+          update: { payload },
+        });
+        return result;
+      },
+      { timeout: 30000 },
+    );
+  }
+  const operation = (queues.get(name) || Promise.resolve()).then(async () => {
+    const all = await readRecord<T>(name);
+    const result = await change(all);
+    await fs.mkdir(dataDir, { recursive: true });
+    const file = path.join(dataDir, name),
+      tmp = `${file}.${randomUUID()}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify(all), { mode: 0o600 });
+    await fs.rename(tmp, file);
+    return result;
+  });
+  queues.set(
+    name,
+    operation.catch(() => undefined),
+  );
+  return operation;
+}

@@ -87,3 +87,9 @@ Alex & Jordan, `DEMO_AUTH=1`, Atlanta, default shape `weekend` unless they run o
 
 To a couple: “The desk follows your day — including if there is no aisle — and stays after hire.”  
 To an agent: read `CLAUDE.md`, then this file, then the kernels in `web/src/lib/`.
+
+## Approved Studio direction — September 2026
+
+The user explicitly requested a focused Studio app for DIY weddings, advanced visualization and optional AI, with established providers for stationery and websites. This supersedes earlier restrictions on Studio 3D previews and a scoped AI assistant. Keep Studio inside this deployment with shared wedding records; a separate service or SKU is not implied. Preserve post-audit planning and data fixes.
+
+Implemented scope and integration setup are documented in `web/docs/STUDIO_INTEGRATIONS.md`; visual direction is in `web/docs/studio-surface.md`. Dimension-based mockups, manual venue photo alignment and approximate AI concepts must remain clearly distinguished. Do not imply live provider connections, website/RSVP synchronization or paid AI activation until verified with configured accounts.

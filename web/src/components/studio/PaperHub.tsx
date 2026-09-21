@@ -1,3 +1,164 @@
-'use client';
-import Link from 'next/link';import {useRouter} from 'next/navigation';import {useState} from 'react';import type {StudioProject} from '@/lib/studio-project';import {DESIGN_PROVIDERS} from '@/lib/studio/catalog';import {csvDownload} from '@/lib/studio/design';import {studioRequest} from './StudioUI';
-export function PaperHub({projects,guests}:{projects:StudioProject[];guests:{name:string;household:string;table:string}[]}){const router=useRouter(),[busy,setBusy]=useState(false),[error,setError]=useState('');async function create(){setBusy(true);try{const {project}=await studioRequest({action:'create',kind:'print'});router.push(`/studio/projects/${project.id}?stage=recipe`);}catch(e){setError((e as Error).message);setBusy(false);}}return <div><header className="st-page-heading"><div><p className="st-eyebrow">Professional design. Your finishing touch.</p><h1>Paper & websites that belong to your day.</h1><p>Choose a design collection you love. Keep its professional editor, printing and website tools, then bring the finished pieces into your wedding build.</p></div><button className="st-button st-primary" onClick={()=>void create()} disabled={busy}>{busy?'Creating…':'Plan a paper suite'}</button></header>{error&&<p className="st-error" role="alert">{error}</p>}<section className="st-provider-grid" aria-label="Design providers">{DESIGN_PROVIDERS.map(p=><article className="st-provider" key={p.id}><p className="st-eyebrow">{p.mode}</p><h2>{p.name}</h2><p>{p.description}</p><div className="studio-actions"><a className="st-button st-primary" href={p.stationery} target="_blank" rel="noreferrer">Explore stationery ↗</a><a className="st-button" href={p.website} target="_blank" rel="noreferrer">Wedding websites ↗</a>{p.id==='canva'&&<Link className="st-text-link" href="/studio/connections">Connect Canva</Link>}</div></article>)}</section><div className="st-stage-intro" style={{marginTop:35}}><div><h2>Your designs, in the room.</h2><p>Import a PNG preview to see menus, place cards and signs at their actual size. Attach the print PDF, approved proof, website link and order quantity to the same project.</p><p className="st-help">Printing, purchases and website publishing happen with your chosen provider. Website RSVPs and guest lists do not automatically sync with Vowfolk.</p></div><button className="st-button" onClick={()=>csvDownload('vowfolk-place-card-names.csv',[['Name','Household','Table'],...guests.map(g=>[g.name,g.household,g.table])])}>Export guest names CSV</button></div><div className="st-section-heading"><h2>On your paper desk</h2><Link className="st-text-link" href="/studio/connections">Design connections →</Link></div>{projects.filter(p=>['print','cricut'].includes(p.kind)).length?projects.filter(p=>['print','cricut'].includes(p.kind)).map(p=><Link className="studio-project-row" key={p.id} href={`/studio/projects/${p.id}?stage=recipe`}><div className="studio-project-image">{p.design?.artwork.find(a=>a.previewUrl)?<img src={p.design.artwork.find(a=>a.previewUrl)!.previewUrl} alt=""/>:<span>P</span>}</div><div><h3>{p.title}</h3><p>{p.qty} to make · {p.design?.artwork.length||0} attached designs</p></div><span>Open project</span><span>↗</span></Link>):<div className="st-empty"><h3>Start with a beautiful design.</h3><p>Explore a provider, then create your paper project to bring the proof, quantities and setup instructions together.</p></div>}</div>;}
+"use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import type { StudioProject } from "@/lib/studio-project";
+import { DESIGN_PROVIDERS } from "@/lib/studio/catalog";
+import { csvDownload } from "@/lib/studio/design";
+import { studioRequest } from "./StudioUI";
+export function PaperHub({
+  projects,
+  guests,
+}: {
+  projects: StudioProject[];
+  guests: { name: string; household: string; table: string }[];
+}) {
+  const router = useRouter(),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+  async function create() {
+    setBusy(true);
+    try {
+      const { project } = await studioRequest({
+        action: "create",
+        kind: "print",
+      });
+      router.push(`/studio/projects/${project.id}?stage=recipe`);
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  }
+  return (
+    <div>
+      <header className="st-page-heading">
+        <div>
+          <p className="st-eyebrow">
+            Professional design. Your finishing touch.
+          </p>
+          <h1>Paper & websites that belong to your day.</h1>
+          <p>
+            Choose a design collection you love. Keep its professional editor,
+            printing and website tools, then bring the finished pieces into your
+            wedding build.
+          </p>
+        </div>
+        <button
+          className="st-button st-primary"
+          onClick={() => void create()}
+          disabled={busy}
+        >
+          {busy ? "Creating…" : "Plan a paper suite"}
+        </button>
+      </header>
+      {error && (
+        <p className="st-error" role="alert">
+          {error}
+        </p>
+      )}
+      <section className="st-provider-grid" aria-label="Design providers">
+        {DESIGN_PROVIDERS.map((p) => (
+          <article className="st-provider" key={p.id}>
+            <p className="st-eyebrow">{p.mode}</p>
+            <h2>{p.name}</h2>
+            <p>{p.description}</p>
+            <div className="studio-actions">
+              <a
+                className="st-button st-primary"
+                href={p.stationery}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Explore stationery ↗
+              </a>
+              <a
+                className="st-button"
+                href={p.website}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Wedding websites ↗
+              </a>
+              {p.id === "canva" && (
+                <Link className="st-text-link" href="/studio/connections">
+                  Connect Canva
+                </Link>
+              )}
+            </div>
+          </article>
+        ))}
+      </section>
+      <div className="st-stage-intro" style={{ marginTop: 35 }}>
+        <div>
+          <h2>Your designs, in the room.</h2>
+          <p>
+            Import a PNG preview to see menus, place cards and signs at their
+            actual size. Attach the print PDF, approved proof, website link and
+            order quantity to the same project.
+          </p>
+          <p className="st-help">
+            Printing, purchases and website publishing happen with your chosen
+            provider. Website RSVPs and guest lists do not automatically sync
+            with Vowfolk.
+          </p>
+        </div>
+        <button
+          className="st-button"
+          onClick={() =>
+            csvDownload("vowfolk-place-card-names.csv", [
+              ["Name", "Household", "Table"],
+              ...guests.map((g) => [g.name, g.household, g.table]),
+            ])
+          }
+        >
+          Export guest names CSV
+        </button>
+      </div>
+      <div className="st-section-heading">
+        <h2>On your paper desk</h2>
+        <Link className="st-text-link" href="/studio/connections">
+          Design connections →
+        </Link>
+      </div>
+      {projects.filter((p) => ["print", "cricut"].includes(p.kind)).length ? (
+        projects
+          .filter((p) => ["print", "cricut"].includes(p.kind))
+          .map((p) => (
+            <Link
+              className="studio-project-row"
+              key={p.id}
+              href={`/studio/projects/${p.id}?stage=recipe`}
+            >
+              <div className="studio-project-image">
+                {p.design?.artwork.find((a) => a.previewUrl) ? (
+                  <img
+                    src={p.design.artwork.find((a) => a.previewUrl)!.previewUrl}
+                    alt=""
+                  />
+                ) : (
+                  <span>P</span>
+                )}
+              </div>
+              <div>
+                <h3>{p.title}</h3>
+                <p>
+                  {p.qty} to make · {p.design?.artwork.length || 0} attached
+                  designs
+                </p>
+              </div>
+              <span>Open project</span>
+              <span>↗</span>
+            </Link>
+          ))
+      ) : (
+        <div className="st-empty">
+          <h3>Start with a beautiful design.</h3>
+          <p>
+            Explore a provider, then create your paper project to bring the
+            proof, quantities and setup instructions together.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}

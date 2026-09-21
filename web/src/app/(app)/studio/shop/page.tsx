@@ -1,2 +1,14 @@
-import {ensureDemoWorkspace} from "@/lib/data/workspace";import {getStudio} from "@/lib/data/studio-store";import {StudioOperations} from "@/components/studio/StudioOperations";
-export default async function Page(){const {workspace,meta}=await ensureDemoWorkspace();const {projects}=await getStudio(workspace.id);return <StudioOperations initial={projects} weddingDate={meta.weddingDate||""} mode="supplies"/>;}
+import { ensureDemoWorkspace } from "@/lib/data/workspace";
+import { getStudio } from "@/lib/data/studio-store";
+import { StudioOperations } from "@/components/studio/StudioOperations";
+export default async function Page() {
+  const { workspace, meta } = await ensureDemoWorkspace();
+  const { projects } = await getStudio(workspace.id);
+  return (
+    <StudioOperations
+      initial={projects}
+      weddingDate={meta.weddingDate || ""}
+      mode="supplies"
+    />
+  );
+}

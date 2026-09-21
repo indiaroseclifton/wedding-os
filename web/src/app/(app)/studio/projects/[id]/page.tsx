@@ -1,1 +1,37 @@
-import {notFound} from "next/navigation";import {ensureDemoWorkspace} from "@/lib/data/workspace";import {getStudio} from "@/lib/data/studio-store";import {getSessionUser} from "@/lib/auth/session";import {StudioWorkspace} from "@/components/studio/StudioWorkspace";export default async function Page({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{stage?:string}>}){const {id}=await params,{stage}=await searchParams,{workspace,meta}=await ensureDemoWorkspace(),{projects}=await getStudio(workspace.id),user=await getSessionUser(),p=projects.find(p=>p.id===id);if(!p)notFound();return <StudioWorkspace key={p.id} initial={p} weddingDate={meta.weddingDate||""} user={user?.name||"You"} ai={!!process.env.OPENAI_API_KEY} initialStage={stage&&["design","recipe","source","build","pack","review"].includes(stage)?stage:"design"}/>;}
+import { notFound } from "next/navigation";
+import { ensureDemoWorkspace } from "@/lib/data/workspace";
+import { getStudio } from "@/lib/data/studio-store";
+import { getSessionUser } from "@/lib/auth/session";
+import { StudioWorkspace } from "@/components/studio/StudioWorkspace";
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ stage?: string }>;
+}) {
+  const { id } = await params,
+    { stage } = await searchParams,
+    { workspace, meta } = await ensureDemoWorkspace(),
+    { projects } = await getStudio(workspace.id),
+    user = await getSessionUser(),
+    p = projects.find((p) => p.id === id);
+  if (!p) notFound();
+  return (
+    <StudioWorkspace
+      key={p.id}
+      initial={p}
+      weddingDate={meta.weddingDate || ""}
+      user={user?.name || "You"}
+      ai={!!process.env.OPENAI_API_KEY}
+      initialStage={
+        stage &&
+        ["design", "recipe", "source", "build", "pack", "review"].includes(
+          stage,
+        )
+          ? stage
+          : "design"
+      }
+    />
+  );
+}
