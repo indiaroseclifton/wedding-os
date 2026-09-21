@@ -38,7 +38,7 @@ export function StudioShell({
       </a>
       <header className="studio-mast">
         <div className="studio-brand">
-          <Wordmark />
+          <Wordmark href="/studio" />
           <span>STUDIO</span>
         </div>
         <p className="studio-wedding">

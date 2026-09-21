@@ -95,6 +95,7 @@ export function StudioWorkspace({
     object = d.objects.find((o) => o.id === selected),
     warnings = designWarnings(d, p.qty);
   const unavailable = useCallback(() => {
+    capture.current = null;
     setView("plan");
     setMessage("3D is unavailable on this device; use the measured plan.");
   }, []);

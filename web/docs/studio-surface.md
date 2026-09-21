@@ -4,7 +4,7 @@ Preserve the post-audit wedding planner and existing Vowfolk brand. Studio shoul
 
 Use the app’s existing serif and sans-serif families. Studio surfaces use ivory #f8f7f2, charcoal green #303b33, sage #e6eadf, deep green #3c5543, blush #f0e3db and a thin #daddd2 border. Prefer editorial sections and lists over repeated dashboard cards. Selected controls must be clearly visible. Inputs and principal actions are at least 42 pixels tall; compact canvas tools have explicit labels.
 
-Desktop: a 190-pixel contextual Studio sidebar; project workbench with a materials library, dominant canvas and inspector. Below 1180 pixels, move the inspector under the canvas. Below 760 pixels, use a menu, canvas first and a compact material grid. Tables scroll within their own container. No navigation change discards dirty project edits without a choice.
+Desktop: a 190-pixel contextual Studio sidebar; project workbench with a materials library, dominant canvas and inspector. Below 1180 pixels, move the inspector under the canvas. Below 760 pixels, use a menu, canvas first and a compact material grid. Tables scroll within their own container. Internal link navigation asks users to save or discard dirty project edits; leaving or reloading the browser uses its unsaved-work warning.
 
 Use 180–240 ms transitions and one brief page reveal. Honor reduced-motion preferences. Do not use constant decoration or canvas animation. Render the 3D scene only for interaction, resize or material updates.
 

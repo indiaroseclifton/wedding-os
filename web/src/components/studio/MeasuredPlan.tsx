@@ -15,7 +15,7 @@ export function MeasuredPlan({
   onMove: (id: string, x: number, z: number) => void;
 }) {
   const svg = useRef<SVGSVGElement>(null),
-    drag = useRef<string | null>(null);
+    drag = useRef<{ id: string; dx: number; dz: number } | null>(null);
   const s = design.surface,
     w = s.shape === "none" ? 600 : Math.max(s.width, s.depth) + 90;
   return (
@@ -29,7 +29,11 @@ export function MeasuredPlan({
           const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(
             svg.current.getScreenCTM()?.inverse(),
           );
-          onMove(drag.current, Math.round(pt.x), Math.round(pt.y));
+          onMove(
+            drag.current.id,
+            Math.round(pt.x - drag.current.dx),
+            Math.round(pt.y - drag.current.dz),
+          );
         }}
         onPointerUp={() => {
           drag.current = null;
@@ -95,7 +99,15 @@ export function MeasuredPlan({
               if (readOnly) return;
               onSelect(o.id);
               if (!o.locked) {
-                drag.current = o.id;
+                const base = design.objects.find((item) => item.id === o.id)!;
+                const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(
+                  svg.current?.getScreenCTM()?.inverse(),
+                );
+                drag.current = {
+                  id: o.id,
+                  dx: pt.x - base.x,
+                  dz: pt.y - base.z,
+                };
                 svg.current?.setPointerCapture(e.pointerId);
               }
             }}
@@ -113,15 +125,16 @@ export function MeasuredPlan({
               ) {
                 e.preventDefault();
                 const n = e.shiftKey ? 10 : 1;
+                const base = design.objects.find((item) => item.id === o.id)!;
                 onMove(
                   o.id,
-                  o.x +
+                  base.x +
                     (e.key === "ArrowRight"
                       ? n
                       : e.key === "ArrowLeft"
                         ? -n
                         : 0),
-                  o.z +
+                  base.z +
                     (e.key === "ArrowDown" ? n : e.key === "ArrowUp" ? -n : 0),
                 );
               }
