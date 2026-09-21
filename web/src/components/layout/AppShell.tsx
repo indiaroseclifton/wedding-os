@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { StudioShell } from "@/components/studio/StudioShell";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CommandPalette } from "@/components/search/CommandPalette";
@@ -54,7 +55,9 @@ export function AppShell({
   const home = pathname === "/dashboard" || pathname === "/";
   const photo = coverUrl || "/brand/flowers.jpg";
   const extras = MORE_ROOMS.filter((r) => roomVisible(r.href, shape));
-  const hasRail = NAV_ITEMS.some((item) => item.room && tabOn(pathname, item.match));
+  const hasRail = NAV_ITEMS.some(
+    (item) => item.room && tabOn(pathname, item.match),
+  );
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -70,8 +73,21 @@ export function AppShell({
     pane.current?.scrollTo({ top: 0 });
   }, [pathname]);
 
+  if (
+    pathname.startsWith("/studio") ||
+    pathname.startsWith("/diy/studio") ||
+    pathname === "/diy/calendar"
+  )
+    return (
+      <StudioShell names={names} weddingDate={weddingDate}>
+        {children}
+      </StudioShell>
+    );
+
   return (
-    <div className={`desk ${home ? "is-home" : ""} ${hasRail ? "has-rail" : ""}`}>
+    <div
+      className={`desk ${home ? "is-home" : ""} ${hasRail ? "has-rail" : ""}`}
+    >
       <a href="#main" className="skip-link">
         Skip to the desk
       </a>
@@ -104,7 +120,11 @@ export function AppShell({
               </span>
             ) : null}
           </Link>
-          <Link href="/settings" className="h-9 w-9 overflow-hidden rounded-full border border-line" aria-label="Settings">
+          <Link
+            href="/settings"
+            className="h-9 w-9 overflow-hidden rounded-full border border-line"
+            aria-label="Settings"
+          >
             <img src={photo} alt="" className="h-full w-full object-cover" />
           </Link>
         </div>
@@ -116,7 +136,11 @@ export function AppShell({
             {currentRoomLabel(pathname) || "Vowfolk"}
           </p>
           <div className="min-h-0 flex-1 overflow-y-auto">
-            <DeskNav shape={shape} guestCount={guestCount} vendorCount={vendorCount} />
+            <DeskNav
+              shape={shape}
+              guestCount={guestCount}
+              vendorCount={vendorCount}
+            />
           </div>
         </aside>
       ) : null}
@@ -162,11 +186,20 @@ export function AppShell({
 
       {more && (
         <div className="fixed inset-0 z-50 print:hidden">
-          <button type="button" className="absolute inset-0 bg-ink/30" aria-label="Close" onClick={() => setMore(false)} />
+          <button
+            type="button"
+            className="absolute inset-0 bg-ink/30"
+            aria-label="Close"
+            onClick={() => setMore(false)}
+          />
           <div className="absolute inset-x-0 bottom-0 max-h-[86vh] overflow-y-auto rounded-t-3xl bg-paper px-5 pb-10 pt-5">
             <nav className="flex flex-wrap gap-2">
               {extras.map((r) => (
-                <Link key={r.href} href={r.href} className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]">
+                <Link
+                  key={r.href}
+                  href={r.href}
+                  className="inline-flex min-h-11 items-center rounded-full border border-line bg-surface px-3.5 text-[13px]"
+                >
                   {r.label}
                 </Link>
               ))}

@@ -1,0 +1,418 @@
+"use client";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import type { StudioProject } from "@/lib/studio-project";
+import { designFor, uid } from "@/lib/studio/design";
+import { Field, saveBody, studioRequest } from "./StudioUI";
+type Provider = "canva" | "pinterest";
+type Status = { id: Provider; configured: boolean; connected: boolean };
+type Item = {
+  id: string;
+  name: string;
+  image: string;
+  url: string;
+  note?: string;
+};
+async function connection(path: string, body?: unknown) {
+  const r = await fetch(path, {
+    method: body ? "POST" : "GET",
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Connection request failed.");
+  return data;
+}
+export function ConnectionsHub({
+  projects,
+  initialProject = "",
+  initialError = "",
+}: {
+  projects: StudioProject[];
+  initialProject?: string;
+  initialError?: string;
+}) {
+  const [statuses, setStatuses] = useState<Status[]>([]),
+    [provider, setProvider] = useState<Provider>("canva"),
+    [items, setItems] = useState<Item[]>([]),
+    [boards, setBoards] = useState<Item[]>([]),
+    [board, setBoard] = useState(""),
+    [query, setQuery] = useState(""),
+    [cursor, setCursor] = useState(""),
+    [projectId, setProjectId] = useState(
+      initialProject || projects[0]?.id || "",
+    ),
+    [busy, setBusy] = useState(""),
+    [error, setError] = useState(initialError),
+    [message, setMessage] = useState("");
+  useEffect(() => {
+    let active = true;
+    connection("/api/studio/connections")
+      .then((d) => {
+        if (active) setStatuses(d.connections);
+      })
+      .catch((e) => {
+        if (active) setError(e.message);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  async function authorize(p: Provider) {
+    setBusy(p);
+    setError("");
+    try {
+      const d = await connection(`/api/studio/connections/${p}/authorize`, {});
+      window.location.assign(d.url);
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy("");
+    }
+  }
+  async function remove(p: Provider) {
+    setBusy(p);
+    try {
+      await connection("/api/studio/connections", {
+        action: "disconnect",
+        provider: p,
+      });
+      setStatuses((s) =>
+        s.map((x) => (x.id === p ? { ...x, connected: false } : x)),
+      );
+      setItems([]);
+      setBoards([]);
+      setMessage(
+        "Connection removed from Studio. You can also revoke app access in your provider account.",
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy("");
+    }
+  }
+  async function browse(p: Provider, boardId = "", more = false) {
+    setProvider(p);
+    setBusy("browse");
+    setError("");
+    const q = new URLSearchParams({
+      provider: p,
+      ...(p === "canva" ? { query } : {}),
+    });
+    if (boardId) q.set("board", boardId);
+    if (more && cursor) q.set("cursor", cursor);
+    try {
+      const d = await connection(`/api/studio/connections?${q}`);
+      if (p === "pinterest" && !boardId) {
+        setBoards((prev) => (more ? [...prev, ...d.items] : d.items));
+        setItems([]);
+      } else {
+        setItems((prev) => (more ? [...prev, ...d.items] : d.items));
+        setBoards([]);
+      }
+      setBoard(boardId);
+      setCursor(d.cursor || "");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy("");
+    }
+  }
+  async function attach(item: Item, format: "png" | "pdf" = "png") {
+    if (!projectId) {
+      setError("Choose or create a project first.");
+      return;
+    }
+    setBusy(item.id);
+    setError("");
+    setMessage("");
+    try {
+      let file: { url: string; type: string } | undefined;
+      if (provider === "canva") {
+        const job = await connection("/api/studio/connections", {
+          action: "export",
+          designId: item.id,
+          format,
+        });
+        for (let i = 0; i < 25; i++) {
+          const result = await connection("/api/studio/connections", {
+            action: "export-status",
+            id: job.id,
+          });
+          if (result.status === "success") {
+            file = result.upload;
+            break;
+          }
+          if (result.status === "failed")
+            throw new Error(
+              result.error || "Canva could not export this design.",
+            );
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+        }
+        if (!file)
+          throw new Error(
+            "Canva is still preparing the file. Try again shortly or upload an export from Canva.",
+          );
+      }
+      const all = await connection("/api/studio/workbench"),
+        p = all.projects.find((p: StudioProject) => p.id === projectId) as
+          StudioProject | undefined;
+      if (!p) throw new Error("Project not found. Refresh the page.");
+      const d = structuredClone(designFor(p));
+      if (provider === "pinterest") {
+        if (!d.references.some((r) => r.url === item.url))
+          d.references.push({
+            id: uid(),
+            source: "pinterest",
+            url: item.url,
+            title: item.name,
+            imageUrl: item.image,
+            note: item.note || "",
+          });
+      } else {
+        const existing = d.artwork.find((a) => a.designId === item.id);
+        if (existing) {
+          if (format === "png") existing.previewUrl = file!.url;
+          else existing.fileUrl = file!.url;
+          existing.approved = false;
+          existing.editUrl = item.url;
+        } else
+          d.artwork.push({
+            id: uid(),
+            name: item.name,
+            provider: "Canva",
+            designId: item.id,
+            editUrl: item.url,
+            previewUrl: format === "png" ? file!.url : "",
+            fileUrl: file!.url,
+            width: 10,
+            height: 15,
+            copies: p.qty,
+            approved: false,
+          });
+      }
+      await studioRequest(saveBody(p, d));
+      setMessage(
+        `${item.name} added to ${p.title}. ${provider === "canva" ? "Confirm the finished size and check the proof in your project." : "Original Pinterest attribution is retained."}`,
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy("");
+    }
+  }
+  return (
+    <div>
+      <header className="st-page-heading">
+        <div>
+          <p className="st-eyebrow">Bring the tools you love</p>
+          <h1>Inspiration in. Finished designs in.</h1>
+          <p>
+            Connect your accounts to bring approved designs and saved
+            inspiration into a project you can actually make.
+          </p>
+        </div>
+        <Link className="st-button" href="/studio/cards">
+          Paper & website providers ↗
+        </Link>
+      </header>
+      {error && (
+        <p className="st-error" role="alert">
+          {error}
+        </p>
+      )}
+      {message && (
+        <p className="st-notice" role="status">
+          {message}
+        </p>
+      )}
+      <section className="st-provider-grid">
+        {(["canva", "pinterest"] as Provider[]).map((p) => {
+          const s = statuses.find((s) => s.id === p);
+          return (
+            <article className="st-provider" key={p}>
+              <p className="st-eyebrow">
+                {p === "canva" ? "Finished artwork" : "Reference library"}
+              </p>
+              <h2>{p === "canva" ? "Canva" : "Pinterest"}</h2>
+              <p>
+                {p === "canva"
+                  ? "Use your Canva designs. Import a PNG preview or print PDF, keep the original editor link and place the artwork in your mockup."
+                  : "Browse public boards you can access, choose the Pins you want and retain their original source links."}
+              </p>
+              <span className="st-provider-status">
+                {!s
+                  ? "Checking connection…"
+                  : s.connected
+                    ? "Account connected"
+                    : s.configured
+                      ? "Ready to connect"
+                      : "Connection needs provider app setup"}
+              </span>
+              <div className="studio-actions">
+                {s?.connected ? (
+                  <>
+                    <button
+                      className="st-button st-primary"
+                      disabled={!!busy}
+                      onClick={() => void browse(p)}
+                    >
+                      Browse {p === "canva" ? "designs" : "boards"}
+                    </button>
+                    <button
+                      className="st-button"
+                      disabled={!!busy}
+                      onClick={() => void remove(p)}
+                    >
+                      Disconnect
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="st-button st-primary"
+                    disabled={!s?.configured || !!busy}
+                    onClick={() => void authorize(p)}
+                  >
+                    Connect {p === "canva" ? "Canva" : "Pinterest"}
+                  </button>
+                )}
+                <a
+                  className="st-button"
+                  target="_blank"
+                  rel="noreferrer"
+                  href={
+                    p === "canva"
+                      ? "https://www.canva.com/templates/s/wedding/"
+                      : "https://www.pinterest.com/"
+                  }
+                >
+                  Open {p === "canva" ? "Canva" : "Pinterest"} ↗
+                </a>
+              </div>
+              {s && !s.configured && (
+                <p className="st-help">
+                  You can use this today by uploading a design export or adding
+                  a reference link in your project.
+                </p>
+              )}
+            </article>
+          );
+        })}
+      </section>
+      <div className="st-filterbar">
+        <Field label="Add to project">
+          <select
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+          >
+            <option value="">Choose a project</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </select>
+        </Field>
+        {provider === "canva" &&
+          statuses.some((s) => s.id === "canva" && s.connected) && (
+            <>
+              <Field label="Find Canva designs">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Wedding, menu, invitation…"
+                />
+              </Field>
+              <button
+                className="st-button"
+                disabled={!!busy}
+                onClick={() => void browse("canva")}
+              >
+                Search
+              </button>
+            </>
+          )}
+        {projectId && (
+          <Link
+            className="st-text-link"
+            href={`/studio/projects/${projectId}?stage=recipe`}
+          >
+            Open selected project →
+          </Link>
+        )}
+      </div>
+      {provider === "pinterest" && board && (
+        <button
+          className="st-text-link"
+          disabled={!!busy}
+          onClick={() => void browse("pinterest")}
+        >
+          ← All public boards
+        </button>
+      )}
+      <div className="st-connection-media">
+        {boards.map((b) => (
+          <article key={b.id}>
+            <h3>{b.name}</h3>
+            <button
+              className="st-button"
+              disabled={!!busy}
+              onClick={() => void browse("pinterest", b.id)}
+            >
+              View Pins
+            </button>
+          </article>
+        ))}
+        {items.map((item) => (
+          <article key={item.id}>
+            {item.image && <img src={item.image} alt={item.name} />}
+            <h3>{item.name}</h3>
+            <a
+              className="st-text-link"
+              href={item.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View original ↗
+            </a>
+            <button
+              className="st-button st-primary"
+              disabled={!!busy || !projectId}
+              onClick={() => void attach(item)}
+            >
+              {busy === item.id
+                ? "Importing…"
+                : provider === "canva"
+                  ? "Import preview"
+                  : "Add reference"}
+            </button>
+            {provider === "canva" && (
+              <button
+                className="st-button"
+                disabled={!!busy || !projectId}
+                onClick={() => void attach(item, "pdf")}
+              >
+                Import print PDF
+              </button>
+            )}
+          </article>
+        ))}
+      </div>
+      {busy === "browse" && <p role="status">Loading from your account…</p>}
+      {cursor && (
+        <button
+          className="st-button"
+          disabled={!!busy}
+          onClick={() => void browse(provider, board, true)}
+        >
+          Load more
+        </button>
+      )}
+      <p className="st-help">
+        Imports are selected by you; edits in another app do not automatically
+        sync. Pinterest references are inspiration, not permission to reproduce
+        an artist’s work. Recheck proofs and provider print specifications
+        before ordering.
+      </p>
+    </div>
+  );
+}

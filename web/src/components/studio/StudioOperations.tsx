@@ -1,0 +1,411 @@
+"use client";
+import Link from "next/link";
+import { useState } from "react";
+import type { StudioProject } from "@/lib/studio-project";
+import {
+  csvDownload,
+  designFor,
+  dueDate,
+  money,
+  supplyRows,
+} from "@/lib/studio/design";
+import { calendarDownload } from "@/lib/studio/calendar";
+import { Field, saveBody, studioRequest } from "./StudioUI";
+export function StudioOperations({
+  initial,
+  weddingDate = "",
+  mode,
+}: {
+  initial: StudioProject[];
+  weddingDate?: string;
+  mode: "supplies" | "calendar" | "packing";
+}) {
+  const [projects, setProjects] = useState(initial),
+    [filter, setFilter] = useState("all"),
+    [search, setSearch] = useState(""),
+    [assignee, setAssignee] = useState(""),
+    [complete, setComplete] = useState(false),
+    [busy, setBusy] = useState(""),
+    [error, setError] = useState("");
+  const supplies = supplyRows(projects).filter(
+    (r) =>
+      r.label.toLowerCase().includes(search.toLowerCase()) &&
+      (filter === "all" ||
+        (filter === "order" && r.toOrder > 0) ||
+        (filter === "delivery" && r.missing > 0)),
+  );
+  const tasks = projects
+    .flatMap((p) =>
+      p.steps.map((s, index) => ({
+        p,
+        s,
+        index,
+        date: dueDate(s, weddingDate),
+      })),
+    )
+    .filter(
+      ({ p, s }) =>
+        (complete || !s.done) &&
+        (!assignee || s.assignee === assignee) &&
+        (p.title + " " + s.what).toLowerCase().includes(search.toLowerCase()),
+    )
+    .sort((a, b) => (a.date || "9999").localeCompare(b.date || "9999"));
+  const dates = [...new Set(tasks.map((t) => t.date))];
+  async function toggle(p: StudioProject, index: number) {
+    const s = p.steps[index];
+    if (!s.done && (s.dependsOn || []).some((i) => !p.steps[i]?.done)) {
+      setError(
+        "Complete the earlier dependencies in the project before this task.",
+      );
+      return;
+    }
+    setBusy(s.id);
+    setError("");
+    try {
+      const next = {
+          ...p,
+          steps: p.steps.map((t, i) =>
+            i === index ? { ...t, done: !t.done } : t,
+          ),
+        },
+        r = await studioRequest(saveBody(next, designFor(next)));
+      setProjects((rows) =>
+        rows.map((row) => (row.id === r.project.id ? r.project : row)),
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy("");
+    }
+  }
+  return (
+    <div>
+      <header className="st-page-heading">
+        <div>
+          <p className="st-eyebrow">The whole wedding build</p>
+          <h1>
+            {mode === "supplies"
+              ? "One list. Every handmade detail."
+              : mode === "calendar"
+                ? "Make room for the making."
+                : "Every piece has a place to go."}
+          </h1>
+          <p>
+            {mode === "supplies"
+              ? "Combine matching supplies across projects, account for what you own and order the right number of packs."
+              : mode === "calendar"
+                ? "Real wedding dates, preparation time and helper assignments. Changes to a project stay connected here."
+                : "Pack by setup location, share clear instructions and keep returns attached to the boxes."}
+          </p>
+        </div>
+        {mode === "supplies" ? (
+          <button
+            className="st-button"
+            onClick={() =>
+              csvDownload("vowfolk-studio-supplies.csv", [
+                [
+                  "Material",
+                  "Unit",
+                  "Required",
+                  "Owned",
+                  "Ordered",
+                  "Received",
+                  "Still to order",
+                  "Pack size",
+                  "Packs to order",
+                  "Estimated cost",
+                ],
+                ...supplies.map((r) => [
+                  r.label,
+                  r.unit,
+                  r.required,
+                  r.owned,
+                  r.ordered,
+                  r.received,
+                  r.toOrder,
+                  r.pack,
+                  r.packs,
+                  r.packs * r.pack * r.cost,
+                ]),
+              ])
+            }
+          >
+            Export supplies CSV
+          </button>
+        ) : mode === "calendar" ? (
+          <button
+            className="st-button"
+            onClick={() => calendarDownload(projects, weddingDate)}
+          >
+            Export calendar .ics
+          </button>
+        ) : (
+          <button className="st-button" onClick={() => window.print()}>
+            Print packing overview
+          </button>
+        )}
+      </header>
+      {error && (
+        <p className="st-error" role="alert">
+          {error}
+        </p>
+      )}
+      {mode !== "packing" && (
+        <div className="st-filterbar">
+          <Field label="Search">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={
+                mode === "supplies" ? "Find supplies…" : "Find build tasks…"
+              }
+            />
+          </Field>
+          {mode === "supplies" ? (
+            <Field label="Show">
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="all">All supplies</option>
+                <option value="order">Still to order</option>
+                <option value="delivery">Not fully received</option>
+              </select>
+            </Field>
+          ) : (
+            <>
+              <Field label="Assigned to">
+                <select
+                  value={assignee}
+                  onChange={(e) => setAssignee(e.target.value)}
+                >
+                  <option value="">Everyone</option>
+                  {[
+                    ...new Set(
+                      projects
+                        .flatMap((p) => p.steps.map((s) => s.assignee || ""))
+                        .filter(Boolean),
+                    ),
+                  ].map((n) => (
+                    <option key={n}>{n}</option>
+                  ))}
+                </select>
+              </Field>
+              <label className="st-check">
+                <input
+                  type="checkbox"
+                  checked={complete}
+                  onChange={(e) => setComplete(e.target.checked)}
+                />
+                Include completed tasks
+              </label>
+            </>
+          )}
+        </div>
+      )}
+      {mode === "supplies" ? (
+        <>
+          <div className="st-table-scroll">
+            <table className="st-table">
+              <thead>
+                <tr>
+                  {[
+                    "Material / projects",
+                    "Required",
+                    "Owned",
+                    "Ordered",
+                    "Received",
+                    "Packs to order",
+                    "Estimate",
+                  ].map((h) => (
+                    <th key={h}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {supplies.map((r) => (
+                  <tr key={r.id}>
+                    <td>
+                      <strong>{r.label}</strong>
+                      <small>{r.unit}</small>
+                      {r.links.map((l) => (
+                        <Link
+                          className="st-text-link"
+                          key={l.projectId + l.materialId}
+                          href={`/studio/projects/${l.projectId}?stage=source`}
+                        >
+                          {l.project}
+                        </Link>
+                      ))}
+                    </td>
+                    <td>{r.required}</td>
+                    <td>{r.owned}</td>
+                    <td>{r.ordered}</td>
+                    <td>{r.received}</td>
+                    <td>
+                      <strong>{r.packs}</strong>
+                      <small>
+                        {r.pack} per pack · {r.toOrder} units needed
+                      </small>
+                    </td>
+                    <td>{money(r.packs * r.pack * r.cost)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {!supplies.length && (
+            <div className="st-empty">
+              <h3>
+                {projects.length
+                  ? "Nothing in this view."
+                  : "Your designs will write the shopping list."}
+              </h3>
+              <p>Open a project to add materials and record purchases.</p>
+            </div>
+          )}
+          <p className="st-help">
+            Matching material, supplier, pack size, cost and sourcing method are
+            consolidated. Received deliveries are part of ordered stock, so they
+            are not subtracted twice. Prices remain estimates until you enter
+            supplier costs.
+          </p>
+        </>
+      ) : mode === "calendar" ? (
+        <>
+          {!weddingDate && (
+            <p className="st-notice">
+              Set your wedding date in{" "}
+              <Link className="st-text-link" href="/settings">
+                Wedding settings
+              </Link>{" "}
+              to schedule relative tasks. Exact dates you have entered still
+              appear.
+            </p>
+          )}
+          {dates.map((date) => (
+            <section className="st-calendar-day" key={date}>
+              <time dateTime={date || undefined}>{date || "Date needed"}</time>
+              <div>
+                {tasks
+                  .filter((t) => t.date === date)
+                  .map(({ p, s, index }) => (
+                    <div className="st-calendar-task" key={p.id + s.id}>
+                      <input
+                        type="checkbox"
+                        checked={s.done}
+                        disabled={!!busy}
+                        aria-label={`Mark ${s.what} ${s.done ? "incomplete" : "complete"}`}
+                        onChange={() => void toggle(p, index)}
+                      />
+                      <div>
+                        <Link href={`/studio/projects/${p.id}?stage=build`}>
+                          {s.what}
+                        </Link>
+                        <p>
+                          {p.title} · {s.hours} h · {s.assignee || "Unassigned"}
+                          {!date && s.dayOffset !== undefined
+                            ? ` · ${Math.abs(s.dayOffset)} days ${s.dayOffset < 0 ? "before" : "after"} the wedding`
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </section>
+          ))}
+          {!tasks.length && (
+            <div className="st-empty">
+              <h3>No tasks in this view.</h3>
+              <p>
+                Your project’s complete build schedule will appear here,
+                including early trials and returns.
+              </p>
+            </div>
+          )}
+          <p className="st-help">
+            Calendar exports are a snapshot of dated tasks. Export again after
+            rescheduling; tasks keep stable event identifiers.
+          </p>
+        </>
+      ) : (
+        <>
+          <div className="st-box-grid">
+            {projects.flatMap((p) =>
+              (p.design?.boxes || []).map((b) => (
+                <article className="st-box" key={p.id + b.id}>
+                  <p className="st-eyebrow">{p.title}</p>
+                  <h2>{b.name}</h2>
+                  <p>
+                    {b.destination || "Choose a setup location"} ·{" "}
+                    {b.owner || "Assign an owner"}
+                  </p>
+                  <p className="st-help">
+                    Transport: {b.transport || "Add handling notes"}
+                    <br />
+                    After: {b.after}
+                  </p>
+                  <table className="st-table" style={{ minWidth: 0 }}>
+                    <thead>
+                      <tr>
+                        <th>Material</th>
+                        <th>Packed</th>
+                        <th>Placed</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {b.items.map((i) => (
+                        <tr key={i.materialId}>
+                          <td>
+                            {p.materials.find((m) => m.id === i.materialId)
+                              ?.label || "Removed material"}
+                          </td>
+                          <td>
+                            {i.packed}/{i.qty}
+                          </td>
+                          <td>
+                            {i.placed}/{i.qty}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <Link
+                    className="st-text-link"
+                    href={`/studio/projects/${p.id}?stage=pack`}
+                  >
+                    Manage box & helper guide →
+                  </Link>
+                </article>
+              )),
+            )}
+          </div>
+          {!projects.some((p) => p.design?.boxes.length) && (
+            <div className="st-empty">
+              <h3>Build the boxes before the rush.</h3>
+              <p>
+                Open Pack & setup in a project to allocate materials, choose a
+                destination and write transport instructions.
+              </p>
+            </div>
+          )}
+          <div className="st-section-heading">
+            <h2>Projects to pack</h2>
+          </div>
+          {projects.map((p) => (
+            <p key={p.id}>
+              <Link
+                className="st-text-link"
+                href={`/studio/projects/${p.id}?stage=pack`}
+              >
+                {p.title} →
+              </Link>
+              <small> · {p.design?.boxes.length || 0} boxes</small>
+            </p>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}

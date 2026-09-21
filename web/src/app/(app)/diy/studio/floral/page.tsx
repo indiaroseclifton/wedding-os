@@ -1,20 +1,14 @@
-import { Suspense } from "react";
-import { FlowerDesk } from "@/components/diy/FlowerDesk";
-import { FloralStudio } from "@/components/diy/FloralStudio";
-import { RoomSubnav } from "@/components/layout/RoomSubnav";
-
-export default async function FloralStudioPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ canvas?: string }>;
-}) {
-  const q = await searchParams;
+import { ensureDemoWorkspace } from "@/lib/data/workspace";
+import { getStudio } from "@/lib/data/studio-store";
+import { StudioHome } from "@/components/studio/StudioHome";
+export default async function Page() {
+  const { workspace, meta } = await ensureDemoWorkspace();
+  const { projects } = await getStudio(workspace.id);
   return (
-    <div>
-      <RoomSubnav room="studio" />
-      <Suspense fallback={<p className="text-sm text-muted">Opening the studio…</p>}>
-        {q.canvas === "1" ? <FloralStudio /> : <FlowerDesk />}
-      </Suspense>
-    </div>
+    <StudioHome
+      projects={projects}
+      weddingDate={meta.weddingDate || ""}
+      kind="floral"
+    />
   );
 }

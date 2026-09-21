@@ -1,0 +1,375 @@
+"use client";
+import Link from "next/link";
+import { useState } from "react";
+import { DESIGN_PROVIDERS } from "@/lib/studio/catalog";
+import { newObject, uid, type StudioArtwork } from "@/lib/studio/design";
+import { Field, FileButton, NumberField, uploadStudioFile } from "./StudioUI";
+import type { PanelProps } from "./WorkspacePanels";
+export function ArtworkPanel({ project: p, onDesign }: PanelProps) {
+  const d = p.design!,
+    [provider, setProvider] = useState("canva"),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState(""),
+    [message, setMessage] = useState(""),
+    [matWidth, setMatWidth] = useState(30.5),
+    [matHeight, setMatHeight] = useState(30.5),
+    [gap, setGap] = useState(0.6);
+  const update = (id: string, patch: Partial<StudioArtwork>) =>
+    onDesign({
+      ...d,
+      artwork: d.artwork.map((a) =>
+        a.id === id ? { ...a, ...patch, approved: patch.approved ?? false } : a,
+      ),
+    });
+  async function upload(file: File, id?: string) {
+    setBusy(true);
+    setError("");
+    try {
+      const f = await uploadStudioFile(file);
+      if (id)
+        update(
+          id,
+          f.type.startsWith("image/")
+            ? { previewUrl: f.url }
+            : { fileUrl: f.url },
+        );
+      else
+        onDesign({
+          ...d,
+          artwork: [
+            ...d.artwork,
+            {
+              id: uid(),
+              name: f.name,
+              provider,
+              editUrl: "",
+              previewUrl: f.type.startsWith("image/") ? f.url : "",
+              fileUrl: f.url,
+              width: p.kind === "cricut" ? 45.7 : 12.7,
+              height: p.kind === "cricut" ? 61 : 17.8,
+              copies: p.qty,
+              approved: false,
+            },
+          ],
+        });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <section className="st-artwork-panel">
+      <div className="st-section-heading">
+        <div>
+          <p className="st-eyebrow">Professional designs. Your wedding.</p>
+          <h3>Artwork & production</h3>
+        </div>
+        <Link
+          className="st-button"
+          href={`/studio/connections?project=${p.id}`}
+        >
+          Import from Canva ↗
+        </Link>
+      </div>
+      <p className="st-help">
+        Personalize with your provider, then attach the finished files. PNG
+        previews appear in the mockup; PDFs remain production files.
+      </p>
+      <div className="st-provider-links">
+        {DESIGN_PROVIDERS.map((p) => (
+          <a key={p.id} href={p.stationery} target="_blank" rel="noreferrer">
+            {p.name} designs ↗
+          </a>
+        ))}
+      </div>
+      {error && (
+        <p role="alert" className="st-error">
+          {error}
+        </p>
+      )}
+      {message && (
+        <p role="status" className="st-notice">
+          {message}
+        </p>
+      )}
+      <div className="st-artwork-grid">
+        {d.artwork.map((a) => (
+          <article className="st-artwork" key={a.id}>
+            <div className="st-artwork-image">
+              {a.previewUrl ? (
+                <img src={a.previewUrl} alt={a.name} />
+              ) : (
+                <span>
+                  {a.websiteUrl
+                    ? "Wedding website"
+                    : a.fileUrl
+                      ? "PDF production file"
+                      : "Attach your design"}
+                </span>
+              )}
+            </div>
+            <Field label="Design name">
+              <input
+                value={a.name}
+                onChange={(e) => update(a.id, { name: e.target.value })}
+              />
+            </Field>
+            <div className="st-field-grid">
+              <NumberField
+                label="Finished width · cm"
+                value={a.width}
+                min={0.1}
+                max={500}
+                step={0.1}
+                onChange={(width) => update(a.id, { width })}
+              />
+              <NumberField
+                label="Finished height · cm"
+                value={a.height}
+                min={0.1}
+                max={500}
+                step={0.1}
+                onChange={(height) => update(a.id, { height })}
+              />
+              <NumberField
+                label="Provider order quantity"
+                value={a.copies}
+                min={1}
+                max={10000}
+                onChange={(n) => update(a.id, { copies: Math.round(n) })}
+              />
+              <Field label="Provider">
+                <select
+                  value={a.provider}
+                  onChange={(e) => update(a.id, { provider: e.target.value })}
+                >
+                  {DESIGN_PROVIDERS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                  <option value="other">Other designer</option>
+                </select>
+              </Field>
+            </div>
+            <Field label="Edit link at provider">
+              <input
+                type="url"
+                placeholder="https://"
+                value={a.editUrl}
+                onChange={(e) => update(a.id, { editUrl: e.target.value })}
+              />
+            </Field>
+            <Field label="Matching wedding website">
+              <input
+                type="url"
+                placeholder="https://your-wedding-website"
+                value={a.websiteUrl || ""}
+                onChange={(e) => update(a.id, { websiteUrl: e.target.value })}
+              />
+            </Field>
+            <div className="studio-actions">
+              {a.editUrl && (
+                <a
+                  className="st-button"
+                  href={a.editUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Edit with provider ↗
+                </a>
+              )}
+              {a.websiteUrl && (
+                <a
+                  className="st-button"
+                  href={a.websiteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open website ↗
+                </a>
+              )}
+              {a.fileUrl && (
+                <a
+                  className="st-button"
+                  href={a.fileUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open production file
+                </a>
+              )}
+            </div>
+            <div className="studio-actions">
+              <FileButton
+                accept="image/png,image/jpeg,image/webp"
+                disabled={busy}
+                onFile={(f) => void upload(f, a.id)}
+              >
+                Attach preview
+              </FileButton>
+              <FileButton
+                accept="application/pdf"
+                disabled={busy}
+                onFile={(f) => void upload(f, a.id)}
+              >
+                Attach print PDF
+              </FileButton>
+            </div>
+            <label className="st-check">
+              <input
+                type="checkbox"
+                checked={a.approved}
+                onChange={(e) => update(a.id, { approved: e.target.checked })}
+              />
+              Proof checked: names, date, spelling, dimensions and printer
+              requirements
+            </label>
+            {a.previewUrl && (
+              <button
+                className="st-button st-primary"
+                onClick={() => {
+                  const sign = p.kind === "cricut";
+                  onDesign({
+                    ...d,
+                    objects: [
+                      ...d.objects,
+                      newObject(sign ? "welcome-sign" : "menu", {
+                        name: a.name,
+                        imageUrl: a.previewUrl,
+                        width: a.width,
+                        ...(sign
+                          ? { height: a.height, depth: 0.6 }
+                          : { depth: a.height, height: 0.05 }),
+                      }),
+                    ],
+                  });
+                  setMessage(
+                    `Added ${a.name} to the design. Position it and set the per-design count in the canvas; provider order quantity stays separate.`,
+                  );
+                }}
+              >
+                Place one in the mockup
+              </button>
+            )}
+            <button
+              className="st-text-link st-danger"
+              onClick={() =>
+                onDesign({
+                  ...d,
+                  artwork: d.artwork.filter((x) => x.id !== a.id),
+                })
+              }
+            >
+              Remove artwork record
+            </button>
+          </article>
+        ))}
+      </div>
+      <div className="st-inline-form">
+        <Field label="Design provider">
+          <select
+            value={provider}
+            onChange={(e) => setProvider(e.target.value)}
+          >
+            {DESIGN_PROVIDERS.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+            <option value="other">Other designer</option>
+          </select>
+        </Field>
+        <FileButton disabled={busy} onFile={(f) => void upload(f)}>
+          {busy ? "Uploading…" : "Upload a finished design"}
+        </FileButton>
+        <button
+          className="st-button"
+          onClick={() =>
+            onDesign({
+              ...d,
+              artwork: [
+                ...d.artwork,
+                {
+                  id: uid(),
+                  name: "Our wedding website",
+                  provider,
+                  editUrl: "",
+                  previewUrl: "",
+                  fileUrl: "",
+                  width: 12.7,
+                  height: 17.8,
+                  copies: 1,
+                  approved: false,
+                  websiteUrl: "",
+                },
+              ],
+            })
+          }
+        >
+          Link a website
+        </button>
+      </div>
+      {p.kind === "cricut" && (
+        <div className="st-cut-check">
+          <h3>Cutting preparation</h3>
+          <p className="st-help">
+            Create and verify vector cut paths in your provider or Cricut Design
+            Space. A raster preview or PDF is not a machine cut path. This
+            calculator checks rectangular layout capacity.
+          </p>
+          <div className="st-field-grid">
+            <NumberField
+              label="Usable mat width · cm"
+              value={matWidth}
+              min={1}
+              max={1000}
+              step={0.1}
+              onChange={setMatWidth}
+            />
+            <NumberField
+              label="Usable mat height · cm"
+              value={matHeight}
+              min={1}
+              max={1000}
+              step={0.1}
+              onChange={setMatHeight}
+            />
+            <NumberField
+              label="Gap per design · cm"
+              value={gap}
+              max={10}
+              step={0.1}
+              onChange={setGap}
+            />
+          </div>
+          {d.artwork.map((a) => {
+            const fit = Math.max(
+              Math.floor(matWidth / (a.width + gap)) *
+                Math.floor(matHeight / (a.height + gap)),
+              Math.floor(matWidth / (a.height + gap)) *
+                Math.floor(matHeight / (a.width + gap)),
+            );
+            return (
+              <p key={a.id}>
+                <strong>{a.name}:</strong>{" "}
+                {fit
+                  ? `${fit} per mat · ${Math.ceil(a.copies / fit)} mats for ${a.copies} copies`
+                  : "Does not fit in one piece. Resize or plan tiling in the cutting software."}
+              </p>
+            );
+          })}
+          <a
+            className="st-button"
+            href="https://design.cricut.com/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Cricut Design Space ↗
+          </a>
+        </div>
+      )}
+    </section>
+  );
+}

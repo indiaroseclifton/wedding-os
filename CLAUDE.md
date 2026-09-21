@@ -74,3 +74,9 @@ Vercel deploys from `web/`. A green build is required; a 200 is not proof the pa
 ## Voice in the product
 
 Short. Specific. Coordinator, not cheerleader. “Who files the license.” not “Start your journey.”
+
+## Approved Studio direction — September 2026
+
+The user explicitly requested a focused Studio app for DIY weddings, advanced visualization and optional AI, with established providers for stationery and websites. This supersedes earlier restrictions on Studio 3D previews and a scoped AI assistant. Keep Studio inside this deployment with shared wedding records; a separate service or SKU is not implied. Preserve post-audit planning and data fixes.
+
+Implemented scope and integration setup are documented in `web/docs/STUDIO_INTEGRATIONS.md`; visual direction is in `web/docs/studio-surface.md`. Dimension-based mockups, manual venue photo alignment and approximate AI concepts must remain clearly distinguished. Do not imply live provider connections, website/RSVP synchronization or paid AI activation until verified with configured accounts.
