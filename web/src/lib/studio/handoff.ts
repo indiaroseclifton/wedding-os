@@ -1,0 +1,3 @@
+import type {StudioProject} from '@/lib/studio-project';import {designFor,dueDate} from './design';
+export function publicHandoff(p:StudioProject,weddingDate=''){const source=designFor(p);return {title:p.title,qty:p.qty,zone:p.zone,owner:p.owner,weddingDate,design:{...source,references:[],artwork:[],comments:[],trials:[],helpers:[],approval:{status:source.approval.status,by:'',at:source.approval.at}},materials:p.materials.filter(m=>m.qty>0).map(m=>({id:m.id,label:m.label,qty:m.qty,unit:m.unit})),tasks:p.steps.map(s=>({id:s.id,what:s.what,date:dueDate(s,weddingDate),assignee:s.assignee||'',instructions:s.instructions||[],done:s.done})),updatedAt:p.updatedAt};}
+export type PublicHandoff=ReturnType<typeof publicHandoff>;

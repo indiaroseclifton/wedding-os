@@ -1,5 +1,1 @@
-import { MakeThis } from "@/components/studio/MakeThis";
-
-export default function MakePage() {
-  return <MakeThis />;
-}
+import {StudioIntake} from "@/components/studio/StudioIntake";export default function Page(){return <StudioIntake/>;}

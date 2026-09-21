@@ -22,6 +22,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/box/") ||
     pathname.startsWith("/ros/") ||
     pathname.startsWith("/api/public/") ||
+    pathname.startsWith("/build/") ||
+    pathname.startsWith("/api/studio/") ||
     pathname.startsWith("/api/integrations/spotify/callback") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico"

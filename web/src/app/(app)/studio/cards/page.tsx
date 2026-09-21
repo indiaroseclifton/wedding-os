@@ -1,14 +1,1 @@
-import { ensureDemoWorkspace, getWorkspaceGuests } from "@/lib/data/workspace";
-import { CardsDesk } from "@/components/studio/CardsDesk";
-
-export default async function CardsPage() {
-  const { workspace, meta } = await ensureDemoWorkspace();
-  const guests = await getWorkspaceGuests(workspace.id);
-  return (
-    <CardsDesk
-      guests={guests}
-      names={meta.coupleNames || meta.name}
-      date={meta.weddingDate || ""}
-    />
-  );
-}
+import {ensureDemoWorkspace,getWorkspaceGuests} from '@/lib/data/workspace';import {getStudio} from '@/lib/data/studio-store';import {PaperHub} from '@/components/studio/PaperHub';export default async function Page(){const {workspace}=await ensureDemoWorkspace();const [{projects},guests]=await Promise.all([getStudio(workspace.id),getWorkspaceGuests(workspace.id)]);return <PaperHub projects={projects} guests={guests.map(g=>({name:g.name,household:g.partyName||'',table:g.tableLabel||''}))}/>;}

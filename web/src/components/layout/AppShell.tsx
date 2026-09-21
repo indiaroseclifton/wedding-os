@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { StudioShell } from "@/components/studio/StudioShell";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CommandPalette } from "@/components/search/CommandPalette";
@@ -69,6 +70,8 @@ export function AppShell({
     setMore(false);
     pane.current?.scrollTo({ top: 0 });
   }, [pathname]);
+
+  if (pathname.startsWith("/studio") || pathname.startsWith("/diy/studio") || pathname === "/diy/calendar") return <StudioShell names={names} weddingDate={weddingDate}>{children}</StudioShell>;
 
   return (
     <div className={`desk ${home ? "is-home" : ""} ${hasRail ? "has-rail" : ""}`}>
