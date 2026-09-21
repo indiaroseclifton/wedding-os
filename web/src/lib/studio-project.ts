@@ -1,3 +1,4 @@
+import type {StudioDesign,DesignRevision} from "./studio/design";
 export type StudioKind = "floral" | "table" | "print" | "cricut" | "decor" | "lighting" | "favors";
 export type StudioIntent = "recreate" | "inspire" | "similar" | "style";
 export type StudioStage = "spark" | "design" | "spec" | "source" | "build" | "pack" | "setup" | "after";
@@ -13,6 +14,7 @@ export type StudioMaterial = {
   source?: string;
   fate: MaterialFate;
   bought: boolean;
+  catalogId?:string;perUnit?:number;packSize?:number;orderedQty?:number;receivedQty?:number;ownedQty?:number;actualUnitCost?:number;sourceUrl?:string;orderBy?:string;retired?:boolean;
 };
 
 export type StudioStep = {
@@ -21,6 +23,7 @@ export type StudioStep = {
   what: string;
   hours: number;
   done: boolean;
+  dayOffset?:number;dueDate?:string;assignee?:string;instructions?:string[];dependsOn?:number[];hoursMode?:"fixed"|"recipe"|"per-piece";perPieceHours?:number;
 };
 
 export type StudioProject = {
@@ -41,6 +44,7 @@ export type StudioProject = {
   steps: StudioStep[];
   createdAt: string;
   updatedAt: string;
+  design?:StudioDesign;revisions?:DesignRevision[];version?:number;shareToken?:string;
 };
 
 export const STAGES: { id: StudioStage; label: string }[] = [

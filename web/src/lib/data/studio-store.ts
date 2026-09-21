@@ -17,7 +17,7 @@ export type StoredStudio = {
   updatedAt: string;
 };
 
-async function readAll(): Promise<Record<string, StoredStudio>> {
+export async function readAllStudio(): Promise<Record<string, StoredStudio>> {
   await ensureDir();
   try {
     return JSON.parse(await readText(file));
@@ -31,16 +31,15 @@ async function writeAll(all: Record<string, StoredStudio>) {
 }
 
 export async function getStudio(workspaceId: string): Promise<StoredStudio> {
-  const all = await readAll();
+  const all = await readAllStudio();
   if (!all[workspaceId]) {
     all[workspaceId] = { workspaceId, projects: [], updatedAt: new Date().toISOString() };
-    await writeAll(all);
   }
   return all[workspaceId];
 }
 
 async function save(workspaceId: string, projects: StudioProject[]) {
-  const all = await readAll();
+  const all = await readAllStudio();
   all[workspaceId] = { workspaceId, projects, updatedAt: new Date().toISOString() };
   await writeAll(all);
   return all[workspaceId];
@@ -187,3 +186,5 @@ export async function upsertKindProject(
   };
   return save(workspaceId, [...current.projects, project]);
 }
+
+export async function mutateStudio<T>(workspaceId:string,change:(projects:StudioProject[])=>T|Promise<T>){const {mutateRecord}=await import("@/lib/studio/persistence");return mutateRecord<StoredStudio,T>("studio-projects.json",async all=>{const row=all[workspaceId]||{workspaceId,projects:[],updatedAt:new Date().toISOString()};const result=await change(row.projects);row.updatedAt=new Date().toISOString();all[workspaceId]=row;return result;});}
